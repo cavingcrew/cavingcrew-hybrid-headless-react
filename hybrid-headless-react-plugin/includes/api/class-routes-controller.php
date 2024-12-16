@@ -100,20 +100,56 @@ class Hybrid_Headless_Routes_Controller {
      * Serve the Next.js application
      */
     private function serve_nextjs_app() {
-        $next_app_path = HYBRID_HEADLESS_PLUGIN_DIR . 'dist/index.html';
-        
-        if ( file_exists( $next_app_path ) ) {
-            // Set headers for static files
-            header( 'Content-Type: text/html; charset=UTF-8' );
-            header( 'Cache-Control: public, max-age=3600' );
-            
-            // Output the Next.js app
-            readfile( $next_app_path );
-        } else {
-            // Fallback if Next.js app is not built
-            status_header( 404 );
-            include( get_404_template() );
+        $build_path = get_option('hybrid_headless_build_path', 'dist');
+        $request_path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        $file_path = HYBRID_HEADLESS_PLUGIN_DIR . $build_path . $request_path;
+
+        // Handle static files (_next/static/*)
+        if (strpos($request_path, '_next/static/') !== false) {
+            $this->serve_static_file($file_path);
+            return;
         }
+
+        // Serve index.html for app routes
+        $index_path = HYBRID_HEADLESS_PLUGIN_DIR . $build_path . '/index.html';
+        if (file_exists($index_path)) {
+            header('Content-Type: text/html; charset=UTF-8');
+            header('Cache-Control: public, max-age=3600');
+            readfile($index_path);
+        } else {
+            status_header(404);
+            include(get_404_template());
+        }
+    }
+
+    /**
+     * Serve static files with appropriate headers
+     *
+     * @param string $file_path Path to static file
+     */
+    private function serve_static_file($file_path) {
+        if (!file_exists($file_path)) {
+            status_header(404);
+            return;
+        }
+
+        $mime_types = array(
+            'css' => 'text/css',
+            'js' => 'application/javascript',
+            'svg' => 'image/svg+xml',
+            'png' => 'image/png',
+            'jpg' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'gif' => 'image/gif',
+            'json' => 'application/json',
+        );
+
+        $ext = pathinfo($file_path, PATHINFO_EXTENSION);
+        $mime_type = isset($mime_types[$ext]) ? $mime_types[$ext] : 'application/octet-stream';
+
+        header('Content-Type: ' . $mime_type);
+        header('Cache-Control: public, max-age=31536000, immutable');
+        readfile($file_path);
     }
 
     /**
