@@ -79,6 +79,10 @@ final class Hybrid_Headless_Plugin {
             require_once HYBRID_HEADLESS_PLUGIN_DIR . 'includes/admin/class-admin.php';
             new Hybrid_Headless_Admin();
         }
+
+        // Load frontend handlers
+        require_once HYBRID_HEADLESS_PLUGIN_DIR . 'includes/frontend/class-frontend.php';
+        new Hybrid_Headless_Frontend();
     }
 
     /**

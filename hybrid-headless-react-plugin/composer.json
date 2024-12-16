@@ -13,6 +13,10 @@
 	},
 	"scripts": {
 		"build": ["php build/build.php"],
-		"build-dev": ["BUILD_PATH=dist-dev php build/build.php"]
+		"build-dev": ["BUILD_PATH=dist-dev php build/build.php"],
+		"test": "phpunit"
+	},
+	"require-dev": {
+		"phpunit/phpunit": "^9.0"
 	}
 }
