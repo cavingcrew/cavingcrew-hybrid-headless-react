@@ -5,8 +5,8 @@
 This repository contains both the frontend Next.js application and the WordPress plugin required for headless e-commerce functionality.
 
 ```
-/frontend/    # Next.js TypeScript application
-/plugin/      # WordPress plugin for headless integration
+/hybrid-headless-front-end/     # Next.js TypeScript application
+/hybrid-headless-react-plugin/  # WordPress plugin for headless integration
 ```
 
 ## Architecture Overview
@@ -76,7 +76,7 @@ The platform uses a hybrid routing approach:
 
 ### Frontend Development
 ```bash
-cd frontend
+cd hybrid-headless-front-end
 npm install
 npm run dev
 ```
