@@ -1,22 +1,18 @@
 {
-    "name": "hybrid-headless/react-plugin",
-    "description": "Enables headless WordPress + Next.js integration for WooCommerce",
-    "type": "wordpress-plugin",
-    "license": "GPL-2.0-or-later",
-    "require": {
-        "php": ">=7.4"
-    },
-    "autoload": {
-        "psr-4": {
-            "HybridHeadless\\": "includes/"
-        }
-    },
-    "scripts": {
-        "build": [
-            "php build/build.php"
-        ],
-        "build-dev": [
-            "BUILD_PATH=dist-dev php build/build.php"
-        ]
-    }
+	"name": "hybrid-headless/react-plugin",
+	"description": "Enables headless WordPress + Next.js integration for WooCommerce",
+	"type": "wordpress-plugin",
+	"license": "GPL-2.0-or-later",
+	"require": {
+		"php": ">=7.4"
+	},
+	"autoload": {
+		"psr-4": {
+			"HybridHeadless\\": "includes/"
+		}
+	},
+	"scripts": {
+		"build": ["php build/build.php"],
+		"build-dev": ["BUILD_PATH=dist-dev php build/build.php"]
+	}
 }
