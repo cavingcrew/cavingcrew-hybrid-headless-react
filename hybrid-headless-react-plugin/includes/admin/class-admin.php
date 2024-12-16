@@ -38,8 +38,8 @@ class Hybrid_Headless_Admin {
      * Register settings
      */
     public function register_settings() {
-        register_setting( 'hybrid_headless', 'hybrid_headless_frontend_url' );
         register_setting( 'hybrid_headless', 'hybrid_headless_frontend_homepage', 'boolean' );
+        register_setting( 'hybrid_headless', 'hybrid_headless_build_path' );
 
         add_settings_section(
             'hybrid_headless_main',
@@ -49,9 +49,9 @@ class Hybrid_Headless_Admin {
         );
 
         add_settings_field(
-            'frontend_url',
-            __( 'Frontend URL', 'hybrid-headless' ),
-            array( $this, 'render_field_frontend_url' ),
+            'build_path',
+            __( 'Next.js Build Path', 'hybrid-headless' ),
+            array( $this, 'render_field_build_path' ),
             'hybrid-headless',
             'hybrid_headless_main'
         );
@@ -91,14 +91,14 @@ class Hybrid_Headless_Admin {
     }
 
     /**
-     * Render frontend URL field
+     * Render build path field
      */
-    public function render_field_frontend_url() {
-        $value = get_option( 'hybrid_headless_frontend_url' );
+    public function render_field_build_path() {
+        $value = get_option( 'hybrid_headless_build_path', 'dist' );
         ?>
-        <input type="url" name="hybrid_headless_frontend_url" value="<?php echo esc_attr( $value ); ?>" class="regular-text">
+        <input type="text" name="hybrid_headless_build_path" value="<?php echo esc_attr( $value ); ?>" class="regular-text">
         <p class="description">
-            <?php esc_html_e( 'The URL where your Next.js frontend is hosted.', 'hybrid-headless' ); ?>
+            <?php esc_html_e( 'The path within the plugin directory where the Next.js build is located.', 'hybrid-headless' ); ?>
         </p>
         <?php
     }

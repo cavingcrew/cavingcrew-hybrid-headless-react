@@ -87,15 +87,32 @@ class Hybrid_Headless_Routes_Controller {
      */
     public function handle_frontend_routes() {
         global $wp;
-        $current_url = home_url( $wp->request );
         
         // Check if current route should be handled by Next.js
         if ( $this->is_frontend_route( $wp->request ) ) {
-            $frontend_url = get_option( 'hybrid_headless_frontend_url' );
-            if ( ! empty( $frontend_url ) ) {
-                wp_redirect( trailingslashit( $frontend_url ) . $wp->request );
-                exit;
-            }
+            // Serve the Next.js app
+            $this->serve_nextjs_app();
+            exit;
+        }
+    }
+
+    /**
+     * Serve the Next.js application
+     */
+    private function serve_nextjs_app() {
+        $next_app_path = HYBRID_HEADLESS_PLUGIN_DIR . 'dist/index.html';
+        
+        if ( file_exists( $next_app_path ) ) {
+            // Set headers for static files
+            header( 'Content-Type: text/html; charset=UTF-8' );
+            header( 'Cache-Control: public, max-age=3600' );
+            
+            // Output the Next.js app
+            readfile( $next_app_path );
+        } else {
+            // Fallback if Next.js app is not built
+            status_header( 404 );
+            include( get_404_template() );
         }
     }
 
