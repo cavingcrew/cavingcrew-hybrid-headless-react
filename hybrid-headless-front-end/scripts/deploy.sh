@@ -2,7 +2,7 @@
 
 # Configuration
 PLUGIN_DIR="../hybrid-headless-react-plugin"
-WORDPRESS_PLUGINS_DIR="/home/bitnami/stack/wordpress/wp-content/plugins/hybrid-headless-react-plugin"
+REMOTE_PATH="cavingcrew://home/bitnami/stack/wordpress/wp-content/plugins/hybrid-headless-react-plugin"
 BUILD_DIR="$PLUGIN_DIR/dist"
 
 # Colors for output
@@ -16,13 +16,6 @@ echo "🚀 Starting deployment process..."
 if [ ! -d "$PLUGIN_DIR" ]; then
     echo -e "${RED}Error: Plugin directory not found${NC}"
     exit 1
-fi
-
-# Create .env.production if it doesn't exist
-if [ ! -f ".env.production" ]; then
-    echo "NEXT_PUBLIC_WORDPRESS_API_URL=/wp-json" > .env.production
-    echo "NEXT_PUBLIC_WORDPRESS_URL=/" >> .env.production
-    echo -e "${GREEN}Created .env.production with default values${NC}"
 fi
 
 # Build Next.js app
@@ -44,23 +37,23 @@ echo "📋 Copying static files..."
 cp -r .next/static "$BUILD_DIR/_next/"
 cp -r public/* "$BUILD_DIR/"
 
-# Copy standalone output if using standalone output
-if [ -d ".next/standalone" ]; then
-    cp -r .next/standalone/* "$BUILD_DIR/"
-fi
-
 # Create version file
 echo "$(date '+%Y%m%d%H%M%S')" > "$BUILD_DIR/version.txt"
 
-# Deploy to WordPress plugins directory
+# Deploy to WordPress plugins directory using custom protocol
 echo "📤 Deploying to WordPress plugins directory..."
-if [ -d "$WORDPRESS_PLUGINS_DIR" ]; then
-    rm -rf "$WORDPRESS_PLUGINS_DIR/dist"
-    cp -r "$BUILD_DIR" "$WORDPRESS_PLUGINS_DIR/"
-    echo -e "${GREEN}Deployment successful!${NC}"
+if command -v cavingcrew-copy &> /dev/null; then
+    cavingcrew-copy "$BUILD_DIR" "$REMOTE_PATH/dist"
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}Deployment successful!${NC}"
+    else
+        echo -e "${RED}Deployment failed${NC}"
+        exit 1
+    fi
 else
-    echo -e "${RED}WordPress plugins directory not found${NC}"
+    echo -e "${RED}cavingcrew-copy command not found${NC}"
     echo "Build files are in $BUILD_DIR"
+    echo "Please manually copy the build files to $REMOTE_PATH"
     exit 1
 fi
 
