@@ -2,11 +2,14 @@ import { Container, Title, Text, SimpleGrid } from '@mantine/core';
 import { apiService } from '@/lib/api-service';
 import { TripCard } from '@/components/trips/TripCard';
 import { notFound } from 'next/navigation';
-import { PageProps } from 'next';
 
-export default async function CategoryPage({ 
-  params 
-}: PageProps<{ params: { slug: string } }>) {
+interface PageProps {
+  params: {
+    slug: string;
+  };
+}
+
+export default async function CategoryPage({ params }: PageProps) {
   const { data: trips } = await apiService.getTripsByCategory(params.slug);
   
   if (!trips.length) {
