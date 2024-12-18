@@ -22,12 +22,16 @@ fi
 
 # Build Next.js app
 echo "📦 Building Next.js application..."
-npm run build
+NEXT_TELEMETRY_DISABLED=1 npm run build
 
 if [ $? -ne 0 ]; then
     echo -e "${RED}Build failed${NC}"
     exit 1
 fi
+
+# Ensure proper directory structure
+echo "🏗️ Ensuring proper directory structure..."
+mkdir -p "$BUILD_DIR/_next"
 
 # Clean previous build in plugin
 echo "🧹 Cleaning previous build..."

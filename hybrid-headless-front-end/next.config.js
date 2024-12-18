@@ -1,16 +1,10 @@
-/** @type {import('next').NextConfig} */
 const nextConfig = {
 	output: "standalone",
-
-	// Configure image domains
 	images: {
 		domains: ["localhost", "www.cavingcrew.com", "cavingcrew.com"],
 		unoptimized: true,
 	},
-
-	// Optimize builds
 	webpack: (config, { dev, isServer }) => {
-		// Only enable these optimizations in production
 		if (!dev) {
 			config.optimization = {
 				...config.optimization,
@@ -22,8 +16,6 @@ const nextConfig = {
 				},
 			};
 		}
-
-		// Handle Mantine packages
 		if (!isServer) {
 			config.resolve.alias = {
 				...config.resolve.alias,
@@ -31,7 +23,6 @@ const nextConfig = {
 				"@mantine/hooks": "@mantine/hooks/esm",
 			};
 		}
-
 		return config;
 	},
 };
