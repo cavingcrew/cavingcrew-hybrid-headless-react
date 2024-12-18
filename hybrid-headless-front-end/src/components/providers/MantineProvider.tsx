@@ -1,10 +1,20 @@
 'use client';
 
 import { MantineProvider as BaseMantineProvider } from '@mantine/core';
+import { useColorScheme } from '@mantine/hooks';
+import { type ReactNode } from 'react';
 
-export function MantineProvider({ children }: { children: React.ReactNode }) {
+interface MantineProviderProps {
+  children: ReactNode;
+}
+
+export function MantineProvider({ children }: MantineProviderProps) {
+  const preferredColorScheme = useColorScheme();
+
   return (
-    <BaseMantineProvider>
+    <BaseMantineProvider
+      defaultColorScheme={preferredColorScheme}
+    >
       {children}
     </BaseMantineProvider>
   );

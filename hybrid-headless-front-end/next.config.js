@@ -1,39 +1,39 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-	output: "standalone",
-	basePath: "",
+  output: "standalone",
+  
+  // Configure image domains
+  images: {
+    domains: ["localhost", "www.cavingcrew.com", "cavingcrew.com"],
+    unoptimized: true,
+  },
 
-	// Configure image domains
-	images: {
-		domains: ["localhost", "www.cavingcrew.com", "cavingcrew.com"],
-		unoptimized: true,
-	},
+  // Optimize builds
+  webpack: (config, { dev, isServer }) => {
+    // Only enable these optimizations in production
+    if (!dev) {
+      config.optimization = {
+        ...config.optimization,
+        minimize: true,
+        splitChunks: {
+          chunks: 'all',
+          minSize: 20000,
+          maxSize: 244000,
+        },
+      };
+    }
 
-	// Optimize builds
-	compress: true,
-	poweredByHeader: false,
+    // Handle Mantine packages
+    if (!isServer) {
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        '@mantine/core': '@mantine/core/esm',
+        '@mantine/hooks': '@mantine/hooks/esm',
+      };
+    }
 
-	// Handle static file generation
-	generateBuildId: async () => {
-		return `build-${Date.now()}`;
-	},
-
-	// Add CSS modules support
-	webpack: (config, { dev, isServer }) => {
-		// Only enable these optimizations in production
-		if (!dev) {
-			config.optimization = {
-				...config.optimization,
-				minimize: true,
-				splitChunks: {
-					chunks: "all",
-					minSize: 20000,
-					maxSize: 244000,
-				},
-			};
-		}
-		return config;
-	},
+    return config;
+  },
 };
 
 module.exports = nextConfig;
