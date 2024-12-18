@@ -135,6 +135,10 @@ class Hybrid_Headless_Products_Controller {
             );
         }
 
+        // Set cache headers for stock monitoring
+        header('Cache-Control: no-store, max-age=0');
+        header('Pragma: no-cache');
+        
         return rest_ensure_response( $this->prepare_product_data( $product ) );
     }
 
@@ -145,6 +149,18 @@ class Hybrid_Headless_Products_Controller {
      * @return array
      */
     private function prepare_product_data( $product ) {
+        // Cache stock info for 30 seconds
+        $cache_key = 'product_stock_' . $product->get_id();
+        $stock_info = wp_cache_get($cache_key);
+        
+        if (false === $stock_info) {
+            $stock_info = array(
+                'stock_status' => $product->get_stock_status(),
+                'stock_quantity' => $product->get_stock_quantity()
+            );
+            wp_cache_set($cache_key, $stock_info, '', 30);
+        }
+
         return array(
             'id'          => $product->get_id(),
             'name'        => $product->get_name(),
@@ -152,8 +168,8 @@ class Hybrid_Headless_Products_Controller {
             'price'       => $product->get_price(),
             'regular_price' => $product->get_regular_price(),
             'sale_price' => $product->get_sale_price(),
-            'stock_status' => $product->get_stock_status(),
-            'stock_quantity' => $product->get_stock_quantity(),
+            'stock_status' => $stock_info['stock_status'],
+            'stock_quantity' => $stock_info['stock_quantity'],
             'description' => $product->get_description(),
             'short_description' => $product->get_short_description(),
             'images'      => $this->get_product_images( $product ),
