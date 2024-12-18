@@ -37,9 +37,11 @@ class Hybrid_Headless_Rest_API {
     private function load_controllers() {
         require_once HYBRID_HEADLESS_PLUGIN_DIR . 'includes/api/class-products-controller.php';
         require_once HYBRID_HEADLESS_PLUGIN_DIR . 'includes/api/class-routes-controller.php';
+        require_once HYBRID_HEADLESS_PLUGIN_DIR . 'includes/api/class-categories-controller.php';
         
         new Hybrid_Headless_Products_Controller();
         new Hybrid_Headless_Routes_Controller();
+        new Hybrid_Headless_Categories_Controller();
     }
 
     /**
