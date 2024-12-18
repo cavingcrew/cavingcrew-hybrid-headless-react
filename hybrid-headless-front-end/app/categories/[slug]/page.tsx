@@ -3,13 +3,12 @@ import { apiService } from '@/lib/api-service';
 import { TripCard } from '@/components/trips/TripCard';
 import { notFound } from 'next/navigation';
 
-type Props = {
+export default async function CategoryPage({
+  params: { slug },
+}: {
   params: { slug: string };
-  searchParams: { [key: string]: string | string[] | undefined };
-};
-
-export default async function CategoryPage(props: Props) {
-  const { data: trips } = await apiService.getTripsByCategory(props.params.slug);
+}) {
+  const { data: trips } = await apiService.getTripsByCategory(slug);
   
   if (!trips.length) {
     notFound();
@@ -17,7 +16,7 @@ export default async function CategoryPage(props: Props) {
 
   return (
     <Container size="lg" py="xl">
-      <Title order={1} mb="sm">{params.slug}</Title>
+      <Title order={1} mb="sm">{slug}</Title>
       <Text c="dimmed" mb="xl">
         Showing {trips.length} trips in this category
       </Text>
