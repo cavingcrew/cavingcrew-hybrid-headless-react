@@ -1,9 +1,14 @@
 import { Container, Title, SimpleGrid, Card, Text, Group } from '@mantine/core';
 import { apiService } from '@/lib/api-service';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 
 export default async function CategoriesPage() {
-  const { data: categories } = await apiService.getCategories();
+  const { data: categories, success } = await apiService.getCategories();
+
+  if (!success || !categories || categories.length === 0) {
+    notFound();
+  }
 
   return (
     <Container size="lg" py="xl">
