@@ -18,7 +18,7 @@ export function MantineProvider({ children }: MantineProviderProps) {
 
   return (
     <BaseMantineProvider
-      colorScheme={mounted ? preferredColorScheme : 'light'}
+      defaultColorScheme={mounted ? preferredColorScheme : 'light'}
     >
       {children}
     </BaseMantineProvider>
