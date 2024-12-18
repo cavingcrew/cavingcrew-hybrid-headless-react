@@ -2,9 +2,8 @@
 const nextConfig = {
 	output: "standalone",
 	basePath: "",
-	assetPrefix: "/_next/",
 
-	// Optimize image domains if needed
+	// Configure image domains
 	images: {
 		domains: ["localhost", "your-production-domain.com"],
 		unoptimized: true, // Since we're serving through WordPress
