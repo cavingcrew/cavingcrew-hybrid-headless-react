@@ -12,7 +12,8 @@ const nextConfig = {
 
 	// Environment variables are fixed
 	env: {
-		NEXT_PUBLIC_WORDPRESS_API_URL: process.env.NEXT_PUBLIC_WORDPRESS_API_URL || "/wp-json",
+		NEXT_PUBLIC_WORDPRESS_API_URL:
+			process.env.NEXT_PUBLIC_WORDPRESS_API_URL || "/wp-json",
 		NEXT_PUBLIC_WORDPRESS_URL: process.env.NEXT_PUBLIC_WORDPRESS_URL || "/",
 	},
 
