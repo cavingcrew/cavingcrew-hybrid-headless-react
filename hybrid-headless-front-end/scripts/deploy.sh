@@ -48,7 +48,7 @@ echo "$(date '+%Y%m%d%H%M%S')" > "$BUILD_DIR/version.txt"
 
 # Deactivate plugin before deployment
 echo "🔽 Deactivating plugin..."
-ssh "$REMOTE_HOST" "sudo wp plugin deactivate $PLUGIN_NAME"
+ssh "$REMOTE_HOST" "sudo wp plugin deactivate $PLUGIN_NAME --user=2"
 
 if [ $? -ne 0 ]; then
     echo -e "${RED}Failed to deactivate plugin${NC}"
@@ -71,7 +71,7 @@ fi
 
 # Reactivate plugin after deployment
 echo "🔼 Reactivating plugin..."
-ssh "$REMOTE_HOST" "sudo wp plugin activate $PLUGIN_NAME"
+ssh "$REMOTE_HOST" "sudo wp plugin activate $PLUGIN_NAME --user=2"
 
 if [ $? -ne 0 ]; then
     echo -e "${RED}Failed to reactivate plugin${NC}"
