@@ -2,12 +2,13 @@ import { Container, Title, Image, Text, Group, Badge } from '@mantine/core';
 import { apiService } from '@/lib/api-service';
 import { notFound } from 'next/navigation';
 
-export default async function TripPage({
-  params,
-}: {
-  params: { slug: string }
-}) {
-  const { data: trip } = await apiService.getTrip(params.slug);
+type Props = {
+  params: { slug: string };
+  searchParams: { [key: string]: string | string[] | undefined };
+};
+
+export default async function TripPage(props: Props) {
+  const { data: trip } = await apiService.getTrip(props.params.slug);
   
   if (!trip) {
     notFound();
