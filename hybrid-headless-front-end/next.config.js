@@ -7,6 +7,10 @@ const nextConfig = {
 		domains: ["localhost", "www.cavingcrew.com", "cavingcrew.com"],
 		unoptimized: true,
 	},
+	experimental: {
+		outputFileTracingRoot: process.env.NODE_ENV === "development" ? 
+			undefined : process.cwd(),
+	},
 	webpack: (config, { dev, isServer }) => {
 		if (!dev) {
 			config.optimization = {

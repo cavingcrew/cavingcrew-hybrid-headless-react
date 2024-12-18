@@ -38,8 +38,9 @@ echo "🧹 Cleaning previous build..."
 rm -rf "$BUILD_DIR"
 mkdir -p "$BUILD_DIR"
 
-# Copy Next.js static files
-echo "📋 Copying static files..."
+# Copy Next.js build files
+echo "📋 Copying build files..."
+cp -r .next/standalone/* "$BUILD_DIR/"
 cp -r .next/static "$BUILD_DIR/_next/"
 cp -r public/* "$BUILD_DIR/"
 
