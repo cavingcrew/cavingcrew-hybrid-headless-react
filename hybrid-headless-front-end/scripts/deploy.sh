@@ -2,7 +2,8 @@
 
 # Configuration
 PLUGIN_DIR="../hybrid-headless-react-plugin"
-REMOTE_PATH="cavingcrew://home/bitnami/stack/wordpress/wp-content/plugins/hybrid-headless-react-plugin"
+REMOTE_HOST="cavingcrew"
+REMOTE_PATH="/home/bitnami/stack/wordpress/wp-content/plugins/hybrid-headless-react-plugin"
 BUILD_DIR="$PLUGIN_DIR/dist"
 
 # Colors for output
@@ -40,20 +41,17 @@ cp -r public/* "$BUILD_DIR/"
 # Create version file
 echo "$(date '+%Y%m%d%H%M%S')" > "$BUILD_DIR/version.txt"
 
-# Deploy to WordPress plugins directory using custom protocol
+# Deploy to WordPress plugins directory using scp
 echo "📤 Deploying to WordPress plugins directory..."
-if command -v cavingcrew-copy &> /dev/null; then
-    cavingcrew-copy "$BUILD_DIR" "$REMOTE_PATH/dist"
-    if [ $? -eq 0 ]; then
+if ssh "$REMOTE_HOST" "rm -rf $REMOTE_PATH/dist/*"; then
+    if scp -r "$BUILD_DIR"/* "$REMOTE_HOST:$REMOTE_PATH/dist/"; then
         echo -e "${GREEN}Deployment successful!${NC}"
     else
-        echo -e "${RED}Deployment failed${NC}"
+        echo -e "${RED}Deployment failed during file copy${NC}"
         exit 1
     fi
 else
-    echo -e "${RED}cavingcrew-copy command not found${NC}"
-    echo "Build files are in $BUILD_DIR"
-    echo "Please manually copy the build files to $REMOTE_PATH"
+    echo -e "${RED}Failed to clean remote directory${NC}"
     exit 1
 fi
 
