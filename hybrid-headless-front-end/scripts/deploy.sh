@@ -41,18 +41,18 @@ cp -r public/* "$BUILD_DIR/"
 # Create version file
 echo "$(date '+%Y%m%d%H%M%S')" > "$BUILD_DIR/version.txt"
 
-# Deploy to WordPress plugins directory using scp
+# Deploy to WordPress plugins directory using rsync
 echo "📤 Deploying to WordPress plugins directory..."
-if ssh "$REMOTE_HOST" "rm -rf $REMOTE_PATH/dist/*"; then
-    if scp -r "$BUILD_DIR"/* "$REMOTE_HOST:$REMOTE_PATH/dist/"; then
-        echo -e "${GREEN}Deployment successful!${NC}"
-    else
-        echo -e "${RED}Deployment failed during file copy${NC}"
-        exit 1
-    fi
+rsync -avz --delete \
+    --exclude='.git/' \
+    --exclude='.gitignore' \
+    --exclude='node_modules/' \
+    "$BUILD_DIR/" \
+    "$REMOTE_HOST:$REMOTE_PATH/dist/"
+
+if [ $? -eq 0 ]; then
+    echo -e "${GREEN}✨ Deployment complete!${NC}"
 else
-    echo -e "${RED}Failed to clean remote directory${NC}"
+    echo -e "${RED}Deployment failed${NC}"
     exit 1
 fi
-
-echo -e "${GREEN}✨ Deployment complete!${NC}"
