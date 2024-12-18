@@ -1,11 +1,11 @@
 'use client';
 
-import { Footer, Container, Group, Text } from '@mantine/core';
+import { Container, Group, Text } from '@mantine/core';
 import Link from 'next/link';
 
 export function MainFooter() {
   return (
-    <Footer height={60}>
+    <footer style={{ height: 60, borderTop: '1px solid #e9ecef' }}>
       <Container size="lg" h="100%">
         <Group h="100%" justify="space-between">
           <Text size="sm">© 2024 Travel Adventures. All rights reserved.</Text>
@@ -19,6 +19,6 @@ export function MainFooter() {
           </Group>
         </Group>
       </Container>
-    </Footer>
+    </footer>
   );
 }

@@ -1,11 +1,11 @@
 'use client';
 
-import { Header, Container, Group, Button, Text } from '@mantine/core';
+import { Container, Group, Button, Text } from '@mantine/core';
 import Link from 'next/link';
 
 export function MainHeader() {
   return (
-    <Header height={60}>
+    <header style={{ height: 60, borderBottom: '1px solid #e9ecef' }}>
       <Container size="lg" h="100%">
         <Group h="100%" justify="space-between">
           <Link href="/" style={{ textDecoration: 'none' }}>
@@ -29,6 +29,6 @@ export function MainHeader() {
           </Group>
         </Group>
       </Container>
-    </Header>
+    </header>
   );
 }
