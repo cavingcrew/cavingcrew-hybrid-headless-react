@@ -40,8 +40,12 @@ export default function HomePage() {
     fetchTrips();
   }, []);
 
-  if (loading) return <LoadingState />;
-  if (error) return <ErrorState message={error} />;
+  if (loading) {
+    return <LoadingState />;
+  }
+  if (error) {
+    return <ErrorState message={error} />;
+  }
 
   return (
     <Container size="lg">

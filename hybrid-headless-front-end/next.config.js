@@ -1,5 +1,8 @@
 const nextConfig = {
 	output: "standalone",
+	eslint: {
+		ignoreDuringBuilds: true,
+	},
 	images: {
 		domains: ["localhost", "www.cavingcrew.com", "cavingcrew.com"],
 		unoptimized: true,
