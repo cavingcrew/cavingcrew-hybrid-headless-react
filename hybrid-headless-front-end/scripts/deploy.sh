@@ -55,14 +55,16 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Deploy to WordPress plugins directory using rsync
-echo "📤 Deploying to WordPress plugins directory..."
+# Deploy entire plugin including frontend build
+echo "📤 Deploying plugin and frontend build..."
 rsync -avz --delete \
     --exclude='.git/' \
     --exclude='.gitignore' \
     --exclude='node_modules/' \
-    "$BUILD_DIR/" \
-    "$REMOTE_HOST:$REMOTE_PATH/dist/"
+    --exclude='tests/' \
+    --exclude='.github/' \
+    "$PLUGIN_DIR/" \
+    "$REMOTE_HOST:$REMOTE_PATH/"
 
 if [ $? -ne 0 ]; then
     echo -e "${RED}Deployment failed${NC}"
