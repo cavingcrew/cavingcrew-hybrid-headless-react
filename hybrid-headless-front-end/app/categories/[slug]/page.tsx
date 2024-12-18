@@ -9,9 +9,10 @@ interface PageProps {
 
 export default async function CategoryPage({ params }: PageProps) {
   const { slug } = await params;
-  const { data: trips } = await apiService.getTripsByCategory(slug);
+  const { data: trips, success } = await apiService.getTripsByCategory(slug);
   
-  if (!trips.length) {
+  // Handle null data or unsuccessful response
+  if (!success || !trips || trips.length === 0) {
     notFound();
   }
 
