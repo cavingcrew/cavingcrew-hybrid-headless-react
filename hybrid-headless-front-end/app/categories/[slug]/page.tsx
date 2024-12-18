@@ -3,11 +3,12 @@ import { apiService } from '@/lib/api-service';
 import { TripCard } from '@/components/trips/TripCard';
 import { notFound } from 'next/navigation';
 
-export default async function CategoryPage({
-  params: { slug },
-}: {
-  params: { slug: string };
-}) {
+interface PageProps {
+  params: Promise<{ slug: string }>;
+}
+
+export default async function CategoryPage({ params }: PageProps) {
+  const { slug } = await params;
   const { data: trips } = await apiService.getTripsByCategory(slug);
   
   if (!trips.length) {
