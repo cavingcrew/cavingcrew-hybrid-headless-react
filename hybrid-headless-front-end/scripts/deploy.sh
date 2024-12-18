@@ -4,6 +4,7 @@
 PLUGIN_DIR="../hybrid-headless-react-plugin"
 REMOTE_HOST="cavingcrew"
 REMOTE_PATH="/home/bitnami/stack/wordpress/wp-content/plugins/hybrid-headless-react-plugin"
+PLUGIN_NAME="hybrid-headless-react-plugin"
 BUILD_DIR="$PLUGIN_DIR/dist"
 
 # Colors for output
@@ -41,6 +42,15 @@ cp -r public/* "$BUILD_DIR/"
 # Create version file
 echo "$(date '+%Y%m%d%H%M%S')" > "$BUILD_DIR/version.txt"
 
+# Deactivate plugin before deployment
+echo "🔽 Deactivating plugin..."
+ssh "$REMOTE_HOST" "wp plugin deactivate $PLUGIN_NAME"
+
+if [ $? -ne 0 ]; then
+    echo -e "${RED}Failed to deactivate plugin${NC}"
+    exit 1
+fi
+
 # Deploy to WordPress plugins directory using rsync
 echo "📤 Deploying to WordPress plugins directory..."
 rsync -avz --delete \
@@ -50,9 +60,19 @@ rsync -avz --delete \
     "$BUILD_DIR/" \
     "$REMOTE_HOST:$REMOTE_PATH/dist/"
 
-if [ $? -eq 0 ]; then
-    echo -e "${GREEN}✨ Deployment complete!${NC}"
-else
+if [ $? -ne 0 ]; then
     echo -e "${RED}Deployment failed${NC}"
     exit 1
 fi
+
+# Reactivate plugin after deployment
+echo "🔼 Reactivating plugin..."
+ssh "$REMOTE_HOST" "wp plugin activate $PLUGIN_NAME"
+
+if [ $? -ne 0 ]; then
+    echo -e "${RED}Failed to reactivate plugin${NC}"
+    echo -e "${RED}⚠️ Plugin is currently deactivated! Manual activation required.${NC}"
+    exit 1
+fi
+
+echo -e "${GREEN}✨ Deployment complete!${NC}"
