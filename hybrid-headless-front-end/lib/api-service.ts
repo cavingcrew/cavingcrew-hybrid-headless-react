@@ -9,7 +9,8 @@ export const apiService = {
       if (!response.ok) {
         throw new Error('Failed to fetch trips');
       }
-      return await response.json();
+      const data = await response.json();
+      return { data: data.products || [], success: true };
     } catch (error) {
       return { data: [], success: false, message: error instanceof Error ? error.message : 'Failed to fetch trips' };
     }
@@ -21,7 +22,8 @@ export const apiService = {
       if (!response.ok) {
         throw new Error(`Failed to fetch trip ${slug}`);
       }
-      return await response.json();
+      const data = await response.json();
+      return { data: data.product || null, success: true };
     } catch (error) {
       return { data: null, success: false, message: error instanceof Error ? error.message : 'Failed to fetch trip' };
     }
@@ -33,7 +35,8 @@ export const apiService = {
       if (!response.ok) {
         throw new Error('Failed to fetch categories');
       }
-      return await response.json();
+      const data = await response.json();
+      return { data: data.categories || [], success: true };
     } catch (error) {
       return { data: [], success: false, message: error instanceof Error ? error.message : 'Failed to fetch categories' };
     }
@@ -47,7 +50,8 @@ export const apiService = {
       if (!response.ok) {
         throw new Error(`Failed to fetch trips for category ${categorySlug}`);
       }
-      return await response.json();
+      const data = await response.json();
+      return { data: data.products || [], success: true };
     } catch (error) {
       return { data: [], success: false, message: error instanceof Error ? error.message : 'Failed to fetch category trips' };
     }
