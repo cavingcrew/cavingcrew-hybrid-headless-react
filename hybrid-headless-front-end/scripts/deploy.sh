@@ -40,8 +40,7 @@ mkdir -p "$BUILD_DIR"
 
 # Copy Next.js build files
 echo "📋 Copying build files..."
-cp -r .next/standalone/* "$BUILD_DIR/"
-cp -r .next/static "$BUILD_DIR/_next/"
+cp -r out/* "$BUILD_DIR/"
 cp -r public/* "$BUILD_DIR/"
 
 # Create version file
