@@ -1,9 +1,14 @@
 import { Container, Title, SimpleGrid } from '@mantine/core';
 import { apiService } from '@/lib/api-service';
 import { TripCard } from '@/components/trips/TripCard';
+import { notFound } from 'next/navigation';
 
 export default async function TripsPage() {
-  const { data: trips } = await apiService.getTrips();
+  const { data: trips, success } = await apiService.getTrips();
+
+  if (!success || !trips || trips.length === 0) {
+    notFound();
+  }
 
   return (
     <Container size="lg" py="xl">
