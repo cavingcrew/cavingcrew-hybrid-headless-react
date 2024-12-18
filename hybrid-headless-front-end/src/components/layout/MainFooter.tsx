@@ -1,3 +1,5 @@
+'use client';
+
 import { Footer, Container, Group, Text } from '@mantine/core';
 import Link from 'next/link';
 
