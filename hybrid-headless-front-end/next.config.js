@@ -5,7 +5,7 @@ const nextConfig = {
 
 	// Configure image domains
 	images: {
-		domains: ["localhost", "your-production-domain.com"],
+		domains: ["localhost", "www.cavingcrew.com", "cavingcrew.com"],
 		unoptimized: true, // Since we're serving through WordPress
 	},
 
