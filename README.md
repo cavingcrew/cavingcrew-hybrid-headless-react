@@ -420,6 +420,39 @@ The platform includes:
 - User behavior analytics
 - API performance monitoring
 
+## Project Structure
+
+This repository contains both the frontend Next.js application and the WordPress plugin required for headless e-commerce functionality.
+
+```
+/hybrid-headless-front-end/     # Next.js TypeScript application
+  ├── app/                      # Next.js app directory
+  │   ├── [...]                # Dynamic catch-all route
+  │   ├── categories/          # Category pages
+  │   ├── trips/              # Trip pages
+  │   ├── layout.tsx          # Root layout
+  │   └── page.tsx            # Homepage
+  ├── components/             # React components
+  │   ├── layout/            # Layout components
+  │   ├── providers/         # Context providers
+  │   ├── trips/             # Trip-related components
+  │   └── ui/                # Shared UI components
+  ├── lib/                   # Utility functions
+  │   ├── api-client.ts      # API client configuration
+  │   ├── api-service.ts     # API service methods
+  │   └── cart-service.ts    # Cart functionality
+  ├── types/                 # TypeScript type definitions
+  └── scripts/               # Deployment and utility scripts
+
+/hybrid-headless-react-plugin/  # WordPress plugin for headless integration
+  ├── includes/                 # Plugin core functionality
+  │   ├── admin/               # Admin interface
+  │   ├── api/                 # REST API endpoints
+  │   └── frontend/            # Frontend functionality
+  ├── assets/                  # Static assets
+  └── build/                   # Build utilities
+```
+
 ## Documentation
 
 For detailed technical specifications and architecture decisions, see [spec.md](spec.md).
