@@ -34,6 +34,20 @@ rsync -avz --delete \
     --exclude='.next/cache/' \
     --exclude='tests/' \
     --exclude='.github/' \
+    --exclude='.env.development' \
+    --exclude='.env.local' \
+    --exclude='storybook-static/' \
+    --exclude='.storybook/' \
+    --exclude='coverage/' \
+    --exclude='*.test.*' \
+    --exclude='*.spec.*' \
+    --exclude='README.md' \
+    --exclude='CHANGELOG.md' \
+    --exclude='jest.config.*' \
+    --exclude='.eslintrc.*' \
+    --exclude='.prettierrc.*' \
+    --exclude='.stylelintrc.*' \
+    --exclude='tsconfig.tsbuildinfo' \
     ./ \
     "$REMOTE_HOST:$REMOTE_PATH/"
 
