@@ -60,6 +60,130 @@ async rewrites() {
 }
 ```
 
+### Routing Flow Examples
+
+#### Frontend (Next.js) Routes
+
+1. **Product Page Example** (`/trips/mountain-adventure`)
+```
+User requests /trips/mountain-adventure
+↓
+WordPress receives request
+↓
+Hybrid_Headless_Routes_Controller checks if it's a frontend route
+↓
+Matches '^trips/[^/]+/?' pattern, confirms it's a frontend route
+↓
+Serves static Next.js app (index.html)
+↓
+Next.js app boots up in browser
+↓
+Next.js client-side routing matches /trips/[slug]
+↓
+TripPage component renders
+↓
+Component fetches trip data from WordPress API
+```
+
+2. **Category Listing Example** (`/categories`)
+```
+User requests /categories
+↓
+WordPress receives request
+↓
+Hybrid_Headless_Routes_Controller checks if it's a frontend route
+↓
+Matches '^categories/?' pattern, confirms it's a frontend route
+↓
+Serves static Next.js app (index.html)
+↓
+Next.js app boots up in browser
+↓
+Next.js client-side routing matches /categories
+↓
+CategoriesPage component renders
+↓
+Component fetches categories data from WordPress API
+```
+
+#### WordPress Routes
+
+1. **Checkout Example** (`/checkout`)
+```
+User requests /checkout
+↓
+WordPress receives request
+↓
+Hybrid_Headless_Routes_Controller checks if it's a frontend route
+↓
+No match found in frontend patterns
+↓
+WordPress handles request normally
+↓
+WooCommerce checkout page renders
+↓
+Traditional WordPress/WooCommerce functionality takes over
+```
+
+2. **My Account Example** (`/my-account`)
+```
+User requests /my-account
+↓
+WordPress receives request
+↓
+Hybrid_Headless_Routes_Controller checks if it's a frontend route
+↓
+No match found in frontend patterns
+↓
+WordPress handles request normally
+↓
+WooCommerce account page renders
+↓
+User authentication and account management handled by WordPress
+```
+
+3. **Admin Example** (`/wp-admin`)
+```
+User requests /wp-admin
+↓
+WordPress receives request
+↓
+Hybrid_Headless_Routes_Controller checks if it's a frontend route
+↓
+No match found in frontend patterns
+↓
+WordPress handles request normally
+↓
+WordPress login/admin interface renders
+↓
+Traditional WordPress admin functionality available
+```
+
+#### Client-Side Navigation
+
+When navigating between frontend routes after initial load:
+```
+User clicks link to /trips/new-adventure
+↓
+Next.js intercepts click event
+↓
+Client-side routing handles navigation
+↓
+URL updates without full page reload
+↓
+New component renders
+↓
+Component fetches new data from WordPress API
+↓
+UI updates smoothly
+```
+
+This hybrid approach provides:
+- Fast, app-like experience for content browsing
+- Traditional WordPress functionality where needed
+- Seamless transitions between modes
+- Proper handling of authenticated routes
+
 ### Static Export
 
 #### Configuration
