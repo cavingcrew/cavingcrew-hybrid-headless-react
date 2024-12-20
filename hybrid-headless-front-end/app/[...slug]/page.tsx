@@ -61,3 +61,52 @@ export default function DynamicPage() {
     </Container>
   );
 }
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { Container } from '@mantine/core';
+import { apiService } from '@/lib/api-service';
+import { LoadingState } from '@/components/ui/LoadingState';
+import { ErrorState } from '@/components/ui/ErrorState';
+
+export default function CatchAllPage() {
+  const params = useParams();
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const handleRoute = async () => {
+      const path = Array.isArray(params.slug) ? params.slug.join('/') : params.slug;
+
+      // Check if this is a known route type
+      if (path.startsWith('trips/')) {
+        router.push(`/trips/${path.replace('trips/', '')}`);
+        return;
+      }
+      if (path.startsWith('categories/')) {
+        router.push(`/categories/${path.replace('categories/', '')}`);
+        return;
+      }
+      if (path === 'trips' || path === 'categories') {
+        router.push(`/${path}`);
+        return;
+      }
+
+      // If we get here, it's truly a 404
+      setLoading(false);
+    };
+
+    handleRoute();
+  }, [params.slug, router]);
+
+  if (loading) {
+    return <LoadingState />;
+  }
+
+  return (
+    <Container>
+      <ErrorState message="Page not found" />
+    </Container>
+  );
+}
