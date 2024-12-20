@@ -21,6 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 define( 'HYBRID_HEADLESS_VERSION', '1.0.0' );
 define( 'HYBRID_HEADLESS_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'HYBRID_HEADLESS_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+define( 'HYBRID_HEADLESS_DEFAULT_NEXTJS_URL', 'http://localhost:3000' );
 
 // Composer autoloader
 if ( file_exists( dirname( __FILE__ ) . '/vendor/autoload.php' ) ) {
@@ -64,6 +65,7 @@ final class Hybrid_Headless_Plugin {
     private function init_hooks() {
         add_action( 'plugins_loaded', array( $this, 'on_plugins_loaded' ) );
         add_action( 'init', array( $this, 'init' ) );
+        add_action( 'admin_init', array( $this, 'register_settings' ) );
     }
 
     /**
@@ -154,6 +156,26 @@ final class Hybrid_Headless_Plugin {
             <p><?php esc_html_e( 'Hybrid Headless requires PHP 7.4 or higher.', 'hybrid-headless' ); ?></p>
         </div>
         <?php
+    }
+
+    public function register_settings() {
+        register_setting( 'general', 'hybrid_headless_nextjs_url', array(
+            'type' => 'string',
+            'default' => HYBRID_HEADLESS_DEFAULT_NEXTJS_URL,
+            'sanitize_callback' => 'esc_url_raw',
+        ));
+
+        add_settings_field(
+            'hybrid_headless_nextjs_url',
+            __( 'Next.js Server URL', 'hybrid-headless' ),
+            array( $this, 'nextjs_url_callback' ),
+            'general'
+        );
+    }
+
+    public function nextjs_url_callback() {
+        $value = get_option( 'hybrid_headless_nextjs_url', HYBRID_HEADLESS_DEFAULT_NEXTJS_URL );
+        echo '<input type="url" id="hybrid_headless_nextjs_url" name="hybrid_headless_nextjs_url" value="' . esc_attr( $value ) . '" class="regular-text">';
     }
 }
 

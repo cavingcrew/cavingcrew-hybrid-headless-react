@@ -69,9 +69,19 @@ class Hybrid_Headless_Rest_API {
      * @return bool
      */
     public function handle_cors( $served, $result, $request, $server ) {
-        $origin = get_option( 'hybrid_headless_frontend_url', '*' );
+        $allowed_origins = array(
+            get_option( 'hybrid_headless_nextjs_url', HYBRID_HEADLESS_DEFAULT_NEXTJS_URL ),
+            get_option( 'hybrid_headless_frontend_url', '*' )
+        );
         
-        header( 'Access-Control-Allow-Origin: ' . esc_url_raw( $origin ) );
+        $origin = $_SERVER['HTTP_ORIGIN'] ?? '*';
+        
+        if (in_array($origin, $allowed_origins)) {
+            header( 'Access-Control-Allow-Origin: ' . esc_url_raw( $origin ) );
+        } else {
+            header( 'Access-Control-Allow-Origin: *' );
+        }
+        
         header( 'Access-Control-Allow-Methods: GET, POST, OPTIONS' );
         header( 'Access-Control-Allow-Credentials: true' );
         header( 'Access-Control-Allow-Headers: Authorization, Content-Type' );
