@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+.next/
+out/
+dist/
+build/
+
+# Cache
+.cache/
+
+# Environment files
+.env*
+
+# Other project files
+*.md
+*.css
+*.scss
+*.svg
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.woff
+*.woff2
+*.eot
+*.ttf
+*.otf

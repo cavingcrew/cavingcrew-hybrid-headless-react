@@ -19,7 +19,10 @@
 		"test": "npm run prettier:check && npm run lint && npm run typecheck && npm run jest",
 		"storybook": "storybook dev -p 6006",
 		"storybook:build": "storybook build",
-		"deploy": "chmod +x ./scripts/deploy.sh && ./scripts/deploy.sh"
+		"deploy": "chmod +x ./scripts/deploy.sh && ./scripts/deploy.sh",
+		"lint:biome": "biome lint .",
+		"format:biome": "biome format . --write",
+		"check:biome": "biome check --apply ."
 	},
 	"dependencies": {
 		"@mantine/core": "^7.14.3",
@@ -32,6 +35,7 @@
 	},
 	"devDependencies": {
 		"@babel/core": "^7.24.7",
+		"@biomejs/biome": "1.5.3",
 		"@eslint/js": "^9.15.0",
 		"@ianvs/prettier-plugin-sort-imports": "^4.3.1",
 		"@storybook/nextjs": "^8.1.10",
