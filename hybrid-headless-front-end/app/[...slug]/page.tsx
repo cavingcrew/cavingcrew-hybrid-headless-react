@@ -1,5 +1,17 @@
 'use client';
 
+// Add static param generation for Next.js static export
+export async function generateStaticParams() {
+  // Return empty array since WordPress plugin handles actual routing
+  // This just satisfies Next.js static export requirement
+  return [
+    // Basic patterns we want to support
+    { slug: ['trip'] },
+    { slug: ['category'] },
+    // You can add more patterns if needed
+  ];
+}
+
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { Container, Title, SimpleGrid } from '@mantine/core';
