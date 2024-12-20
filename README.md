@@ -1,17 +1,22 @@
 # Hybrid WordPress + Next.js E-commerce Platform
 
-## Project Structure
-
-This repository contains both the frontend Next.js application and the WordPress plugin required for headless e-commerce functionality.
-
-```
-/hybrid-headless-front-end/     # Next.js TypeScript application
-/hybrid-headless-react-plugin/  # WordPress plugin for headless integration
-```
-
 ## Architecture Overview
 
 This is a hybrid architecture combining WordPress/WooCommerce with Next.js to create a high-performance e-commerce platform. The system uses WordPress headlessly for specific routes while maintaining traditional WordPress functionality for authenticated user flows.
+
+### Deployment Architecture
+
+#### Next.js Frontend
+- Runs as a Node.js application managed by PM2
+- Server-side rendering for dynamic content
+- Proxied through Nginx for production traffic
+- Environment variables managed through PM2 ecosystem config
+
+#### WordPress Backend
+- Traditional WordPress installation
+- WooCommerce for e-commerce functionality
+- Custom REST API endpoints for Next.js integration
+- Handles authenticated routes directly
 
 ## Routing Architecture
 
@@ -184,32 +189,38 @@ This hybrid approach provides:
 - Seamless transitions between modes
 - Proper handling of authenticated routes
 
-### Static Export
+### Server Configuration
 
-#### Configuration
-The app is configured for static export in `next.config.js`:
+#### PM2 Configuration
+The application uses PM2 for process management:
 ```javascript
-const nextConfig = {
-  output: "export",
-  images: {
-    unoptimized: true,
-  },
-  trailingSlash: true,
-};
+// ecosystem.config.js
+{
+  apps: [{
+    name: 'hybrid-headless-frontend',
+    script: 'node_modules/next/dist/bin/next',
+    args: 'start',
+    env: {
+      PORT: 3000,
+      NODE_ENV: 'production',
+      NEXT_PUBLIC_WORDPRESS_API_URL: 'https://www.cavingcrew.com/wp-json'
+    }
+  }]
+}
 ```
 
-#### Build Process
-1. Run `npm run build` to generate static files
-2. Output is created in the `out` directory
-3. Files are copied to the WordPress plugin's `dist` directory
-4. Plugin serves these static files for frontend routes
-
-#### Deployment
-The `deploy.sh` script handles the deployment process:
-1. Builds the Next.js application
-2. Copies build files to plugin directory
-3. Syncs with WordPress server
-4. Manages plugin activation/deactivation
+#### Nginx Configuration
+Nginx proxies requests to the Next.js application:
+```nginx
+location / {
+    proxy_pass http://localhost:3000;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection 'upgrade';
+    proxy_set_header Host $host;
+    proxy_cache_bypass $http_upgrade;
+}
+```
 
 ### How It Works Together
 
@@ -243,21 +254,74 @@ The `deploy.sh` script handles the deployment process:
    - Hot reloading enabled
    - API calls to WordPress backend
 
-2. **Building for Production**
+2. **Production Build**
    ```bash
    npm run build
    ```
-   - Generates static export
-   - Creates optimized production build
-   - Prepares files for WordPress plugin
+   - Creates optimized server-side rendering build
+   - Prepares for PM2 deployment
 
 3. **Deployment**
    ```bash
    npm run deploy
    ```
    - Runs build process
-   - Syncs files with WordPress server
-   - Manages plugin state
+   - Syncs with production server
+   - Updates PM2 process
+
+### Environment Variables
+
+Create `.env.local` for development:
+```env
+NEXT_PUBLIC_WORDPRESS_API_URL=https://www.cavingcrew.com/wp-json
+```
+
+Production variables are managed through PM2 ecosystem config.
+
+### Performance Considerations
+
+1. **Server-Side Rendering**
+   - Initial page load includes complete HTML
+   - Improved SEO performance
+   - Better Core Web Vitals
+
+2. **Caching Strategy**
+   - Server-side caching of API responses
+   - Client-side caching for static assets
+   - Stale-while-revalidate for dynamic content
+
+3. **API Optimization**
+   - Efficient data fetching
+   - Minimized API calls
+   - Response caching
+
+### Monitoring
+
+The application can be monitored using:
+```bash
+pm2 monit
+pm2 logs hybrid-headless-frontend
+pm2 status
+```
+
+### Troubleshooting
+
+1. **Process Issues**
+   ```bash
+   pm2 logs
+   pm2 restart hybrid-headless-frontend
+   ```
+
+2. **Build Issues**
+   ```bash
+   npm run build
+   ```
+
+3. **Deployment Issues**
+   ```bash
+   pm2 delete hybrid-headless-frontend
+   pm2 start ecosystem.config.js
+   ```
 
 ### Important Considerations
 
