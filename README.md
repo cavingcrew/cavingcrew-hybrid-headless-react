@@ -13,64 +13,173 @@ This repository contains both the frontend Next.js application and the WordPress
 
 This is a hybrid architecture combining WordPress/WooCommerce with Next.js to create a high-performance e-commerce platform. The system uses WordPress headlessly for specific routes while maintaining traditional WordPress functionality for authenticated user flows.
 
-### Frontend (Next.js)
+## Routing Architecture
 
-Located in `/frontend/`, this TypeScript-based Next.js application handles:
-- Static generation of product pages
-- Client-side data fetching for dynamic content
-- Public-facing routes only:
-  - Homepage (/)
-  - Product listings (/trips/*)
-  - Product category pages
-  - Selected static content pages
+### Overview
+The application uses a sophisticated hybrid routing system that combines static routes with dynamic routing capabilities, all while maintaining a static export. Here's how it works:
 
-Key features:
+### Route Structure
+
+#### Static Routes
+Pre-defined routes with dedicated page components:
+```
+/                   -> app/page.tsx
+/trips             -> app/trips/page.tsx
+/trips/[slug]      -> app/trips/[slug]/page.tsx
+/categories        -> app/categories/page.tsx
+/categories/[slug] -> app/categories/[slug]/page.tsx
+```
+
+#### Dynamic Parameters
+Routes that use URL parameters:
+- `[slug]` captures a single URL segment
+- Example: `/trips/mountain-adventure` → `slug = "mountain-adventure"`
+
+#### Catch-all Route
+A fallback route that handles any undefined paths:
+- Located at `app/[...slug]/page.tsx`
+- Captures all segments of the URL
+- Example: `/any/unknown/path` → `slug = ["any", "unknown", "path"]`
+
+### Route Priority
+Routes are matched in order of specificity:
+1. Exact static routes (`/trips`, `/categories`)
+2. Dynamic parameter routes (`/trips/[slug]`, `/categories/[slug]`)
+3. Catch-all route (`[...slug]`)
+
+This is configured in `next.config.js`:
+```javascript
+async rewrites() {
+  return [
+    { source: '/trips', destination: '/trips' },
+    { source: '/trips/:slug', destination: '/trips/:slug' },
+    { source: '/categories', destination: '/categories' },
+    { source: '/categories/:slug', destination: '/categories/:slug' },
+    { source: '/:path*', destination: '/:path*' }
+  ];
+}
+```
+
+### Static Export
+
+#### Configuration
+The app is configured for static export in `next.config.js`:
+```javascript
+const nextConfig = {
+  output: "export",
+  images: {
+    unoptimized: true,
+  },
+  trailingSlash: true,
+};
+```
+
+#### Build Process
+1. Run `npm run build` to generate static files
+2. Output is created in the `out` directory
+3. Files are copied to the WordPress plugin's `dist` directory
+4. Plugin serves these static files for frontend routes
+
+#### Deployment
+The `deploy.sh` script handles the deployment process:
+1. Builds the Next.js application
+2. Copies build files to plugin directory
+3. Syncs with WordPress server
+4. Manages plugin activation/deactivation
+
+### How It Works Together
+
+1. **Initial Request**
+   - User visits a URL (e.g., `/trips/mountain-adventure`)
+   - WordPress plugin checks if it's a frontend route
+   - If yes, serves the static Next.js app
+
+2. **Client-Side Navigation**
+   - Next.js router checks for matching static routes
+   - If found, renders the corresponding page component
+   - If not found, falls back to catch-all route
+
+3. **Data Fetching**
+   - Pages fetch data from WordPress REST API
+   - API calls are made client-side using `apiService`
+   - Loading and error states are handled by components
+
+4. **Static Assets**
+   - Images, scripts, and styles are served from `/dist/_next/`
+   - WordPress plugin handles static file serving
+   - Cache headers are set for optimal performance
+
+### Development Workflow
+
+1. **Local Development**
+   ```bash
+   npm run dev
+   ```
+   - Runs Next.js development server
+   - Hot reloading enabled
+   - API calls to WordPress backend
+
+2. **Building for Production**
+   ```bash
+   npm run build
+   ```
+   - Generates static export
+   - Creates optimized production build
+   - Prepares files for WordPress plugin
+
+3. **Deployment**
+   ```bash
+   npm run deploy
+   ```
+   - Runs build process
+   - Syncs files with WordPress server
+   - Manages plugin state
+
+### Important Considerations
+
+1. **SEO and Performance**
+   - Static export provides excellent performance
+   - Initial HTML is pre-rendered
+   - Client-side navigation is smooth and fast
+
+2. **API Integration**
+   - All data fetching happens client-side
+   - API responses should be fast for optimal UX
+   - Consider implementing caching strategies
+
+3. **Error Handling**
+   - 404 pages for unknown routes
+   - Loading states during data fetching
+   - Error boundaries for component failures
+
+4. **Browser Support**
+   - Works in modern browsers
+   - Requires JavaScript enabled
+   - Consider polyfills if needed
+
+## Frontend Features
+
+### Components
 - Built with TypeScript for type safety
-- Uses Next.js for static and server-side rendering
-- Implements Incremental Static Regeneration (ISR) for product updates
-- Handles real-time stock level updates
-- Optimized for Core Web Vitals
+- Uses Mantine UI framework
+- Implements loading and error states
+- Responsive design patterns
 
-### Backend (WordPress Plugin)
+### Data Management
+- Client-side data fetching
+- Real-time stock updates
+- Efficient caching strategies
+- Type-safe API integration
 
-Located in `/plugin/`, this custom WordPress plugin provides:
+## Backend Integration
+
+The WordPress plugin provides:
 - REST API endpoints for Next.js integration
 - Custom route handling for hybrid setup
 - Advanced Custom Fields (ACF) integration
 - WooCommerce data exposure
 - Cache control and optimization
 - Authentication handling
-
-## Deployment
-
-The project is designed to be deployed as follows:
-
-1. Frontend:
-   - Built using `npm run build` in the `/frontend` directory
-   - Deployed to static hosting (Vercel/Netlify)
-   - Configured for optimal caching and performance
-
-2. Plugin:
-   - Installed on WordPress instance
-   - Configured for headless operation
-   - Optimized for API performance
-
-## Route Architecture
-
-The platform uses a hybrid routing approach:
-
-### Next.js Handled Routes (Public)
-- Homepage (/)
-- Product listings (/trips/*)
-- Product category pages
-- Static content pages
-
-### WordPress Handled Routes (Traditional)
-- /my-account/*
-- /checkout/*
-- /basket/*
-- /wp-admin/*
-- All authenticated user flows
 
 ## Development
 
