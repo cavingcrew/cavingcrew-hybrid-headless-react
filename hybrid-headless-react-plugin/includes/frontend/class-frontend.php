@@ -101,21 +101,33 @@ class Hybrid_Headless_Frontend {
         $nextjs_url = $this->get_nextjs_url();
         $request_uri = $_SERVER['REQUEST_URI'];
         
-        $response = $this->proxy_request($nextjs_url . $request_uri);
+        $response = wp_remote_get($nextjs_url . $request_uri, array(
+            'timeout' => 30,
+            'headers' => array(
+                'X-Forwarded-Host' => $_SERVER['HTTP_HOST'],
+                'X-Forwarded-Proto' => isset($_SERVER['HTTPS']) ? 'https' : 'http',
+                'X-Real-IP' => $_SERVER['REMOTE_ADDR'],
+            )
+        ));
         
-        if (!$response) {
+        if (is_wp_error($response)) {
+            error_log('Next.js proxy error: ' . $response->get_error_message());
             status_header(500);
             include(get_404_template());
             return;
         }
         
-        $headers = wp_remote_retrieve_headers($response);
         $status_code = wp_remote_retrieve_response_code($response);
-        
         status_header($status_code);
         
+        if ($status_code === 404) {
+            include(get_404_template());
+            return;
+        }
+        
+        $headers = wp_remote_retrieve_headers($response);
         foreach ($headers as $key => $value) {
-            if (!in_array(strtolower($key), ['transfer-encoding'])) {
+            if (!in_array(strtolower($key), ['transfer-encoding', 'content-encoding', 'content-length'])) {
                 header("$key: $value");
             }
         }

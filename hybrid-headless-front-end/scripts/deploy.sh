@@ -81,4 +81,10 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+echo "📦 Copying PM2 ecosystem config..."
+scp ecosystem.config.js "$REMOTE_HOST:$REMOTE_PATH/"
+
+echo "🔄 Restarting PM2 process..."
+ssh "$REMOTE_HOST" "cd $REMOTE_PATH && pm2 reload ecosystem.config.js --update-env"
+
 echo -e "${GREEN}✨ Deployment complete!${NC}"
