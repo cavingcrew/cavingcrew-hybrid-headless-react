@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { Container, Title, SimpleGrid } from '@mantine/core';
 import { apiService } from '@/lib/api-service';
 import { LoadingState } from '@/components/ui/LoadingState';
@@ -9,17 +9,11 @@ import { ErrorState } from '@/components/ui/ErrorState';
 import { TripCard } from '@/components/trips/TripCard';
 import type { Trip } from '@/types/api';
 
-// Define the static parameter patterns for both trip and category URLs
-export async function generateStaticParams() {
-  return [
-    { slug: ['trip', '[tripSlug]'] },     // Matches /trip/any-trip-name
-    { slug: ['category', '[catSlug]'] }   // Matches /category/any-category-name
-  ];
-}
+// Tell Next.js this is a valid catch-all route pattern
+export const dynamicParams = true;
 
 export default function CatchAllPage() {
   const params = useParams();
-  const router = useRouter();
   const [data, setData] = useState<Trip[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
