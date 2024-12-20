@@ -18,32 +18,44 @@ export default function CatchAllPage() {
 
   useEffect(() => {
     const handleRoute = async () => {
+      // Early return if no slug parameter
+      if (!params.slug) {
+        setError('Invalid path');
+        setLoading(false);
+        return;
+      }
+
       const path = Array.isArray(params.slug) ? params.slug.join('/') : params.slug;
 
       // Handle known route patterns first
-      if (path.startsWith('trips/')) {
-        router.push(`/trips/${path.replace('trips/', '')}`);
-        return;
-      }
-      if (path.startsWith('categories/')) {
-        router.push(`/categories/${path.replace('categories/', '')}`);
-        return;
-      }
-      if (path === 'trips' || path === 'categories') {
-        router.push(`/${path}`);
-        return;
-      }
-
-      // If not a redirect, try to fetch data
-      try {
-        const response = await apiService.getTripsByCategory(path);
-        if (!response.success) {
-          throw new Error('Failed to fetch data');
+      if (typeof path === 'string') {
+        if (path.startsWith('trips/')) {
+          router.push(`/trips/${path.replace('trips/', '')}`);
+          return;
         }
-        setData(response.data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load data');
-      } finally {
+        if (path.startsWith('categories/')) {
+          router.push(`/categories/${path.replace('categories/', '')}`);
+          return;
+        }
+        if (path === 'trips' || path === 'categories') {
+          router.push(`/${path}`);
+          return;
+        }
+
+        // If not a redirect, try to fetch data
+        try {
+          const response = await apiService.getTripsByCategory(path);
+          if (!response.success) {
+            throw new Error('Failed to fetch data');
+          }
+          setData(response.data);
+        } catch (err) {
+          setError(err instanceof Error ? err.message : 'Failed to load data');
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        setError('Invalid path format');
         setLoading(false);
       }
     };
