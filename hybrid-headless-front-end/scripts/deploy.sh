@@ -3,21 +3,56 @@
 # Configuration
 REMOTE_HOST="cavingcrew"
 REMOTE_PATH="/home/bitnami/apps/nextjs-frontend"
+PLUGIN_SOURCE="../hybrid-headless-react-plugin"
+PLUGIN_DEST="/home/bitnami/stack/wordpress/wp-content/plugins"
 APP_NAME="hybrid-headless-frontend"
+PLUGIN_NAME="hybrid-headless-react-plugin"
 
 # Colors for output
 GREEN='\033[0;32m'
 NC='\033[0m'
 RED='\033[0;31m'
+YELLOW='\033[1;33m'
+
+# Function to deploy WordPress plugin
+deploy_plugin() {
+    echo "🔌 Deploying WordPress plugin..."
+    
+    # Deactivate plugin
+    echo "⏸️  Deactivating plugin..."
+    ssh "$REMOTE_HOST" "wp plugin deactivate $PLUGIN_NAME --path=/home/bitnami/stack/wordpress"
+    
+    # Deploy plugin files
+    echo "📤 Copying plugin files..."
+    rsync --delete -avz -e ssh \
+        --exclude='.git/' \
+        --exclude='.gitignore' \
+        --exclude='node_modules/' \
+        --exclude='tests/' \
+        --exclude='.github/' \
+        "$PLUGIN_SOURCE" \
+        "$REMOTE_HOST:$PLUGIN_DEST/"
+
+    if [ $? -ne 0 ]; then
+        echo -e "${RED}Plugin deployment failed${NC}"
+        exit 1
+    fi
+
+    # Reactivate plugin
+    echo "▶️  Reactivating plugin..."
+    ssh "$REMOTE_HOST" "wp plugin activate $PLUGIN_NAME --path=/home/bitnami/stack/wordpress"
+    
+    echo -e "${GREEN}✨ Plugin deployment complete!${NC}"
+}
 
 # Function to deploy built files and restart service
-deploy_and_restart() {
+deploy_frontend() {
     # Create deployment directory if it doesn't exist
     echo "🏗️ Ensuring proper directory structure..."
     ssh "$REMOTE_HOST" "mkdir -p $REMOTE_PATH"
 
     # Deploy application files
-    echo "📤 Deploying application..."
+    echo "📤 Deploying frontend application..."
     rsync -avz --delete \
         --exclude='.git/' \
         --exclude='.gitignore' \
@@ -44,7 +79,7 @@ deploy_and_restart() {
         "$REMOTE_HOST:$REMOTE_PATH/"
 
     if [ $? -ne 0 ]; then
-        echo -e "${RED}Deployment failed${NC}"
+        echo -e "${RED}Frontend deployment failed${NC}"
         exit 1
     fi
 
@@ -60,25 +95,50 @@ deploy_and_restart() {
     if [ $? -ne 0 ]; then
         echo -e "${RED}Service restart failed${NC}"
         exit 1
-    fi
+    }
+    
+    echo -e "${GREEN}✨ Frontend deployment complete!${NC}"
 }
 
-# Check if we should skip the build
-if [ "$1" = "--skip-build" ]; then
-    echo "🚀 Starting deployment process (skipping build)..."
-    deploy_and_restart
-else
-    echo "🚀 Starting deployment process..."
-    # Build Next.js app
-    echo "📦 Building Next.js application..."
-    NEXT_TELEMETRY_DISABLED=1 npm run build
+# Parse command line arguments
+SKIP_BUILD=false
+SKIP_FRONTEND=false
+SKIP_PLUGIN=false
 
-    if [ $? -ne 0 ]; then
-        echo -e "${RED}Build failed${NC}"
-        exit 1
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        --skip-build) SKIP_BUILD=true ;;
+        --skip-frontend) SKIP_FRONTEND=true ;;
+        --skip-plugin) SKIP_PLUGIN=true ;;
+        *) echo "Unknown parameter: $1"; exit 1 ;;
+    esac
+    shift
+done
+
+# Main deployment logic
+echo "🚀 Starting deployment process..."
+
+if [ "$SKIP_FRONTEND" = false ]; then
+    if [ "$SKIP_BUILD" = false ]; then
+        echo "📦 Building Next.js application..."
+        NEXT_TELEMETRY_DISABLED=1 npm run build
+        if [ $? -ne 0 ]; then
+            echo -e "${RED}Build failed${NC}"
+            exit 1
+        fi
+    else
+        echo -e "${YELLOW}Skipping build phase...${NC}"
     fi
-
-    deploy_and_restart
+    
+    deploy_frontend
+else
+    echo -e "${YELLOW}Skipping frontend deployment...${NC}"
 fi
 
-echo -e "${GREEN}✨ Deployment complete!${NC}"
+if [ "$SKIP_PLUGIN" = false ]; then
+    deploy_plugin
+else
+    echo -e "${YELLOW}Skipping plugin deployment...${NC}"
+fi
+
+echo -e "${GREEN}✨ All deployments complete!${NC}"
