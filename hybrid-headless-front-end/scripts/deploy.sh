@@ -95,7 +95,7 @@ deploy_frontend() {
     if [ $? -ne 0 ]; then
         echo -e "${RED}Service restart failed${NC}"
         exit 1
-    }
+    fi
     
     echo -e "${GREEN}✨ Frontend deployment complete!${NC}"
 }
