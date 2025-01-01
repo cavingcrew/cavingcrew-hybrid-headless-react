@@ -20,7 +20,7 @@ deploy_plugin() {
     
     # Deactivate plugin
     echo "⏸️  Deactivating plugin..."
-    ssh "$REMOTE_HOST" "wp plugin deactivate $PLUGIN_NAME --path=/home/bitnami/stack/wordpress"
+    ssh -o "ForwardX11=no" -o "ForwardAgent=no" "$REMOTE_HOST" "sudo wp plugin deactivate $PLUGIN_NAME --path=/home/bitnami/stack/wordpress --allow-root"
     
     # Deploy plugin files
     echo "📤 Copying plugin files..."
@@ -40,7 +40,7 @@ deploy_plugin() {
 
     # Reactivate plugin
     echo "▶️  Reactivating plugin..."
-    ssh "$REMOTE_HOST" "wp plugin activate $PLUGIN_NAME --path=/home/bitnami/stack/wordpress"
+    ssh -o "ForwardX11=no" -o "ForwardAgent=no" "$REMOTE_HOST" "sudo wp plugin activate $PLUGIN_NAME --path=/home/bitnami/stack/wordpress --allow-root"
     
     echo -e "${GREEN}✨ Plugin deployment complete!${NC}"
 }
