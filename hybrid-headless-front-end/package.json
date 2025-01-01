@@ -20,6 +20,7 @@
 		"storybook": "storybook dev -p 6006",
 		"storybook:build": "storybook build",
 		"deploy": "chmod +x ./scripts/deploy.sh && ./scripts/deploy.sh",
+		"deploy:only": "chmod +x ./scripts/deploy.sh && ./scripts/deploy.sh --skip-build",
 		"lint:biome": "biome lint .",
 		"format:biome": "biome format . --write",
 		"check:biome": "biome check --apply ."
