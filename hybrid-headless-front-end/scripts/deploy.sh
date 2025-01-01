@@ -49,7 +49,7 @@ rsync -avz --delete \
     --exclude='.stylelintrc.*' \
     --exclude='tsconfig.tsbuildinfo' \
     ./ \
-    "$REMOTE_HOST:$REMOTE_PATH/"
+    -e ssh "$REMOTE_HOST:$REMOTE_PATH/"
 
 if [ $? -ne 0 ]; then
     echo -e "${RED}Deployment failed${NC}"
