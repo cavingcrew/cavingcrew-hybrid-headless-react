@@ -168,11 +168,17 @@ class Hybrid_Headless_Routes_Controller {
      */
     private function is_frontend_route( $route ) {
         $frontend_patterns = array(
+            '^_next/',
             '^trips/?',
             '^trips/[^/]+/?',
             '^categories/?',
             '^categories/[^/]+/?',
         );
+
+        // Add _next/ to the patterns
+        if (strpos($route, '_next/') === 0) {
+            return true;
+        }
 
         foreach ( $frontend_patterns as $pattern ) {
             if ( preg_match( "#{$pattern}#", $route ) ) {

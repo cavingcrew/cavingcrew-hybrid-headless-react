@@ -189,6 +189,11 @@ class Hybrid_Headless_Frontend {
 
         $current_path = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
 
+        // Exclude _next/ from WordPress routes
+        if (strpos($current_path, '_next/') === 0) {
+            return false;
+        }
+
         // Check if the current path is a WordPress-specific path
         foreach ($wordpress_paths as $path) {
             if (strpos($current_path, $path) === 0) {
