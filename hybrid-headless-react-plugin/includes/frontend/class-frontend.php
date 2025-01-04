@@ -169,6 +169,13 @@ class Hybrid_Headless_Frontend {
     }
 
     private function is_wordpress_route() {
+        $current_path = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
+
+        // Never handle _next/ routes as WordPress routes
+        if (strpos($current_path, '_next/') === 0) {
+            return false;
+        }
+
         $wordpress_paths = array(
             'my-account',
             'checkout',
@@ -186,13 +193,6 @@ class Hybrid_Headless_Frontend {
             'feed',
             'comments',
         );
-
-        $current_path = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
-
-        // Exclude _next/ from WordPress routes
-        if (strpos($current_path, '_next/') === 0) {
-            return false;
-        }
 
         // Check if the current path is a WordPress-specific path
         foreach ($wordpress_paths as $path) {

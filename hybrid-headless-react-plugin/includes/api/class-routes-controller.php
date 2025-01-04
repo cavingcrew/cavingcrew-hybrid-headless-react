@@ -136,28 +136,34 @@ class Hybrid_Headless_Routes_Controller {
      * @param string $file_path Path to static file
      */
     private function serve_static_file($file_path) {
-        if (!file_exists($file_path)) {
+        $nextjs_url = get_option('hybrid_headless_nextjs_url', HYBRID_HEADLESS_DEFAULT_NEXTJS_URL);
+        $request_uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        $proxy_url = rtrim($nextjs_url, '/') . $request_uri;
+        
+        $response = wp_remote_get($proxy_url, array(
+            'timeout' => 30,
+            'headers' => array(
+                'X-Forwarded-Host' => $_SERVER['HTTP_HOST'],
+                'X-Forwarded-Proto' => isset($_SERVER['HTTPS']) ? 'https' : 'http',
+            ),
+        ));
+        
+        if (is_wp_error($response) || wp_remote_retrieve_response_code($response) !== 200) {
             status_header(404);
             return;
         }
-
-        $mime_types = array(
-            'css' => 'text/css',
-            'js' => 'application/javascript',
-            'svg' => 'image/svg+xml',
-            'png' => 'image/png',
-            'jpg' => 'image/jpeg',
-            'jpeg' => 'image/jpeg',
-            'gif' => 'image/gif',
-            'json' => 'application/json',
-        );
-
-        $ext = pathinfo($file_path, PATHINFO_EXTENSION);
-        $mime_type = isset($mime_types[$ext]) ? $mime_types[$ext] : 'application/octet-stream';
-
-        header('Content-Type: ' . $mime_type);
-        header('Cache-Control: public, max-age=31536000, immutable');
-        readfile($file_path);
+        
+        // Forward all headers except those that could cause issues
+        $headers = wp_remote_retrieve_headers($response);
+        foreach ($headers as $key => $value) {
+            if (!in_array(strtolower($key), ['transfer-encoding', 'content-encoding', 'content-length'])) {
+                header("$key: $value");
+            }
+        }
+        
+        // Output the response body
+        echo wp_remote_retrieve_body($response);
+        exit;
     }
 
     /**
@@ -166,28 +172,27 @@ class Hybrid_Headless_Routes_Controller {
      * @param string $route Current route.
      * @return boolean
      */
-    private function is_frontend_route( $route ) {
+    private function is_frontend_route($route) {
+        // Always proxy _next/ requests
+        if (strpos($route, '_next/') === 0) {
+            return true;
+        }
+
         $frontend_patterns = array(
-            '^_next/',
             '^trips/?',
             '^trips/[^/]+/?',
             '^categories/?',
             '^categories/[^/]+/?',
         );
 
-        // Add _next/ to the patterns
-        if (strpos($route, '_next/') === 0) {
-            return true;
-        }
-
-        foreach ( $frontend_patterns as $pattern ) {
-            if ( preg_match( "#{$pattern}#", $route ) ) {
+        foreach ($frontend_patterns as $pattern) {
+            if (preg_match("#{$pattern}#", $route)) {
                 return true;
             }
         }
 
         // Homepage check
-        if ( empty( $route ) && get_option( 'hybrid_headless_frontend_homepage', false ) ) {
+        if (empty($route) && get_option('hybrid_headless_frontend_homepage', false)) {
             return true;
         }
 
