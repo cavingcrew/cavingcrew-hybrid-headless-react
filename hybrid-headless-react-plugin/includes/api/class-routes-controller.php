@@ -117,8 +117,16 @@ class Hybrid_Headless_Routes_Controller {
             header('Cache-Control: public, max-age=3600');
             readfile($index_path);
         } else {
-            status_header(404);
-            include(get_404_template());
+            $template = get_404_template();
+            if (!empty($template) && file_exists($template)) {
+                include($template);
+            } else {
+                // Fallback to a simple 404 message
+                status_header(404);
+                nocache_headers();
+                echo '<h1>404 - Page Not Found</h1>';
+                exit;
+            }
         }
     }
 
