@@ -59,13 +59,15 @@ class Hybrid_Headless_Frontend {
      * @param string $template Template path.
      * @return string
      */
-    public function override_template( $template ) {
-        if ( ! $this->is_wordpress_route() ) {
+    public function override_template($template) {
+        // If it's a WordPress route, serve the WordPress template
+        if ($this->is_wordpress_route()) {
             return $template;
         }
 
-        // Use default template for WordPress-handled routes
-        return $template;
+        // Proxy the request to Next.js
+        $this->serve_nextjs_app();
+        exit;
     }
 
     /**
@@ -101,14 +103,34 @@ class Hybrid_Headless_Frontend {
         $nextjs_url = $this->get_nextjs_url();
         $request_uri = $_SERVER['REQUEST_URI'];
         
-        $response = wp_remote_get($nextjs_url . $request_uri, array(
+        // Preserve query parameters
+        $query_string = !empty($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : '';
+        
+        // Build the full URL to proxy to
+        $proxy_url = rtrim($nextjs_url, '/') . $request_uri . $query_string;
+        
+        // Set up request arguments
+        $args = array(
             'timeout' => 30,
             'headers' => array(
                 'X-Forwarded-Host' => $_SERVER['HTTP_HOST'],
                 'X-Forwarded-Proto' => isset($_SERVER['HTTPS']) ? 'https' : 'http',
                 'X-Real-IP' => $_SERVER['REMOTE_ADDR'],
-            )
-        ));
+                'X-Forwarded-For' => $_SERVER['REMOTE_ADDR'],
+                'Accept' => $_SERVER['HTTP_ACCEPT'] ?? '*/*',
+                'Accept-Language' => $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '',
+                'User-Agent' => $_SERVER['HTTP_USER_AGENT'] ?? '',
+            ),
+        );
+        
+        // Handle POST requests
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $args['method'] = 'POST';
+            $args['body'] = file_get_contents('php://input');
+            $args['headers']['Content-Type'] = $_SERVER['CONTENT_TYPE'] ?? 'application/json';
+        }
+        
+        $response = wp_remote_request($proxy_url, $args);
         
         if (is_wp_error($response)) {
             error_log('Next.js proxy error: ' . $response->get_error_message());
@@ -120,11 +142,22 @@ class Hybrid_Headless_Frontend {
         $status_code = wp_remote_retrieve_response_code($response);
         status_header($status_code);
         
+        // Handle redirects
+        if ($status_code >= 300 && $status_code < 400) {
+            $location = wp_remote_retrieve_header($response, 'location');
+            if ($location) {
+                wp_redirect($location, $status_code);
+                exit;
+            }
+        }
+        
+        // Handle 404s
         if ($status_code === 404) {
             include(get_404_template());
             return;
         }
         
+        // Forward headers
         $headers = wp_remote_retrieve_headers($response);
         foreach ($headers as $key => $value) {
             if (!in_array(strtolower($key), ['transfer-encoding', 'content-encoding', 'content-length'])) {
@@ -132,6 +165,7 @@ class Hybrid_Headless_Frontend {
             }
         }
         
+        // Output the response body
         echo wp_remote_retrieve_body($response);
     }
 
@@ -142,14 +176,30 @@ class Hybrid_Headless_Frontend {
             'cart',
             'wp-login.php',
             'wp-admin',
+            'wp-content',
+            'wp-includes',
+            'wp-json',
+            'wp-cron.php',
+            'wp-activate.php',
+            'wp-signup.php',
+            'wp-trackback.php',
+            'xmlrpc.php',
+            'feed',
+            'comments',
         );
 
-        $current_path = trim( parse_url( $_SERVER['REQUEST_URI'], PHP_URL_PATH ), '/' );
-        
-        foreach ( $wordpress_paths as $path ) {
-            if ( strpos( $current_path, $path ) === 0 ) {
+        $current_path = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
+
+        // Check if the current path is a WordPress-specific path
+        foreach ($wordpress_paths as $path) {
+            if (strpos($current_path, $path) === 0) {
                 return true;
             }
+        }
+
+        // Check for static files
+        if (preg_match('/\.(css|js|jpg|jpeg|png|gif|ico|svg|woff|woff2|ttf|eot)$/i', $current_path)) {
+            return true;
         }
 
         return false;
