@@ -9,8 +9,15 @@ The Hybrid Headless React Plugin is a sophisticated WordPress plugin that enable
 ### 1. Smart Route Handling
 - Automatically detects and routes requests between headless and traditional WordPress paths
 - Configurable route patterns for maximum flexibility
-- Maintains WordPress functionality for critical paths (/wp-admin, /my-account, etc.)
+- Maintains WordPress functionality for critical paths (`/wp-admin`, `/my-account`, etc.)
 - Seamless integration with WooCommerce checkout and cart processes
+- Proxies specific routes to Next.js:
+  - `/` (root)
+  - `/categories/`
+  - `/category/`
+  - `/trips/`
+  - `/trip/`
+  - `/route-descriptions/`
 
 ### 2. Advanced API Integration
 - Custom REST API endpoints optimized for headless frontends
@@ -213,3 +220,8 @@ Special thanks to all contributors!
 - Added custom route patterns
 - Improved caching
 - Enhanced API responses
+
+### 1.2.0 (2024-03-01)
+- Updated route handling to include `/categories/`, `/category/`, `/trips/`, `/trip/`, `/route-descriptions/`, and `/` (root)
+- Removed debugging code
+- Improved documentation
