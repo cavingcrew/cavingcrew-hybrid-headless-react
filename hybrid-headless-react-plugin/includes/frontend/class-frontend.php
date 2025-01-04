@@ -60,10 +60,30 @@ class Hybrid_Headless_Frontend {
      * @return string
      */
     public function override_template($template) {
+        // Debug: Log the template being overridden
+        error_log("Hybrid Headless: Overriding template - Initial Template: $template");
+
         // If it's a WordPress route, serve the WordPress template
         if ($this->is_wordpress_route()) {
+            // Debug: Log that WordPress is handling the request
+            error_log("Hybrid Headless: Serving WordPress template");
             return $template;
         }
+
+        // Debug: Log that we're proxying to Next.js
+        error_log("Hybrid Headless: Proxying to Next.js");
+
+        // Get the Next.js server URL
+        $nextjs_url = $this->get_nextjs_url();
+
+        // Debug: Log the Next.js URL
+        error_log("Hybrid Headless: Next.js URL: $nextjs_url");
+
+        // Get the current request path
+        $request_path = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
+
+        // Debug: Log the request path
+        error_log("Hybrid Headless: Request Path: $request_path");
 
         // Proxy the request to Next.js
         $this->serve_nextjs_app();
@@ -108,6 +128,9 @@ class Hybrid_Headless_Frontend {
         
         // Build the full URL to proxy to
         $proxy_url = rtrim($nextjs_url, '/') . $request_uri . $query_string;
+        
+        // Debug: Log the proxy URL
+        error_log("Hybrid Headless: Proxying to URL: $proxy_url");
         
         // Set up request arguments
         $args = array(
@@ -190,18 +213,26 @@ class Hybrid_Headless_Frontend {
 
         $current_path = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
 
+        // Debug: Log the current path
+        error_log("Hybrid Headless: Checking route - Current Path: $current_path");
+
         // Check if the current path is a WordPress-specific path
         foreach ($wordpress_paths as $path) {
             if (strpos($current_path, $path) === 0) {
+                // Debug: Log that this is a WordPress route
+                error_log("Hybrid Headless: Route is WordPress-specific - Path: $path");
                 return true;
             }
         }
 
         // Check for static files
         if (preg_match('/\.(css|js|jpg|jpeg|png|gif|ico|svg|woff|woff2|ttf|eot)$/i', $current_path)) {
+            error_log("Hybrid Headless: Route is a static file - Path: $current_path");
             return true;
         }
 
+        // Debug: Log that this is not a WordPress route
+        error_log("Hybrid Headless: Route is not WordPress-specific - Proxying to Next.js");
         return false;
     }
 }
