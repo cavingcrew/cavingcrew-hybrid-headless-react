@@ -18,6 +18,7 @@ The Hybrid Headless React Plugin is a sophisticated WordPress plugin that enable
   - `/trips/`
   - `/trip/`
   - `/route-descriptions/`
+  - `/_next/` (Next.js static assets)
 
 ### 2. Advanced API Integration
 - Custom REST API endpoints optimized for headless frontends
@@ -225,3 +226,8 @@ Special thanks to all contributors!
 - Updated route handling to include `/categories/`, `/category/`, `/trips/`, `/trip/`, `/route-descriptions/`, and `/` (root)
 - Removed debugging code
 - Improved documentation
+
+### 1.2.1 (2024-03-02)
+- Added proper handling of `/_next/` routes for Next.js static assets
+- Improved 404 error handling
+- Updated documentation for route handling
