@@ -7,6 +7,7 @@ import { apiService } from '@/lib/api-service';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { CategoryTripsGrid } from '@/components/categories/CategoryTripsGrid';
+import { TripDetails } from '@/components/trips/TripDetails';
 import type { Trip } from '@/types/api';
 
 export function CatchAllContent() {
@@ -72,8 +73,14 @@ export function CatchAllContent() {
 
   return (
     <Container size="lg" py="xl">
-      <Title order={1} mb="xl">{title}</Title>
-      <CategoryTripsGrid trips={data} />
+      {isTrip ? (
+        <TripDetails trip={data[0]} />
+      ) : (
+        <>
+          <Title order={1} mb="xl">{title}</Title>
+          <CategoryTripsGrid trips={data} />
+        </>
+      )}
     </Container>
   );
 }
