@@ -1,46 +1,51 @@
-"use client";
+'use client';
 
-import { Button, Center, Container, Loader, Text, Title } from "@mantine/core";
-import { CategoryTripsGrid } from "@/components/categories/CategoryTripsGrid";
-import { useTrips } from "@/lib/hooks/useTrips";
-import { ErrorState } from "@/components/ui/ErrorState";
-import { LoadingState } from "@/components/ui/LoadingState";
+import React from 'react';
+import { Container, Title, Text, Loader, Center } from '@mantine/core';
+import { useTrips } from '@/lib/hooks/useTrips';
+import { CategoryTripsGrid } from '@/components/categories/CategoryTripsGrid';
 
 export default function CategoryPage({ params }: { params: { slug: string } }) {
+  const { slug } = params;
+
   const { data: allTrips, isLoading, error, refetch } = useTrips();
 
   // Get trips filtered by category slug
   const categoryTrips = allTrips?.data?.filter(trip => 
-    trip.categories.some(cat => cat.slug === params.slug)
+    trip.categories.some(cat => cat.slug === slug)
   ) || [];
 
   // Get the category name from the first matching trip
   const categoryName = categoryTrips[0]?.categories.find(
-    cat => cat.slug === params.slug
-  )?.name || params.slug.replace(/-/g, ' ');
+    cat => cat.slug === slug
+  )?.name || slug.replace(/-/g, ' ');
 
   if (isLoading) {
-    return <LoadingState />;
+    return (
+      <Center h={400}>
+        <Loader size="lg" />
+      </Center>
+    );
   }
 
   if (error || !allTrips?.success) {
     return (
-      <ErrorState 
-        message={error?.message || 'Failed to load trips'} 
-        onRetry={() => refetch()}
-      />
+      <Center h={400}>
+        <Text>Failed to load trips. Please try again.</Text>
+        <button onClick={() => refetch()}>Retry</button>
+      </Center>
     );
   }
 
   return (
     <Container size="lg" py="xl">
-      <Title order={1} mb="sm" style={{ textTransform: "capitalize" }}>
+      <Title order={1} mb="sm" transform="capitalize">
         {categoryName}
       </Title>
       <Text c="dimmed" mb="xl">
         Showing {categoryTrips.length} trips in this category
       </Text>
-
+      
       {categoryTrips.length > 0 ? (
         <CategoryTripsGrid trips={categoryTrips} />
       ) : (
