@@ -46,16 +46,30 @@ export function MainHeader() {
   // Desktop menu
   const DesktopMenu = () => (
     <Group gap={20}>
-      {mainLinks.map((link) => (
-        <UnstyledButton
-          key={link.href}
-          component={shouldFullRefresh(link.href) ? 'a' : Link}
-          href={link.href}
-          onClick={shouldFullRefresh(link.href) ? () => window.location.href = link.href : undefined}
-        >
-          {link.label}
-        </UnstyledButton>
-      ))}
+      {mainLinks.map((link) => {
+        if (shouldFullRefresh(link.href)) {
+          return (
+            <UnstyledButton
+              key={link.href}
+              component="a"
+              href={link.href}
+              onClick={() => window.location.href = link.href}
+            >
+              {link.label}
+            </UnstyledButton>
+          );
+        }
+        
+        return (
+          <UnstyledButton
+            key={link.href}
+            component={Link}
+            href={link.href}
+          >
+            {link.label}
+          </UnstyledButton>
+        );
+      })}
 
       <Menu 
         trigger="hover" 
@@ -128,19 +142,28 @@ export function MainHeader() {
     >
       <Stack>
         {mainLinks.map((link) => (
-          <UnstyledButton
-            key={link.href}
-            component={shouldFullRefresh(link.href) ? 'a' : Link}
-            href={link.href}
-            onClick={() => {
-              closeDrawer();
-              if (shouldFullRefresh(link.href)) {
+          {shouldFullRefresh(link.href) ? (
+            <UnstyledButton
+              key={link.href}
+              component="a"
+              href={link.href}
+              onClick={() => {
+                closeDrawer();
                 window.location.href = link.href;
-              }
-            }}
-          >
-            {link.label}
-          </UnstyledButton>
+              }}
+            >
+              {link.label}
+            </UnstyledButton>
+          ) : (
+            <UnstyledButton
+              key={link.href}
+              component={Link}
+              href={link.href}
+              onClick={closeDrawer}
+            >
+              {link.label}
+            </UnstyledButton>
+          )}
         ))}
 
         <Box>
