@@ -2,17 +2,11 @@ import '@mantine/core/styles.css';
 import { ColorSchemeScript } from '@mantine/core';
 import { MantineProvider } from '@/components/providers/MantineProvider';
 import { QueryProvider } from '@/components/providers/QueryProvider';
+import { PrefetchProvider } from '@/components/providers/PrefetchProvider';
 import { MainHeader } from '@/components/layout/MainHeader';
 import { MainFooter } from '@/components/layout/MainFooter';
-import { useEffect } from 'react';
-import { usePrefetch } from '@/lib/hooks/usePrefetch';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const { prefetchAll } = usePrefetch();
-
-  useEffect(() => {
-    prefetchAll();
-  }, []);
   return (
     <html lang="en">
       <head>
@@ -21,17 +15,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <QueryProvider>
           <MantineProvider>
-          <div style={{ 
-            minHeight: '100vh',
-            display: 'flex',
-            flexDirection: 'column'
-          }}>
-            <MainHeader />
-            <main style={{ flex: 1 }}>
-              {children}
-            </main>
-            <MainFooter />
-          </div>
+            <PrefetchProvider>
+              <div style={{ 
+                minHeight: '100vh',
+                display: 'flex',
+                flexDirection: 'column'
+              }}>
+                <MainHeader />
+                <main style={{ flex: 1 }}>
+                  {children}
+                </main>
+                <MainFooter />
+              </div>
+            </PrefetchProvider>
           </MantineProvider>
         </QueryProvider>
       </body>
