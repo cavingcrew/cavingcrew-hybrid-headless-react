@@ -17,6 +17,10 @@ import Link from 'next/link';
 import { IconChevronDown } from '@tabler/icons-react';
 import { useState } from 'react';
 
+const shouldFullRefresh = (href: string) => {
+  return href.startsWith('/my-account') || href === '/about-us';
+};
+
 export function MainHeader() {
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
   const [userMenuOpened, setUserMenuOpened] = useState(false);
@@ -33,10 +37,10 @@ export function MainHeader() {
   ];
 
   const accountLinks = [
-    { label: 'My Crew details', href: '/my-account/edit-account' },
-    { label: 'My Crew Trips', href: '/my-account/orders' },
-    { label: 'Logout', href: '/my-account/customer-logout/?_wpnonce=be52231fdc' },
-    { label: 'Lost password', href: '/my-account/lost-password' },
+    { label: 'My Crew details', href: '/my-account/edit-account', fullRefresh: true },
+    { label: 'My Crew Trips', href: '/my-account/orders', fullRefresh: true },
+    { label: 'Logout', href: '/my-account/customer-logout/?_wpnonce=be52231fdc', fullRefresh: true },
+    { label: 'Lost password', href: '/my-account/lost-password', fullRefresh: true },
   ];
 
   // Desktop menu
@@ -45,8 +49,9 @@ export function MainHeader() {
       {mainLinks.map((link) => (
         <UnstyledButton
           key={link.href}
-          component={Link}
+          component={shouldFullRefresh(link.href) ? 'a' : Link}
           href={link.href}
+          onClick={shouldFullRefresh(link.href) ? () => window.location.href = link.href : undefined}
         >
           {link.label}
         </UnstyledButton>
@@ -99,8 +104,9 @@ export function MainHeader() {
           {accountLinks.map((link) => (
             <Menu.Item
               key={link.href}
-              component={Link}
+              component={link.fullRefresh ? 'a' : Link}
               href={link.href}
+              onClick={link.fullRefresh ? () => window.location.href = link.href : undefined}
             >
               {link.label}
             </Menu.Item>
@@ -124,9 +130,14 @@ export function MainHeader() {
         {mainLinks.map((link) => (
           <UnstyledButton
             key={link.href}
-            component={Link}
+            component={shouldFullRefresh(link.href) ? 'a' : Link}
             href={link.href}
-            onClick={closeDrawer}
+            onClick={() => {
+              closeDrawer();
+              if (shouldFullRefresh(link.href)) {
+                window.location.href = link.href;
+              }
+            }}
           >
             {link.label}
           </UnstyledButton>
@@ -156,9 +167,14 @@ export function MainHeader() {
             {accountLinks.map((link) => (
               <UnstyledButton
                 key={link.href}
-                component={Link}
+                component={link.fullRefresh ? 'a' : Link}
                 href={link.href}
-                onClick={closeDrawer}
+                onClick={() => {
+                  closeDrawer();
+                  if (link.fullRefresh) {
+                    window.location.href = link.href;
+                  }
+                }}
               >
                 {link.label}
               </UnstyledButton>
