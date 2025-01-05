@@ -176,6 +176,11 @@ class Hybrid_Headless_Frontend {
             return false;
         }
 
+        // Check for static files
+        if (preg_match('/\.(css|js|jpg|jpeg|png|gif|ico|svg|woff|woff2|ttf|eot)$/i', $current_path)) {
+            return false;
+        }
+
         $wordpress_paths = array(
             'my-account',
             'checkout',
@@ -199,11 +204,6 @@ class Hybrid_Headless_Frontend {
             if (strpos($current_path, $path) === 0) {
                 return true;
             }
-        }
-
-        // Check for static files
-        if (preg_match('/\.(css|js|jpg|jpeg|png|gif|ico|svg|woff|woff2|ttf|eot)$/i', $current_path)) {
-            return true;
         }
 
         // Check if the current path is one of the frontend routes

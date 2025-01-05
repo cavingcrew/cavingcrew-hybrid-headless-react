@@ -101,23 +101,56 @@ class Hybrid_Headless_Routes_Controller {
      */
     private function serve_nextjs_app() {
         $nextjs_url = get_option('hybrid_headless_nextjs_url', HYBRID_HEADLESS_DEFAULT_NEXTJS_URL);
-        $request_path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-        if (file_exists($index_path)) {
-            header('Content-Type: text/html; charset=UTF-8');
-            header('Cache-Control: public, max-age=3600');
-            readfile($index_path);
-        } else {
-            $template = get_404_template();
-            if (!empty($template) && file_exists($template)) {
-                include($template);
-            } else {
-                // Fallback to a simple 404 message
-                status_header(404);
-                nocache_headers();
-                echo '<h1>404 - Page Not Found</h1>';
-                exit;
+        $request_uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        
+        // Build the full proxy URL
+        $proxy_url = rtrim($nextjs_url, '/') . $request_uri;
+        
+        // Set up request arguments
+        $args = array(
+            'timeout' => 30,
+            'headers' => array(
+                'X-Forwarded-Host' => $_SERVER['HTTP_HOST'],
+                'X-Forwarded-Proto' => isset($_SERVER['HTTPS']) ? 'https' : 'http',
+                'X-Real-IP' => $_SERVER['REMOTE_ADDR'],
+                'X-Forwarded-For' => $_SERVER['REMOTE_ADDR'],
+                'Accept' => $_SERVER['HTTP_ACCEPT'] ?? '*/*',
+                'Accept-Language' => $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '',
+                'User-Agent' => $_SERVER['HTTP_USER_AGENT'] ?? '',
+            ),
+        );
+        
+        // Make the request to Next.js server
+        $response = wp_remote_get($proxy_url, $args);
+        
+        // Handle errors
+        if (is_wp_error($response)) {
+            status_header(500);
+            return;
+        }
+        
+        $status_code = wp_remote_retrieve_response_code($response);
+        
+        // Handle 404s
+        if ($status_code === 404) {
+            status_header(404);
+            return;
+        }
+        
+        // Forward all headers except those that could cause issues
+        $headers = wp_remote_retrieve_headers($response);
+        foreach ($headers as $key => $value) {
+            if (!in_array(strtolower($key), ['transfer-encoding', 'content-encoding', 'content-length'])) {
+                header("$key: $value");
             }
         }
+        
+        // Set the status code
+        status_header($status_code);
+        
+        // Output the response body
+        echo wp_remote_retrieve_body($response);
+        exit;
     }
 
     /**
