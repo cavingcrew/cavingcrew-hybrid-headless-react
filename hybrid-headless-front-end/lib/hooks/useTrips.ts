@@ -59,7 +59,7 @@ export function useTrip(slug: string) {
     queryFn: async () => {
       // First try to find the trip in the existing trips data
       const tripsData = queryClient.getQueryData<TripsResponse>(tripKeys.lists());
-      const existingTrip = tripsData?.data?.find(t => t.slug === slug);
+      const existingTrip = tripsData?.data?.find((t: Trip) => t.slug === slug);
       
       if (existingTrip) {
         return { data: existingTrip, success: true };
