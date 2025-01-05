@@ -100,18 +100,8 @@ class Hybrid_Headless_Routes_Controller {
      * Serve the Next.js application
      */
     private function serve_nextjs_app() {
-        $build_path = get_option('hybrid_headless_build_path', 'dist');
+        $nextjs_url = get_option('hybrid_headless_nextjs_url', HYBRID_HEADLESS_DEFAULT_NEXTJS_URL);
         $request_path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-        $file_path = HYBRID_HEADLESS_PLUGIN_DIR . $build_path . $request_path;
-
-        // Handle static files (_next/static/*)
-        if (strpos($request_path, '_next/static/') !== false) {
-            $this->serve_static_file($file_path);
-            return;
-        }
-
-        // Serve index.html for app routes
-        $index_path = HYBRID_HEADLESS_PLUGIN_DIR . $build_path . '/index.html';
         if (file_exists($index_path)) {
             header('Content-Type: text/html; charset=UTF-8');
             header('Cache-Control: public, max-age=3600');
@@ -189,11 +179,6 @@ class Hybrid_Headless_Routes_Controller {
             if (preg_match("#{$pattern}#", $route)) {
                 return true;
             }
-        }
-
-        // Homepage check
-        if (empty($route) && get_option('hybrid_headless_frontend_homepage', false)) {
-            return true;
         }
 
         return false;

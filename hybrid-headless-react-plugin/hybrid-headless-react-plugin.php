@@ -159,7 +159,7 @@ final class Hybrid_Headless_Plugin {
     }
 
     public function register_settings() {
-        register_setting( 'general', 'hybrid_headless_nextjs_url', array(
+        register_setting('general', 'hybrid_headless_nextjs_url', array(
             'type' => 'string',
             'default' => HYBRID_HEADLESS_DEFAULT_NEXTJS_URL,
             'sanitize_callback' => 'esc_url_raw',
@@ -167,8 +167,8 @@ final class Hybrid_Headless_Plugin {
 
         add_settings_field(
             'hybrid_headless_nextjs_url',
-            __( 'Next.js Server URL', 'hybrid-headless' ),
-            array( $this, 'nextjs_url_callback' ),
+            __('Next.js Server URL', 'hybrid-headless'),
+            array($this, 'nextjs_url_callback'),
             'general'
         );
     }
