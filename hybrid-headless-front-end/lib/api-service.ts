@@ -19,7 +19,7 @@ export const apiService = {
 
   async getTrip(slug: string): Promise<ApiResponse<Trip>> {
     try {
-      const response = await fetch(`${API_BASE_URL}/hybrid-headless/v1/products/${slug}`);
+      const response = await fetch(`${API_BASE_URL}/hybrid-headless/v1/products/${slug}?by_slug=true`);
       if (!response.ok) {
         throw new Error(`Failed to fetch trip ${slug}`);
       }

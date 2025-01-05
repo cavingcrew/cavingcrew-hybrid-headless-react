@@ -56,6 +56,26 @@ class Hybrid_Headless_Products_Controller {
                 ),
             )
         );
+
+        register_rest_route(
+            Hybrid_Headless_Rest_API::API_NAMESPACE,
+            '/products/(?P<slug>[a-zA-Z0-9-]+)',
+            array(
+                array(
+                    'methods'             => WP_REST_Server::READABLE,
+                    'callback'            => array( $this, 'get_product_by_slug' ),
+                    'permission_callback' => '__return_true',
+                    'args'               => array(
+                        'slug' => array(
+                            'required'          => true,
+                            'validate_callback' => function( $param ) {
+                                return is_string( $param );
+                            },
+                        ),
+                    ),
+                ),
+            )
+        );
     }
 
     /**
@@ -208,6 +228,41 @@ class Hybrid_Headless_Products_Controller {
      * @param WC_Product $product Product object.
      * @return array
      */
+    /**
+     * Get product by slug
+     *
+     * @param WP_REST_Request $request Request object.
+     * @return WP_REST_Response|WP_Error
+     */
+    public function get_product_by_slug( $request ) {
+        $slug = $request['slug'];
+        $product = get_page_by_path( $slug, OBJECT, 'product' );
+
+        if ( ! $product ) {
+            return new WP_Error(
+                'product_not_found',
+                __( 'Product not found', 'hybrid-headless' ),
+                array( 'status' => 404 )
+            );
+        }
+
+        $wc_product = wc_get_product( $product->ID );
+        
+        if ( ! $wc_product ) {
+            return new WP_Error(
+                'product_not_found',
+                __( 'Product not found', 'hybrid-headless' ),
+                array( 'status' => 404 )
+            );
+        }
+
+        // Set cache headers for stock monitoring
+        header('Cache-Control: no-store, max-age=0');
+        header('Pragma: no-cache');
+        
+        return rest_ensure_response( $this->prepare_product_data( $wc_product ) );
+    }
+
     private function get_product_categories( $product ) {
         $terms = get_the_terms( $product->get_id(), 'product_cat' );
         $categories = array();
