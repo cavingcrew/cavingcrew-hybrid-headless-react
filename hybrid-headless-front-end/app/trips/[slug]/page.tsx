@@ -16,31 +16,28 @@ export default async function TripPage({ params }: PageProps) {
 
   return (
     <Container size="md" py="xl">
-      {trip.featuredImage && (
+      {trip.images?.[0] && (
         <Image
-          src={trip.featuredImage.url}
-          alt={trip.featuredImage.alt}
+          src={trip.images[0].src}
+          alt={trip.images[0].alt}
           height={400}
           mb="xl"
         />
       )}
 
-      <Title order={1}>{trip.title}</Title>
+      <Title order={1}>{trip.name}</Title>
       
       <Group mt="md" mb="xl">
         <Badge size="lg" variant="filled">
           ${trip.price}
         </Badge>
-        <Badge size="lg" color={trip.stockStatus === 'instock' ? 'green' : 'red'}>
-          {trip.stockStatus === 'instock' ? 'Available' : 'Sold Out'}
-        </Badge>
-        <Badge size="lg" variant="outline">
-          {trip.duration} days
+        <Badge size="lg" color={trip.stock_status === 'instock' ? 'green' : 'red'}>
+          {trip.stock_status === 'instock' ? 'Available' : 'Sold Out'}
         </Badge>
       </Group>
 
       <div 
-        dangerouslySetInnerHTML={{ __html: trip.content }}
+        dangerouslySetInnerHTML={{ __html: trip.description }}
         className="wp-content"
       />
     </Container>
