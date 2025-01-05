@@ -1,2 +1,2 @@
-export { TripCard } from './TripCard';
+export { default as TripCard } from './TripCard';
 export { TripDetails } from './TripDetails';

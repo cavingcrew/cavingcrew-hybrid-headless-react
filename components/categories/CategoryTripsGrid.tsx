@@ -1,13 +1,8 @@
 'use client';
 
 import { SimpleGrid } from '@mantine/core';
-import dynamic from 'next/dynamic';
 import type { Trip } from '@/types/api';
-
-const TripCard = dynamic(() => import('@/components/trips/TripCard'), {
-  ssr: false,
-  loading: () => <p>Loading...</p>
-});
+import { TripCard } from '@/components/trips';
 
 interface CategoryTripsGridProps {
   trips: Trip[];

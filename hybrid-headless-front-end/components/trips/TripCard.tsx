@@ -9,7 +9,7 @@ interface TripCardProps {
 	trip: Trip;
 }
 
-export function TripCard({ trip }: TripCardProps) {
+export default function TripCard({ trip }: TripCardProps) {
 	return (
 		<Card shadow="sm" padding="lg" radius="md" withBorder>
 			{trip.images?.[0] && (
