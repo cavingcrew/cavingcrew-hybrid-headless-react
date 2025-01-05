@@ -9,8 +9,14 @@ export const tripKeys = {
   category: (categorySlug: string) => [...tripKeys.all, 'category', categorySlug] as const,
 };
 
+interface TripsResponse {
+  data: Trip[];
+  success: boolean;
+  message?: string;
+}
+
 export function useTrips() {
-  return useQuery({
+  return useQuery<TripsResponse>({
     queryKey: tripKeys.lists(),
     queryFn: () => apiService.getTrips(),
     staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
@@ -19,9 +25,22 @@ export function useTrips() {
 }
 
 export function useTrip(slug: string) {
+  const queryClient = useQueryClient();
+  
   return useQuery({
     queryKey: tripKeys.detail(slug),
-    queryFn: () => apiService.getTrip(slug),
+    queryFn: async () => {
+      // First try to find the trip in the existing trips data
+      const tripsData = queryClient.getQueryData<TripsResponse>(tripKeys.lists());
+      const existingTrip = tripsData?.data?.find(t => t.slug === slug);
+      
+      if (existingTrip) {
+        return { data: existingTrip, success: true };
+      }
+      
+      // If not found, fetch it individually
+      return apiService.getTrip(slug);
+    },
     enabled: !!slug,
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 60,
@@ -29,9 +48,25 @@ export function useTrip(slug: string) {
 }
 
 export function useTripsByCategory(categorySlug: string) {
+  const queryClient = useQueryClient();
+
   return useQuery({
     queryKey: tripKeys.category(categorySlug),
-    queryFn: () => apiService.getTripsByCategory(categorySlug),
+    queryFn: async () => {
+      // First try to find trips in this category from existing data
+      const tripsData = queryClient.getQueryData<TripsResponse>(tripKeys.lists());
+      if (tripsData?.data) {
+        const categoryTrips = tripsData.data.filter(trip => 
+          trip.categories.some(cat => cat.slug === categorySlug)
+        );
+        if (categoryTrips.length > 0) {
+          return { data: categoryTrips, success: true };
+        }
+      }
+      
+      // If not found, fetch category trips
+      return apiService.getTripsByCategory(categorySlug);
+    },
     enabled: !!categorySlug,
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 60,
