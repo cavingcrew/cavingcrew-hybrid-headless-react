@@ -32,7 +32,7 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
 			<Center h={400}>
 				<Text>Failed to load trips. Please try again.</Text>
 				<Button onClick={() => refetch()} type="button" variant="light">
-				  Retry
+					Retry
 				</Button>
 			</Center>
 		);
