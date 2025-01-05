@@ -30,12 +30,12 @@ export default function TripCard({ trip }: TripCardProps) {
 			</Group>
 
 			<Text size="sm" c="dimmed" lineClamp={2}>
-				{trip.short_description}
+				{trip.acf.event_description || trip.short_description}
 			</Text>
 
 			<Group mt="md" justify="space-between">
 				<Text size="xl" fw={700} c="blue">
-					£{trip.price}
+					£{trip.acf.event_cost || trip.price}
 				</Text>
 				<Button component={Link} href={`/trips/${trip.slug}`} variant="light">
 					View Details
