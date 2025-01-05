@@ -9,7 +9,16 @@ interface MantineProviderProps {
 }
 
 export function MantineProvider({ children }: MantineProviderProps) {
+  const [mounted, setMounted] = useState(false);
   const preferredColorScheme = useColorScheme();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <BaseMantineProvider

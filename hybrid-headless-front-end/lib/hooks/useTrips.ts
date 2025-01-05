@@ -21,8 +21,13 @@ export function useTrips() {
     queryFn: async () => {
       const response = await apiService.getTrips();
       if (response.success && response.data) {
+        // Transform the data structure
+        const trips = Array.isArray(response.data.products) ? 
+          response.data.products : 
+          [];
+        
         // Filter out the membership product and transform the data
-        const filteredData = response.data.products
+        const filteredData = trips
           .filter(trip => trip.id !== 1272)
           .map(trip => ({
             ...trip,

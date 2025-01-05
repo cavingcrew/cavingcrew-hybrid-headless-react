@@ -22,19 +22,19 @@ export default function HomePage() {
   }
 
   // Filter trips by category
-  const giggleTrips = data.data?.products
+  const giggleTrips = data.data
     ?.filter(trip => 
       trip.categories.some(cat => cat.slug === 'giggletrips') &&
       trip.id !== 1272
     ) || [];
 
-  const eveningTrips = data.data?.products
+  const eveningTrips = data.data
     ?.filter(trip => 
       trip.categories.some(cat => cat.slug === 'evening-trips') &&
       trip.id !== 1272
     ) || [];
 
-  const weekendTrips = data.data?.products
+  const weekendTrips = data.data
     ?.filter(trip => 
       trip.categories.some(cat => cat.slug === 'weekend-trips') &&
       trip.id !== 1272
