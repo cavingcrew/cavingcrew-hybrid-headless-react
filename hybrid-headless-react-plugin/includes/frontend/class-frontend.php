@@ -101,13 +101,16 @@ class Hybrid_Headless_Frontend {
 
     private function serve_nextjs_app() {
         $nextjs_url = $this->get_nextjs_url();
-        $request_uri = $_SERVER['REQUEST_URI'];
+        $request_uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        
+        // Decode the URL-encoded path
+        $decoded_path = urldecode($request_uri);
         
         // Preserve query parameters
         $query_string = !empty($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : '';
         
         // Build the full URL to proxy to
-        $proxy_url = rtrim($nextjs_url, '/') . $request_uri . $query_string;
+        $proxy_url = rtrim($nextjs_url, '/') . $decoded_path . $query_string;
         
         // Set up request arguments
         $args = array(

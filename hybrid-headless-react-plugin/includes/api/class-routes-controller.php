@@ -103,8 +103,11 @@ class Hybrid_Headless_Routes_Controller {
         $nextjs_url = get_option('hybrid_headless_nextjs_url', HYBRID_HEADLESS_DEFAULT_NEXTJS_URL);
         $request_uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         
+        // Decode the URL-encoded path
+        $decoded_path = urldecode($request_uri);
+        
         // Build the full proxy URL
-        $proxy_url = rtrim($nextjs_url, '/') . $request_uri;
+        $proxy_url = rtrim($nextjs_url, '/') . $decoded_path;
         
         // Set up request arguments
         $args = array(
