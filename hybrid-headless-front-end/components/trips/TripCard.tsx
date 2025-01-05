@@ -1,8 +1,9 @@
 'use client';
 
+import React from 'react';
 import { Card, Image, Text, Badge, Group, Button } from '@mantine/core';
 import Link from 'next/link';
-import type { Trip } from '@/types/api';
+import type { Trip } from '../../types/api';
 
 interface TripCardProps {
   trip: Trip;
