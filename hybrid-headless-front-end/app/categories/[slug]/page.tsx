@@ -6,9 +6,14 @@ import { useTrips } from '@/lib/hooks/useTrips';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { CategoryTripsGrid } from '@/components/categories/CategoryTripsGrid';
+import type { PageProps } from 'next';
 
-interface CategoryPageProps {
-  params: { slug: string };
+interface CategoryPageParams {
+  slug: string;
+}
+
+interface CategoryPageProps extends PageProps {
+  params: CategoryPageParams;
   searchParams?: { [key: string]: string | string[] | undefined };
 }
 
