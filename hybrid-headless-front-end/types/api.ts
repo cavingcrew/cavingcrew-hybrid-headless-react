@@ -35,6 +35,12 @@ export interface Trip {
 		event_description: string;
 		event_how_does_this_work: string;
 		event_location: string;
+		event_cave_name: string;
+		event_possible_location: string;
+		event_cost: string;
+		event_skills_required?: string;
+		event_gear_required?: string;
+		event_paying_for?: string;
 		overnight_plans: Array<{
 			overnight_plans_day: string;
 			overnight_plans_description: string;
