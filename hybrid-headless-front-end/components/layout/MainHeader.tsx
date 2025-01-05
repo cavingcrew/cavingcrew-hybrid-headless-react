@@ -76,8 +76,8 @@ export function MainHeader() {
 							component="a"
 							href={link.href}
 							onClick={() => {
-                window.location.href = link.href;
-              }}
+								window.location.href = link.href;
+							}}
 						>
 							{link.label}
 						</UnstyledButton>
@@ -148,8 +148,8 @@ export function MainHeader() {
 									component="a"
 									href={link.href}
 									onClick={() => {
-                    window.location.href = link.href;
-                  }}
+										window.location.href = link.href;
+									}}
 								>
 									{link.label}
 								</Menu.Item>
