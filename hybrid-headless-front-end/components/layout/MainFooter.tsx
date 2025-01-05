@@ -8,7 +8,7 @@ export function MainFooter() {
     <footer style={{ height: 60, borderTop: '1px solid #e9ecef' }}>
       <Container size="lg" h="100%">
         <Group h="100%" justify="space-between">
-          <Text size="sm">© 2024 Travel Adventures. All rights reserved.</Text>
+          <Text size="sm">© {new Date().getFullYear()} The Caving Crew. All rights reserved.</Text>
           <Group>
             <Text component={Link} href="/privacy-policy" size="sm">
               Privacy Policy

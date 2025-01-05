@@ -12,7 +12,7 @@ export function MainHeader() {
       <Container size="lg" h="100%">
         <Group h="100%" justify="space-between">
           <Link href="/" style={{ textDecoration: 'none' }}>
-            <Text size="xl" fw={700}>Travel Adventures</Text>
+            <Text size="xl" fw={700}>The Caving Crew</Text>
           </Link>
 
           <Group>
