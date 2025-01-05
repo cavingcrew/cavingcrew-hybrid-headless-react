@@ -208,31 +208,31 @@ export function MainHeader() {
 					</Text>
 					<Stack gap="xs" ml="md">
 						{aboutLinks.map((link) => {
-              if (link.external) {
-                return (
-                  <UnstyledButton
-                    key={link.href}
-                    component="a"
-                    href={link.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={closeDrawer}
-                  >
-                    {link.label}
-                  </UnstyledButton>
-                );
-              }
-              return (
-                <UnstyledButton
-                  key={link.href}
-                  component={Link}
-                  href={link.href}
-                  onClick={closeDrawer}
-                >
-                  {link.label}
-                </UnstyledButton>
-              );
-            })}
+							if (link.external) {
+								return (
+									<UnstyledButton
+										key={link.href}
+										component="a"
+										href={link.href}
+										target="_blank"
+										rel="noopener noreferrer"
+										onClick={closeDrawer}
+									>
+										{link.label}
+									</UnstyledButton>
+								);
+							}
+							return (
+								<UnstyledButton
+									key={link.href}
+									component={Link}
+									href={link.href}
+									onClick={closeDrawer}
+								>
+									{link.label}
+								</UnstyledButton>
+							);
+						})}
 					</Stack>
 				</Box>
 
@@ -242,32 +242,32 @@ export function MainHeader() {
 					</Text>
 					<Stack gap="xs" ml="md">
 						{accountLinks.map((link) => {
-              if (link.fullRefresh) {
-                return (
-                  <UnstyledButton
-                    key={link.href}
-                    component="a"
-                    href={link.href}
-                    onClick={() => {
-                      closeDrawer();
-                      window.location.href = link.href;
-                    }}
-                  >
-                    {link.label}
-                  </UnstyledButton>
-                );
-              }
-              return (
-                <UnstyledButton
-                  key={link.href}
-                  component={Link}
-                  href={link.href}
-                  onClick={closeDrawer}
-                >
-                  {link.label}
-                </UnstyledButton>
-              );
-            })}
+							if (link.fullRefresh) {
+								return (
+									<UnstyledButton
+										key={link.href}
+										component="a"
+										href={link.href}
+										onClick={() => {
+											closeDrawer();
+											window.location.href = link.href;
+										}}
+									>
+										{link.label}
+									</UnstyledButton>
+								);
+							}
+							return (
+								<UnstyledButton
+									key={link.href}
+									component={Link}
+									href={link.href}
+									onClick={closeDrawer}
+								>
+									{link.label}
+								</UnstyledButton>
+							);
+						})}
 					</Stack>
 				</Box>
 			</Stack>
