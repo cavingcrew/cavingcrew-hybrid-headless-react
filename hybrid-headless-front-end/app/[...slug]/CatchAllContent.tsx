@@ -6,7 +6,12 @@ import { Container, Title, SimpleGrid } from '@mantine/core';
 import { apiService } from '@/lib/api-service';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { ErrorState } from '@/components/ui/ErrorState';
-import { TripCard } from '@/components/trips/TripCard';
+import dynamic from 'next/dynamic';
+
+const TripCard = dynamic(() => import('@/components/trips/TripCard'), {
+  ssr: false,
+  loading: () => <p>Loading...</p>
+});
 import type { Trip } from '@/types/api';
 
 export function CatchAllContent() {

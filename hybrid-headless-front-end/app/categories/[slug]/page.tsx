@@ -1,6 +1,11 @@
 import { Container, Title, Text, SimpleGrid } from '@mantine/core';
 import { apiService } from '@/lib/api-service';
-import { TripCard } from '@/components/trips/TripCard';
+import dynamic from 'next/dynamic';
+
+const TripCard = dynamic(() => import('@/components/trips/TripCard'), {
+  ssr: false,
+  loading: () => <p>Loading...</p>
+});
 import { notFound } from 'next/navigation';
 
 interface PageProps {

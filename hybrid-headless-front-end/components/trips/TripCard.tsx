@@ -1,3 +1,5 @@
+'use client';
+
 import { Card, Image, Text, Badge, Group, Button } from '@mantine/core';
 import Link from 'next/link';
 import type { Trip } from '@/types/api';
