@@ -22,6 +22,7 @@ define( 'HYBRID_HEADLESS_VERSION', '1.0.0' );
 define( 'HYBRID_HEADLESS_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'HYBRID_HEADLESS_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'HYBRID_HEADLESS_DEFAULT_NEXTJS_URL', 'http://localhost:3000' );
+define( 'HYBRID_HEADLESS_STATIC_DIR', WP_CONTENT_DIR . '/uploads/hybrid-headless-static' );
 
 // Composer autoloader
 if ( file_exists( dirname( __FILE__ ) . '/vendor/autoload.php' ) ) {

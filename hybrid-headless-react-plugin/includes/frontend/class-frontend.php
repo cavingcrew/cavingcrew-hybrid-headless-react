@@ -9,8 +9,6 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-// Define static files directory
-define('HYBRID_HEADLESS_STATIC_DIR', WP_CONTENT_DIR . '/uploads/hybrid-headless-static');
 
 /**
  * Frontend Class
