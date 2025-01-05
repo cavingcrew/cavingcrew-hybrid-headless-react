@@ -24,8 +24,10 @@ export default function TripsPage() {
     <Container size="lg">
       <Title order={1} mb="xl">All Available Trips</Title>
       <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="lg">
-        {data.data.map((trip) => (
-          <TripCard key={trip.id} trip={trip} />
+        {data.data
+          .filter(trip => trip.id !== 1272) // Filter out membership
+          .map((trip) => (
+            <TripCard key={trip.id} trip={trip} />
         ))}
       </SimpleGrid>
     </Container>

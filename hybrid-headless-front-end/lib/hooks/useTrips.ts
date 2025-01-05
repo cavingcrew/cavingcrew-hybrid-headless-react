@@ -18,9 +18,17 @@ interface TripsResponse {
 export function useTrips() {
   return useQuery<ApiResponse<Trip[]>>({
     queryKey: tripKeys.lists(),
-    queryFn: () => apiService.getTrips(),
-    staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
-    gcTime: 1000 * 60 * 60, // Keep unused data in cache for 1 hour
+    queryFn: async () => {
+      const response = await apiService.getTrips();
+      if (response.success && response.data) {
+        // Filter out the membership product
+        const filteredData = response.data.filter(trip => trip.id !== 1272);
+        return { ...response, data: filteredData };
+      }
+      return response;
+    },
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 60,
   });
 }
 
@@ -57,15 +65,21 @@ export function useTripsByCategory(categorySlug: string) {
       const tripsData = queryClient.getQueryData<TripsResponse>(tripKeys.lists());
       if (tripsData?.data) {
         const categoryTrips = tripsData.data.filter(trip => 
-          trip.categories.some(cat => cat.slug === categorySlug)
+          trip.categories.some(cat => cat.slug === categorySlug) &&
+          trip.id !== 1272 // Filter out membership
         );
         if (categoryTrips.length > 0) {
           return { data: categoryTrips, success: true };
         }
       }
       
-      // If not found, fetch category trips
-      return apiService.getTripsByCategory(categorySlug);
+      // If not found, fetch category trips and filter
+      const response = await apiService.getTripsByCategory(categorySlug);
+      if (response.success && response.data) {
+        const filteredData = response.data.filter(trip => trip.id !== 1272);
+        return { ...response, data: filteredData };
+      }
+      return response;
     },
     enabled: !!categorySlug,
     staleTime: 1000 * 60 * 5,
