@@ -2,8 +2,11 @@
 
 import { Container, Group, Button, Text } from '@mantine/core';
 import Link from 'next/link';
+import { usePrefetchTrips } from '@/lib/hooks/useTrips';
 
 export function MainHeader() {
+  const { prefetchTrips } = usePrefetchTrips();
+
   return (
     <header style={{ height: 60, borderBottom: '1px solid #e9ecef' }}>
       <Container size="lg" h="100%">
@@ -13,7 +16,13 @@ export function MainHeader() {
           </Link>
 
           <Group>
-            <Button component={Link} href="/trips" variant="light">
+            <Button 
+              component={Link} 
+              href="/trips" 
+              variant="light"
+              onMouseEnter={() => prefetchTrips()}
+              onFocus={() => prefetchTrips()}
+            >
               All Trips
             </Button>
             <Button component={Link} href="/categories" variant="light">
