@@ -4,16 +4,23 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_WORDPRESS_API_URL ||
   (typeof window !== 'undefined' ? window.location.origin + '/wp-json' : 'https://www.cavingcrew.com/wp-json');
 
 export const apiService = {
-  async getTrips(page = 1, perPage = 12): Promise<ApiResponse<Trip[]>> {
+  async getTrips(page = 1, perPage = 12): Promise<ApiResponse<any>> {
     try {
-      const response = await fetch(`${API_BASE_URL}/hybrid-headless/v1/products?page=${page}&per_page=${perPage}`);
+      const response = await fetch(`${API_BASE_URL}/hybrid-headless/v1/products`);
       if (!response.ok) {
         throw new Error('Failed to fetch trips');
       }
       const data = await response.json();
-      return { data: data.products || [], success: true };
+      return { 
+        success: true,
+        data 
+      };
     } catch (error) {
-      return { data: [], success: false, message: error instanceof Error ? error.message : 'Failed to fetch trips' };
+      return { 
+        success: false, 
+        data: null,
+        message: error instanceof Error ? error.message : 'Failed to fetch trips' 
+      };
     }
   },
 

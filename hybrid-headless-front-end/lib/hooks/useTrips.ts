@@ -21,11 +21,25 @@ export function useTrips() {
     queryFn: async () => {
       const response = await apiService.getTrips();
       if (response.success && response.data) {
-        // Filter out the membership product
-        const filteredData = response.data.filter(trip => trip.id !== 1272);
-        return { ...response, data: filteredData };
+        // Filter out the membership product and transform the data
+        const filteredData = response.data.products
+          .filter(trip => trip.id !== 1272)
+          .map(trip => ({
+            ...trip,
+            // Ensure categories is always an array
+            categories: trip.categories || []
+          }));
+        
+        return { 
+          success: true,
+          data: filteredData
+        };
       }
-      return response;
+      return { 
+        success: false,
+        data: [],
+        message: response.message || 'Failed to fetch trips'
+      };
     },
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 60,
