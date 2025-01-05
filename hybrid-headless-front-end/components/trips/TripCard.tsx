@@ -35,7 +35,7 @@ export default function TripCard({ trip }: TripCardProps) {
 
 			<Group mt="md" justify="space-between">
 				<Text size="xl" fw={700} c="blue">
-					${trip.price}
+					£{trip.price}
 				</Text>
 				<Button component={Link} href={`/trips/${trip.slug}`} variant="light">
 					View Details
