@@ -3,7 +3,10 @@ export interface Trip {
   name: string;
   slug: string;
   price: string;
+  regular_price?: string;
+  sale_price?: string;
   stock_status: string;
+  stock_quantity?: number | null;
   description: string;
   short_description: string;
   images: {

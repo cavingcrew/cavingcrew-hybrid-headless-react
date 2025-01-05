@@ -33,16 +33,8 @@ export function CatchAllContent() {
             throw new Error('Trip not found');
           }
           
-          // Transform the data to match the expected structure
-          const tripData = {
-            ...response.data,
-            name: response.data.name,
-            images: response.data.images,
-            description: response.data.description,
-            short_description: response.data.short_description
-          };
-          
-          setData([tripData]);
+          // Use the data directly
+          setData([response.data]);
         }
         // Handle category routes
         else if (segments[0] === 'category' && segments[1]) {

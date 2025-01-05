@@ -24,9 +24,16 @@ export const apiService = {
         throw new Error(`Failed to fetch trip ${slug}`);
       }
       const data = await response.json();
-      return { data: data.product || null, success: true };
+      return { 
+        data: data || null, 
+        success: true 
+      };
     } catch (error) {
-      return { data: null, success: false, message: error instanceof Error ? error.message : 'Failed to fetch trip' };
+      return { 
+        data: null, 
+        success: false, 
+        message: error instanceof Error ? error.message : 'Failed to fetch trip' 
+      };
     }
   },
 
