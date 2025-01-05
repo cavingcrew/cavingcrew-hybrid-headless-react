@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { 
   Container, 
   Group, 
@@ -18,7 +19,7 @@ import { IconChevronDown } from '@tabler/icons-react';
 import { useState } from 'react';
 
 const shouldFullRefresh = (href: string) => {
-  return href.startsWith('/my-account') || href === '/about-us';
+  return href.indexOf('/my-account') === 0 || href === '/about-us';
 };
 
 export function MainHeader() {
