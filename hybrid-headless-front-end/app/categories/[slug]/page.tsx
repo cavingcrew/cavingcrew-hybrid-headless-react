@@ -9,6 +9,7 @@ import { CategoryTripsGrid } from '@/components/categories/CategoryTripsGrid';
 
 interface CategoryPageProps {
   params: { slug: string };
+  searchParams?: { [key: string]: string | string[] | undefined };
 }
 
 export default function CategoryPage({ params }: CategoryPageProps) {
