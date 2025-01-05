@@ -5,7 +5,7 @@ import { notFound } from 'next/navigation';
 
 export default async function CategoryPage({ params }: { params: { slug: string } }) {
   const { slug } = params;
-  
+
   // Debugging: Log the received params
   console.log('Received params:', params);
 
@@ -28,10 +28,15 @@ export default async function CategoryPage({ params }: { params: { slug: string 
     return notFound();
   }
 
+  // Ensure tripsResponse.data.products is an array
+  const tripsData = Array.isArray(tripsResponse.data?.products)
+    ? tripsResponse.data.products
+    : [];
+
   // Get trips filtered by category slug
-  const categoryTrips = tripsResponse.data?.filter(trip => 
-    trip.categories.some(cat => cat.slug === slug)
-  ) || [];
+  const categoryTrips = tripsData.filter(trip => 
+    trip.categories?.some(cat => cat.slug === slug)
+  );
 
   // Debugging: Log filtered trips
   console.log('Filtered trips:', {
@@ -58,7 +63,7 @@ export default async function CategoryPage({ params }: { params: { slug: string 
       <Text c="dimmed" mb="xl">
         Showing {categoryTrips.length} trips in this category
       </Text>
-      
+
       {categoryTrips.length > 0 ? (
         <CategoryTripsGrid trips={categoryTrips} />
       ) : (
