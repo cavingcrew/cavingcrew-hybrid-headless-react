@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient, type UseQueryResult } from '@tanstack/react-query';
 import { apiService } from '../api-service';
 import type { Trip, ApiResponse } from '../../types/api';
 
@@ -15,7 +15,7 @@ interface TripsResponse {
   message?: string;
 }
 
-export function useTrips() {
+export function useTrips(): UseQueryResult<ApiResponse<Trip[]>> {
   return useQuery<ApiResponse<Trip[]>>({
     queryKey: tripKeys.lists(),
     queryFn: async () => {
@@ -28,8 +28,8 @@ export function useTrips() {
         
         // Filter out the membership product and transform the data
         const filteredData = trips
-          .filter(trip => trip.id !== 1272)
-          .map(trip => ({
+          .filter((trip: Trip) => trip.id !== 1272)
+          .map((trip: Trip) => ({
             ...trip,
             // Ensure categories is always an array
             categories: trip.categories || []
