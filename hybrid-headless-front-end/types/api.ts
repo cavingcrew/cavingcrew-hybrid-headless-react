@@ -1,59 +1,70 @@
 export interface Trip {
-	id: number;
-	name: string;
-	slug: string;
-	price: string;
-	regular_price?: string;
-	sale_price?: string;
-	stock_status: string;
-	stock_quantity?: number | null;
-	description: string;
-	short_description: string;
-	images: {
-		id: string;
-		src: string;
-		alt: string;
-	}[];
-	categories: {
-		id: number;
-		name: string;
-		slug: string;
-	}[];
-	date?: string;
-	time?: string;
-	location?: string;
-	member_price?: number;
-	non_member_price?: number;
-	minimum_skills?: string[];
-	minimum_gear?: string[];
-	faqs?: {
-		question: string;
-		answer: string;
-	}[];
-	acf: {
-		event_start_date_time: string;
-		event_description: string;
-		event_how_does_this_work: string;
-		event_location: string;
-		event_cave_name: string;
-		event_possible_location: string;
-		event_cost: string;
-		event_skills_required?: string;
-		event_gear_required?: string;
-		event_paying_for?: string;
-		overnight_plans: Array<{
-			overnight_plans_day: string;
-			overnight_plans_description: string;
-		}>;
-		overnight_kitlist: Array<{
-			overnight_kit_list_type: string;
-			overnight_kit_list: string;
-		}>;
-		trip_faq: Array<{
-			trip_faq_title: string;
-			trip_faq_answer: string;
-		}>;
-	};
+  id: number;
+  name: string;
+  slug: string;
+  price: string;
+  regular_price?: string;
+  sale_price?: string;
+  stock_status: string;
+  stock_quantity: number | null;
+  description: string;
+  short_description: string;
+  images: {
+    id: string;
+    src: string;
+    alt: string;
+  }[];
+  categories: {
+    id: number;
+    name: string;
+    slug: string;
+  }[];
+  acf: {
+    event_start_date?: string;
+    event_finish_date?: string;
+    event_signup_opens?: string;
+    event_start_date_time: string;
+    event_finish_date_time?: string;
+    event_description?: string;
+    event_how_does_this_work: string;
+    event_location?: string;
+    event_cave_name?: string;
+    event_possible_location?: string;
+    event_cost?: string;
+    cost?: string;
+    event_total_places_available?: string;
+    event_possible_objectives?: string;
+    what_is_the_minimum_skill_required_for_this_trip?: string;
+    event_climbing_trip_or_other_things?: string;
+    event_accomodation_description?: string;
+    hut_photo?: string;
+    hut_facilities_description?: string;
+    event_dogs_come?: string;
+    event_paying_for?: string;
+    event_type: string;
+    event_gear_required: string;
+    event_must_caved_with_us_before: string;
+    event_skills_required: string;
+    event_trip_leader: string;
+    event_non_members_welcome?: string;
+    event_why_are_only_members_allowed?: string;
+    event_volunteering_required?: string;
+    event_u18s_come?: string;
+    membership_faq?: boolean;
+    overnight_plans?: Array<{
+      overnight_plans_day: string;
+      overnight_plans_description: string;
+    }>;
+    overnight_kitlist?: Array<{
+      overnight_kit_list_type: string;
+      overnight_kit_list: string;
+    }>;
+    trip_faq?: Array<{
+      trip_faq_title: string;
+      trip_faq_answer: string;
+    }> | false;
+    Testimonials_overnight_trips?: boolean;
+  };
 }
 
 export interface Category {
