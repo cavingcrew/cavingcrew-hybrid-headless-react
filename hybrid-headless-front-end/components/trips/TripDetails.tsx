@@ -1,195 +1,242 @@
-'use client';
+"use client";
 
-import React from 'react';
 import {
-  Container,
-  Title,
-  Text,
-  Stack,
-  Group,
-  Badge,
-  Paper,
-  List,
-  Accordion,
-  Grid,
-  Button,
-  Image,
-} from '@mantine/core';
-import { IconCalendar, IconClock, IconMapPin, IconCoin } from '@tabler/icons-react';
-import type { Trip } from '../../types/api';
+	Accordion,
+	Badge,
+	Button,
+	Container,
+	Grid,
+	Group,
+	Image,
+	List,
+	Paper,
+	Stack,
+	Text,
+	Title,
+} from "@mantine/core";
+import {
+	IconCalendar,
+	IconClock,
+	IconCoin,
+	IconMapPin,
+} from "@tabler/icons-react";
+import React from "react";
+import type { Trip } from "../../types/api";
 
 interface TripDetailsProps {
-  trip: Trip;
+	trip: Trip;
 }
 
 export function TripDetails({ trip }: TripDetailsProps) {
-  const acf = trip.acf;
-  
-  const startDate = acf?.event_start_date_time ? 
-    new Date(acf.event_start_date_time) : null;
+	const acf = trip.acf;
 
-  return (
-    <Stack gap="xl">
-      {/* Header Section */}
-      <Stack gap="md">
-        <Title order={1}>{trip.name}</Title>
-        {acf?.event_description && (
-          <div 
-            dangerouslySetInnerHTML={{ 
-              __html: acf.event_description || '' 
-            }} 
-          />
-        )}
-      </Stack>
+	const startDate = acf?.event_start_date_time
+		? new Date(acf.event_start_date_time)
+		: null;
 
-      {/* Key Details Section */}
-      <Grid>
-        <Grid.Col span={{ base: 12, md: 8 }}>
-          <Paper withBorder p="md" radius="md">
-            <Stack gap="md">
-              {startDate && (
-                <Group gap="xs">
-                  <IconCalendar size={20} />
-                  <Text>When: {startDate.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}</Text>
-                </Group>
-              )}
-              {startDate && (
-                <Group gap="xs">
-                  <IconClock size={20} />
-                  <Text>Time: from {startDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</Text>
-                </Group>
-              )}
-              {acf?.event_location && (
-                <Group gap="xs">
-                  <IconMapPin size={20} />
-                  <Text>Location: {acf.event_cave_name || ''} near {acf.event_possible_location || ''}</Text>
-                </Group>
-              )}
-              <Group gap="xs">
-                <IconCoin size={20} />
-                <Text>Member Price: £{acf?.event_cost || trip.price}</Text>
-              </Group>
-              <Group gap="xs">
-                <IconCoin size={20} />
-                <Text>Non-Member Price: £{trip.price}</Text>
-              </Group>
-            </Stack>
-          </Paper>
+	return (
+		<Stack gap="xl">
+			{/* Header Section */}
+			<Stack gap="md">
+				<Title order={1}>{trip.name}</Title>
+				{acf?.event_description && (
+					<div
+						dangerouslySetInnerHTML={{
+							__html: acf.event_description || "",
+						}}
+					/>
+				)}
+			</Stack>
 
-          {/* Requirements Section */}
-          {(acf?.event_skills_required || acf?.event_gear_required) && (
-            <Paper withBorder p="md" radius="md" mt="md">
-              <Stack gap="md">
-                <Text fw={500}>Requirements</Text>
-                {acf?.event_skills_required && (
-                  <div>
-                    <Text size="sm" fw={500}>Minimum Skills</Text>
-                    <Text>{acf.event_skills_required}</Text>
-                  </div>
-                )}
-                {acf?.event_gear_required && (
-                  <div>
-                    <Text size="sm" fw={500}>Minimum Gear</Text>
-                    <Text>{acf.event_gear_required}</Text>
-                  </div>
-                )}
-              </Stack>
-            </Paper>
-          )}
-        </Grid.Col>
+			{/* Key Details Section */}
+			<Grid>
+				<Grid.Col span={{ base: 12, md: 8 }}>
+					<Paper withBorder p="md" radius="md">
+						<Stack gap="md">
+							{startDate && (
+								<Group gap="xs">
+									<IconCalendar size={20} />
+									<Text>
+										When:{" "}
+										{startDate.toLocaleDateString("en-GB", {
+											weekday: "long",
+											day: "numeric",
+											month: "long",
+										})}
+									</Text>
+								</Group>
+							)}
+							{startDate && (
+								<Group gap="xs">
+									<IconClock size={20} />
+									<Text>
+										Time: from{" "}
+										{startDate.toLocaleTimeString("en-GB", {
+											hour: "2-digit",
+											minute: "2-digit",
+										})}
+									</Text>
+								</Group>
+							)}
+							{acf?.event_location && (
+								<Group gap="xs">
+									<IconMapPin size={20} />
+									<Text>
+										Location: {acf.event_cave_name || ""} near{" "}
+										{acf.event_possible_location || ""}
+									</Text>
+								</Group>
+							)}
+							<Group gap="xs">
+								<IconCoin size={20} />
+								<Text>Member Price: £{acf?.event_cost || trip.price}</Text>
+							</Group>
+							<Group gap="xs">
+								<IconCoin size={20} />
+								<Text>Non-Member Price: £{trip.price}</Text>
+							</Group>
+						</Stack>
+					</Paper>
 
-        <Grid.Col span={{ base: 12, md: 4 }}>
-          {trip.images?.[0] && (
-            <Image
-              src={trip.images[0].src}
-              alt={trip.images[0].alt}
-              radius="md"
-            />
-          )}
-        </Grid.Col>
-      </Grid>
+					{/* Requirements Section */}
+					{(acf?.event_skills_required || acf?.event_gear_required) && (
+						<Paper withBorder p="md" radius="md" mt="md">
+							<Stack gap="md">
+								<Text fw={500}>Requirements</Text>
+								{acf?.event_skills_required && (
+									<div>
+										<Text size="sm" fw={500}>
+											Minimum Skills
+										</Text>
+										<Text>{acf.event_skills_required}</Text>
+									</div>
+								)}
+								{acf?.event_gear_required && (
+									<div>
+										<Text size="sm" fw={500}>
+											Minimum Gear
+										</Text>
+										<Text>{acf.event_gear_required}</Text>
+									</div>
+								)}
+							</Stack>
+						</Paper>
+					)}
+				</Grid.Col>
 
-      {/* What does signing up pay for section */}
-      {acf?.event_paying_for && (
-        <Paper withBorder p="md" radius="md">
-          <Title order={2} mb="md">What does signing up pay for?</Title>
-          <div 
-            dangerouslySetInnerHTML={{ 
-              __html: trip.acf.event_paying_for || '' 
-            }} 
-          />
-        </Paper>
-      )}
+				<Grid.Col span={{ base: 12, md: 4 }}>
+					{trip.images?.[0] && (
+						<Image
+							src={trip.images[0].src}
+							alt={trip.images[0].alt}
+							radius="md"
+						/>
+					)}
+				</Grid.Col>
+			</Grid>
 
-      {/* FAQ Section */}
-      {acf.trip_faq && acf.trip_faq.length > 0 && (
-        <Paper withBorder p="md" radius="md">
-          <Title order={2} mb="md">Q&A</Title>
-          <Accordion>
-            {acf.trip_faq && Array.isArray(acf.trip_faq) && acf.trip_faq.map((faq, index) => (
-              <Accordion.Item key={index} value={`faq-${index}`}>
-                <Accordion.Control>{faq.trip_faq_title}</Accordion.Control>
-                <Accordion.Panel>
-                  {faq.trip_faq_answer && (
-                    <div 
-                      dangerouslySetInnerHTML={{ 
-                        __html: faq.trip_faq_answer || '' 
-                      }} 
-                    />
-                  )}
-                </Accordion.Panel>
-              </Accordion.Item>
-            ))}
-          </Accordion>
-        </Paper>
-      )}
+			{/* What does signing up pay for section */}
+			{acf?.event_paying_for && (
+				<Paper withBorder p="md" radius="md">
+					<Title order={2} mb="md">
+						What does signing up pay for?
+					</Title>
+					<div
+						dangerouslySetInnerHTML={{
+							__html: trip.acf.event_paying_for || "",
+						}}
+					/>
+				</Paper>
+			)}
 
-      {/* Kit List Section */}
-      {acf.overnight_kitlist && acf.overnight_kitlist.length > 0 && (
-        <Paper withBorder p="md" radius="md">
-          <Title order={2} mb="md">Kit List</Title>
-          <Accordion>
-            {acf.overnight_kitlist && Array.isArray(acf.overnight_kitlist) && acf.overnight_kitlist.map((kit, index) => (
-              <Accordion.Item key={index} value={`kit-${index}`}>
-                <Accordion.Control>{kit.overnight_kit_list_type}</Accordion.Control>
-                <Accordion.Panel>
-                  {kit.overnight_kit_list && (
-                    <div 
-                      dangerouslySetInnerHTML={{ 
-                        __html: kit.overnight_kit_list || '' 
-                      }} 
-                    />
-                  )}
-                </Accordion.Panel>
-              </Accordion.Item>
-            ))}
-          </Accordion>
-        </Paper>
-      )}
+			{/* FAQ Section */}
+			{acf.trip_faq && acf.trip_faq.length > 0 && (
+				<Paper withBorder p="md" radius="md">
+					<Title order={2} mb="md">
+						Q&A
+					</Title>
+					<Accordion>
+						{acf.trip_faq &&
+							Array.isArray(acf.trip_faq) &&
+							acf.trip_faq.map((faq, index) => (
+								<Accordion.Item key={index} value={`faq-${index}`}>
+									<Accordion.Control>{faq.trip_faq_title}</Accordion.Control>
+									<Accordion.Panel>
+										{faq.trip_faq_answer && (
+											<div
+												dangerouslySetInnerHTML={{
+													__html: faq.trip_faq_answer || "",
+												}}
+											/>
+										)}
+									</Accordion.Panel>
+								</Accordion.Item>
+							))}
+					</Accordion>
+				</Paper>
+			)}
 
-      {/* Plans Section */}
-      {acf.overnight_plans && acf.overnight_plans.length > 0 && (
-        <Paper withBorder p="md" radius="md">
-          <Title order={2} mb="md">Plans</Title>
-          <Text mb="md">Times are all subject to change, and are mainly for illustration and to start conversation.</Text>
-          <Accordion>
-            {acf.overnight_plans && Array.isArray(acf.overnight_plans) && acf.overnight_plans.map((plan, index) => (
-              <Accordion.Item key={index} value={`plan-${index}`}>
-                <Accordion.Control>{plan.overnight_plans_day}</Accordion.Control>
-                <Accordion.Panel>
-                  {plan.overnight_plans_description && (
-                    <div 
-                      dangerouslySetInnerHTML={{ 
-                        __html: plan.overnight_plans_description || '' 
-                      }} 
-                    />
-                  )}
-                </Accordion.Panel>
-              </Accordion.Item>
-            ))}
-          </Accordion>
-        </Paper>
-      )}
-    </Stack>
-  );
+			{/* Kit List Section */}
+			{acf.overnight_kitlist && acf.overnight_kitlist.length > 0 && (
+				<Paper withBorder p="md" radius="md">
+					<Title order={2} mb="md">
+						Kit List
+					</Title>
+					<Accordion>
+						{acf.overnight_kitlist &&
+							Array.isArray(acf.overnight_kitlist) &&
+							acf.overnight_kitlist.map((kit, index) => (
+								<Accordion.Item key={index} value={`kit-${index}`}>
+									<Accordion.Control>
+										{kit.overnight_kit_list_type}
+									</Accordion.Control>
+									<Accordion.Panel>
+										{kit.overnight_kit_list && (
+											<div
+												dangerouslySetInnerHTML={{
+													__html: kit.overnight_kit_list || "",
+												}}
+											/>
+										)}
+									</Accordion.Panel>
+								</Accordion.Item>
+							))}
+					</Accordion>
+				</Paper>
+			)}
+
+			{/* Plans Section */}
+			{acf.overnight_plans && acf.overnight_plans.length > 0 && (
+				<Paper withBorder p="md" radius="md">
+					<Title order={2} mb="md">
+						Plans
+					</Title>
+					<Text mb="md">
+						Times are all subject to change, and are mainly for illustration and
+						to start conversation.
+					</Text>
+					<Accordion>
+						{acf.overnight_plans &&
+							Array.isArray(acf.overnight_plans) &&
+							acf.overnight_plans.map((plan, index) => (
+								<Accordion.Item key={index} value={`plan-${index}`}>
+									<Accordion.Control>
+										{plan.overnight_plans_day}
+									</Accordion.Control>
+									<Accordion.Panel>
+										{plan.overnight_plans_description && (
+											<div
+												dangerouslySetInnerHTML={{
+													__html: plan.overnight_plans_description || "",
+												}}
+											/>
+										)}
+									</Accordion.Panel>
+								</Accordion.Item>
+							))}
+					</Accordion>
+				</Paper>
+			)}
+		</Stack>
+	);
 }
