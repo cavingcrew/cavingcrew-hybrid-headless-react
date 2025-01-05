@@ -111,15 +111,22 @@ class Hybrid_Headless_Products_Controller {
             'post_type'      => 'product',
             'posts_per_page' => $request['per_page'],
             'paged'          => $request['page'],
+            'tax_query'      => array(
+                array(
+                    'taxonomy' => 'product_visibility',
+                    'field'    => 'name',
+                    'terms'    => array('exclude-from-catalog', 'exclude-from-search'),
+                    'operator' => 'NOT IN',
+                ),
+            ),
+            'post_status'    => 'publish',
         );
 
         if ( ! empty( $request['category'] ) ) {
-            $args['tax_query'] = array(
-                array(
-                    'taxonomy' => 'product_cat',
-                    'field'    => 'slug',
-                    'terms'    => $request['category'],
-                ),
+            $args['tax_query'][] = array(
+                'taxonomy' => 'product_cat',
+                'field'    => 'slug',
+                'terms'    => $request['category'],
             );
         }
 
@@ -128,7 +135,9 @@ class Hybrid_Headless_Products_Controller {
 
         foreach ( $query->posts as $post ) {
             $product = wc_get_product( $post );
-            $products[] = $this->prepare_product_data( $product );
+            if ($product && $product->is_visible()) {
+                $products[] = $this->prepare_product_data( $product );
+            }
         }
 
         return rest_ensure_response( array(
