@@ -1,3 +1,4 @@
+import React from 'react';
 import { Center, Loader, Text, Stack } from '@mantine/core';
 
 interface LoadingStateProps {
