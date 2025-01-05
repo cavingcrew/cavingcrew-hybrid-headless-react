@@ -1,6 +1,6 @@
 "use client";
 
-import { Center, Container, Loader, Text, Title } from "@mantine/core";
+import { Button, Center, Container, Loader, Text, Title } from "@mantine/core";
 import React from "react";
 import { CategoryTripsGrid } from "../../../components/categories/CategoryTripsGrid";
 import { useTrips } from "../../../lib/hooks/useTrips";
@@ -31,7 +31,9 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
 		return (
 			<Center h={400}>
 				<Text>Failed to load trips. Please try again.</Text>
-				<button onClick={() => refetch()}>Retry</button>
+				<Button onClick={() => refetch()} type="button" variant="light">
+				  Retry
+				</Button>
 			</Center>
 		);
 	}
