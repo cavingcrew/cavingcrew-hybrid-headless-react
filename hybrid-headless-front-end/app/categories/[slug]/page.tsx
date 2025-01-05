@@ -1,29 +1,39 @@
+'use client';
+
 import { Container, Title, Text } from '@mantine/core';
-import { apiService } from '@/lib/api-service';
-import { notFound } from 'next/navigation';
+import { useTripsByCategory } from '@/lib/hooks/useTrips';
+import { LoadingState } from '@/components/ui/LoadingState';
+import { ErrorState } from '@/components/ui/ErrorState';
 import { CategoryTripsGrid } from '@/components/categories/CategoryTripsGrid';
 
-interface PageProps {
-  params: Promise<{ slug: string }>;
+interface CategoryPageProps {
+  params: {
+    slug: string;
+  };
 }
 
-export default async function CategoryPage({ params }: PageProps) {
-  const { slug } = await params;
-  const { data: trips, success } = await apiService.getTripsByCategory(slug);
-  
-  // Handle null data or unsuccessful response
-  if (!success || !trips || trips.length === 0) {
-    notFound();
+export default function CategoryPage({ params }: CategoryPageProps) {
+  const { data, isLoading, error, refetch } = useTripsByCategory(params.slug);
+
+  if (isLoading) {
+    return <LoadingState />;
+  }
+
+  if (error || !data?.success || !data?.data) {
+    return <ErrorState 
+      message={error?.message || 'Failed to load category'} 
+      onRetry={() => refetch()}
+    />;
   }
 
   return (
     <Container size="lg" py="xl">
-      <Title order={1} mb="sm">{slug}</Title>
+      <Title order={1} mb="sm">{params.slug}</Title>
       <Text c="dimmed" mb="xl">
-        Showing {trips.length} trips in this category
+        Showing {data.data.length} trips in this category
       </Text>
       
-      <CategoryTripsGrid trips={trips} />
+      <CategoryTripsGrid trips={data.data} />
     </Container>
   );
 }

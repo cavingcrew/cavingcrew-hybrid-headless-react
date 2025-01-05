@@ -1,6 +1,7 @@
 import '@mantine/core/styles.css';
 import { ColorSchemeScript } from '@mantine/core';
 import { MantineProvider } from '@/components/providers/MantineProvider';
+import { QueryProvider } from '@/components/providers/QueryProvider';
 import { MainHeader } from '@/components/layout/MainHeader';
 import { MainFooter } from '@/components/layout/MainFooter';
 
@@ -11,7 +12,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ColorSchemeScript defaultColorScheme="light" />
       </head>
       <body>
-        <MantineProvider>
+        <QueryProvider>
+          <MantineProvider>
           <div style={{ 
             minHeight: '100vh',
             display: 'flex',
@@ -23,7 +25,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </main>
             <MainFooter />
           </div>
-        </MantineProvider>
+          </MantineProvider>
+        </QueryProvider>
       </body>
     </html>
   );

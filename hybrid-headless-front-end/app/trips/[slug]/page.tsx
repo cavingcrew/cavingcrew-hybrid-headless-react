@@ -1,23 +1,34 @@
+'use client';
+
 import { Container } from '@mantine/core';
-import { apiService } from '@/lib/api-service';
-import { notFound } from 'next/navigation';
+import { useTrip } from '@/lib/hooks/useTrips';
+import { LoadingState } from '@/components/ui/LoadingState';
+import { ErrorState } from '@/components/ui/ErrorState';
 import { TripDetails } from '@/components/trips/TripDetails';
 
-interface PageProps {
-  params: Promise<{ slug: string }>;
+interface TripPageProps {
+  params: {
+    slug: string;
+  };
 }
 
-export default async function TripPage({ params }: PageProps) {
-  const { slug } = await params;
-  const { data: trip } = await apiService.getTrip(slug);
-  
-  if (!trip) {
-    notFound();
+export default function TripPage({ params }: TripPageProps) {
+  const { data, isLoading, error, refetch } = useTrip(params.slug);
+
+  if (isLoading) {
+    return <LoadingState />;
+  }
+
+  if (error || !data?.success || !data?.data) {
+    return <ErrorState 
+      message={error?.message || 'Failed to load trip'} 
+      onRetry={() => refetch()}
+    />;
   }
 
   return (
     <Container size="lg" py="xl">
-      <TripDetails trip={trip} />
+      <TripDetails trip={data.data} />
     </Container>
   );
 }
