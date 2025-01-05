@@ -40,11 +40,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
 			<Stack gap="md">
 				<Title order={1}>{trip.name}</Title>
 				{acf?.event_description && (
-					<div
-						dangerouslySetInnerHTML={{
-							__html: acf.event_description || "",
-						}}
-					/>
+					<Text>{acf.event_description}</Text>
 				)}
 			</Stack>
 
@@ -141,11 +137,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
 					<Title order={2} mb="md">
 						What does signing up pay for?
 					</Title>
-					<div
-						dangerouslySetInnerHTML={{
-							__html: trip.acf.event_paying_for || "",
-						}}
-					/>
+					<Text>{trip.acf.event_paying_for}</Text>
 				</Paper>
 			)}
 
@@ -158,16 +150,12 @@ export function TripDetails({ trip }: TripDetailsProps) {
 					<Accordion>
 						{acf.trip_faq &&
 							Array.isArray(acf.trip_faq) &&
-							acf.trip_faq.map((faq, index) => (
-								<Accordion.Item key={index} value={`faq-${index}`}>
+							acf.trip_faq.map((faq) => (
+								<Accordion.Item key={faq.trip_faq_title} value={faq.trip_faq_title}>
 									<Accordion.Control>{faq.trip_faq_title}</Accordion.Control>
 									<Accordion.Panel>
 										{faq.trip_faq_answer && (
-											<div
-												dangerouslySetInnerHTML={{
-													__html: faq.trip_faq_answer || "",
-												}}
-											/>
+											<Text>{faq.trip_faq_answer}</Text>
 										)}
 									</Accordion.Panel>
 								</Accordion.Item>
@@ -185,18 +173,14 @@ export function TripDetails({ trip }: TripDetailsProps) {
 					<Accordion>
 						{acf.overnight_kitlist &&
 							Array.isArray(acf.overnight_kitlist) &&
-							acf.overnight_kitlist.map((kit, index) => (
-								<Accordion.Item key={index} value={`kit-${index}`}>
+							acf.overnight_kitlist.map((kit) => (
+								<Accordion.Item key={kit.overnight_kit_list_type} value={kit.overnight_kit_list_type}>
 									<Accordion.Control>
 										{kit.overnight_kit_list_type}
 									</Accordion.Control>
 									<Accordion.Panel>
 										{kit.overnight_kit_list && (
-											<div
-												dangerouslySetInnerHTML={{
-													__html: kit.overnight_kit_list || "",
-												}}
-											/>
+											<Text>{kit.overnight_kit_list}</Text>
 										)}
 									</Accordion.Panel>
 								</Accordion.Item>
@@ -218,18 +202,14 @@ export function TripDetails({ trip }: TripDetailsProps) {
 					<Accordion>
 						{acf.overnight_plans &&
 							Array.isArray(acf.overnight_plans) &&
-							acf.overnight_plans.map((plan, index) => (
-								<Accordion.Item key={index} value={`plan-${index}`}>
+							acf.overnight_plans.map((plan) => (
+								<Accordion.Item key={plan.overnight_plans_day} value={plan.overnight_plans_day}>
 									<Accordion.Control>
 										{plan.overnight_plans_day}
 									</Accordion.Control>
 									<Accordion.Panel>
 										{plan.overnight_plans_description && (
-											<div
-												dangerouslySetInnerHTML={{
-													__html: plan.overnight_plans_description || "",
-												}}
-											/>
+											<Text>{plan.overnight_plans_description}</Text>
 										)}
 									</Accordion.Panel>
 								</Accordion.Item>
