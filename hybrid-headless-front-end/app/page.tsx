@@ -13,7 +13,7 @@ export default function HomePage() {
     return <LoadingState />;
   }
 
-  if (error || !data?.success || !data?.data) {
+  if (error || !data?.products) {
     return <ErrorState 
       message={error?.message || 'Failed to load trips'} 
       onRetry={() => refetch()}
@@ -24,7 +24,7 @@ export default function HomePage() {
     <Container size="lg">
       <Title order={1} mb="xl">Featured Trips</Title>
       <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="lg">
-        {data.data.map((trip) => (
+        {data.products.map((trip) => (
           <TripCard key={trip.id} trip={trip} />
         ))}
       </SimpleGrid>
