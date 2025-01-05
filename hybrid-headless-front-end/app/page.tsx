@@ -37,10 +37,10 @@ export default function HomePage() {
 
   return (
     <Container size="lg">
-      <Stack spacing="xl">
+      <Stack gap="xl">
         {/* Hero Section */}
         <Paper p="xl" radius="md" withBorder>
-          <Stack spacing="md">
+          <Stack gap="md">
             <Title order={1}>We're the Caving Crew!</Title>
             <Text size="lg">
               A bunch of supportive, friendly people who like to encourage each other to cave and eat cake.
@@ -49,7 +49,7 @@ export default function HomePage() {
         </Paper>
 
         {/* Extra-Welcoming Trips Section */}
-        <Stack spacing="md">
+        <Stack gap="md">
           <Title order={2}>Extra-Welcoming Trips</Title>
           <Text>
             We run regular Extra-Welcoming "Giggletrips" to help introduce you to the Crew and to Caving. 
@@ -64,7 +64,7 @@ export default function HomePage() {
         </Stack>
 
         {/* Evening Trips Section */}
-        <Stack spacing="md">
+        <Stack gap="md">
           <Title order={2}>Evening Trips</Title>
           <Text>
             We run regular evening Horizontal Caving trips - usually, on Tuesday evenings.
@@ -78,7 +78,7 @@ export default function HomePage() {
         </Stack>
 
         {/* Weekend Trips Section */}
-        <Stack spacing="md">
+        <Stack gap="md">
           <Title order={2}>Weekend Trips</Title>
           <Text>
             Every month, we run weekend trips to Caving huts and regions around the country. 
@@ -94,7 +94,7 @@ export default function HomePage() {
         {/* Training & Membership Section */}
         <Group grow>
           <Paper p="xl" radius="md" withBorder>
-            <Stack spacing="md">
+            <Stack gap="md">
               <Title order={3}>Training Trips</Title>
               <Text>
                 Want to learn SRT? Horizontal Cave Navigation? How to find your way through a cave? Rigging?
@@ -107,7 +107,7 @@ export default function HomePage() {
           </Paper>
 
           <Paper p="xl" radius="md" withBorder>
-            <Stack spacing="md">
+            <Stack gap="md">
               <Title order={3}>Membership</Title>
               <Text>
                 Getting membership to the Crew makes it easier and cheaper to access all the trips 
@@ -122,7 +122,7 @@ export default function HomePage() {
 
         {/* Social Events Section */}
         <Paper p="xl" radius="md" withBorder>
-          <Stack spacing="md">
+          <Stack gap="md">
             <Title order={3}>Social Events</Title>
             <Text>
               We run social events with{' '}
