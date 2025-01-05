@@ -142,7 +142,7 @@ export function MainHeader() {
     >
       <Stack>
         {mainLinks.map((link) => (
-          {shouldFullRefresh(link.href) ? (
+          shouldFullRefresh(link.href) ? (
             <UnstyledButton
               key={link.href}
               component="a"
@@ -163,7 +163,7 @@ export function MainHeader() {
             >
               {link.label}
             </UnstyledButton>
-          )}
+          )
         ))}
 
         <Box>
