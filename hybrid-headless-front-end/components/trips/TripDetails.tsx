@@ -23,15 +23,17 @@ interface TripDetailsProps {
 }
 
 export function TripDetails({ trip }: TripDetailsProps) {
-  const startDate = trip.acf.event_start_date_time ? 
-    new Date(trip.acf.event_start_date_time) : null;
+  const acf = trip.acf || {};
+  
+  const startDate = acf.event_start_date_time ? 
+    new Date(acf.event_start_date_time) : null;
 
   return (
     <Stack gap="xl">
       {/* Header Section */}
       <Stack gap="md">
         <Title order={1}>{trip.name}</Title>
-        {trip.acf.event_description && (
+        {acf.event_description && (
           <div 
             dangerouslySetInnerHTML={{ 
               __html: trip.acf.event_description 
@@ -57,15 +59,15 @@ export function TripDetails({ trip }: TripDetailsProps) {
                   <Text>Time: from {startDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</Text>
                 </Group>
               )}
-              {trip.acf.event_location && (
+              {acf.event_location && (
                 <Group gap="xs">
                   <IconMapPin size={20} />
-                  <Text>Location: {trip.acf.event_cave_name} near {trip.acf.event_possible_location}</Text>
+                  <Text>Location: {acf.event_cave_name} near {acf.event_possible_location}</Text>
                 </Group>
               )}
               <Group gap="xs">
                 <IconCoin size={20} />
-                <Text>Member Price: £{trip.acf.event_cost}</Text>
+                <Text>Member Price: £{acf.event_cost}</Text>
               </Group>
               <Group gap="xs">
                 <IconCoin size={20} />
@@ -75,20 +77,20 @@ export function TripDetails({ trip }: TripDetailsProps) {
           </Paper>
 
           {/* Requirements Section */}
-          {(trip.acf.event_skills_required || trip.acf.event_gear_required) && (
+          {(acf.event_skills_required || acf.event_gear_required) && (
             <Paper withBorder p="md" radius="md" mt="md">
               <Stack gap="md">
                 <Text fw={500}>Requirements</Text>
-                {trip.acf.event_skills_required && (
+                {acf.event_skills_required && (
                   <div>
                     <Text size="sm" fw={500}>Minimum Skills</Text>
-                    <Text>{trip.acf.event_skills_required}</Text>
+                    <Text>{acf.event_skills_required}</Text>
                   </div>
                 )}
-                {trip.acf.event_gear_required && (
+                {acf.event_gear_required && (
                   <div>
                     <Text size="sm" fw={500}>Minimum Gear</Text>
-                    <Text>{trip.acf.event_gear_required}</Text>
+                    <Text>{acf.event_gear_required}</Text>
                   </div>
                 )}
               </Stack>
@@ -108,7 +110,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
       </Grid>
 
       {/* What does signing up pay for section */}
-      {trip.acf.event_paying_for && (
+      {acf.event_paying_for && (
         <Paper withBorder p="md" radius="md">
           <Title order={2} mb="md">What does signing up pay for?</Title>
           <div 
@@ -120,7 +122,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
       )}
 
       {/* FAQ Section */}
-      {trip.acf.trip_faq && trip.acf.trip_faq.length > 0 && (
+      {acf.trip_faq && acf.trip_faq.length > 0 && (
         <Paper withBorder p="md" radius="md">
           <Title order={2} mb="md">Q&A</Title>
           <Accordion>
@@ -143,7 +145,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
       )}
 
       {/* Kit List Section */}
-      {trip.acf.overnight_kitlist && trip.acf.overnight_kitlist.length > 0 && (
+      {acf.overnight_kitlist && acf.overnight_kitlist.length > 0 && (
         <Paper withBorder p="md" radius="md">
           <Title order={2} mb="md">Kit List</Title>
           <Accordion>
@@ -166,7 +168,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
       )}
 
       {/* Plans Section */}
-      {trip.acf.overnight_plans && trip.acf.overnight_plans.length > 0 && (
+      {acf.overnight_plans && acf.overnight_plans.length > 0 && (
         <Paper withBorder p="md" radius="md">
           <Title order={2} mb="md">Plans</Title>
           <Text mb="md">Times are all subject to change, and are mainly for illustration and to start conversation.</Text>
