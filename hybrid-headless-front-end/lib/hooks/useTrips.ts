@@ -86,3 +86,17 @@ export function usePrefetchTrips() {
     }
   };
 }
+
+export function usePrefetchTrip() {
+  const queryClient = useQueryClient();
+  
+  const prefetchTrip = (slug: string) => {
+    queryClient.prefetchQuery({
+      queryKey: tripKeys.detail(slug),
+      queryFn: () => apiService.getTrip(slug),
+      staleTime: 1000 * 60 * 5,
+    });
+  };
+
+  return { prefetchTrip };
+}

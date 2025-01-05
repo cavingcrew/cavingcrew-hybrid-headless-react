@@ -1,23 +1,31 @@
-import { Container, Title, SimpleGrid } from '@mantine/core';
-import { apiService } from '@/lib/api-service';
-import TripCard from '@/components/trips/TripCard';
-import { notFound } from 'next/navigation';
+'use client';
 
-export default async function TripsPage() {
-  const { data: trips, success } = await apiService.getTrips();
+import { Container } from '@mantine/core';
+import { useTrip } from '@/lib/hooks/useTrips';
+import { LoadingState } from '@/components/ui/LoadingState';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { TripDetails } from '@/components/trips/TripDetails';
+import { useParams } from 'next/navigation';
 
-  if (!success || !trips || trips.length === 0) {
-    notFound();
+export default function TripPage() {
+  const params = useParams();
+  const slug = typeof params.slug === 'string' ? params.slug : '';
+  const { data, isLoading, error, refetch } = useTrip(slug);
+
+  if (isLoading) {
+    return <LoadingState />;
+  }
+
+  if (error || !data?.success || !data?.data) {
+    return <ErrorState 
+      message={error?.message || 'Failed to load trip'} 
+      onRetry={() => refetch()}
+    />;
   }
 
   return (
     <Container size="lg" py="xl">
-      <Title order={1} mb="xl">Available Trips</Title>
-      <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="lg">
-        {trips.map((trip) => (
-          <TripCard key={trip.id} trip={trip} />
-        ))}
-      </SimpleGrid>
+      <TripDetails trip={data.data} />
     </Container>
   );
 }
