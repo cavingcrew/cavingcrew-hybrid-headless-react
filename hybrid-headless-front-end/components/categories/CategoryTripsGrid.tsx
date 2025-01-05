@@ -1,8 +1,9 @@
 'use client';
 
+import React from 'react';
 import { SimpleGrid } from '@mantine/core';
-import { TripCard } from '@/components/trips/TripCard';
-import type { Trip } from '@/types/api';
+import { TripCard } from '../trips/TripCard';
+import type { Trip } from '../../types/api';
 
 interface CategoryTripsGridProps {
   trips: Trip[];
