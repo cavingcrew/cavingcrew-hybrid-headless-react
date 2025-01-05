@@ -16,7 +16,7 @@ interface TripsResponse {
 }
 
 export function useTrips() {
-  return useQuery<TripsResponse>({
+  return useQuery<ApiResponse<Trip[]>>({
     queryKey: tripKeys.lists(),
     queryFn: () => apiService.getTrips(),
     staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
