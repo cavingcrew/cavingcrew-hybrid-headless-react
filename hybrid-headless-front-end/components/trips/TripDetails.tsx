@@ -39,9 +39,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
 			{/* Header Section */}
 			<Stack gap="md">
 				<Title order={1}>{trip.name}</Title>
-				{acf?.event_description && (
-					<Text>{acf.event_description}</Text>
-				)}
+				{acf?.event_description && <Text>{acf.event_description}</Text>}
 			</Stack>
 
 			{/* Key Details Section */}
@@ -151,12 +149,13 @@ export function TripDetails({ trip }: TripDetailsProps) {
 						{acf.trip_faq &&
 							Array.isArray(acf.trip_faq) &&
 							acf.trip_faq.map((faq) => (
-								<Accordion.Item key={faq.trip_faq_title} value={faq.trip_faq_title}>
+								<Accordion.Item
+									key={faq.trip_faq_title}
+									value={faq.trip_faq_title}
+								>
 									<Accordion.Control>{faq.trip_faq_title}</Accordion.Control>
 									<Accordion.Panel>
-										{faq.trip_faq_answer && (
-											<Text>{faq.trip_faq_answer}</Text>
-										)}
+										{faq.trip_faq_answer && <Text>{faq.trip_faq_answer}</Text>}
 									</Accordion.Panel>
 								</Accordion.Item>
 							))}
@@ -174,7 +173,10 @@ export function TripDetails({ trip }: TripDetailsProps) {
 						{acf.overnight_kitlist &&
 							Array.isArray(acf.overnight_kitlist) &&
 							acf.overnight_kitlist.map((kit) => (
-								<Accordion.Item key={kit.overnight_kit_list_type} value={kit.overnight_kit_list_type}>
+								<Accordion.Item
+									key={kit.overnight_kit_list_type}
+									value={kit.overnight_kit_list_type}
+								>
 									<Accordion.Control>
 										{kit.overnight_kit_list_type}
 									</Accordion.Control>
@@ -203,7 +205,10 @@ export function TripDetails({ trip }: TripDetailsProps) {
 						{acf.overnight_plans &&
 							Array.isArray(acf.overnight_plans) &&
 							acf.overnight_plans.map((plan) => (
-								<Accordion.Item key={plan.overnight_plans_day} value={plan.overnight_plans_day}>
+								<Accordion.Item
+									key={plan.overnight_plans_day}
+									value={plan.overnight_plans_day}
+								>
 									<Accordion.Control>
 										{plan.overnight_plans_day}
 									</Accordion.Control>
