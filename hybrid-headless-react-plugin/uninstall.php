@@ -12,6 +12,7 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 // Delete plugin options
 delete_option( 'hybrid_headless_frontend_homepage' );
 delete_option( 'hybrid_headless_build_path' );
+delete_option( 'hybrid_headless_enable_proxy' );
 
 // Clean up build directories
 $build_paths = array( 'dist', 'dist-dev' );

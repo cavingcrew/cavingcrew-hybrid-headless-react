@@ -91,6 +91,33 @@ composer require hybrid-headless/react-plugin
    - Build Path
    - Homepage Handling
    - Route Patterns
+   - Frontend Proxy
+
+### Route Proxying Configuration
+
+The plugin can be configured to either proxy frontend routes to Next.js or only provide API functionality.
+
+#### Via WordPress Admin
+1. Navigate to Settings → Hybrid Headless
+2. Find the "Enable Frontend Proxy" setting
+3. Check/uncheck the box to enable/disable route proxying
+4. Save changes
+
+#### Via WP-CLI
+Enable route proxying:
+```bash
+wp hybrid-headless proxy enable
+```
+
+Disable route proxying:
+```bash
+wp hybrid-headless proxy disable
+```
+
+When proxying is disabled, the plugin will continue to provide API functionality but won't intercept and proxy frontend routes to Next.js. This is useful when you want to:
+- Use the plugin only for its API capabilities
+- Debug routing issues
+- Temporarily disable frontend proxying without deactivating the entire plugin
 
 ### Advanced Configuration
 Create a `hybrid-headless-config.php` file in your wp-content directory:

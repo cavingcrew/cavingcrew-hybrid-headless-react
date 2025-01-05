@@ -187,5 +187,10 @@ function hybrid_headless_init() {
     return Hybrid_Headless_Plugin::instance();
 }
 
+// Load CLI commands
+if (defined('WP_CLI') && WP_CLI) {
+    require_once HYBRID_HEADLESS_PLUGIN_DIR . 'includes/class-cli.php';
+}
+
 // Start the plugin
 hybrid_headless_init();

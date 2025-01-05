@@ -61,6 +61,11 @@ class Hybrid_Headless_Frontend {
      * @return string
      */
     public function override_template($template) {
+        // Check if proxying is enabled
+        if (!get_option('hybrid_headless_enable_proxy', true)) {
+            return $template;
+        }
+
         // If it's a WordPress route, serve the WordPress template
         if ($this->is_wordpress_route()) {
             return $template;

@@ -40,6 +40,11 @@ class Hybrid_Headless_Admin {
     public function register_settings() {
         register_setting( 'hybrid_headless', 'hybrid_headless_frontend_homepage', 'boolean' );
         register_setting( 'hybrid_headless', 'hybrid_headless_build_path' );
+        register_setting('hybrid_headless', 'hybrid_headless_enable_proxy', array(
+            'type' => 'boolean',
+            'default' => true,
+            'sanitize_callback' => 'rest_sanitize_boolean',
+        ));
 
         add_settings_section(
             'hybrid_headless_main',
@@ -63,6 +68,30 @@ class Hybrid_Headless_Admin {
             'hybrid-headless',
             'hybrid_headless_main'
         );
+
+        add_settings_field(
+            'enable_proxy',
+            __('Enable Frontend Proxy', 'hybrid-headless'),
+            array($this, 'render_field_enable_proxy'),
+            'hybrid-headless',
+            'hybrid_headless_main'
+        );
+    }
+
+    /**
+     * Render enable proxy field
+     */
+    public function render_field_enable_proxy() {
+        $value = get_option('hybrid_headless_enable_proxy', true);
+        ?>
+        <label>
+            <input type="checkbox" name="hybrid_headless_enable_proxy" value="1" <?php checked($value); ?>>
+            <?php esc_html_e('Enable frontend route proxying to Next.js', 'hybrid-headless'); ?>
+        </label>
+        <p class="description">
+            <?php esc_html_e('When disabled, the plugin will only provide API functionality without proxying frontend routes.', 'hybrid-headless'); ?>
+        </p>
+        <?php
     }
 
     /**
