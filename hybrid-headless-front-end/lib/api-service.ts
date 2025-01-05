@@ -1,6 +1,7 @@
 import type { Trip, Category, ApiResponse } from '@/types/api';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_WORDPRESS_API_URL || window.location.origin + '/wp-json';
+const API_BASE_URL = process.env.NEXT_PUBLIC_WORDPRESS_API_URL || 
+  (typeof window !== 'undefined' ? window.location.origin + '/wp-json' : 'https://www.cavingcrew.com/wp-json');
 
 export const apiService = {
   async getTrips(page = 1, perPage = 12): Promise<ApiResponse<Trip[]>> {
