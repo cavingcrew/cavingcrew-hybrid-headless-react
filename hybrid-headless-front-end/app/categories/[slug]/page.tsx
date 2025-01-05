@@ -1,41 +1,30 @@
-'use client';
-
-import React from 'react';
-import { Container, Title, Text, Loader, Center } from '@mantine/core';
-import { useTrips } from '@/lib/hooks/useTrips';
+import { Container, Title, Text, Center } from '@mantine/core';
+import { apiService } from '@/lib/api-service';
 import { CategoryTripsGrid } from '@/components/categories/CategoryTripsGrid';
+import { notFound } from 'next/navigation';
 
-export default function CategoryPage({ params }: { params: { slug: string } }) {
+export default async function CategoryPage({ params }: { params: { slug: string } }) {
   const { slug } = params;
 
-  const { data: allTrips, isLoading, error, refetch } = useTrips();
+  // Fetch trips and categories
+  const [tripsResponse, categoriesResponse] = await Promise.all([
+    apiService.getTrips(),
+    apiService.getCategories()
+  ]);
+
+  // Handle errors
+  if (!tripsResponse.success || !categoriesResponse.success) {
+    return notFound();
+  }
 
   // Get trips filtered by category slug
-  const categoryTrips = allTrips?.data?.filter(trip => 
+  const categoryTrips = tripsResponse.data?.filter(trip => 
     trip.categories.some(cat => cat.slug === slug)
   ) || [];
 
-  // Get the category name from the first matching trip
-  const categoryName = categoryTrips[0]?.categories.find(
-    cat => cat.slug === slug
-  )?.name || slug.replace(/-/g, ' ');
-
-  if (isLoading) {
-    return (
-      <Center h={400}>
-        <Loader size="lg" />
-      </Center>
-    );
-  }
-
-  if (error || !allTrips?.success) {
-    return (
-      <Center h={400}>
-        <Text>Failed to load trips. Please try again.</Text>
-        <button onClick={() => refetch()}>Retry</button>
-      </Center>
-    );
-  }
+  // Get the category name from categories response
+  const category = categoriesResponse.data?.find(cat => cat.slug === slug);
+  const categoryName = category?.name || slug.replace(/-/g, ' ');
 
   return (
     <Container size="lg" py="xl">
