@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { Container, Title, Text, Loader, Center } from '@mantine/core';
-import { useTrips } from '@/lib/hooks/useTrips';
-import { CategoryTripsGrid } from '@/components/categories/CategoryTripsGrid';
+import { useTrips } from '../../lib/hooks/useTrips';
+import { CategoryTripsGrid } from '../../components/categories/CategoryTripsGrid';
 
 export default function CategoryPage({ params }: { params: { slug: string } }) {
   const { data: allTrips, isLoading, error, refetch } = useTrips();
@@ -37,7 +37,7 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
 
   return (
     <Container size="lg" py="xl">
-      <Title order={1} mb="sm" transform="capitalize">
+      <Title order={1} mb="sm" style={{ textTransform: 'capitalize' }}>
         {categoryName}
       </Title>
       <Text c="dimmed" mb="xl">
