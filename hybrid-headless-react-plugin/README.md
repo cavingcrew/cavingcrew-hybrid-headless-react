@@ -7,11 +7,12 @@ The Hybrid Headless React Plugin is a sophisticated WordPress plugin that enable
 ## Features
 
 ### 1. Smart Route Handling
+- Configurable proxy functionality that can be enabled/disabled via admin UI or WP-CLI
 - Automatically detects and routes requests between headless and traditional WordPress paths
 - Configurable route patterns for maximum flexibility
 - Maintains WordPress functionality for critical paths (`/wp-admin`, `/my-account`, etc.)
 - Seamless integration with WooCommerce checkout and cart processes
-- Proxies specific routes to Next.js:
+- Proxies specific routes to Next.js when enabled:
   - `/` (root)
   - `/categories/`
   - `/category/`
@@ -26,6 +27,8 @@ The Hybrid Headless React Plugin is a sophisticated WordPress plugin that enable
 - Real-time stock level management
 - Secure authentication handling
 - CORS support with configurable origins
+- Cached responses with configurable TTLs
+- Automatic cache invalidation on updates
 
 ### 3. Performance Optimization
 - Static file serving for Next.js assets
