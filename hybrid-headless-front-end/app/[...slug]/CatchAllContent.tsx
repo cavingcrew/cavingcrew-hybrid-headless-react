@@ -32,7 +32,20 @@ export function CatchAllContent() {
           if (!response.success || !response.data) {
             throw new Error('Trip not found');
           }
-          setData([response.data]);
+          
+          // Transform the data to match the expected structure
+          const tripData = {
+            ...response.data,
+            title: response.data.name,
+            featuredImage: response.data.images?.[0] ? {
+              url: response.data.images[0].src,
+              alt: response.data.images[0].alt
+            } : null,
+            content: response.data.description,
+            excerpt: response.data.short_description
+          };
+          
+          setData([tripData]);
         }
         // Handle category routes
         else if (segments[0] === 'category' && segments[1]) {

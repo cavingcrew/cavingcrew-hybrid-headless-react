@@ -1,17 +1,39 @@
 export interface Trip {
   id: number;
-  title: string;
+  name: string;
   slug: string;
-  excerpt: string;
-  content: string;
-  featuredImage?: {
-    url: string;
+  price: string;
+  stock_status: string;
+  description: string;
+  short_description: string;
+  images: {
+    id: string;
+    src: string;
     alt: string;
+  }[];
+  categories: {
+    id: number;
+    name: string;
+    slug: string;
+  }[];
+  acf: {
+    event_start_date_time: string;
+    event_description: string;
+    event_how_does_this_work: string;
+    event_location: string;
+    overnight_plans: Array<{
+      overnight_plans_day: string;
+      overnight_plans_description: string;
+    }>;
+    overnight_kitlist: Array<{
+      overnight_kit_list_type: string;
+      overnight_kit_list: string;
+    }>;
+    trip_faq: Array<{
+      trip_faq_title: string;
+      trip_faq_answer: string;
+    }>;
   };
-  price: number;
-  duration: number;
-  stockStatus: 'instock' | 'outofstock';
-  stockQuantity?: number;
 }
 
 export interface Category {
