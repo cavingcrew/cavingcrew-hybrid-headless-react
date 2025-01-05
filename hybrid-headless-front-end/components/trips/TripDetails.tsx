@@ -36,7 +36,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
         {acf.event_description && (
           <div 
             dangerouslySetInnerHTML={{ 
-              __html: trip.acf.event_description 
+              __html: trip.acf.event_description || '' 
             }} 
           />
         )}
@@ -115,7 +115,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
           <Title order={2} mb="md">What does signing up pay for?</Title>
           <div 
             dangerouslySetInnerHTML={{ 
-              __html: trip.acf.event_paying_for 
+              __html: trip.acf.event_paying_for || '' 
             }} 
           />
         </Paper>
@@ -133,7 +133,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
                   {faq.trip_faq_answer && (
                     <div 
                       dangerouslySetInnerHTML={{ 
-                        __html: faq.trip_faq_answer 
+                        __html: faq.trip_faq_answer || '' 
                       }} 
                     />
                   )}
@@ -156,7 +156,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
                   {kit.overnight_kit_list && (
                     <div 
                       dangerouslySetInnerHTML={{ 
-                        __html: kit.overnight_kit_list 
+                        __html: kit.overnight_kit_list || '' 
                       }} 
                     />
                   )}
@@ -180,7 +180,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
                   {plan.overnight_plans_description && (
                     <div 
                       dangerouslySetInnerHTML={{ 
-                        __html: plan.overnight_plans_description 
+                        __html: plan.overnight_plans_description || '' 
                       }} 
                     />
                   )}
