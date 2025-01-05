@@ -80,8 +80,31 @@ class Hybrid_Headless_Frontend {
         return get_option( 'hybrid_headless_nextjs_url', HYBRID_HEADLESS_DEFAULT_NEXTJS_URL );
     }
 
-    private function serve_static_file($file_path) {
-        if (!file_exists($file_path)) {
+    private function is_valid_static_file_path($path) {
+        // Prevent directory traversal
+        if (strpos($path, '..') !== false) {
+            return false;
+        }
+
+        // Only allow specific characters in the path
+        if (!preg_match('/^\/_next\/static\/[a-zA-Z0-9\-_\/\.%]+$/', $path)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private function serve_static_file($request_uri) {
+        // Decode the URL-encoded path
+        $decoded_path = urldecode($request_uri);
+        
+        // Remove any query parameters
+        $clean_path = parse_url($decoded_path, PHP_URL_PATH);
+        
+        // Build the full file path
+        $static_file_path = HYBRID_HEADLESS_STATIC_DIR . $clean_path;
+        
+        if (!file_exists($static_file_path)) {
             status_header(404);
             return;
         }
@@ -100,12 +123,12 @@ class Hybrid_Headless_Frontend {
             'eot' => 'application/vnd.ms-fontobject',
         ];
 
-        $extension = strtolower(pathinfo($file_path, PATHINFO_EXTENSION));
+        $extension = strtolower(pathinfo($static_file_path, PATHINFO_EXTENSION));
         $mime_type = $mime_types[$extension] ?? 'application/octet-stream';
 
         header('Content-Type: ' . $mime_type);
-        header('Content-Length: ' . filesize($file_path));
-        readfile($file_path);
+        header('Content-Length: ' . filesize($static_file_path));
+        readfile($static_file_path);
         exit;
     }
 
@@ -134,12 +157,12 @@ class Hybrid_Headless_Frontend {
         
         // Check if this is a static file request
         if (strpos($request_uri, '/_next/static/') === 0) {
-            $static_file_path = HYBRID_HEADLESS_STATIC_DIR . $request_uri;
-            
-            if (file_exists($static_file_path)) {
-                $this->serve_static_file($static_file_path);
+            if (!$this->is_valid_static_file_path($request_uri)) {
+                status_header(403);
                 return;
             }
+            $this->serve_static_file($request_uri);
+            return;
         }
         
         // If not a static file, proxy to Next.js
