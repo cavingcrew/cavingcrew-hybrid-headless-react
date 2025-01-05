@@ -1,6 +1,6 @@
 import { Container, Title, SimpleGrid } from '@mantine/core';
 import { apiService } from '@/lib/api-service';
-import { TripCard } from '@/components/trips/TripCard';
+import TripCard from '@/components/trips/TripCard';
 import { notFound } from 'next/navigation';
 
 export default async function TripsPage() {

@@ -3,7 +3,7 @@
 import { SimpleGrid } from "@mantine/core";
 import React from "react";
 import type { Trip } from "../../types/api";
-import { TripCard } from "../trips/TripCard";
+import TripCard from "../trips/TripCard";
 
 interface CategoryTripsGridProps {
 	trips: Trip[];
