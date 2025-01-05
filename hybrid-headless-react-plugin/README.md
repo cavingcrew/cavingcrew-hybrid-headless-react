@@ -168,6 +168,242 @@ const response = await fetch('${wordpressUrl}/wp-json/hybrid-headless/v1/product
 });
 ```
 
+## API Reference
+
+All endpoints are prefixed with `/wp-json/hybrid-headless/v1/`
+
+### Products API
+
+#### List Products
+`GET /products`
+
+Query Parameters:
+- `page` (integer, default: 1): Page number
+- `per_page` (integer, default: 10): Items per page
+- `category` (string, optional): Filter by category slug
+
+Response:
+```json
+{
+  "products": [
+    {
+      "id": 123,
+      "name": "Product Name",
+      "slug": "product-name",
+      "price": "99.99",
+      "regular_price": "129.99",
+      "sale_price": "99.99",
+      "stock_status": "instock",
+      "stock_quantity": 10,
+      "description": "Full description...",
+      "short_description": "Short description...",
+      "images": [
+        {
+          "id": 456,
+          "src": "https://example.com/image.jpg",
+          "alt": "Image description"
+        }
+      ],
+      "categories": [
+        {
+          "id": 789,
+          "name": "Category Name",
+          "slug": "category-name"
+        }
+      ],
+      "acf": {} // Custom fields if ACF is installed
+    }
+  ],
+  "total": 100,
+  "pages": 10
+}
+```
+
+#### Get Single Product
+`GET /products/{id}`
+`GET /products/{slug}`
+
+Response:
+```json
+{
+  "id": 123,
+  "name": "Product Name",
+  "slug": "product-name",
+  "price": "99.99",
+  "regular_price": "129.99",
+  "sale_price": "99.99",
+  "stock_status": "instock",
+  "stock_quantity": 10,
+  "description": "Full description...",
+  "short_description": "Short description...",
+  "images": [
+    {
+      "id": 456,
+      "src": "https://example.com/image.jpg",
+      "alt": "Image description"
+    }
+  ],
+  "categories": [
+    {
+      "id": 789,
+      "name": "Category Name",
+      "slug": "category-name"
+    }
+  ],
+  "acf": {} // Custom fields if ACF is installed
+}
+```
+
+### Categories API
+
+#### List Categories
+`GET /categories`
+
+Response:
+```json
+[
+  {
+    "id": 789,
+    "name": "Category Name",
+    "slug": "category-name",
+    "description": "Category description",
+    "count": 15,
+    "image": "https://example.com/category-image.jpg",
+    "acf": {} // Custom fields if ACF is installed
+  }
+]
+```
+
+#### Get Single Category
+`GET /categories/{slug}`
+
+Response:
+```json
+{
+  "id": 789,
+  "name": "Category Name",
+  "slug": "category-name",
+  "description": "Category description",
+  "count": 15,
+  "image": "https://example.com/category-image.jpg",
+  "acf": {} // Custom fields if ACF is installed
+}
+```
+
+### Routes API
+
+#### Get Available Routes
+`GET /routes`
+
+Response:
+```json
+{
+  "frontend": {
+    "home": "/",
+    "trips": "/trips",
+    "trip": "/trips/{slug}",
+    "categories": "/categories",
+    "category": "/categories/{slug}"
+  },
+  "wordpress": {
+    "account": "/my-account",
+    "checkout": "/checkout",
+    "cart": "/cart",
+    "login": "/wp-login.php",
+    "admin": "/wp-admin"
+  }
+}
+```
+
+### Status API
+
+#### Get API Status
+`GET /status`
+
+Response:
+```json
+{
+  "status": "ok",
+  "version": "1.2.1"
+}
+```
+
+### Error Responses
+
+All endpoints may return the following error responses:
+
+#### 404 Not Found
+```json
+{
+  "code": "not_found",
+  "message": "Resource not found",
+  "data": {
+    "status": 404
+  }
+}
+```
+
+#### 400 Bad Request
+```json
+{
+  "code": "bad_request",
+  "message": "Invalid parameters",
+  "data": {
+    "status": 400,
+    "params": ["invalid_parameter_name"]
+  }
+}
+```
+
+### Headers
+
+#### Cache Control
+The API uses various cache control headers depending on the endpoint:
+
+- Product listings: `Cache-Control: public, max-age=300` (5 minutes)
+- Single product: `Cache-Control: no-store, max-age=0` (for real-time stock)
+- Categories: `Cache-Control: public, max-age=3600` (1 hour)
+- Routes: `Cache-Control: public, max-age=86400` (24 hours)
+
+#### CORS
+The API supports CORS with the following headers:
+```
+Access-Control-Allow-Origin: [configured frontend URL]
+Access-Control-Allow-Methods: GET, POST, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: Authorization, Content-Type
+```
+
+### Authentication
+
+The API supports standard WordPress authentication methods:
+
+1. Cookie Authentication (for same-origin requests)
+2. Application Passwords (for cross-origin requests)
+3. JWT Authentication (if configured)
+
+Example authenticated request:
+```bash
+curl -H "Authorization: Basic base64_encoded_credentials" \
+     https://your-site.com/wp-json/hybrid-headless/v1/products
+```
+
+### Rate Limiting
+
+The API implements WordPress's default rate limiting. Consider using caching for high-traffic scenarios.
+
+### Extending the API
+
+The API can be extended using WordPress filters:
+
+```php
+// Add custom data to product response
+add_filter('hybrid_headless_product_data', function($data, $product) {
+    $data['custom_field'] = get_post_meta($product->get_id(), 'custom_field', true);
+    return $data;
+}, 10, 2);
+```
+
 ## Development
 
 ### Local Development Setup
