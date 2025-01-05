@@ -9,6 +9,9 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
+// Define static files directory
+define('HYBRID_HEADLESS_STATIC_DIR', WP_CONTENT_DIR . '/uploads/hybrid-headless-static');
+
 /**
  * Frontend Class
  */
@@ -79,6 +82,35 @@ class Hybrid_Headless_Frontend {
         return get_option( 'hybrid_headless_nextjs_url', HYBRID_HEADLESS_DEFAULT_NEXTJS_URL );
     }
 
+    private function serve_static_file($file_path) {
+        if (!file_exists($file_path)) {
+            status_header(404);
+            return;
+        }
+
+        $mime_types = [
+            'js' => 'application/javascript',
+            'css' => 'text/css',
+            'png' => 'image/png',
+            'jpg' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'gif' => 'image/gif',
+            'svg' => 'image/svg+xml',
+            'woff' => 'font/woff',
+            'woff2' => 'font/woff2',
+            'ttf' => 'font/ttf',
+            'eot' => 'application/vnd.ms-fontobject',
+        ];
+
+        $extension = strtolower(pathinfo($file_path, PATHINFO_EXTENSION));
+        $mime_type = $mime_types[$extension] ?? 'application/octet-stream';
+
+        header('Content-Type: ' . $mime_type);
+        header('Content-Length: ' . filesize($file_path));
+        readfile($file_path);
+        exit;
+    }
+
     private function proxy_request($url, $args = []) {
         $default_args = array(
             'timeout' => 30,
@@ -100,16 +132,22 @@ class Hybrid_Headless_Frontend {
     }
 
     private function serve_nextjs_app() {
-        $nextjs_url = $this->get_nextjs_url();
         $request_uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         
-        // Decode the URL-encoded path
+        // Check if this is a static file request
+        if (strpos($request_uri, '/_next/static/') === 0) {
+            $static_file_path = HYBRID_HEADLESS_STATIC_DIR . $request_uri;
+            
+            if (file_exists($static_file_path)) {
+                $this->serve_static_file($static_file_path);
+                return;
+            }
+        }
+        
+        // If not a static file, proxy to Next.js
+        $nextjs_url = $this->get_nextjs_url();
         $decoded_path = urldecode($request_uri);
-        
-        // Preserve query parameters
         $query_string = !empty($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : '';
-        
-        // Build the full URL to proxy to
         $proxy_url = rtrim($nextjs_url, '/') . $decoded_path . $query_string;
         
         // Set up request arguments
