@@ -2,7 +2,7 @@
 
 import { Container, Title, SimpleGrid } from '@mantine/core';
 import { useEffect, useState } from 'react';
-import { TripCard } from '@/components/trips/TripCard';
+import TripCard from '@/components/trips/TripCard';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import type { Trip } from '@/types/api';
@@ -20,15 +20,13 @@ export default function HomePage() {
         const data = await response.json();
         setTrips(data.products.map((trip: any) => ({
           id: trip.id,
-          title: trip.name,
+          name: trip.name,
           slug: trip.slug,
-          excerpt: trip.short_description,
+          short_description: trip.short_description,
           price: trip.price,
-          stockStatus: trip.stock_status,
-          featuredImage: trip.images[0] ? {
-            url: trip.images[0].src,
-            alt: trip.images[0].alt
-          } : null
+          stock_status: trip.stock_status,
+          images: trip.images,
+          categories: trip.categories
         })));
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load trips');
