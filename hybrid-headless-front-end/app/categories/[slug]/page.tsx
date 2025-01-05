@@ -1,19 +1,18 @@
 'use client';
 
+import React from 'react';
 import { Container, Title, Text } from '@mantine/core';
-import { useTripsByCategory } from '@/lib/hooks/useTrips';
-import { LoadingState } from '@/components/ui/LoadingState';
-import { ErrorState } from '@/components/ui/ErrorState';
-import { CategoryTripsGrid } from '@/components/categories/CategoryTripsGrid';
-import { use } from 'react';
+import { useTripsByCategory } from '../../lib/hooks/useTrips';
+import { LoadingState } from '../../components/ui/LoadingState';
+import { ErrorState } from '../../components/ui/ErrorState';
+import { CategoryTripsGrid } from '../../components/categories/CategoryTripsGrid';
 
 interface CategoryPageProps {
-  params: Promise<{ slug: string }>;
+  params: { slug: string };
 }
 
 export default function CategoryPage({ params }: CategoryPageProps) {
-  const resolvedParams = use(params);
-  const { data, isLoading, error, refetch } = useTripsByCategory(resolvedParams.slug);
+  const { data, isLoading, error, refetch } = useTripsByCategory(params.slug);
 
   if (isLoading) {
     return <LoadingState />;
