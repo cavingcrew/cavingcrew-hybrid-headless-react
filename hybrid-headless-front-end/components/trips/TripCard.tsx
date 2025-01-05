@@ -30,7 +30,7 @@ export default function TripCard({ trip }: TripCardProps) {
 			</Group>
 
 			<Text size="sm" c="dimmed" lineClamp={2}>
-				{trip.acf.event_description || 'No description available'}
+				{trip.acf.event_description || "No description available"}
 			</Text>
 
 			<Group mt="md" justify="space-between">
