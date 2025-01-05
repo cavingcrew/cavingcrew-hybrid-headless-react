@@ -1,0 +1,1 @@
+export { CategoryTripsGrid } from './CategoryTripsGrid';
