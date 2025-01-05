@@ -2,16 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { Container, Title, SimpleGrid } from '@mantine/core';
+import { Container, Title } from '@mantine/core';
 import { apiService } from '@/lib/api-service';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { ErrorState } from '@/components/ui/ErrorState';
-import dynamic from 'next/dynamic';
-
-const TripCard = dynamic(() => import('@/components/trips/TripCard'), {
-  ssr: false,
-  loading: () => <p>Loading...</p>
-});
+import { CategoryTripsGrid } from '@/components/categories/CategoryTripsGrid';
 import type { Trip } from '@/types/api';
 
 export function CatchAllContent() {
@@ -86,11 +81,7 @@ export function CatchAllContent() {
   return (
     <Container size="lg" py="xl">
       <Title order={1} mb="xl">{title}</Title>
-      <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="lg">
-        {data.map((trip) => (
-          <TripCard key={trip.id} trip={trip} />
-        ))}
-      </SimpleGrid>
+      <CategoryTripsGrid trips={data} />
     </Container>
   );
 }

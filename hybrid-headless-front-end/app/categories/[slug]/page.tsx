@@ -1,12 +1,7 @@
-import { Container, Title, Text, SimpleGrid } from '@mantine/core';
+import { Container, Title, Text } from '@mantine/core';
 import { apiService } from '@/lib/api-service';
-import dynamic from 'next/dynamic';
-
-const TripCard = dynamic(() => import('@/components/trips/TripCard'), {
-  ssr: false,
-  loading: () => <p>Loading...</p>
-});
 import { notFound } from 'next/navigation';
+import { CategoryTripsGrid } from '@/components/categories/CategoryTripsGrid';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -28,11 +23,7 @@ export default async function CategoryPage({ params }: PageProps) {
         Showing {trips.length} trips in this category
       </Text>
       
-      <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="lg">
-        {trips.map((trip) => (
-          <TripCard key={trip.id} trip={trip} />
-        ))}
-      </SimpleGrid>
+      <CategoryTripsGrid trips={trips} />
     </Container>
   );
 }
