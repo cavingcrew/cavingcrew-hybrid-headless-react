@@ -2,7 +2,7 @@
 
 import { MantineProvider as BaseMantineProvider } from '@mantine/core';
 import { useColorScheme } from '@mantine/hooks';
-import { type ReactNode } from 'react';
+import { useState, useEffect, type ReactNode } from 'react';
 
 interface MantineProviderProps {
   children: ReactNode;
