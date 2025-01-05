@@ -5,6 +5,7 @@ import TripCard from '../components/trips/TripCard';
 import { LoadingState } from '../components/ui/LoadingState';
 import { ErrorState } from '../components/ui/ErrorState';
 import { useTrips } from '@/lib/hooks/useTrips';
+import type { Trip } from '@/types/api';
 
 export default function HomePage() {
   const { data, isLoading, error, refetch } = useTrips();
@@ -24,7 +25,7 @@ export default function HomePage() {
     <Container size="lg">
       <Title order={1} mb="xl">Featured Trips</Title>
       <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="lg">
-        {data.data.map((trip) => (
+        {data.data.map((trip: Trip) => (
           <TripCard key={trip.id} trip={trip} />
         ))}
       </SimpleGrid>
