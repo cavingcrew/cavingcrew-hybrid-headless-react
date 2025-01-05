@@ -38,7 +38,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
 
   return (
     <Container size="lg" py="xl">
-      <Title order={1} mb="sm" transform="capitalize">
+      <Title order={1} mb="sm" style={{ textTransform: 'capitalize' }}>
         {categoryName}
       </Title>
       <Text c="dimmed" mb="xl">
