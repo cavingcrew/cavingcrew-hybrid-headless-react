@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import React from 'react';
-import dynamic from 'next/dynamic';
-import { LoadingState } from '../../components/ui/LoadingState';
+import dynamic from "next/dynamic";
+import React from "react";
+import { LoadingState } from "../../components/ui/LoadingState";
 
 const CatchAllContent = dynamic(
-  () => import('./CatchAllContent').then((mod) => mod.CatchAllContent),
-  {
-    loading: () => <LoadingState />,
-    ssr: false
-  }
+	() => import("./CatchAllContent").then((mod) => mod.CatchAllContent),
+	{
+		loading: () => <LoadingState />,
+		ssr: false,
+	},
 );
 
 export default function CatchAllPage() {
-  return <CatchAllContent />;
+	return <CatchAllContent />;
 }

@@ -1,10 +1,10 @@
 "use client";
 
 import { Badge, Card, Group, Image, Text } from "@mantine/core";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 import React from "react";
+import { usePrefetchTrip } from "../../lib/hooks/useTrips";
 import type { Trip } from "../../types/api";
-import { usePrefetchTrip } from '../../lib/hooks/useTrips';
 
 interface TripCardProps {
 	trip: Trip;
