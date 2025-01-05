@@ -86,17 +86,30 @@ export function MainHeader() {
           </UnstyledButton>
         </Menu.Target>
         <Menu.Dropdown>
-          {aboutLinks.map((link) => (
-            <Menu.Item
-              key={link.href}
-              component={link.external ? 'a' : Link}
-              href={link.href}
-              target={link.external ? '_blank' : undefined}
-              rel={link.external ? 'noopener noreferrer' : undefined}
-            >
-              {link.label}
-            </Menu.Item>
-          ))}
+          {aboutLinks.map((link) => {
+            if (link.external) {
+              return (
+                <Menu.Item
+                  key={link.href}
+                  component="a"
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {link.label}
+                </Menu.Item>
+              );
+            }
+            return (
+              <Menu.Item
+                key={link.href}
+                component={Link}
+                href={link.href}
+              >
+                {link.label}
+              </Menu.Item>
+            );
+          })}
         </Menu.Dropdown>
       </Menu>
 
@@ -116,16 +129,29 @@ export function MainHeader() {
           </UnstyledButton>
         </Menu.Target>
         <Menu.Dropdown>
-          {accountLinks.map((link) => (
-            <Menu.Item
-              key={link.href}
-              component={link.fullRefresh ? 'a' : Link}
-              href={link.href}
-              onClick={link.fullRefresh ? () => window.location.href = link.href : undefined}
-            >
-              {link.label}
-            </Menu.Item>
-          ))}
+          {accountLinks.map((link) => {
+            if (link.fullRefresh) {
+              return (
+                <Menu.Item
+                  key={link.href}
+                  component="a"
+                  href={link.href}
+                  onClick={() => window.location.href = link.href}
+                >
+                  {link.label}
+                </Menu.Item>
+              );
+            }
+            return (
+              <Menu.Item
+                key={link.href}
+                component={Link}
+                href={link.href}
+              >
+                {link.label}
+              </Menu.Item>
+            );
+          })}
         </Menu.Dropdown>
       </Menu>
     </Group>
