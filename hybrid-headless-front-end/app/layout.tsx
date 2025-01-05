@@ -4,8 +4,15 @@ import { MantineProvider } from '@/components/providers/MantineProvider';
 import { QueryProvider } from '@/components/providers/QueryProvider';
 import { MainHeader } from '@/components/layout/MainHeader';
 import { MainFooter } from '@/components/layout/MainFooter';
+import { useEffect } from 'react';
+import { usePrefetch } from '@/lib/hooks/usePrefetch';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const { prefetchAll } = usePrefetch();
+
+  useEffect(() => {
+    prefetchAll();
+  }, []);
   return (
     <html lang="en">
       <head>
