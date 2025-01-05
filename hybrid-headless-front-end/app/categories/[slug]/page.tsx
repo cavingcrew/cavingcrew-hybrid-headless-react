@@ -5,15 +5,15 @@ import { useTripsByCategory } from '@/lib/hooks/useTrips';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { CategoryTripsGrid } from '@/components/categories/CategoryTripsGrid';
+import { use } from 'react';
 
 interface CategoryPageProps {
-  params: {
-    slug: string;
-  };
+  params: Promise<{ slug: string }>;
 }
 
 export default function CategoryPage({ params }: CategoryPageProps) {
-  const { data, isLoading, error, refetch } = useTripsByCategory(params.slug);
+  const resolvedParams = use(params);
+  const { data, isLoading, error, refetch } = useTripsByCategory(resolvedParams.slug);
 
   if (isLoading) {
     return <LoadingState />;
@@ -28,7 +28,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
 
   return (
     <Container size="lg" py="xl">
-      <Title order={1} mb="sm">{params.slug}</Title>
+      <Title order={1} mb="sm">{resolvedParams.slug}</Title>
       <Text c="dimmed" mb="xl">
         Showing {data.data.length} trips in this category
       </Text>

@@ -5,15 +5,15 @@ import { useTrip } from '@/lib/hooks/useTrips';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { TripDetails } from '@/components/trips/TripDetails';
+import { use } from 'react';
 
 interface TripPageProps {
-  params: {
-    slug: string;
-  };
+  params: Promise<{ slug: string }>;
 }
 
 export default function TripPage({ params }: TripPageProps) {
-  const { data, isLoading, error, refetch } = useTrip(params.slug);
+  const resolvedParams = use(params);
+  const { data, isLoading, error, refetch } = useTrip(resolvedParams.slug);
 
   if (isLoading) {
     return <LoadingState />;
