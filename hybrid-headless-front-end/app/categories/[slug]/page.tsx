@@ -2,20 +2,22 @@
 
 import React from 'react';
 import { Container, Title, Text, Loader, Center } from '@mantine/core';
-import { useTrips } from '@/lib/hooks/useTrips';
-import { CategoryTripsGrid } from '@/components/categories/CategoryTripsGrid';
-import type { PageProps } from 'next';
+import { useTrips } from '../../lib/hooks/useTrips';
+import { CategoryTripsGrid } from '../../components/categories/CategoryTripsGrid';
+import type { NextPage } from 'next';
 
 interface CategoryPageParams {
   slug: string;
 }
+
+export default CategoryPage;
 
 interface CategoryPageProps extends PageProps {
   params: CategoryPageParams;
   searchParams?: { [key: string]: string | string[] | undefined };
 }
 
-export default function CategoryPage({ params }: CategoryPageProps) {
+const CategoryPage: NextPage<CategoryPageProps> = ({ params }) => {
   const { data: allTrips, isLoading, error, refetch } = useTrips();
 
   // Get trips filtered by category slug
@@ -47,7 +49,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
 
   return (
     <Container size="lg" py="xl">
-      <Title order={1} mb="sm" transform="capitalize">
+      <Title order={1} mb="sm" style={{ textTransform: 'capitalize' }}>
         {categoryName}
       </Title>
       <Text c="dimmed" mb="xl">
