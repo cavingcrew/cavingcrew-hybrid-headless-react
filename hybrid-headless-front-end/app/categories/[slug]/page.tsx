@@ -1,23 +1,21 @@
 'use client';
 
 import React from 'react';
-import { Container, Title, Text } from '@mantine/core';
-import { useTrips } from '../../lib/hooks/useTrips';
-import { LoadingState } from '../../components/ui/LoadingState';
-import { ErrorState } from '../../components/ui/ErrorState';
-import { CategoryTripsGrid } from '../../components/categories/CategoryTripsGrid';
-import type { NextPage } from 'next';
+import { Container, Title, Text, Loader, Center } from '@mantine/core';
+import { useTrips } from '@/lib/hooks/useTrips';
+import { CategoryTripsGrid } from '@/components/categories/CategoryTripsGrid';
+import type { PageProps } from 'next';
 
 interface CategoryPageParams {
   slug: string;
 }
 
-interface CategoryPageProps {
+interface CategoryPageProps extends PageProps {
   params: CategoryPageParams;
   searchParams?: { [key: string]: string | string[] | undefined };
 }
 
-const CategoryPage: NextPage<CategoryPageProps> = ({ params }) => {
+export default function CategoryPage({ params }: CategoryPageProps) {
   const { data: allTrips, isLoading, error, refetch } = useTrips();
 
   // Get trips filtered by category slug
@@ -31,19 +29,25 @@ const CategoryPage: NextPage<CategoryPageProps> = ({ params }) => {
   )?.name || params.slug.replace(/-/g, ' ');
 
   if (isLoading) {
-    return <LoadingState />;
+    return (
+      <Center h={400}>
+        <Loader size="lg" />
+      </Center>
+    );
   }
 
   if (error || !allTrips?.success) {
-    return <ErrorState 
-      message={error?.message || 'Failed to load trips'} 
-      onRetry={() => refetch()}
-    />;
+    return (
+      <Center h={400}>
+        <Text>Failed to load trips. Please try again.</Text>
+        <button onClick={() => refetch()}>Retry</button>
+      </Center>
+    );
   }
 
   return (
     <Container size="lg" py="xl">
-      <Title order={1} mb="sm" style={{ textTransform: 'capitalize' }}>
+      <Title order={1} mb="sm" transform="capitalize">
         {categoryName}
       </Title>
       <Text c="dimmed" mb="xl">
