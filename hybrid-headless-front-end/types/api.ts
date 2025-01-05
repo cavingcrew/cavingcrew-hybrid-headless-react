@@ -19,13 +19,13 @@ export interface Trip {
 		name: string;
 		slug: string;
 	}[];
-	date: string;
-	time: string;
-	location: string;
-	member_price: number;
-	non_member_price: number;
-	minimum_skills: string[];
-	minimum_gear: string[];
+	date?: string;
+	time?: string;
+	location?: string;
+	member_price?: number;
+	non_member_price?: number;
+	minimum_skills?: string[];
+	minimum_gear?: string[];
 	faqs?: {
 		question: string;
 		answer: string;
