@@ -2,10 +2,10 @@
 
 import React from 'react';
 import { Container, Title, Text } from '@mantine/core';
-import { useTripsByCategory } from '../../lib/hooks/useTrips';
-import { LoadingState } from '../../components/ui/LoadingState';
-import { ErrorState } from '../../components/ui/ErrorState';
-import { CategoryTripsGrid } from '../../components/categories/CategoryTripsGrid';
+import { useTripsByCategory } from '@/lib/hooks/useTrips';
+import { LoadingState } from '@/components/ui/LoadingState';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { CategoryTripsGrid } from '@/components/categories/CategoryTripsGrid';
 
 interface CategoryPageProps {
   params: { slug: string };
@@ -27,7 +27,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
 
   return (
     <Container size="lg" py="xl">
-      <Title order={1} mb="sm">{resolvedParams.slug}</Title>
+      <Title order={1} mb="sm">{params.slug}</Title>
       <Text c="dimmed" mb="xl">
         Showing {data.data.length} trips in this category
       </Text>
