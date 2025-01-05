@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { apiService } from '../api-service';
-import type { Trip } from '@/types/api';
+import type { Trip } from '../../types/api';
 
 export const tripKeys = {
   all: ['trips'] as const,
