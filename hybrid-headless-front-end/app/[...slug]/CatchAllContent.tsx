@@ -1,14 +1,15 @@
 'use client';
 
+import React from 'react';
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { Container, Title } from '@mantine/core';
-import { apiService } from '@/lib/api-service';
-import { LoadingState } from '@/components/ui/LoadingState';
-import { ErrorState } from '@/components/ui/ErrorState';
-import { CategoryTripsGrid } from '@/components/categories/CategoryTripsGrid';
-import { TripDetails } from '@/components/trips/TripDetails';
-import type { Trip } from '@/types/api';
+import { apiService } from '../../lib/api-service';
+import { LoadingState } from '../../components/ui/LoadingState';
+import { ErrorState } from '../../components/ui/ErrorState';
+import { CategoryTripsGrid } from '../../components/categories/CategoryTripsGrid';
+import { TripDetails } from '../../components/trips/TripDetails';
+import type { Trip } from '../../types/api';
 
 export function CatchAllContent() {
   const params = useParams();
