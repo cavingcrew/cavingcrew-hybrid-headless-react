@@ -1,10 +1,13 @@
-import { Container, Title, Text, Center } from '@mantine/core';
+import { Container, Title, Text } from '@mantine/core';
 import { apiService } from '@/lib/api-service';
 import { CategoryTripsGrid } from '@/components/categories/CategoryTripsGrid';
 import { notFound } from 'next/navigation';
 
 export default async function CategoryPage({ params }: { params: { slug: string } }) {
   const { slug } = params;
+  
+  // Debugging: Log the received params
+  console.log('Received params:', params);
 
   // Fetch trips and categories
   const [tripsResponse, categoriesResponse] = await Promise.all([
@@ -12,8 +15,16 @@ export default async function CategoryPage({ params }: { params: { slug: string 
     apiService.getCategories()
   ]);
 
+  // Debugging: Log the API responses
+  console.log('Trips response:', tripsResponse);
+  console.log('Categories response:', categoriesResponse);
+
   // Handle errors
   if (!tripsResponse.success || !categoriesResponse.success) {
+    console.error('Failed to fetch data:', {
+      tripsSuccess: tripsResponse.success,
+      categoriesSuccess: categoriesResponse.success
+    });
     return notFound();
   }
 
@@ -22,9 +33,22 @@ export default async function CategoryPage({ params }: { params: { slug: string 
     trip.categories.some(cat => cat.slug === slug)
   ) || [];
 
+  // Debugging: Log filtered trips
+  console.log('Filtered trips:', {
+    slug,
+    count: categoryTrips.length,
+    trips: categoryTrips.map(t => t.name)
+  });
+
   // Get the category name from categories response
   const category = categoriesResponse.data?.find(cat => cat.slug === slug);
   const categoryName = category?.name || slug.replace(/-/g, ' ');
+
+  // Debugging: Log final data
+  console.log('Final data:', {
+    categoryName,
+    tripCount: categoryTrips.length
+  });
 
   return (
     <Container size="lg" py="xl">
