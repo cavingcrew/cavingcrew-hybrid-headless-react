@@ -2,10 +2,11 @@
 
 import { Container, Title, SimpleGrid } from '@mantine/core';
 import { useEffect, useState } from 'react';
-import TripCard from '@/components/trips/TripCard';
-import { LoadingState } from '@/components/ui/LoadingState';
-import { ErrorState } from '@/components/ui/ErrorState';
-import type { Trip } from '@/types/api';
+import React from 'react';
+import TripCard from '../components/trips/TripCard';
+import { LoadingState } from '../components/ui/LoadingState';
+import { ErrorState } from '../components/ui/ErrorState';
+import type { Trip } from '../types/api';
 
 export default function HomePage() {
   const [trips, setTrips] = useState<Trip[]>([]);
