@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { 
   Box, 
@@ -34,19 +34,22 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
     queryKey: ['productStock', trip.id],
     queryFn: () => apiService.getProductStock(trip.id),
     refetchInterval: 30000,
-    enabled: trip.has_variations,
-    onSuccess: (data) => {
-      // Update main trips cache
+    enabled: trip.has_variations
+  });
+
+  useEffect(() => {
+    if (stockData?.data) {
       queryClient.setQueryData(tripKeys.all, (old: ApiResponse<Trip[]> | undefined) => {
         if (!old?.data) return old;
         return {
           ...old,
           data: old.data.map(t => 
-            t.id === trip.id ? { ...t, variations: data?.variations || [] } : t
+            t.id === trip.id ? { ...t, variations: stockData.data.variations || [] } : t
           )
         };
       });
     }
+  }, [stockData, queryClient, trip.id]);
   });
 
   const handleSignUp = () => {
