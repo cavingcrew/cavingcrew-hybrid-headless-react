@@ -9,7 +9,12 @@ import type { Trip } from '@/types/api';
 import React from 'react';
 
 interface CategoryPageProps {
-  params: { slug: string };
+  params: {
+    slug: string;
+  };
+  searchParams?: {
+    [key: string]: string | string[] | undefined;
+  };
 }
 
 interface CategoryResponse {
@@ -20,7 +25,7 @@ interface CategoryResponse {
   };
 }
 
-export default function CategoryPage({ params }: CategoryPageProps) {
+export default function CategoryPage({ params, searchParams }: CategoryPageProps) {
   const { slug } = params;
   const { data, isLoading, error, refetch } = useCategoryTrips(slug);
 
