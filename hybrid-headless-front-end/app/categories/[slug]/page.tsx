@@ -9,7 +9,6 @@ interface CategoryPageProps {
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
   const { slug } = params;
-  const { slug } = params;
 
   // Debugging: Log the received params
   console.log('Received params:', params);
@@ -40,7 +39,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
       : [];
 
     // Get trips filtered by category slug
-    const categoryTrips = tripsData.filter(trip => 
+    const categoryTrips = tripsData.filter(trip =>
       trip.categories?.some(cat => cat.slug === slug)
     );
 
@@ -82,4 +81,3 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
     return notFound();
   }
 }
-import React from 'react';
