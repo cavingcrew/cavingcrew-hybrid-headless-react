@@ -125,7 +125,7 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
         </Badge>
       )}
 
-      {userStatus && !userStatus.isLoggedIn ? (
+      {userStatus && !userStatus.isLoggedIn && trip.acf?.event_non_members_welcome !== 'yes' ? (
         <Alert color="blue" mt="md" icon={<IconLogin size={18} />}>
           <Group gap="xs">
             <Text>Please log in to sign up for this trip</Text>

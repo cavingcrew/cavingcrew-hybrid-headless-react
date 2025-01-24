@@ -466,7 +466,17 @@ class Hybrid_Headless_Products_Controller {
         return (bool) get_user_meta($user_id, 'cc_member', true);
     }
 
-    public function check_cart_permissions() {
+    public function check_cart_permissions($request) {
+        $params = $request->get_params();
+        $product = wc_get_product($params['product_id']);
+        
+        if ($product) {
+            $non_members_welcome = get_post_meta($product->get_id(), 'event_non-members_welcome', true);
+            if ($non_members_welcome === 'yes') {
+                return true;
+            }
+        }
+        
         return is_user_logged_in();
     }
 }
