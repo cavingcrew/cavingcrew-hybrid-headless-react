@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient, type UseQueryResult } from '@tanstack/react-query';
 import { apiService } from '../api-service';
-import type { Trip, ApiResponse } from '../../types/api';
+import type { Trip, ApiResponse, CategoryResponse } from '../../types/api';
 
 export const tripKeys = {
   all: ['trips'] as const,
@@ -22,10 +22,10 @@ export function useTrips(): UseQueryResult<ApiResponse<Trip[]>> {
       const response = await apiService.getTrips();
       if (response.success && response.data) {
         // Transform the data structure
-        const trips = Array.isArray(response.data.products) ? 
-          response.data.products : 
+        const trips = Array.isArray(response.data.products) ?
+          response.data.products :
           [];
-        
+
         // Filter out the membership product and transform the data
         const filteredData = trips
           .filter((trip: Trip) => trip.id !== 1272)
@@ -34,13 +34,13 @@ export function useTrips(): UseQueryResult<ApiResponse<Trip[]>> {
             // Ensure categories is always an array
             categories: trip.categories || []
           }));
-        
-        return { 
+
+        return {
           success: true,
           data: filteredData
         };
       }
-      return { 
+      return {
         success: false,
         data: [],
         message: response.message || 'Failed to fetch trips'
@@ -53,18 +53,18 @@ export function useTrips(): UseQueryResult<ApiResponse<Trip[]>> {
 
 export function useTrip(slug: string) {
   const queryClient = useQueryClient();
-  
+
   return useQuery({
     queryKey: tripKeys.detail(slug),
     queryFn: async () => {
       // First try to find the trip in the existing trips data
       const tripsData = queryClient.getQueryData<TripsResponse>(tripKeys.lists());
       const existingTrip = tripsData?.data?.find((t: Trip) => t.slug === slug);
-      
+
       if (existingTrip) {
         return { data: existingTrip, success: true };
       }
-      
+
       // If not found, fetch it individually
       return apiService.getTrip(slug);
     },
@@ -82,14 +82,14 @@ export function useTripsByCategory(categorySlug: string) {
     queryFn: async () => {
       // Fetch fresh data if needed
       const response = await apiService.getTripsByCategory(categorySlug);
-      
+
       if (!response.success || !response.data) {
         return response;
       }
 
       // Filter out membership and transform data
       const filteredData = response.data.filter(trip => trip.id !== 1272);
-      
+
       return {
         success: true,
         data: {
@@ -109,7 +109,7 @@ export function useTripsByCategory(categorySlug: string) {
 
 export function usePrefetchTrips() {
   const queryClient = useQueryClient();
-  
+
   return {
     prefetchTrips: () => {
       queryClient.prefetchQuery({
@@ -123,7 +123,7 @@ export function usePrefetchTrips() {
 
 export function usePrefetchTrip() {
   const queryClient = useQueryClient();
-  
+
   const prefetchTrip = (slug: string) => {
     queryClient.prefetchQuery({
       queryKey: tripKeys.detail(slug),
