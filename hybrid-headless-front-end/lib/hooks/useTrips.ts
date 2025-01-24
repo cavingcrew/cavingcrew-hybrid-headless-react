@@ -52,12 +52,30 @@ export function useTrips(): UseQueryResult<ApiResponse<Trip[]>> {
 }
 
 export function useTrip(slug: string) {
+  const queryClient = useQueryClient();
+
   return useQuery({
     queryKey: tripKeys.detail(slug),
-    queryFn: () => apiService.getTrip(slug),
-    enabled: !!slug,
+    queryFn: async () => {
+      // Check list cache first
+      const listData = queryClient.getQueryData<ApiResponse<Trip[]>>(tripKeys.all);
+      const cachedTrip = listData?.data?.find(t => t.slug === slug);
+      
+      if (cachedTrip) {
+        // Prefetch fresh data in background
+        queryClient.prefetchQuery({
+          queryKey: tripKeys.detail(slug),
+          queryFn: () => apiService.getTrip(slug)
+        });
+        return { data: cachedTrip, success: true };
+      }
+      
+      // Fallback to API call
+      return apiService.getTrip(slug);
+    },
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 60,
+    enabled: !!slug,
   });
 }
 

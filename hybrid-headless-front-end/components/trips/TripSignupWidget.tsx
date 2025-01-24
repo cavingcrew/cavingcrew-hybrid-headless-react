@@ -28,11 +28,24 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
   });
 
   // Poll stock data
+  const queryClient = useQueryClient();
   const { data: stockData } = useQuery({
     queryKey: ['productStock', trip.id],
     queryFn: () => apiService.getProductStock(trip.id),
     refetchInterval: 30000,
-    enabled: trip.has_variations
+    enabled: trip.has_variations,
+    onSuccess: (data) => {
+      // Update main trips cache
+      queryClient.setQueryData(tripKeys.all, (old: ApiResponse<Trip[]> | undefined) => {
+        if (!old?.data) return old;
+        return {
+          ...old,
+          data: old.data.map(t => 
+            t.id === trip.id ? { ...t, variations: data?.variations || [] } : t
+          )
+        };
+      });
+    }
   });
 
   const handleSignUp = () => {

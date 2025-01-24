@@ -13,18 +13,22 @@ export default function TripCard({ trip }: TripCardProps) {
 	const router = useRouter();
 
 	return (
-		<Card
-			shadow="sm"
-			padding="lg"
-			radius="md"
-			withBorder
-			onClick={() => router.push(`/trips/${trip.slug}`)}
-			style={{
-				textDecoration: "none",
-				color: "inherit",
-				cursor: "pointer",
-			}}
+		<Link 
+			href={`/trips/${trip.slug}`}
+			prefetch={true}
+			style={{ textDecoration: 'none', color: 'inherit' }}
 		>
+			<Card
+				shadow="sm"
+				padding="lg"
+				radius="md"
+				withBorder
+				style={{
+					textDecoration: "none",
+					color: "inherit",
+					cursor: "pointer",
+				}}
+			>
 			{trip.images?.[0] && (
 				<Card.Section>
 					<Image

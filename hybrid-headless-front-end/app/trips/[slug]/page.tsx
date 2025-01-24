@@ -14,6 +14,28 @@ interface TripPageProps {
 export default function TripPage({ params }: TripPageProps) {
   const { slug } = use(params);
   const { data, isLoading, error, refetch } = useTrip(slug);
+  const router = useRouter();
+  const { invalidateTrips } = useCacheInvalidation();
+
+  // Add automatic retry
+  useEffect(() => {
+    if (error && !isLoading) {
+      const retryTimer = setTimeout(() => refetch(), 5000);
+      return () => clearTimeout(retryTimer);
+    }
+  }, [error, isLoading, refetch]);
+
+  // Add cache invalidation on visibility change
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        invalidateTrips();
+      }
+    };
+    
+    window.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => window.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [invalidateTrips]);
 
   if (isLoading) {
     return <LoadingState />;
