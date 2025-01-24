@@ -145,11 +145,11 @@ export interface Category {
 }
 
 export interface ApiResponse<T> {
-  data: T | null;
-  success: boolean;
-  message?: string;
-  timestamp?: number;  // Add cache timestamp
-  etag?: string;       // Add ETag support
+	data: T | null;
+	success: boolean;
+	message?: string;
+	timestamp?: number; // Add cache timestamp
+	etag?: string; // Add ETag support
 }
 
 export interface CategoryResponse {
