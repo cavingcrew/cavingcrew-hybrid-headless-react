@@ -19,6 +19,8 @@ export interface Trip {
 		name: string;
 		slug: string;
 	}[];
+	has_purchased: boolean;
+	can_purchase: boolean;
 	acf: {
 		event_start_date?: string;
 		event_finish_date?: string;
