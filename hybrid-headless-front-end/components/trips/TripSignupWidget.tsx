@@ -39,7 +39,7 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
   useEffect(() => {
     if (stockData?.success) {
       setVariations(prev => prev.map(v => {
-        const stock = stockData.data.variations.find(sv => sv.variation_id === v.id);
+        const stock = stockData.data.variations.find((sv: { variation_id: number; stock_quantity: number | null; stock_status: string }) => sv.variation_id === v.id);
         return stock ? {
           ...v,
           stock_quantity: stock.stock_quantity,
