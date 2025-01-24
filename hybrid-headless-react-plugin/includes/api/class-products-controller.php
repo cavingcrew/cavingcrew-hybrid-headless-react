@@ -39,6 +39,52 @@ class Hybrid_Headless_Products_Controller {
 
         register_rest_route(
             Hybrid_Headless_Rest_API::API_NAMESPACE,
+            '/products/(?P<id>\d+)/variations',
+            [
+                'methods' => 'GET',
+                'callback' => [$this, 'get_product_variations'],
+                'permission_callback' => '__return_true',
+                'args' => [
+                    'id' => [
+                        'validate_callback' => function($param) {
+                            return is_numeric($param);
+                        }
+                    ]
+                ]
+            ]
+        );
+
+        register_rest_route(
+            Hybrid_Headless_Rest_API::API_NAMESPACE,
+            '/stock/(?P<product_id>\d+)/(?P<variation_id>\d+)',
+            [
+                'methods' => 'GET',
+                'callback' => [$this, 'get_stock'],
+                'permission_callback' => '__return_true',
+                'args' => [
+                    'product_id' => ['type' => 'integer'],
+                    'variation_id' => ['type' => 'integer']
+                ]
+            ]
+        );
+
+        register_rest_route(
+            Hybrid_Headless_Rest_API::API_NAMESPACE,
+            '/cart',
+            [
+                'methods' => 'POST',
+                'callback' => [$this, 'add_to_cart'],
+                'permission_callback' => [$this, 'check_cart_permissions'],
+                'args' => [
+                    'product_id' => ['required' => true, 'type' => 'integer'],
+                    'variation_id' => ['required' => true, 'type' => 'integer'],
+                    'quantity' => ['default' => 1, 'type' => 'integer']
+                ]
+            ]
+        );
+
+        register_rest_route(
+            Hybrid_Headless_Rest_API::API_NAMESPACE,
             '/products/(?P<id>[\d]+)',
             array(
                 array(
@@ -287,5 +333,95 @@ class Hybrid_Headless_Products_Controller {
         }
 
         return $categories;
+    }
+
+    public function get_product_variations($request) {
+        $product_id = $request['id'];
+        $product = wc_get_product($product_id);
+        
+        if (!$product || !$product->is_type('variable')) {
+            return new WP_Error(
+                'invalid_product',
+                __('Not a variable product', 'hybrid-headless'),
+                ['status' => 400]
+            );
+        }
+
+        $variations = [];
+        foreach ($product->get_available_variations() as $variation) {
+            $variation_product = wc_get_product($variation['variation_id']);
+            $variations[] = [
+                'id' => $variation['variation_id'],
+                'attributes' => $variation['attributes'],
+                'price' => $variation['display_price'],
+                'regular_price' => $variation['display_regular_price'],
+                'stock_quantity' => $variation_product->get_stock_quantity(),
+                'stock_status' => $variation_product->get_stock_status(),
+                'sku' => $variation_product->get_sku(),
+            ];
+        }
+
+        return rest_ensure_response([
+            'variations' => $variations,
+            'user_status' => [
+                'is_logged_in' => is_user_logged_in(),
+                'is_member' => $this->is_member(),
+            ]
+        ]);
+    }
+
+    public function get_stock($request) {
+        $variation_id = $request['variation_id'];
+        $product = wc_get_product($variation_id);
+        
+        if (!$product) {
+            return new WP_Error(
+                'invalid_variation',
+                __('Invalid product variation', 'hybrid-headless'),
+                ['status' => 404]
+            );
+        }
+
+        return rest_ensure_response([
+            'stock_quantity' => $product->get_stock_quantity(),
+            'stock_status' => $product->get_stock_status(),
+            'price' => $product->get_price(),
+            'regular_price' => $product->get_regular_price(),
+        ]);
+    }
+
+    public function add_to_cart($request) {
+        $params = $request->get_params();
+        
+        try {
+            WC()->cart->add_to_cart(
+                $params['product_id'],
+                $params['quantity'],
+                $params['variation_id'],
+                [],
+                ['is_member' => $this->is_member()]
+            );
+
+            return rest_ensure_response([
+                'success' => true,
+                'cart_url' => wc_get_cart_url()
+            ]);
+        } catch (Exception $e) {
+            return new WP_Error(
+                'cart_error',
+                $e->getMessage(),
+                ['status' => 400]
+            );
+        }
+    }
+
+    private function is_member() {
+        if (!is_user_logged_in()) return false;
+        $user_id = get_current_user_id();
+        return (bool) get_user_meta($user_id, 'cc_member', true);
+    }
+
+    public function check_cart_permissions() {
+        return is_user_logged_in();
     }
 }
