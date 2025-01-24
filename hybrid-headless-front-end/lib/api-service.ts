@@ -4,6 +4,17 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_WORDPRESS_API_URL ||
   (typeof window !== 'undefined' ? window.location.origin + '/wp-json' : 'https://www.cavingcrew.com/wp-json');
 
 export const apiService = {
+  async pollStock(productId: number, variationId: number, interval = 30000): Promise<ApiResponse<any>> {
+    return new Promise((resolve) => {
+      const intervalId = setInterval(async () => {
+        const response = await this.getStock(productId, variationId);
+        if (response.success) {
+          resolve(response);
+          clearInterval(intervalId);
+        }
+      }, interval);
+    });
+  },
   async getProductVariations(productId: number): Promise<ApiResponse<{
     variations: any[];
     userStatus: { isLoggedIn: boolean; isMember: boolean };

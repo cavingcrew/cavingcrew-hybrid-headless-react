@@ -14,6 +14,7 @@ import {
 	Text,
 	Title,
 } from "@mantine/core";
+import { TripSignupWidget } from "./TripSignupWidget";
 import {
 	IconCalendar,
 	IconClock,
@@ -39,6 +40,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
 			{/* Header Section */}
 			<Stack gap="md">
 				<Title order={1}>{trip.name}</Title>
+				<TripSignupWidget trip={trip} />
 				{acf?.event_description && (
 					<div
 						dangerouslySetInnerHTML={{ __html: acf.event_description ?? "" }}
