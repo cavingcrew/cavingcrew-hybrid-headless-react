@@ -540,7 +540,6 @@ class Hybrid_Headless_Products_Controller {
     }
 
     public function add_to_cart($request) {
-        // Initialize WooCommerce session and cart if needed
         if (null === WC()->cart) {
             WC()->frontend_includes();
             WC()->session = new WC_Session_Handler();
@@ -550,6 +549,8 @@ class Hybrid_Headless_Products_Controller {
         }
         
         $params = $request->get_params();
+        $user_id = get_current_user_id();
+        $is_member = (bool) get_user_meta($user_id, 'cc_member', true);
         
         try {
             WC()->cart->add_to_cart(
@@ -557,7 +558,7 @@ class Hybrid_Headless_Products_Controller {
                 $params['quantity'],
                 $params['variation_id'],
                 [],
-                ['is_member' => $this->is_member()]
+                ['is_member' => $is_member] // Pass actual membership status
             );
 
             return rest_ensure_response([
@@ -613,17 +614,27 @@ class Hybrid_Headless_Products_Controller {
     }
 
     public function check_cart_permissions($request) {
-        // First check if user is logged in
+        $params = $request->get_params();
+        $product = wc_get_product($params['product_id']);
+        
+        // Corrected meta key from 'event_non-members-welcome' to 'event_non_members_welcome'
+        $non_members_welcome = $product ? get_post_meta($product->get_id(), 'event_non_members_welcome', true) : false;
+
         if (!is_user_logged_in()) {
-            $params = $request->get_params();
-            $product = wc_get_product($params['product_id']);
-            $non_members_welcome = $product ? get_post_meta($product->get_id(), 'event_non-members_welcome', true) : false;
             if ($non_members_welcome !== 'yes') {
                 return false;
             }
+        } else {
+            // If product requires membership, check user status
+            if ($non_members_welcome !== 'yes') {
+                $user_id = get_current_user_id();
+                $is_member = (bool) get_user_meta($user_id, 'cc_member', true);
+                if (!$is_member) {
+                    return false;
+                }
+            }
         }
         
-        // Additional security checks
         return apply_filters('hybrid_headless_cart_permissions', true, $request);
     }
 }
