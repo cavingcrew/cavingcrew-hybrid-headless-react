@@ -77,7 +77,7 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
     );
   }
 
-  if (!trip.purchasable) {
+  if (!trip.can_purchase) {
     return (
       <Alert color="yellow" title="Not Available">
         This trip is currently not available for signups

@@ -46,6 +46,7 @@ export interface Trip {
 	categories: BasicCategory[];
 	has_purchased: boolean;
 	can_purchase: boolean;
+	purchasable?: never;
 	variations: Variation[];
 	has_variations: boolean;
 	is_variable: boolean;
