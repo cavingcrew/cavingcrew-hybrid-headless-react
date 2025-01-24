@@ -6,15 +6,14 @@ import { LoadingState } from '@/components/ui/LoadingState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { TripDetails } from '@/components/trips/TripDetails';
 import React from 'react';
+import type { Trip } from '@/types/api';
 
 interface TripPageProps {
-  params: Promise<{ slug: string }>;
-  searchParams?: Promise<Record<string, string | string[]>>;
+  params: { slug: string };
 }
 
 export default function TripPage({ params }: TripPageProps) {
-  const resolvedParams = React.use(params);
-  const { slug } = resolvedParams;
+  const { slug } = params;
   const { data, isLoading, error, refetch } = useTrip(slug);
 
   if (isLoading) {
