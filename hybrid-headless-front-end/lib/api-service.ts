@@ -1,12 +1,10 @@
+import { API_BASE_URL } from './constants';
 import type { 
   Trip, 
   Category, 
   ApiResponse, 
   ProductStockResponse 
 } from '../types/api';
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_WORDPRESS_API_URL || 
-  (typeof window !== 'undefined' ? window.location.origin + '/wp-json' : 'https://www.cavingcrew.com/wp-json');
 
 export const apiService = {
   async getUserStatus(): Promise<ApiResponse<{
