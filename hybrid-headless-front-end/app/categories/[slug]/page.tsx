@@ -14,13 +14,6 @@ interface CategoryPageProps {
   };
 }
 
-interface CategoryResponse {
-  products: Trip[];
-  category?: {
-    name: string;
-    slug: string;
-  };
-}
 
 export default function CategoryPage({ params }: CategoryPageProps) {
   const { slug } = params;

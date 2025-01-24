@@ -80,40 +80,26 @@ export function useTripsByCategory(categorySlug: string) {
   return useQuery<ApiResponse<CategoryResponse>>({
     queryKey: tripKeys.category(categorySlug),
     queryFn: async () => {
-      // First try to find trips in this category from existing data
-      const tripsData = queryClient.getQueryData<TripsResponse>(tripKeys.lists());
-      if (tripsData?.data) {
-        const categoryTrips = tripsData.data.filter(trip => 
-          trip.categories.some(cat => cat.slug === categorySlug) &&
-          trip.id !== 1272 // Filter out membership
-        );
-        if (categoryTrips.length > 0) {
-          return { 
-            success: true,
-            data: {
-              products: categoryTrips,
-              category: {
-                name: categorySlug.replace(/-/g, ' '),
-                slug: categorySlug
-              }
-            }
-          };
-        }
-      }
-      
-      // If not found, fetch category trips and filter
+      // Fetch fresh data if needed
       const response = await apiService.getTripsByCategory(categorySlug);
-      if (response.success && response.data) {
-        const filteredData = response.data.filter(trip => trip.id !== 1272);
-        return { 
-          ...response, 
-          data: {
-            products: filteredData,
-            category: response.data.category
-          }
-        };
+      
+      if (!response.success || !response.data) {
+        return response;
       }
-      return response;
+
+      // Filter out membership and transform data
+      const filteredData = response.data.filter(trip => trip.id !== 1272);
+      
+      return {
+        success: true,
+        data: {
+          products: filteredData,
+          category: {
+            name: categorySlug.replace(/-/g, ' '),
+            slug: categorySlug
+          }
+        }
+      };
     },
     enabled: !!categorySlug,
     staleTime: 1000 * 60 * 5,
