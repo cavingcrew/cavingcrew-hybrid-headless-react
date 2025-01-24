@@ -3,7 +3,6 @@
 import { Badge, Card, Group, Image, Text } from "@mantine/core";
 import { useRouter } from "next/navigation";
 import React from "react";
-import { usePrefetchTrip } from "../../lib/hooks/useTrips";
 import type { Trip } from "../../types/api";
 
 interface TripCardProps {
@@ -12,7 +11,6 @@ interface TripCardProps {
 
 export default function TripCard({ trip }: TripCardProps) {
 	const router = useRouter();
-	const { prefetchTrip } = usePrefetchTrip();
 
 	return (
 		<Card
@@ -21,7 +19,6 @@ export default function TripCard({ trip }: TripCardProps) {
 			radius="md"
 			withBorder
 			onClick={() => router.push(`/trips/${trip.slug}`)}
-			onMouseEnter={() => prefetchTrip(trip.slug)}
 			style={{
 				textDecoration: "none",
 				color: "inherit",
