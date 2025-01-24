@@ -4,7 +4,6 @@ import type { Trip, ApiResponse, CategoryResponse } from '../../types/api';
 
 export const tripKeys = {
   all: ['trips'] as const,
-  lists: () => [...tripKeys.all, 'list'] as const,
   detail: (slug: string) => [...tripKeys.all, 'detail', slug] as const,
   category: (categorySlug: string) => [...tripKeys.all, 'category', categorySlug] as const,
 };
