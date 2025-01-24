@@ -39,7 +39,9 @@ export function TripDetails({ trip }: TripDetailsProps) {
 			{/* Header Section */}
 			<Stack gap="md">
 				<Title order={1}>{trip.name}</Title>
-				{acf?.event_description && <Text>{acf.event_description}</Text>}
+				{acf?.event_description && (
+					<div dangerouslySetInnerHTML={{ __html: acf.event_description }} />
+				)}
 			</Stack>
 
 			{/* Key Details Section */}
