@@ -7,6 +7,7 @@ import { LoadingState } from '@/components/ui/LoadingState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { useTrip } from '@/lib/hooks/useTrips';
 import { useCacheInvalidation } from '@/lib/hooks/useCacheInvalidation';
+import { Container } from '@mantine/core';
 
 export default function TripPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
@@ -27,5 +28,8 @@ export default function TripPage({ params }: { params: Promise<{ slug: string }>
     );
   }
 
-  return <TripDetails trip={data.data} />;
-}
+  return (
+      <Container size="lg" py="xl">
+        <TripDetails trip={data.data} />
+      </Container>
+  );}
