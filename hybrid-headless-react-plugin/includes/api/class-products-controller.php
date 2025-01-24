@@ -545,16 +545,6 @@ class Hybrid_Headless_Products_Controller {
         $params = $request->get_params();
         error_log('[Add to Cart] Request params: ' . print_r($params, true));
 
-        // Validate required parameters
-        if (empty($params['product_id']) || empty($params['variation_id'])) {
-            error_log('[Add to Cart] Missing required parameters');
-            return new WP_Error(
-                'missing_parameters',
-                __('Product ID and Variation ID are required', 'hybrid-headless'),
-                ['status' => 400]
-            );
-        }
-
         $user_id = get_current_user_id();
         $is_member = (bool) get_user_meta($user_id, 'cc_member', true);
         error_log('[Add to Cart] User status - ID: ' . $user_id . ', Is member: ' . ($is_member ? 'Yes' : 'No'));
@@ -565,10 +555,32 @@ class Hybrid_Headless_Products_Controller {
                 throw new Exception('WooCommerce not loaded');
             }
 
-            error_log('[Add to Cart] Current cart instance: ' . get_class(WC()->cart));
+            // Initialize WooCommerce session and cart if needed
+            if (!WC()->session) {
+                error_log('[Add to Cart] Initializing WC session');
+                WC()->session = new WC_Session_Handler();
+                WC()->session->init();
+            }
+
+            if (!WC()->cart) {
+                error_log('[Add to Cart] Initializing WC cart');
+                WC()->initialize_session();
+                WC()->cart = new WC_Cart();
+                WC()->customer = new WC_Customer($user_id, true);
+            }
+
+            error_log('[Add to Cart] Current cart instance: ' . (WC()->cart ? get_class(WC()->cart) : 'None'));
             error_log('[Add to Cart] Session handling: ' . (WC()->session ? 'Active' : 'Inactive'));
 
             error_log('[Add to Cart] Attempting to add product ' . $params['product_id'] . ' with variation ' . $params['variation_id']);
+            
+            // Ensure cart is loaded
+            if (!did_action('woocommerce_init')) {
+                error_log('[Add to Cart] Running woocommerce_init');
+                WC()->frontend_includes();
+                do_action('woocommerce_init');
+            }
+
             $added = WC()->cart->add_to_cart(
                 $params['product_id'],
                 $params['quantity'],
