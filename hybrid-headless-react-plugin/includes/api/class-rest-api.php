@@ -116,6 +116,9 @@ class Hybrid_Headless_Rest_API {
      * @return bool
      */
     public function handle_cors($served, $result, $request, $server) {
+        error_log('[CORS] Handling CORS headers');
+        error_log('[CORS] Request headers: ' . print_r($request->get_headers(), true));
+        
         $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
         $allowed = [
             'https://www.cavingcrew.com',
@@ -131,15 +134,26 @@ class Hybrid_Headless_Rest_API {
         header('Access-Control-Allow-Headers: Content-Type, Authorization');
         header('Vary: Origin');
         
-        // Start session if needed
+        // Session debugging
+        error_log('[CORS] Session status: ' . (session_status() === PHP_SESSION_ACTIVE ? 'Active' : 'Inactive'));
+        error_log('[CORS] Current cookies: ' . print_r($_COOKIE, true));
+
         if (!session_id() && !headers_sent()) {
+            error_log('[CORS] Starting new session');
             session_start();
+        } else {
+            error_log('[CORS] Session ID exists: ' . session_id());
         }
         
-        // Initialize WooCommerce session
-        if (class_exists('WC') && !WC()->session) {
-            WC()->session = new WC_Session_Handler();
-            WC()->session->init();
+        // WooCommerce session initialization
+        if (class_exists('WC')) {
+            error_log('[CORS] WooCommerce version: ' . WC()->version);
+            if (!WC()->session) {
+                error_log('[CORS] Initializing new WC session');
+                WC()->session = new WC_Session_Handler();
+                WC()->session->init();
+            }
+            error_log('[CORS] WC customer ID: ' . WC()->session->get_customer_id());
         }
         
         return $served;

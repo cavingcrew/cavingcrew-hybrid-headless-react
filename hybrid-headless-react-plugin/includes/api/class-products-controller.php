@@ -540,17 +540,25 @@ class Hybrid_Headless_Products_Controller {
     }
 
     public function add_to_cart($request) {
+        error_log('[Add to Cart] Starting add to cart process');
+        
         $params = $request->get_params();
+        error_log('[Add to Cart] Request params: ' . print_r($params, true));
+
         $user_id = get_current_user_id();
         $is_member = (bool) get_user_meta($user_id, 'cc_member', true);
+        error_log('[Add to Cart] User status - ID: ' . $user_id . ', Is member: ' . ($is_member ? 'Yes' : 'No'));
         
         try {
-            // Verify WooCommerce is properly loaded
+            error_log('[Add to Cart] Checking WooCommerce initialization');
             if (!function_exists('WC')) {
                 throw new Exception('WooCommerce not loaded');
             }
 
-            // Add item to cart
+            error_log('[Add to Cart] Current cart instance: ' . get_class(WC()->cart));
+            error_log('[Add to Cart] Session handling: ' . (WC()->session ? 'Active' : 'Inactive'));
+
+            error_log('[Add to Cart] Attempting to add product ' . $params['product_id'] . ' with variation ' . $params['variation_id']);
             $added = WC()->cart->add_to_cart(
                 $params['product_id'],
                 $params['quantity'],
@@ -559,18 +567,24 @@ class Hybrid_Headless_Products_Controller {
                 ['is_member' => $is_member]
             );
 
+            error_log('[Add to Cart] Add to cart result: ' . ($added ? 'Success' : 'Failure'));
+            
             if (!$added) {
+                error_log('[Add to Cart] Detailed failure - Cart contents: ' . print_r(WC()->cart->get_cart(), true));
                 throw new Exception('Failed to add item to cart');
             }
 
+            error_log('[Add to Cart] Successfully added, cart URL: ' . wc_get_cart_url());
             return rest_ensure_response([
                 'success' => true,
                 'cart_url' => wc_get_cart_url()
             ]);
         } catch (Exception $e) {
+            error_log('[Add to Cart] Error: ' . $e->getMessage());
+            error_log('[Add to Cart] Stack trace: ' . $e->getTraceAsString());
             return new WP_Error(
                 'cart_error',
-                $e->getMessage(),
+                $e->getMessage() . ' [Debug: User ' . $user_id . ' Member ' . ($is_member ? 'Yes' : 'No') . ']',
                 ['status' => 400]
             );
         }
@@ -616,20 +630,28 @@ class Hybrid_Headless_Products_Controller {
     }
 
     public function check_cart_permissions($request) {
-        $params = $request->get_params();
-        $product = wc_get_product($params['product_id']);
+        error_log('[Cart Permissions] Starting permission check');
         
+        $params = $request->get_params();
+        error_log('[Cart Permissions] Request params: ' . print_r($params, true));
+
+        $product = wc_get_product($params['product_id']);
+        error_log('[Cart Permissions] Product found: ' . ($product ? 'Yes' : 'No'));
+
         // Handle variations by checking parent product
         $product_id = $product ? $product->get_id() : 0;
         if ($product && $product->is_type('variation')) {
             $product_id = $product->get_parent_id();
+            error_log('[Cart Permissions] Variation detected, using parent ID: ' . $product_id);
         }
 
         $non_members_welcome = $product_id ? 
             get_post_meta($product_id, 'event_non_members_welcome', true) : 
             false;
+        error_log('[Cart Permissions] Non-members welcome meta value: ' . print_r($non_members_welcome, true));
 
         if (!is_user_logged_in()) {
+            error_log('[Cart Permissions] User not logged in, returning: ' . ($non_members_welcome === 'yes' ? 'Allowed' : 'Denied'));
             return $non_members_welcome === 'yes';
         }
 
@@ -637,9 +659,11 @@ class Hybrid_Headless_Products_Controller {
         if ($non_members_welcome !== 'yes') {
             $user_id = get_current_user_id();
             $is_member = (bool) get_user_meta($user_id, 'cc_member', true);
+            error_log('[Cart Permissions] Membership check - User ID: ' . $user_id . ', Is member: ' . ($is_member ? 'Yes' : 'No'));
             return $is_member;
         }
 
+        error_log('[Cart Permissions] Default allow');
         return true;
     }
 }
