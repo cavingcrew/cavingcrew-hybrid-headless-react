@@ -81,6 +81,12 @@ class Hybrid_Headless_Rest_API {
         ]);
     }
 
+    private function is_member() {
+        if (!is_user_logged_in()) return false;
+        $user_id = get_current_user_id();
+        return (bool) get_user_meta($user_id, 'cc_member', true);
+    }
+
     /**
      * Handle CORS headers
      *
