@@ -5,7 +5,7 @@ import { useCategoryTrips } from '@/lib/hooks/useTrips';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { CategoryTripsGrid } from '@/components/categories/CategoryTripsGrid';
-import type { Trip } from '@/types/api';
+import type { Trip, CategoryResponse } from '@/types/api';
 import React from 'react';
 
 interface CategoryPageProps {
@@ -21,18 +21,17 @@ export default function CategoryPage({ params }: CategoryPageProps) {
 
   if (isLoading) return <LoadingState />;
 
-  if (error || !data?.success) {
+  if (error || !data?.success || !data.data) {
     return <ErrorState
       message={error?.message || 'Failed to load category'}
       onRetry={refetch}
     />;
   }
 
-  const responseData = data.data as CategoryResponse;
-  const categoryTrips = (responseData.products || []).filter((trip: Trip) =>
+  const categoryTrips = data.data.products.filter((trip) =>
     trip.categories?.some((cat) => cat.slug === slug)
   );
-  const categoryName = responseData.category?.name || slug.replace(/-/g, ' ');
+  const categoryName = data.data.category?.name || slug.replace(/-/g, ' ');
 
   return (
     <Container size="lg" py="xl">

@@ -80,26 +80,41 @@ export function useTripsByCategory(categorySlug: string) {
   return useQuery<ApiResponse<CategoryResponse>>({
     queryKey: tripKeys.category(categorySlug),
     queryFn: async () => {
-      // Fetch fresh data if needed
-      const response = await apiService.getTripsByCategory(categorySlug);
-
-      if (!response.success || !response.data) {
-        return response;
-      }
-
-      // Filter out membership and transform data
-      const filteredData = response.data.filter(trip => trip.id !== 1272);
-
-      return {
-        success: true,
-        data: {
-          products: filteredData,
-          category: {
-            name: categorySlug.replace(/-/g, ' '),
-            slug: categorySlug
-          }
+      try {
+        const response = await apiService.getTripsByCategory(categorySlug);
+        
+        if (!response.success || !response.data) {
+          return {
+            success: false,
+            data: null,
+            message: response.message || 'Failed to fetch category trips'
+          };
         }
-      };
+
+        // Transform the data structure
+        const filteredData = response.data.filter(trip => trip.id !== 1272)
+          .map(trip => ({
+            ...trip,
+            categories: trip.categories || [] // Ensure categories array exists
+          }));
+
+        return {
+          success: true,
+          data: {
+            products: filteredData,
+            category: {
+              name: categorySlug.replace(/-/g, ' '),
+              slug: categorySlug
+            }
+          }
+        };
+      } catch (error) {
+        return {
+          success: false,
+          data: null,
+          message: error instanceof Error ? error.message : 'Failed to fetch category trips'
+        };
+      }
     },
     enabled: !!categorySlug,
     staleTime: 1000 * 60 * 5,
