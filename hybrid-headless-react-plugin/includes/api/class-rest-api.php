@@ -59,6 +59,26 @@ class Hybrid_Headless_Rest_API {
                 ),
             )
         );
+
+        register_rest_route(
+            self::API_NAMESPACE,
+            '/user-status',
+            array(
+                array(
+                    'methods' => WP_REST_Server::READABLE,
+                    'callback' => array($this, 'get_user_status'),
+                    'permission_callback' => '__return_true',
+                )
+            )
+        );
+    }
+
+    public function get_user_status() {
+        return rest_ensure_response([
+            'isLoggedIn' => is_user_logged_in(),
+            'isMember' => $this->is_member(),
+            'cartCount' => WC()->cart ? WC()->cart->get_cart_contents_count() : 0
+        ]);
     }
 
     /**

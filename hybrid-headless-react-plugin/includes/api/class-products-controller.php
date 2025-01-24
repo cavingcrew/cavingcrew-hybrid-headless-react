@@ -540,6 +540,15 @@ class Hybrid_Headless_Products_Controller {
     }
 
     public function add_to_cart($request) {
+        // Initialize WooCommerce session and cart if needed
+        if (null === WC()->cart) {
+            WC()->frontend_includes();
+            WC()->session = new WC_Session_Handler();
+            WC()->session->init();
+            WC()->cart = new WC_Cart();
+            WC()->customer = new WC_Customer();
+        }
+        
         $params = $request->get_params();
         
         try {
@@ -604,16 +613,17 @@ class Hybrid_Headless_Products_Controller {
     }
 
     public function check_cart_permissions($request) {
-        $params = $request->get_params();
-        $product = wc_get_product($params['product_id']);
-        
-        if ($product) {
-            $non_members_welcome = get_post_meta($product->get_id(), 'event_non-members_welcome', true);
-            if ($non_members_welcome === 'yes') {
-                return true;
+        // First check if user is logged in
+        if (!is_user_logged_in()) {
+            $params = $request->get_params();
+            $product = wc_get_product($params['product_id']);
+            $non_members_welcome = $product ? get_post_meta($product->get_id(), 'event_non-members_welcome', true) : false;
+            if ($non_members_welcome !== 'yes') {
+                return false;
             }
         }
         
-        return is_user_logged_in();
+        // Additional security checks
+        return apply_filters('hybrid_headless_cart_permissions', true, $request);
     }
 }

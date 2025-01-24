@@ -9,6 +9,26 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_WORDPRESS_API_URL ||
   (typeof window !== 'undefined' ? window.location.origin + '/wp-json' : 'https://www.cavingcrew.com/wp-json');
 
 export const apiService = {
+  async getUserStatus(): Promise<ApiResponse<{
+    isLoggedIn: boolean;
+    isMember: boolean;
+    cartCount: number;
+  }>> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/hybrid-headless/v1/user-status`, {
+        credentials: 'include'
+      });
+      if (!response.ok) throw new Error('Failed to fetch user status');
+      const data = await response.json();
+      return { data, success: true };
+    } catch (error) {
+      return {
+        success: false,
+        data: null,
+        message: error instanceof Error ? error.message : 'Failed to fetch user status'
+      };
+    }
+  },
   async getProductStock(productId: number): Promise<ApiResponse<ProductStockResponse>> {
     try {
       const response = await fetch(

@@ -22,7 +22,11 @@ interface TripSignupWidgetProps {
 
 export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
   const [selectedVariation, setSelectedVariation] = useState<string>('');
-  const [userStatus, setUserStatus] = useState<{ isLoggedIn: boolean; isMember: boolean } | null>(null);
+  const { data: userStatus } = useQuery({
+    queryKey: ['userStatus'],
+    queryFn: () => apiService.getUserStatus(),
+    refetchInterval: 30000
+  });
   const [variations, setVariations] = useState(trip.variations || []);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
