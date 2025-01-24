@@ -135,7 +135,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
 					<Title order={2} mb="md">
 						What does signing up pay for?
 					</Title>
-					<Text>{trip.acf.event_paying_for}</Text>
+					<div dangerouslySetInnerHTML={{ __html: trip.acf.event_paying_for }} />
 				</Paper>
 			)}
 
@@ -155,7 +155,9 @@ export function TripDetails({ trip }: TripDetailsProps) {
 								>
 									<Accordion.Control>{faq.trip_faq_title}</Accordion.Control>
 									<Accordion.Panel>
-										{faq.trip_faq_answer && <Text>{faq.trip_faq_answer}</Text>}
+										{faq.trip_faq_answer && 
+											<div dangerouslySetInnerHTML={{ __html: faq.trip_faq_answer }} />
+										}
 									</Accordion.Panel>
 								</Accordion.Item>
 							))}
@@ -182,7 +184,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
 									</Accordion.Control>
 									<Accordion.Panel>
 										{kit.overnight_kit_list && (
-											<Text>{kit.overnight_kit_list}</Text>
+											<div dangerouslySetInnerHTML={{ __html: kit.overnight_kit_list }} />
 										)}
 									</Accordion.Panel>
 								</Accordion.Item>
@@ -214,7 +216,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
 									</Accordion.Control>
 									<Accordion.Panel>
 										{plan.overnight_plans_description && (
-											<Text>{plan.overnight_plans_description}</Text>
+											<div dangerouslySetInnerHTML={{ __html: plan.overnight_plans_description }} />
 										)}
 									</Accordion.Panel>
 								</Accordion.Item>
