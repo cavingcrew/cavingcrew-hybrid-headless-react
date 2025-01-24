@@ -9,6 +9,7 @@ interface CategoryPageProps {
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
   const { slug } = params;
+  const { slug } = params;
 
   // Debugging: Log the received params
   console.log('Received params:', params);
