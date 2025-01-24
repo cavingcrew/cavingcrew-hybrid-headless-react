@@ -27,6 +27,21 @@ class Hybrid_Headless_Frontend {
     private function init_hooks() {
         add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
         add_filter( 'template_include', array( $this, 'override_template' ), 999 );
+        add_filter('login_redirect', array($this, 'handle_login_redirect'), 10, 3);
+        add_filter('allowed_redirect_hosts', array($this, 'allow_redirect_hosts'));
+    }
+
+    public function handle_login_redirect($redirect_to, $requested_redirect_to, $user) {
+        // If a specific redirect was requested, use that
+        if ($requested_redirect_to) {
+            return $requested_redirect_to;
+        }
+        return home_url();
+    }
+
+    public function allow_redirect_hosts($hosts) {
+        $hosts[] = parse_url(home_url(), PHP_URL_HOST);
+        return $hosts;
     }
 
     /**

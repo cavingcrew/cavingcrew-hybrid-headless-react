@@ -11,6 +11,7 @@ import {
   Stack,
   Title
 } from '@mantine/core';
+import { IconLogin } from '@tabler/icons-react';
 import { apiService } from '@/lib/api-service';
 import type { Trip } from '@/types/api';
 
@@ -125,8 +126,18 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
       )}
 
       {userStatus && !userStatus.isLoggedIn ? (
-        <Alert color="blue" mt="md">
-          Please log in to sign up for this trip
+        <Alert color="blue" mt="md" icon={<IconLogin size={18} />}>
+          <Group gap="xs">
+            <Text>Please log in to sign up for this trip</Text>
+            <Button
+              variant="light"
+              component="a"
+              href={`/wp-login.php?redirect_to=${encodeURIComponent(window.location.href)}#signup`}
+              leftSection={<IconLogin size={16} />}
+            >
+              Log In Now
+            </Button>
+          </Group>
         </Alert>
       ) : (
         <Group mt="md">
