@@ -375,7 +375,7 @@ class Hybrid_Headless_Products_Controller {
                 'has_variations' => $has_variations,
                 'variations' => $variations,
                 'is_variable' => $product->is_type('variable'),
-                'purchasable' => $product->is_purchasable(),
+                'purchasable' => $product->is_purchasable() || !empty($variations), // Changed line
                 'attributes' => $attributes
             );
             wp_cache_set($cache_key, $stock_info, '', 30);
