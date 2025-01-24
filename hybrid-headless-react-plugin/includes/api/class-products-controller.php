@@ -665,8 +665,12 @@ class Hybrid_Headless_Products_Controller {
         
         error_log('[Cart Auth] Product ID: ' . $parent_id);
         
-        // Get meta value with explicit get_post_meta call
-        $non_members_welcome = get_post_meta($parent_id, 'event_non_members_welcome', true);
+        // Check both hyphenated and underscored versions of the meta key
+        $non_members_welcome = get_post_meta($parent_id, 'event_non-members_welcome', true);
+        if (empty($non_members_welcome)) {
+            $non_members_welcome = get_post_meta($parent_id, 'event_non_members_welcome', true);
+        }
+        
         error_log('[Cart Auth] Non-members welcome raw value: ' . print_r($non_members_welcome, true));
         
         // If product requires membership
