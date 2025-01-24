@@ -1,6 +1,18 @@
 export interface Variation {
 	id: number;
-	attributes: Record<string, string>;
+	attributes: {
+		[key: string]: {
+			name: string;
+			value: string;
+			description?: string;
+			slug: string;
+			options?: Array<{
+				slug: string;
+				name: string;
+				description?: string;
+			}>;
+		};
+	};
 	stock_quantity: number | null;
 	stock_status: string;
 	price: string;
@@ -11,6 +23,18 @@ export interface Variation {
 	purchasable: boolean;
 	has_purchased?: boolean;
 	can_purchase?: boolean;
+}
+
+export interface ProductStockResponse {
+	product_id: number;
+	stock_quantity: number | null;
+	stock_status: string;
+	variations: Array<{
+		variation_id: number;
+		stock_quantity: number | null;
+		stock_status: string;
+		attributes: Record<string, string>;
+	}>;
 }
 
 export interface ProductVariationsResponse {

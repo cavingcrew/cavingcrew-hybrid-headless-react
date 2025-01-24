@@ -4,16 +4,21 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_WORDPRESS_API_URL ||
   (typeof window !== 'undefined' ? window.location.origin + '/wp-json' : 'https://www.cavingcrew.com/wp-json');
 
 export const apiService = {
-  async pollStock(productId: number, variationId: number, interval = 30000): Promise<ApiResponse<any>> {
-    return new Promise((resolve) => {
-      const intervalId = setInterval(async () => {
-        const response = await this.getStock(productId, variationId);
-        if (response.success) {
-          resolve(response);
-          clearInterval(intervalId);
-        }
-      }, interval);
-    });
+  async getProductStock(productId: number): Promise<ApiResponse<ProductStockResponse>> {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/hybrid-headless/v1/products/${productId}/stock`
+      );
+      if (!response.ok) throw new Error('Failed to fetch stock');
+      const data = await response.json();
+      return { data, success: true };
+    } catch (error) {
+      return {
+        success: false,
+        data: null,
+        message: error instanceof Error ? error.message : 'Failed to fetch stock'
+      };
+    }
   },
   async getProductVariations(productId: number): Promise<ApiResponse<{
     variations: any[];

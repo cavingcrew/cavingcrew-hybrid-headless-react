@@ -238,11 +238,45 @@ class Hybrid_Headless_Products_Controller {
             'in_stock' => false
         ];
 
+        // Get attribute descriptions
+        $attributes = [];
+        foreach ($product->get_attributes() as $attribute) {
+            $terms = [];
+            foreach ($attribute->get_terms() as $term) {
+                $terms[] = [
+                    'slug' => $term->slug,
+                    'name' => $term->name,
+                    'description' => $term->description
+                ];
+            }
+            
+            $attributes[$attribute->get_name()] = [
+                'name' => $attribute->get_name(),
+                'type' => $attribute->get_type(),
+                'description' => $attribute->get_description(),
+                'terms' => $terms
+            ];
+        }
+
         // Handle variable products
         if ($product->is_type('variable')) {
             $has_variations = true;
             foreach ($product->get_available_variations() as $variation_data) {
                 $variation = wc_get_product($variation_data['variation_id']);
+                
+                // Get attribute details with descriptions
+                $variation_attributes = [];
+                foreach ($variation->get_variation_attributes() as $attr_name => $attr_value) {
+                    $taxonomy = str_replace('attribute_', '', $attr_name);
+                    $term = get_term_by('slug', $attr_value, $taxonomy);
+                    
+                    $variation_attributes[$taxonomy] = [
+                        'name' => wc_attribute_label($taxonomy),
+                        'value' => $term ? $term->name : $attr_value,
+                        'description' => $term ? $term->description : '',
+                        'slug' => $attr_value
+                    ];
+                }
                 
                 if ($variation && $variation->is_purchasable() && $variation->is_in_stock()) {
                     $variation_stock['total_stock'] += $variation->get_stock_quantity();
@@ -250,7 +284,7 @@ class Hybrid_Headless_Products_Controller {
                     
                     $variations[] = [
                         'id' => $variation->get_id(),
-                        'attributes' => $variation->get_variation_attributes(),
+                        'attributes' => $variation_attributes,
                         'stock_quantity' => $variation->get_stock_quantity(),
                         'stock_status' => $variation->get_stock_status(),
                         'price' => $variation->get_price(),
@@ -272,7 +306,8 @@ class Hybrid_Headless_Products_Controller {
                 'has_variations' => $has_variations,
                 'variations' => $variations,
                 'is_variable' => $product->is_type('variable'),
-                'purchasable' => $product->is_purchasable()
+                'purchasable' => $product->is_purchasable(),
+                'attributes' => $attributes
             );
             wp_cache_set($cache_key, $stock_info, '', 30);
         }

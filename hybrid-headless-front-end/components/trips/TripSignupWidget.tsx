@@ -22,29 +22,31 @@ interface TripSignupWidgetProps {
 export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
   const [selectedVariation, setSelectedVariation] = useState<string>('');
   const [userStatus, setUserStatus] = useState<{ isLoggedIn: boolean; isMember: boolean } | null>(null);
-  const [variations, setVariations] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [variations, setVariations] = useState(trip.variations || []);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const loadVariations = async () => {
-      try {
-        const response = await apiService.getProductVariations(trip.id);
-        if (response.success) {
-          setVariations(response.data?.variations || []);
-          setUserStatus(response.data?.userStatus || null);
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load variations');
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Poll stock data
+  const { data: stockData } = useQuery({
+    queryKey: ['productStock', trip.id],
+    queryFn: () => apiService.getProductStock(trip.id),
+    refetchInterval: 30000,
+    enabled: trip.has_variations
+  });
 
-    if (trip.has_variations) {
-      loadVariations();
+  // Update variations when stock data changes
+  useEffect(() => {
+    if (stockData?.success) {
+      setVariations(prev => prev.map(v => {
+        const stock = stockData.data.variations.find(sv => sv.variation_id === v.id);
+        return stock ? {
+          ...v,
+          stock_quantity: stock.stock_quantity,
+          stock_status: stock.stock_status
+        } : v;
+      }));
     }
-  }, [trip.id, trip.has_variations]);
+  }, [stockData]);
 
   const handleSignUp = async () => {
     if (!selectedVariation) return;
