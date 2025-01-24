@@ -85,6 +85,23 @@ class Hybrid_Headless_Products_Controller {
 
         register_rest_route(
             Hybrid_Headless_Rest_API::API_NAMESPACE,
+            '/products/(?P<id>\d+)/stock',
+            [
+                'methods' => 'GET',
+                'callback' => [$this, 'get_product_stock'],
+                'permission_callback' => '__return_true',
+                'args' => [
+                    'id' => [
+                        'validate_callback' => function($param) {
+                            return is_numeric($param);
+                        }
+                    ]
+                ]
+            ]
+        );
+
+        register_rest_route(
+            Hybrid_Headless_Rest_API::API_NAMESPACE,
             '/products/(?P<id>[\d]+)',
             array(
                 array(
@@ -551,6 +568,39 @@ class Hybrid_Headless_Products_Controller {
         if (!is_user_logged_in()) return false;
         $user_id = get_current_user_id();
         return (bool) get_user_meta($user_id, 'cc_member', true);
+    }
+
+    public function get_product_stock($request) {
+        $product_id = $request['id'];
+        $product = wc_get_product($product_id);
+        
+        if (!$product) {
+            return new WP_Error(
+                'product_not_found',
+                __('Product not found', 'hybrid-headless'),
+                ['status' => 404]
+            );
+        }
+        
+        $stock_data = [
+            'product_id' => $product_id,
+            'stock_status' => $product->get_stock_status(),
+            'stock_quantity' => $product->get_stock_quantity(),
+            'variations' => []
+        ];
+        
+        if ($product->is_type('variable')) {
+            foreach ($product->get_available_variations() as $variation) {
+                $variation_product = wc_get_product($variation['variation_id']);
+                $stock_data['variations'][] = [
+                    'variation_id' => $variation['variation_id'],
+                    'stock_quantity' => $variation_product->get_stock_quantity(),
+                    'stock_status' => $variation_product->get_stock_status()
+                ];
+            }
+        }
+        
+        return rest_ensure_response($stock_data);
     }
 
     public function check_cart_permissions($request) {
