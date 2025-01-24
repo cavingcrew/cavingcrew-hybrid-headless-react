@@ -129,24 +129,28 @@ class Hybrid_Headless_Rest_API {
      * @return bool
      */
     public function handle_cors($served, $result, $request, $server) {
-        error_log('[CORS] Handling CORS headers');
-        error_log('[CORS] Request headers: ' . print_r($request->get_headers(), true));
+        error_log('[API Auth] Starting CORS/Auth handling');
         
+        // Set CORS headers
         $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-        $allowed = [
-            'https://www.cavingcrew.com',
-            'http://localhost:3000' // For local development
-        ];
-
-        if (in_array($origin, $allowed)) {
+        if (in_array($origin, ['https://www.cavingcrew.com', 'http://localhost:3000'])) {
             header('Access-Control-Allow-Origin: ' . esc_url_raw($origin));
             header('Access-Control-Allow-Credentials: true');
+            header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+            header('Access-Control-Allow-Headers: Content-Type, Authorization');
+            header('Vary: Origin');
         }
-        
-        header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-        header('Access-Control-Allow-Headers: Content-Type, Authorization');
-        header('Vary: Origin');
-        
+
+        // Initialize authentication early
+        if (isset($_COOKIE[LOGGED_IN_COOKIE])) {
+            error_log('[API Auth] Found auth cookie, initializing user');
+            $user_id = wp_validate_auth_cookie($_COOKIE[LOGGED_IN_COOKIE], 'logged_in');
+            if ($user_id) {
+                wp_set_current_user($user_id);
+                error_log('[API Auth] Set current user: ' . $user_id);
+            }
+        }
+
         // Session handling
         if (!session_id() && !headers_sent()) {
             session_set_cookie_params([

@@ -640,38 +640,65 @@ class Hybrid_Headless_Products_Controller {
     }
 
     public function check_cart_permissions($request) {
+        error_log('[Cart Auth] Starting permission check');
+        error_log('[Cart Auth] Auth cookie present: ' . (isset($_COOKIE[LOGGED_IN_COOKIE]) ? 'Yes' : 'No'));
+        if (isset($_COOKIE[LOGGED_IN_COOKIE])) {
+            error_log('[Cart Auth] Auth cookie value: ' . $_COOKIE[LOGGED_IN_COOKIE]);
+        }
+        
+        // Force WordPress to check authentication
+        $user_id = apply_filters('determine_current_user', false);
+        error_log('[Cart Auth] User ID from filter: ' . ($user_id ?: 'None'));
+        
+        if ($user_id) {
+            wp_set_current_user($user_id);
+            error_log('[Cart Auth] Set current user: ' . $user_id);
+        }
+
         $params = $request->get_params();
         $product = wc_get_product($params['product_id']);
-
+        
         // Get parent product for variations
         $parent_id = $product->is_type('variation') ? 
             $product->get_parent_id() : 
             $product->get_id();
-
-        $non_members_welcome = get_post_meta(
-            $parent_id, 
-            'event_non_members_welcome', 
-            true
-        );
-
+        
+        error_log('[Cart Auth] Product ID: ' . $parent_id);
+        
+        // Get meta value with explicit get_post_meta call
+        $non_members_welcome = get_post_meta($parent_id, 'event_non_members_welcome', true);
+        error_log('[Cart Auth] Non-members welcome raw value: ' . print_r($non_members_welcome, true));
+        
         // If product requires membership
         if ($non_members_welcome !== 'yes') {
+            error_log('[Cart Auth] Product requires membership');
+            
             // Check WordPress authentication
             if (!is_user_logged_in()) {
-                error_log('Permission denied: User not logged in');
-                return false;
+                error_log('[Cart Auth] User not logged in - denying access');
+                return new WP_Error(
+                    'auth_required',
+                    'Authentication required for this product',
+                    ['status' => 401]
+                );
             }
 
             // Check membership status
             $user_id = get_current_user_id();
             $is_member = (bool) get_user_meta($user_id, 'cc_member', true);
+            error_log('[Cart Auth] User ' . $user_id . ' membership status: ' . ($is_member ? 'Yes' : 'No'));
             
             if (!$is_member) {
-                error_log("Permission denied: User $user_id is not a member");
-                return false;
+                error_log('[Cart Auth] User not a member - denying access');
+                return new WP_Error(
+                    'membership_required',
+                    'Membership required for this product',
+                    ['status' => 403]
+                );
             }
         }
 
+        error_log('[Cart Auth] Permission granted');
         return true;
     }
 }
