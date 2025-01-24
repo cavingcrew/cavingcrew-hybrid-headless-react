@@ -74,16 +74,35 @@ class Hybrid_Headless_Rest_API {
     }
 
     public function get_user_status() {
+        // Manually validate WordPress auth cookies
+        $user_id = 0;
+        $logged_in = false;
+        
+        if (isset($_COOKIE[LOGGED_IN_COOKIE])) {
+            $cookie = $_COOKIE[LOGGED_IN_COOKIE];
+            $user_id = wp_validate_auth_cookie($cookie, 'logged_in');
+            
+            if ($user_id) {
+                wp_set_current_user($user_id);
+                $logged_in = true;
+            }
+        }
+
+        // Get cart count safely
+        $cart_count = 0;
+        if (class_exists('WooCommerce') && WC()->cart) {
+            $cart_count = WC()->cart->get_cart_contents_count();
+        }
+
         return rest_ensure_response([
-            'isLoggedIn' => is_user_logged_in(),
-            'isMember' => $this->is_member(),
-            'cartCount' => WC()->cart ? WC()->cart->get_cart_contents_count() : 0
+            'isLoggedIn' => $logged_in,
+            'isMember' => $this->is_member($user_id),
+            'cartCount' => $cart_count
         ]);
     }
 
-    private function is_member() {
-        if (!is_user_logged_in()) return false;
-        $user_id = get_current_user_id();
+    private function is_member($user_id) {
+        if (!$user_id) return false;
         return (bool) get_user_meta($user_id, 'cc_member', true);
     }
 
@@ -96,23 +115,21 @@ class Hybrid_Headless_Rest_API {
      * @param WP_REST_Server   $server  Server instance.
      * @return bool
      */
-    public function handle_cors( $served, $result, $request, $server ) {
-        $allowed_origins = array(
-            get_option( 'hybrid_headless_nextjs_url', HYBRID_HEADLESS_DEFAULT_NEXTJS_URL ),
-            get_option( 'hybrid_headless_frontend_url', '*' )
-        );
-        
-        $origin = $_SERVER['HTTP_ORIGIN'] ?? '*';
-        
-        if (in_array($origin, $allowed_origins)) {
-            header( 'Access-Control-Allow-Origin: ' . esc_url_raw( $origin ) );
-        } else {
-            header( 'Access-Control-Allow-Origin: *' );
+    public function handle_cors($served, $result, $request, $server) {
+        $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+        $allowed = [
+            'https://www.cavingcrew.com',
+            'http://localhost:3000' // For local development
+        ];
+
+        if (in_array($origin, $allowed)) {
+            header('Access-Control-Allow-Origin: ' . esc_url_raw($origin));
+            header('Access-Control-Allow-Credentials: true');
         }
         
-        header( 'Access-Control-Allow-Methods: GET, POST, OPTIONS' );
-        header( 'Access-Control-Allow-Credentials: true' );
-        header( 'Access-Control-Allow-Headers: Authorization, Content-Type' );
+        header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+        header('Access-Control-Allow-Headers: Content-Type, Authorization');
+        header('Vary: Origin');
         
         return $served;
     }

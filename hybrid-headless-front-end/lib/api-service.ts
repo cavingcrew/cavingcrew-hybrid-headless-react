@@ -16,7 +16,10 @@ export const apiService = {
   }>> {
     try {
       const response = await fetch(`${API_BASE_URL}/hybrid-headless/v1/user-status`, {
-        credentials: 'include'
+        credentials: 'include', // Required for cookies
+        headers: {
+          'Cache-Control': 'no-store' // Prevent caching of auth state
+        }
       });
       if (!response.ok) throw new Error('Failed to fetch user status');
       const data = await response.json();
