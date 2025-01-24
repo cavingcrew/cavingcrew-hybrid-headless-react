@@ -77,7 +77,7 @@ export function useTrip(slug: string) {
 export function useTripsByCategory(categorySlug: string) {
   const queryClient = useQueryClient();
 
-  return useQuery({
+  return useQuery<ApiResponse<CategoryResponse>>({
     queryKey: tripKeys.category(categorySlug),
     queryFn: async () => {
       // First try to find trips in this category from existing data
@@ -88,7 +88,16 @@ export function useTripsByCategory(categorySlug: string) {
           trip.id !== 1272 // Filter out membership
         );
         if (categoryTrips.length > 0) {
-          return { data: categoryTrips, success: true };
+          return { 
+            success: true,
+            data: {
+              products: categoryTrips,
+              category: {
+                name: categorySlug.replace(/-/g, ' '),
+                slug: categorySlug
+              }
+            }
+          };
         }
       }
       
@@ -96,7 +105,13 @@ export function useTripsByCategory(categorySlug: string) {
       const response = await apiService.getTripsByCategory(categorySlug);
       if (response.success && response.data) {
         const filteredData = response.data.filter(trip => trip.id !== 1272);
-        return { ...response, data: filteredData };
+        return { 
+          ...response, 
+          data: {
+            products: filteredData,
+            category: response.data.category
+          }
+        };
       }
       return response;
     },

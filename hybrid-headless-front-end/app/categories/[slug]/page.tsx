@@ -6,11 +6,9 @@ import { LoadingState } from '@/components/ui/LoadingState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { CategoryTripsGrid } from '@/components/categories/CategoryTripsGrid';
 import type { Trip } from '@/types/api';
-import type { PageProps } from 'next/app';
 import React from 'react';
 
-// Define proper page props type
-interface CategoryPageProps extends PageProps {
+interface CategoryPageProps {
   params: { slug: string };
 }
 
@@ -35,19 +33,14 @@ export default function CategoryPage({ params }: CategoryPageProps) {
     />;
   }
 
-  // Get trips from the response data
-  const categoryTrips = (data.data?.products || []).filter((trip: Trip) =>
+  // Type assertion for API response
+  const responseData = data.data as CategoryResponse;
+  
+  const categoryTrips = (responseData.products || []).filter((trip: Trip) =>
     trip.categories?.some((cat) => cat.slug === slug)
   );
 
-  // Get category name from response or fallback to slug
-  const categoryName = data.data?.category?.name || slug.replace(/-/g, ' ');
-
-  console.log('Filtered trips:', {
-    slug,
-    count: categoryTrips.length,
-    trips: categoryTrips.map((t: Trip) => t.name)
-  });
+  const categoryName = responseData.category?.name || slug.replace(/-/g, ' ');
 
   return (
     <Container size="lg" py="xl">
