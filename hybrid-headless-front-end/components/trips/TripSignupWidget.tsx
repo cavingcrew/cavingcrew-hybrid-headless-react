@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { 
   Box, 
   Button, 
@@ -13,7 +13,8 @@ import {
 } from '@mantine/core';
 import { IconLogin } from '@tabler/icons-react';
 import { apiService } from '@/lib/api-service';
-import type { Trip } from '@/types/api';
+import type { Trip, ApiResponse } from '@/types/api';
+import { tripKeys } from '@/lib/hooks/useTrips';
 
 interface TripSignupWidgetProps {
   trip: Trip;
