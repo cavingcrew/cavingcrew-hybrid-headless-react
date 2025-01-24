@@ -115,7 +115,10 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
                       color={variation.stock_status === 'instock' ? 'green' : 'red'}
                       variant="light"
                     >
-                      {variation.stock_quantity} spots left
+                      {variation.stock_status === 'instock' ? 
+                        `${variation.stock_quantity} spots left` : 
+                        'Sold out'
+                      }
                     </Badge>
                   </Group>
                 }
