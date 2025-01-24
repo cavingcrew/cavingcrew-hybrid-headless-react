@@ -4,7 +4,7 @@ import { CategoryTripsGrid } from '@/components/categories/CategoryTripsGrid';
 import { notFound } from 'next/navigation';
 
 interface CategoryPageProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
@@ -81,3 +81,4 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
     return notFound();
   }
 }
+import React from 'react';
