@@ -6,6 +6,7 @@ export const tripKeys = {
   all: ['trips'] as const,
   detail: (slug: string) => [...tripKeys.all, 'detail', slug] as const,
   category: (categorySlug: string) => [...tripKeys.all, 'category', categorySlug] as const,
+  lists: () => [...tripKeys.all, 'list'] as const,
 };
 
 interface TripsResponse {
@@ -16,7 +17,7 @@ interface TripsResponse {
 
 export function useTrips(): UseQueryResult<ApiResponse<Trip[]>> {
   return useQuery<ApiResponse<Trip[]>>({
-    queryKey: tripKeys.lists(),
+    queryKey: tripKeys.all,
     queryFn: async () => {
       const response = await apiService.getTrips();
       if (response.success && response.data) {
