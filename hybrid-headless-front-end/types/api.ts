@@ -22,9 +22,9 @@ export interface ProductVariationsResponse {
 }
 
 export interface BasicCategory {
-  id: number;
-  name: string;
-  slug: string;
+	id: number;
+	name: string;
+	slug: string;
 }
 
 export interface Trip {
