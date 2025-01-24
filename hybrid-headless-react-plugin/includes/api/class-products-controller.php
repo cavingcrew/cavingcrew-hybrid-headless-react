@@ -238,24 +238,56 @@ class Hybrid_Headless_Products_Controller {
             'in_stock' => false
         ];
 
-        // Get attribute descriptions
+        // Get attribute data
         $attributes = [];
-        foreach ($product->get_attributes() as $attribute) {
-            $terms = [];
-            foreach ($attribute->get_terms() as $term) {
-                $terms[] = [
-                    'slug' => $term->slug,
-                    'name' => $term->name,
-                    'description' => $term->description
-                ];
-            }
-            
-            $attributes[$attribute->get_name()] = [
+        $product_attributes = $product->get_attributes();
+        
+        foreach ($product_attributes as $attribute_key => $attribute) {
+            $attr_data = [
                 'name' => $attribute->get_name(),
-                'type' => $attribute->get_type(),
                 'description' => $attribute->get_description(),
-                'terms' => $terms
+                'terms' => []
             ];
+
+            // Handle taxonomy attributes
+            if ($attribute->is_taxonomy()) {
+                $terms = [];
+                $attribute_terms = $attribute->get_terms();
+                
+                if (is_array($attribute_terms)) {
+                    foreach ($attribute_terms as $term) {
+                        $terms[] = [
+                            'slug' => $term->slug,
+                            'name' => $term->name,
+                            'description' => $term->description
+                        ];
+                    }
+                }
+                
+                $attr_data['terms'] = $terms;
+
+                // Get attribute type from taxonomy
+                $taxonomy = $attribute->get_name();
+                $attribute_id = wc_attribute_taxonomy_id_by_name($taxonomy);
+                $attribute_type = wc_get_attribute($attribute_id)->type ?? 'select';
+                $attr_data['type'] = $attribute_type;
+            } else {
+                // Handle custom attributes
+                $attr_data['type'] = 'select';
+                $options = $attribute->get_options();
+                
+                if (is_array($options)) {
+                    foreach ($options as $option) {
+                        $attr_data['terms'][] = [
+                            'slug' => sanitize_title($option),
+                            'name' => $option,
+                            'description' => ''
+                        ];
+                    }
+                }
+            }
+
+            $attributes[$attribute_key] = $attr_data;
         }
 
         // Handle variable products
