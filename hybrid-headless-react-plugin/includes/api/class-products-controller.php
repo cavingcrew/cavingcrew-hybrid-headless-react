@@ -243,6 +243,11 @@ class Hybrid_Headless_Products_Controller {
         $product_attributes = $product->get_attributes();
         
         foreach ($product_attributes as $attribute_key => $attribute) {
+            // Skip invalid attributes
+            if (!($attribute instanceof WC_Product_Attribute)) {
+                continue;
+            }
+
             $attr_data = [
                 'name' => $attribute->get_name(),
                 'description' => $attribute->get_description(),
@@ -269,8 +274,13 @@ class Hybrid_Headless_Products_Controller {
                 // Get attribute type from taxonomy
                 $taxonomy = $attribute->get_name();
                 $attribute_id = wc_attribute_taxonomy_id_by_name($taxonomy);
-                $attribute_type = wc_get_attribute($attribute_id)->type ?? 'select';
-                $attr_data['type'] = $attribute_type;
+                
+                if ($attribute_id) {
+                    $wc_attribute = wc_get_attribute($attribute_id);
+                    $attr_data['type'] = $wc_attribute ? $wc_attribute->type : 'select';
+                } else {
+                    $attr_data['type'] = 'select';
+                }
             } else {
                 // Handle custom attributes
                 $attr_data['type'] = 'select';
