@@ -1,4 +1,4 @@
-import { useQuery, type UseQueryResult } from '@tanstack/react-query';
+import { useQuery, useQueryClient, type UseQueryResult } from '@tanstack/react-query';
 import { apiService } from '../api-service';
 import type { Trip, ApiResponse, CategoryResponse } from '../../types/api';
 
