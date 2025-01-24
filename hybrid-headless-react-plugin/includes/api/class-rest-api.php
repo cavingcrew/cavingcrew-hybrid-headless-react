@@ -88,6 +88,10 @@ class Hybrid_Headless_Rest_API {
                     $logged_in = true;
                 }
             }
+            
+            // Debug logging
+            error_log('[User Status] User ID: ' . $user_id);
+            error_log('[User Status] Logged in: ' . ($logged_in ? 'Yes' : 'No'));
         } catch (Exception $e) {
             error_log('[User Status] Error validating auth cookie: ' . $e->getMessage());
             return rest_ensure_response([
