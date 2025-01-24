@@ -8,12 +8,13 @@ import { TripDetails } from '@/components/trips/TripDetails';
 import React from 'react';
 
 interface TripPageProps {
-  params: { slug: string };
-  searchParams?: { [key: string]: string | string[] | undefined };
+  params: Promise<{ slug: string }>;
+  searchParams?: Promise<Record<string, string | string[]>>;
 }
 
 export default function TripPage({ params }: TripPageProps) {
-  const { slug } = params;
+  const resolvedParams = React.use(params);
+  const { slug } = resolvedParams;
   const { data, isLoading, error, refetch } = useTrip(slug);
 
   if (isLoading) {
