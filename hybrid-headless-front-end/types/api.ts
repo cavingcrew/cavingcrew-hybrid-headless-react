@@ -112,3 +112,11 @@ export interface ApiResponse<T> {
 	success: boolean;
 	message?: string;
 }
+
+export interface CategoryResponse {
+	products: Trip[];
+	category?: {
+		name: string;
+		slug: string;
+	};
+}
