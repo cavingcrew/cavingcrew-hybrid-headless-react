@@ -15,9 +15,9 @@ export interface Variation {
 
 export interface ProductVariationsResponse {
 	variations: Variation[];
-	user_status: {
-		is_logged_in: boolean;
-		is_member: boolean;
+	userStatus: {
+		isLoggedIn: boolean;
+		isMember: boolean;
 	};
 }
 

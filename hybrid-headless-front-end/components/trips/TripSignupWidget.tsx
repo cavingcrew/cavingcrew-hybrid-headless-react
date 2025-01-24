@@ -32,7 +32,7 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
         const response = await apiService.getProductVariations(trip.id);
         if (response.success) {
           setVariations(response.data?.variations || []);
-          setUserStatus(response.data?.user_status || null);
+          setUserStatus(response.data?.userStatus || null);
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load variations');
