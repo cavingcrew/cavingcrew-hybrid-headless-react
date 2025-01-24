@@ -81,7 +81,7 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
   }
 
   const hasAvailableVariations = trip.variations?.some(v => v.stock_status === 'instock');
-  if ((trip.has_variations && !hasAvailableVariations) || (!trip.has_variations && trip.stock_status !== 'instock')) {
+  if ((trip.has_variations && !hasAvailableVariations) || (!trip.has_variations && !trip.purchasable)) {
     return (
       <Alert color="yellow" title={trip.has_variations ? "Sold Out" : "Not Available"}>
         {trip.has_variations ? "All options are currently sold out" : "This trip is currently not available for signups"}
@@ -110,7 +110,7 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
                 value={variation.id.toString()}
                 label={
                   <Group gap="xs">
-                    <Text span>{Object.values(variation.attributes).join(' - ')}</Text>
+                    <Text span>{Object.values(variation.attributes).map(attr => attr.value).join(' - ')}</Text>
                     <Badge 
                       color={variation.stock_status === 'instock' ? 'green' : 'red'}
                       variant="light"

@@ -347,7 +347,7 @@ class Hybrid_Headless_Products_Controller {
                     ];
                 }
                 
-                if ($variation && $variation->is_purchasable() && $variation->is_in_stock()) {
+                if ($variation) { // Return all variations regardless of stock status
                     $variation_stock['total_stock'] += $variation->get_stock_quantity();
                     $variation_stock['in_stock'] = true;
                     
