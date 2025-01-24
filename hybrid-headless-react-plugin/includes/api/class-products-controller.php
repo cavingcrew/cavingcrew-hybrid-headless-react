@@ -68,20 +68,6 @@ class Hybrid_Headless_Products_Controller {
             ]
         );
 
-        register_rest_route(
-            Hybrid_Headless_Rest_API::API_NAMESPACE,
-            '/cart',
-            [
-                'methods' => 'POST',
-                'callback' => [$this, 'add_to_cart'],
-                'permission_callback' => [$this, 'check_cart_permissions'],
-                'args' => [
-                    'product_id' => ['required' => true, 'type' => 'integer'],
-                    'variation_id' => ['required' => true, 'type' => 'integer'],
-                    'quantity' => ['default' => 1, 'type' => 'integer']
-                ]
-            ]
-        );
 
         register_rest_route(
             Hybrid_Headless_Rest_API::API_NAMESPACE,

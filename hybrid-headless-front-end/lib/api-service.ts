@@ -88,32 +88,6 @@ export const apiService = {
     }
   },
 
-  async addToCart(productId: number, variationId: number): Promise<ApiResponse<any>> {
-    try {
-      const response = await fetch(`${API_BASE_URL}/hybrid-headless/v1/cart`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          product_id: productId,
-          variation_id: variationId,
-          quantity: 1
-        })
-      });
-      
-      if (!response.ok) throw new Error('Failed to add to cart');
-      const data = await response.json();
-      return { data, success: true };
-    } catch (error) {
-      return {
-        success: false,
-        data: null,
-        message: error instanceof Error ? error.message : 'Failed to add to cart'
-      };
-    }
-  },
 
   async getTrips(page = 1, perPage = 12): Promise<ApiResponse<any>> {
     try {
