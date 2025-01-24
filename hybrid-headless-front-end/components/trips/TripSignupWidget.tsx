@@ -44,7 +44,7 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
         return {
           ...old,
           data: old.data.map(t => 
-            t.id === trip.id ? { ...t, variations: stockData.data.variations || [] } : t
+            t.id === trip.id ? { ...t, variations: stockData.data?.variations || [] } : t
           )
         };
       });
