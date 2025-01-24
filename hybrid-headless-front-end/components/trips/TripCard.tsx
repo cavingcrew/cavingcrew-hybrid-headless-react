@@ -57,5 +57,6 @@ export default function TripCard({ trip }: TripCardProps) {
 				</Text>
 			</Group>
 		</Card>
+		</Link>
 	);
 }
