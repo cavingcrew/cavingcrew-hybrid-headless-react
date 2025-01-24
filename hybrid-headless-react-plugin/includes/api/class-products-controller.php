@@ -630,40 +630,38 @@ class Hybrid_Headless_Products_Controller {
     }
 
     public function check_cart_permissions($request) {
-        error_log('[Cart Permissions] Starting permission check');
-        
         $params = $request->get_params();
-        error_log('[Cart Permissions] Request params: ' . print_r($params, true));
-
         $product = wc_get_product($params['product_id']);
-        error_log('[Cart Permissions] Product found: ' . ($product ? 'Yes' : 'No'));
 
-        // Handle variations by checking parent product
-        $product_id = $product ? $product->get_id() : 0;
-        if ($product && $product->is_type('variation')) {
-            $product_id = $product->get_parent_id();
-            error_log('[Cart Permissions] Variation detected, using parent ID: ' . $product_id);
-        }
+        // Get parent product for variations
+        $parent_id = $product->is_type('variation') ? 
+            $product->get_parent_id() : 
+            $product->get_id();
 
-        $non_members_welcome = $product_id ? 
-            get_post_meta($product_id, 'event_non_members_welcome', true) : 
-            false;
-        error_log('[Cart Permissions] Non-members welcome meta value: ' . print_r($non_members_welcome, true));
+        $non_members_welcome = get_post_meta(
+            $parent_id, 
+            'event_non_members_welcome', 
+            true
+        );
 
-        if (!is_user_logged_in()) {
-            error_log('[Cart Permissions] User not logged in, returning: ' . ($non_members_welcome === 'yes' ? 'Allowed' : 'Denied'));
-            return $non_members_welcome === 'yes';
-        }
-
-        // For logged-in users, check membership if required
+        // If product requires membership
         if ($non_members_welcome !== 'yes') {
+            // Check WordPress authentication
+            if (!is_user_logged_in()) {
+                error_log('Permission denied: User not logged in');
+                return false;
+            }
+
+            // Check membership status
             $user_id = get_current_user_id();
             $is_member = (bool) get_user_meta($user_id, 'cc_member', true);
-            error_log('[Cart Permissions] Membership check - User ID: ' . $user_id . ', Is member: ' . ($is_member ? 'Yes' : 'No'));
-            return $is_member;
+            
+            if (!$is_member) {
+                error_log("Permission denied: User $user_id is not a member");
+                return false;
+            }
         }
 
-        error_log('[Cart Permissions] Default allow');
         return true;
     }
 }

@@ -134,28 +134,44 @@ class Hybrid_Headless_Rest_API {
         header('Access-Control-Allow-Headers: Content-Type, Authorization');
         header('Vary: Origin');
         
-        // Session debugging
-        error_log('[CORS] Session status: ' . (session_status() === PHP_SESSION_ACTIVE ? 'Active' : 'Inactive'));
-        error_log('[CORS] Current cookies: ' . print_r($_COOKIE, true));
-
+        // Session handling
         if (!session_id() && !headers_sent()) {
-            error_log('[CORS] Starting new session');
+            session_set_cookie_params([
+                'lifetime' => 0,
+                'path' => '/',
+                'domain' => $_SERVER['HTTP_HOST'],
+                'secure' => true,
+                'httponly' => true,
+                'samesite' => 'None' // Critical for cross-origin
+            ]);
             session_start();
-        } else {
-            error_log('[CORS] Session ID exists: ' . session_id());
         }
-        
-        // WooCommerce session initialization
-        if (class_exists('WC')) {
-            error_log('[CORS] WooCommerce version: ' . WC()->version);
-            if (!WC()->session) {
-                error_log('[CORS] Initializing new WC session');
-                WC()->session = new WC_Session_Handler();
-                WC()->session->init();
+
+        // Initialize WC session with user ID
+        if (class_exists('WC') && !WC()->session) {
+            WC()->session = new WC_Session_Handler();
+            WC()->session->init();
+            
+            // Force session cookie parameters
+            add_filter('wc_session_cookie_params', function($params) {
+                return [
+                    'lifetime' => 0,
+                    'path' => '/',
+                    'domain' => $_SERVER['HTTP_HOST'],
+                    'secure' => true,
+                    'httponly' => true,
+                    'samesite' => 'None'
+                ];
+            });
+
+            // Link to WordPress user if logged in
+            if (is_user_logged_in()) {
+                $user_id = get_current_user_id();
+                WC()->session->set_customer_id($user_id);
+                WC()->cart->init(); // Reinitialize cart with user ID
             }
-            error_log('[CORS] WC customer ID: ' . WC()->session->get_customer_id());
         }
-        
+
         return $served;
     }
 
