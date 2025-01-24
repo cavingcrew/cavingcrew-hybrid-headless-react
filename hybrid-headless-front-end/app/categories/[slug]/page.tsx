@@ -6,9 +6,11 @@ import { LoadingState } from '@/components/ui/LoadingState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { CategoryTripsGrid } from '@/components/categories/CategoryTripsGrid';
 import type { Trip } from '@/types/api';
+import type { PageProps } from 'next/app';
 import React from 'react';
 
-interface CategoryPageProps {
+// Define proper page props type
+interface CategoryPageProps extends PageProps {
   params: { slug: string };
 }
 
