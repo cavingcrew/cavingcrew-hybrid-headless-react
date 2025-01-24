@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient, type UseQueryResult } from '@tanstack/react-query';
+import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import { apiService } from '../api-service';
 import type { Trip, ApiResponse, CategoryResponse } from '../../types/api';
 
@@ -62,8 +62,6 @@ export function useTrip(slug: string) {
 }
 
 export function useTripsByCategory(categorySlug: string) {
-  const queryClient = useQueryClient();
-
   return useQuery<ApiResponse<CategoryResponse>>({
     queryKey: tripKeys.category(categorySlug),
     queryFn: async () => {
