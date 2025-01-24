@@ -250,9 +250,19 @@ class Hybrid_Headless_Products_Controller {
 
             $attr_data = [
                 'name' => $attribute->get_name(),
-                'description' => $attribute->get_description(),
                 'terms' => []
             ];
+
+            // Handle taxonomy attributes
+            if ($attribute->is_taxonomy()) {
+                $taxonomy = $attribute->get_name();
+                $attribute_id = wc_attribute_taxonomy_id_by_name($taxonomy);
+                
+                if ($attribute_id) {
+                    $wc_attribute = wc_get_attribute($attribute_id);
+                    $attr_data['description'] = $wc_attribute ? $wc_attribute->description : '';
+                }
+            }
 
             // Handle taxonomy attributes
             if ($attribute->is_taxonomy()) {
