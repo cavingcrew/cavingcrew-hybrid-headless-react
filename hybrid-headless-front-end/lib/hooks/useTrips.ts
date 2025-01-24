@@ -133,3 +133,5 @@ export function usePrefetchTrip() {
 
   return { prefetchTrip };
 }
+
+export const useCategoryTrips = useTripsByCategory;

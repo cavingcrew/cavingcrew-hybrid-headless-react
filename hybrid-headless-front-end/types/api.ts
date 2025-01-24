@@ -21,6 +21,12 @@ export interface ProductVariationsResponse {
 	};
 }
 
+export interface BasicCategory {
+  id: number;
+  name: string;
+  slug: string;
+}
+
 export interface Trip {
 	id: number;
 	name: string;
@@ -37,11 +43,7 @@ export interface Trip {
 		src: string;
 		alt: string;
 	}[];
-	categories: {
-		id: number;
-		name: string;
-		slug: string;
-	}[];
+	categories: BasicCategory[];
 	has_purchased: boolean;
 	can_purchase: boolean;
 	variations: Variation[];
