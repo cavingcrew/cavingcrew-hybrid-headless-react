@@ -12,12 +12,13 @@ interface CategoryPageProps {
   params: { slug: string };
 }
 
-// Define a simplified category type that matches what's actually used
-type BasicCategory = {
-  id: number;
-  name: string;
-  slug: string;
-};
+interface CategoryResponse {
+  products: Trip[];
+  category?: {
+    name: string;
+    slug: string;
+  };
+}
 
 export default function CategoryPage({ params }: CategoryPageProps) {
   const { slug } = params;
@@ -32,17 +33,19 @@ export default function CategoryPage({ params }: CategoryPageProps) {
     />;
   }
 
-  const categoryTrips = (data.data?.trips || []).filter((trip: Trip) =>
-    trip.categories?.some((cat: BasicCategory) => cat.slug === slug)
+  // Get trips from the response data
+  const categoryTrips = (data.data?.products || []).filter((trip: Trip) =>
+    trip.categories?.some((cat) => cat.slug === slug)
   );
+
+  // Get category name from response or fallback to slug
+  const categoryName = data.data?.category?.name || slug.replace(/-/g, ' ');
 
   console.log('Filtered trips:', {
     slug,
     count: categoryTrips.length,
     trips: categoryTrips.map((t: Trip) => t.name)
   });
-
-  const categoryName = data.data?.category?.name || slug.replace(/-/g, ' ');
 
   return (
     <Container size="lg" py="xl">
