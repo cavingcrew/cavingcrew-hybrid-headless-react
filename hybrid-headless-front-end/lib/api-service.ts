@@ -4,6 +4,73 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_WORDPRESS_API_URL ||
   (typeof window !== 'undefined' ? window.location.origin + '/wp-json' : 'https://www.cavingcrew.com/wp-json');
 
 export const apiService = {
+  async getProductVariations(productId: number): Promise<ApiResponse<{
+    variations: any[];
+    userStatus: { isLoggedIn: boolean; isMember: boolean };
+  }>> {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/hybrid-headless/v1/products/${productId}/variations`
+      );
+      if (!response.ok) throw new Error('Failed to fetch variations');
+      const data = await response.json();
+      return { data, success: true };
+    } catch (error) {
+      return {
+        success: false,
+        data: null,
+        message: error instanceof Error ? error.message : 'Failed to fetch variations'
+      };
+    }
+  },
+
+  async getStock(productId: number, variationId: number): Promise<ApiResponse<{
+    stock_quantity: number;
+    stock_status: string;
+  }>> {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/hybrid-headless/v1/stock/${productId}/${variationId}`
+      );
+      if (!response.ok) throw new Error('Failed to fetch stock');
+      const data = await response.json();
+      return { data, success: true };
+    } catch (error) {
+      return {
+        success: false,
+        data: null,
+        message: error instanceof Error ? error.message : 'Failed to fetch stock'
+      };
+    }
+  },
+
+  async addToCart(productId: number, variationId: number): Promise<ApiResponse<any>> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/hybrid-headless/v1/cart`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          product_id: productId,
+          variation_id: variationId,
+          quantity: 1
+        })
+      });
+      
+      if (!response.ok) throw new Error('Failed to add to cart');
+      const data = await response.json();
+      return { data, success: true };
+    } catch (error) {
+      return {
+        success: false,
+        data: null,
+        message: error instanceof Error ? error.message : 'Failed to add to cart'
+      };
+    }
+  },
+
   async getTrips(page = 1, perPage = 12): Promise<ApiResponse<any>> {
     try {
       const response = await fetch(`${API_BASE_URL}/hybrid-headless/v1/products`);
