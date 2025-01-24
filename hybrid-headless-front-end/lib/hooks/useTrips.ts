@@ -52,22 +52,9 @@ export function useTrips(): UseQueryResult<ApiResponse<Trip[]>> {
 }
 
 export function useTrip(slug: string) {
-  const queryClient = useQueryClient();
-
   return useQuery({
     queryKey: tripKeys.detail(slug),
-    queryFn: async () => {
-      // First try to find the trip in the existing trips data
-      const tripsData = queryClient.getQueryData<TripsResponse>(tripKeys.lists());
-      const existingTrip = tripsData?.data?.find((t: Trip) => t.slug === slug);
-
-      if (existingTrip) {
-        return { data: existingTrip, success: true };
-      }
-
-      // If not found, fetch it individually
-      return apiService.getTrip(slug);
-    },
+    queryFn: () => apiService.getTrip(slug),
     enabled: !!slug,
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 60,
@@ -120,34 +107,6 @@ export function useTripsByCategory(categorySlug: string) {
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 60,
   });
-}
-
-export function usePrefetchTrips() {
-  const queryClient = useQueryClient();
-
-  return {
-    prefetchTrips: () => {
-      queryClient.prefetchQuery({
-        queryKey: tripKeys.lists(),
-        queryFn: () => apiService.getTrips(),
-        staleTime: 1000 * 60 * 5,
-      });
-    }
-  };
-}
-
-export function usePrefetchTrip() {
-  const queryClient = useQueryClient();
-
-  const prefetchTrip = (slug: string) => {
-    queryClient.prefetchQuery({
-      queryKey: tripKeys.detail(slug),
-      queryFn: () => apiService.getTrip(slug),
-      staleTime: 1000 * 60 * 5,
-    });
-  };
-
-  return { prefetchTrip };
 }
 
 export const useCategoryTrips = useTripsByCategory;
