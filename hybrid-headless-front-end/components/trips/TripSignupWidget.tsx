@@ -50,7 +50,6 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
       });
     }
   }, [stockData, queryClient, trip.id]);
-  });
 
   const handleSignUp = () => {
     if (!selectedVariation) return;
