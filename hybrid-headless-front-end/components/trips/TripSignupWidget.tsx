@@ -37,9 +37,9 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
 
   // Update variations when stock data changes
   useEffect(() => {
-    if (stockData?.success) {
+    if (stockData?.success && stockData.data?.variations) {
       setVariations(prev => prev.map(v => {
-        const stock = stockData.data.variations.find((sv: { variation_id: number; stock_quantity: number | null; stock_status: string }) => sv.variation_id === v.id);
+        const stock = stockData.data!.variations.find((sv: { variation_id: number; stock_quantity: number | null; stock_status: string }) => sv.variation_id === v.id);
         return stock ? {
           ...v,
           stock_quantity: stock.stock_quantity,
