@@ -2,6 +2,7 @@
 
 import { Badge, Card, Group, Image, Text } from "@mantine/core";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import React from "react";
 import type { Trip } from "../../types/api";
 
