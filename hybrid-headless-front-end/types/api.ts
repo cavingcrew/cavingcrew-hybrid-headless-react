@@ -1,13 +1,13 @@
 export interface ProductStockResponse {
-  product_id: number;
-  stock_quantity: number | null;
-  stock_status: string;
-  variations: Array<{
-    variation_id: number;
-    stock_quantity: number | null;
-    stock_status: string;
-    attributes: Record<string, string>;
-  }>;
+	product_id: number;
+	stock_quantity: number | null;
+	stock_status: string;
+	variations: Array<{
+		variation_id: number;
+		stock_quantity: number | null;
+		stock_status: string;
+		attributes: Record<string, string>;
+	}>;
 }
 
 export interface Variation {
