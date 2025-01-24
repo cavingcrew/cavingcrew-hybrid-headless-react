@@ -12,8 +12,6 @@ import { Container } from '@mantine/core';
 export default function TripPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
   const { data, isLoading, error, refetch } = useTrip(slug);
-  const router = useRouter();
-  const { invalidateTrips } = useCacheInvalidation();
 
   if (isLoading) {
     return <LoadingState />;
