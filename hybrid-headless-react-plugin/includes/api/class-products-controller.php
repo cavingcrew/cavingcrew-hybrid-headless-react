@@ -540,26 +540,28 @@ class Hybrid_Headless_Products_Controller {
     }
 
     public function add_to_cart($request) {
-        if (null === WC()->cart) {
-            WC()->frontend_includes();
-            WC()->session = new WC_Session_Handler();
-            WC()->session->init();
-            WC()->cart = new WC_Cart();
-            WC()->customer = new WC_Customer();
-        }
-        
         $params = $request->get_params();
         $user_id = get_current_user_id();
         $is_member = (bool) get_user_meta($user_id, 'cc_member', true);
         
         try {
-            WC()->cart->add_to_cart(
+            // Verify WooCommerce is properly loaded
+            if (!function_exists('WC')) {
+                throw new Exception('WooCommerce not loaded');
+            }
+
+            // Add item to cart
+            $added = WC()->cart->add_to_cart(
                 $params['product_id'],
                 $params['quantity'],
                 $params['variation_id'],
                 [],
-                ['is_member' => $is_member] // Pass actual membership status
+                ['is_member' => $is_member]
             );
+
+            if (!$added) {
+                throw new Exception('Failed to add item to cart');
+            }
 
             return rest_ensure_response([
                 'success' => true,
@@ -617,24 +619,27 @@ class Hybrid_Headless_Products_Controller {
         $params = $request->get_params();
         $product = wc_get_product($params['product_id']);
         
-        // Corrected meta key from 'event_non-members-welcome' to 'event_non_members_welcome'
-        $non_members_welcome = $product ? get_post_meta($product->get_id(), 'event_non_members_welcome', true) : false;
+        // Handle variations by checking parent product
+        $product_id = $product ? $product->get_id() : 0;
+        if ($product && $product->is_type('variation')) {
+            $product_id = $product->get_parent_id();
+        }
+
+        $non_members_welcome = $product_id ? 
+            get_post_meta($product_id, 'event_non_members_welcome', true) : 
+            false;
 
         if (!is_user_logged_in()) {
-            if ($non_members_welcome !== 'yes') {
-                return false;
-            }
-        } else {
-            // If product requires membership, check user status
-            if ($non_members_welcome !== 'yes') {
-                $user_id = get_current_user_id();
-                $is_member = (bool) get_user_meta($user_id, 'cc_member', true);
-                if (!$is_member) {
-                    return false;
-                }
-            }
+            return $non_members_welcome === 'yes';
         }
-        
-        return apply_filters('hybrid_headless_cart_permissions', true, $request);
+
+        // For logged-in users, check membership if required
+        if ($non_members_welcome !== 'yes') {
+            $user_id = get_current_user_id();
+            $is_member = (bool) get_user_meta($user_id, 'cc_member', true);
+            return $is_member;
+        }
+
+        return true;
     }
 }

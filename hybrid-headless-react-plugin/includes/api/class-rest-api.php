@@ -131,6 +131,17 @@ class Hybrid_Headless_Rest_API {
         header('Access-Control-Allow-Headers: Content-Type, Authorization');
         header('Vary: Origin');
         
+        // Start session if needed
+        if (!session_id() && !headers_sent()) {
+            session_start();
+        }
+        
+        // Initialize WooCommerce session
+        if (class_exists('WC') && !WC()->session) {
+            WC()->session = new WC_Session_Handler();
+            WC()->session->init();
+        }
+        
         return $served;
     }
 
