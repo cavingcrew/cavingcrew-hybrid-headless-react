@@ -7,7 +7,10 @@ export function PrefetchProvider({ children }: { children: React.ReactNode }) {
   const { prefetchAll } = usePrefetch();
 
   useEffect(() => {
-    prefetchAll();
+    // Only prefetch in production
+    if (process.env.NODE_ENV === 'production') {
+      prefetchAll();
+    }
   }, []);
 
   return <>{children}</>;
