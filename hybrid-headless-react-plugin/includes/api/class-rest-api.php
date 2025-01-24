@@ -78,14 +78,23 @@ class Hybrid_Headless_Rest_API {
         $user_id = 0;
         $logged_in = false;
         
-        if (isset($_COOKIE[LOGGED_IN_COOKIE])) {
-            $cookie = $_COOKIE[LOGGED_IN_COOKIE];
-            $user_id = wp_validate_auth_cookie($cookie, 'logged_in');
-            
-            if ($user_id) {
-                wp_set_current_user($user_id);
-                $logged_in = true;
+        try {
+            if (isset($_COOKIE[LOGGED_IN_COOKIE])) {
+                $cookie = $_COOKIE[LOGGED_IN_COOKIE];
+                $user_id = wp_validate_auth_cookie($cookie, 'logged_in');
+                
+                if ($user_id) {
+                    wp_set_current_user($user_id);
+                    $logged_in = true;
+                }
             }
+        } catch (Exception $e) {
+            error_log('[User Status] Error validating auth cookie: ' . $e->getMessage());
+            return rest_ensure_response([
+                'isLoggedIn' => false,
+                'isMember' => false,
+                'cartCount' => 0
+            ]);
         }
 
         // Get cart count safely

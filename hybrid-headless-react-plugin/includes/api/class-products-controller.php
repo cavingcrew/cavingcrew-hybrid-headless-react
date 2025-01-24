@@ -545,6 +545,16 @@ class Hybrid_Headless_Products_Controller {
         $params = $request->get_params();
         error_log('[Add to Cart] Request params: ' . print_r($params, true));
 
+        // Validate required parameters
+        if (empty($params['product_id']) || empty($params['variation_id'])) {
+            error_log('[Add to Cart] Missing required parameters');
+            return new WP_Error(
+                'missing_parameters',
+                __('Product ID and Variation ID are required', 'hybrid-headless'),
+                ['status' => 400]
+            );
+        }
+
         $user_id = get_current_user_id();
         $is_member = (bool) get_user_meta($user_id, 'cc_member', true);
         error_log('[Add to Cart] User status - ID: ' . $user_id . ', Is member: ' . ($is_member ? 'Yes' : 'No'));
