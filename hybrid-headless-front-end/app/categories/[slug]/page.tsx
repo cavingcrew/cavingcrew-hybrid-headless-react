@@ -29,7 +29,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
   if (isLoading) return <LoadingState />;
 
   if (error || !data?.success) {
-    return <ErrorState 
+    return <ErrorState
       message={error?.message || 'Failed to load category'}
       onRetry={refetch}
     />;
