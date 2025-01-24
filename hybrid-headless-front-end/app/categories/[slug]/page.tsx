@@ -12,9 +12,6 @@ interface CategoryPageProps {
   params: {
     slug: string;
   };
-  searchParams?: {
-    [key: string]: string | string[] | undefined;
-  };
 }
 
 interface CategoryResponse {
@@ -25,7 +22,7 @@ interface CategoryResponse {
   };
 }
 
-export default function CategoryPage({ params, searchParams }: CategoryPageProps) {
+export default function CategoryPage({ params }: CategoryPageProps) {
   const { slug } = params;
   const { data, isLoading, error, refetch } = useCategoryTrips(slug);
 
@@ -38,22 +35,15 @@ export default function CategoryPage({ params, searchParams }: CategoryPageProps
     />;
   }
 
-  // Type assertion for API response
   const responseData = data.data as CategoryResponse;
-  
   const categoryTrips = (responseData.products || []).filter((trip: Trip) =>
     trip.categories?.some((cat) => cat.slug === slug)
   );
-
   const categoryName = responseData.category?.name || slug.replace(/-/g, ' ');
 
   return (
     <Container size="lg" py="xl">
-      <Title
-        order={1}
-        mb="sm"
-        style={{ textTransform: 'capitalize' }}
-      >
+      <Title order={1} mb="sm" style={{ textTransform: 'capitalize' }}>
         {categoryName}
       </Title>
       <CategoryTripsGrid trips={categoryTrips} />
