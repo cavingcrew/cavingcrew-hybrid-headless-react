@@ -1,4 +1,4 @@
-const WP_API_URL = process.env.NEXT_PUBLIC_WORDPRESS_API_URL;
+import { API_BASE_URL } from './constants';
 
 export class APIError extends Error {
   constructor(public status: number, message: string) {
@@ -12,8 +12,8 @@ export async function fetchFromApi<T>(
   options: RequestInit = {},
   cache: RequestCache = 'force-cache'
 ): Promise<T> {
-  const url = `${WP_API_URL}/hybrid-headless/v1${endpoint}`;
-  
+  const url = `${API_BASE_URL}/hybrid-headless/v1${endpoint}`;
+
   const response = await fetch(url, {
     ...options,
     cache,
