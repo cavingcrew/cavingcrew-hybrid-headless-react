@@ -182,7 +182,10 @@ class Hybrid_Headless_Products_Controller {
         foreach ( $query->posts as $post ) {
             $product = wc_get_product( $post );
             if ($product && $product->is_visible()) {
-                $products[] = $this->prepare_product_data( $product );
+                $prepared = $this->prepare_product_data( $product );
+                // Add variation count for listings
+                $prepared['variation_count'] = count($prepared['variations']);
+                $products[] = $prepared;
             }
         }
 
@@ -223,33 +226,75 @@ class Hybrid_Headless_Products_Controller {
      * @param WC_Product $product Product object.
      * @return array
      */
-    private function prepare_product_data( $product ) {
-        // Cache stock info for 30 seconds
+    private function prepare_product_data($product) {
         $cache_key = 'product_stock_' . $product->get_id();
         $stock_info = wp_cache_get($cache_key);
         
+        // Initialize variation data
+        $variations = [];
+        $has_variations = false;
+        $variation_stock = [
+            'total_stock' => 0,
+            'in_stock' => false
+        ];
+
+        // Handle variable products
+        if ($product->is_type('variable')) {
+            $has_variations = true;
+            foreach ($product->get_available_variations() as $variation_data) {
+                $variation = wc_get_product($variation_data['variation_id']);
+                
+                if ($variation && $variation->is_purchasable() && $variation->is_in_stock()) {
+                    $variation_stock['total_stock'] += $variation->get_stock_quantity();
+                    $variation_stock['in_stock'] = true;
+                    
+                    $variations[] = [
+                        'id' => $variation->get_id(),
+                        'attributes' => $variation->get_variation_attributes(),
+                        'stock_quantity' => $variation->get_stock_quantity(),
+                        'stock_status' => $variation->get_stock_status(),
+                        'price' => $variation->get_price(),
+                        'regular_price' => $variation->get_regular_price(),
+                        'sale_price' => $variation->get_sale_price(),
+                        'sku' => $variation->get_sku(),
+                        'is_in_stock' => $variation->is_in_stock(),
+                        'purchasable' => $variation->is_purchasable()
+                    ];
+                }
+            }
+        }
+
+        // Get/cache stock info
         if (false === $stock_info) {
             $stock_info = array(
-                'stock_status' => $product->get_stock_status(),
-                'stock_quantity' => $product->get_stock_quantity()
+                'stock_status' => $has_variations ? ($variation_stock['in_stock'] ? 'instock' : 'outofstock') : $product->get_stock_status(),
+                'stock_quantity' => $has_variations ? $variation_stock['total_stock'] : $product->get_stock_quantity(),
+                'has_variations' => $has_variations,
+                'variations' => $variations,
+                'is_variable' => $product->is_type('variable'),
+                'purchasable' => $product->is_purchasable()
             );
             wp_cache_set($cache_key, $stock_info, '', 30);
         }
 
         return array(
-            'id'          => $product->get_id(),
-            'name'        => $product->get_name(),
-            'slug'        => $product->get_slug(),
-            'price'       => $product->get_price(),
+            'id' => $product->get_id(),
+            'name' => $product->get_name(),
+            'slug' => $product->get_slug(),
+            'price' => $product->get_price(),
             'regular_price' => $product->get_regular_price(),
             'sale_price' => $product->get_sale_price(),
             'stock_status' => $stock_info['stock_status'],
             'stock_quantity' => $stock_info['stock_quantity'],
             'description' => $product->get_description(),
             'short_description' => $product->get_short_description(),
-            'images'      => $this->get_product_images( $product ),
-            'categories' => $this->get_product_categories( $product ),
-            'acf'        => get_fields( $product->get_id() ),
+            'images' => $this->get_product_images($product),
+            'categories' => $this->get_product_categories($product),
+            'acf' => get_fields($product->get_id()),
+            'variations' => $stock_info['variations'],
+            'has_variations' => $stock_info['has_variations'],
+            'is_variable' => $stock_info['is_variable'],
+            'purchasable' => $stock_info['purchasable']
         );
     }
 
