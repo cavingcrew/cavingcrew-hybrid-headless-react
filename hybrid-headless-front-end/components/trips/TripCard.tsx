@@ -3,6 +3,7 @@
 import { Badge, Card, Group, Image, Text } from "@mantine/core";
 import Link from "next/link";
 import { useQueryClient } from '@tanstack/react-query';
+import { tripKeys } from '@/lib/hooks/useTrips';
 import { useRouter } from "next/navigation";
 import React from "react";
 import type { Trip } from "../../types/api";
