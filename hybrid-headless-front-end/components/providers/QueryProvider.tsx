@@ -17,7 +17,9 @@ export function QueryProvider({ children }: QueryProviderProps) {
             staleTime: 1000 * 60 * 5,  // 5 minutes
             gcTime: 1000 * 60 * 60,    // 1 hour
             refetchOnWindowFocus: false,
-            structuralSharing: false    // Preserve referential equality
+            structuralSharing: true,
+            // Enable client-side cache for prefetched data
+            initialData: (data) => data,
           }
         }
       })

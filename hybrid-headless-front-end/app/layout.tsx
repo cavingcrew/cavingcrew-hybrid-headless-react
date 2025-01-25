@@ -1,4 +1,5 @@
 import '@mantine/core/styles.css';
+export const fetchCache = 'default-cache';
 import { ColorSchemeScript } from '@mantine/core';
 import { MantineProvider } from '@/components/providers/MantineProvider';
 import { QueryProvider } from '@/components/providers/QueryProvider';
