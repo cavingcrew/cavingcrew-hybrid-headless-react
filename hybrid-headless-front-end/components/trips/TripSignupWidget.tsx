@@ -47,7 +47,7 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
             t.id === trip.id ? { 
               ...t, 
               variations: t.variations.map(v => {
-                const stockVar = stockData.data.variations.find(sv => sv.id === v.id);
+                const stockVar = (stockData?.data?.variations ?? []).find(sv => sv.id === v.id);
                 return stockVar ? { 
                   ...v,
                   stock_quantity: stockVar.stock_quantity,
