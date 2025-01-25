@@ -18,8 +18,9 @@ export function QueryProvider({ children }: QueryProviderProps) {
             gcTime: 1000 * 60 * 60,    // 1 hour
             refetchOnWindowFocus: false,
             structuralSharing: true,
-            // Enable client-side cache for prefetched data
-            initialData: (data) => data,
+            // Disable initial data to prevent SSR hydration issues
+            initialData: undefined,
+            initialDataUpdatedAt: 0,
           }
         }
       })

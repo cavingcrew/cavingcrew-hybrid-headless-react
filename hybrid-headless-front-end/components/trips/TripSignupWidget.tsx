@@ -13,6 +13,7 @@ import {
   Group,
   Text
 } from '@mantine/core';
+import { useIsClient } from '@mantine/hooks';
 import { IconLogin } from '@tabler/icons-react';
 import { apiService } from '@/lib/api-service';
 import type { Trip, ApiResponse } from '@/types/api';
@@ -23,11 +24,13 @@ interface TripSignupWidgetProps {
 }
 
 export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
+  const isClient = useIsClient();
   const [selectedVariation, setSelectedVariation] = useState<string>('');
   const { data: userStatus } = useQuery({
     queryKey: ['userStatus'],
     queryFn: () => apiService.getUserStatus(),
-    refetchInterval: 30000
+    refetchInterval: 30000,
+    enabled: isClient
   });
 
   // Poll stock data
@@ -36,11 +39,11 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
     queryKey: ['productStock', trip.id],
     queryFn: () => apiService.getProductStock(trip.id),
     refetchInterval: 30000,
-    enabled: trip.has_variations
+    enabled: isClient && trip.has_variations
   });
 
   useEffect(() => {
-    if (stockData?.data?.variations) {
+    if (isClient && stockData?.data?.variations) {
       queryClient.setQueryData(tripKeys.all, (old: ApiResponse<Trip[]> | undefined) => {
         if (!old?.data) return old;
         return {
@@ -61,12 +64,17 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
         };
       });
     }
-  }, [stockData, queryClient, trip.id]);
+  }, [stockData, queryClient, trip.id, isClient]);
 
   const handleSignUp = () => {
-    if (!selectedVariation) return;
+    if (!selectedVariation || !isClient) return;
     window.location.href = `/checkout/?add-to-cart=${selectedVariation}`;
   };
+
+  // Safe window access for login URL
+  const loginUrl = isClient 
+    ? `/wp-login.php?redirect_to=${encodeURIComponent(window.location.href)}#signup`
+    : '';
 
   const hasAvailableVariations = trip.variations?.some(v =>
     v.stock_status === 'instock' && (v.stock_quantity ?? 0) > 0
@@ -125,8 +133,9 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
             <Button
               variant="light"
               component="a"
-              href={`/wp-login.php?redirect_to=${encodeURIComponent(window.location.href)}#signup`}
+              href={loginUrl}
               leftSection={<IconLogin size={16} />}
+              disabled={!isClient}
             >
               Log In Now
             </Button>
