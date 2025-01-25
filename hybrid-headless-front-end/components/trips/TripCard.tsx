@@ -2,6 +2,7 @@
 
 import { Badge, Card, Group, Image, Text } from "@mantine/core";
 import Link from "next/link";
+import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from "next/navigation";
 import React from "react";
 import type { Trip } from "../../types/api";
@@ -11,6 +12,7 @@ interface TripCardProps {
 }
 
 export default function TripCard({ trip }: TripCardProps) {
+	const queryClient = useQueryClient();
 	const router = useRouter();
 
 	return (
