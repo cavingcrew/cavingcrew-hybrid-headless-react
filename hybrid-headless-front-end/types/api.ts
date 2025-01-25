@@ -12,6 +12,7 @@ export interface ProductStockResponse {
 
 export interface Variation {
 	id: number;
+	variation_id: number;
 	attributes: {
 		[key: string]: {
 			name: string;

@@ -46,7 +46,10 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
           data: old.data.map(t => 
             t.id === trip.id ? { 
               ...t, 
-              variations: stockData.data.variations.filter(v => v.variation_id) 
+              variations: stockData.data.variations.map(stockVar => ({
+                ...t.variations.find(v => v.variation_id === stockVar.variation_id),
+                ...stockVar
+              }))
             } : t
           )
         };
@@ -60,7 +63,7 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
   };
 
   const hasAvailableVariations = trip.variations?.some(v => 
-    v.variation_id && v.stock_status === 'instock'
+    v.stock_status === 'instock' && v.stock_quantity > 0
   );
   if ((trip.has_variations && !hasAvailableVariations) || (!trip.has_variations && !trip.purchasable)) {
     return (
@@ -87,7 +90,7 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
             {trip.variations.map((variation) => (
               <Radio 
                 key={variation.variation_id}
-                value={variation.variation_id?.toString() ?? ''}
+                value={variation.variation_id.toString()}
                 label={
                   <Group gap="xs">
                     <Text span>{Object.values(variation.attributes).map(attr => attr.value).join(' - ')}</Text>
