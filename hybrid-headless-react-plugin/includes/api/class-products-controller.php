@@ -219,7 +219,7 @@ class Hybrid_Headless_Products_Controller {
         // Set cache headers for stock monitoring
         header('Cache-Control: no-store, max-age=0');
         header('Pragma: no-cache');
-        
+
         return rest_ensure_response( $this->prepare_product_data( $product ) );
     }
 
@@ -232,7 +232,7 @@ class Hybrid_Headless_Products_Controller {
     private function prepare_product_data($product) {
         $cache_key = 'product_stock_' . $product->get_id();
         $stock_info = wp_cache_get($cache_key);
-        
+
         // Initialize variation data
         $variations = [];
         $has_variations = false;
@@ -244,7 +244,7 @@ class Hybrid_Headless_Products_Controller {
         // Get attribute data
         $attributes = [];
         $product_attributes = $product->get_attributes();
-        
+
         foreach ($product_attributes as $attribute_key => $attribute) {
             // Skip invalid attributes
             if (!($attribute instanceof WC_Product_Attribute)) {
@@ -260,7 +260,7 @@ class Hybrid_Headless_Products_Controller {
             if ($attribute->is_taxonomy()) {
                 $taxonomy = $attribute->get_name();
                 $attribute_id = wc_attribute_taxonomy_id_by_name($taxonomy);
-                
+
                 if ($attribute_id) {
                     $wc_attribute = wc_get_attribute($attribute_id);
                     $attr_data['description'] = $wc_attribute ? $wc_attribute->description : '';
@@ -271,7 +271,7 @@ class Hybrid_Headless_Products_Controller {
             if ($attribute->is_taxonomy()) {
                 $terms = [];
                 $attribute_terms = $attribute->get_terms();
-                
+
                 if (is_array($attribute_terms)) {
                     foreach ($attribute_terms as $term) {
                         $terms[] = [
@@ -281,13 +281,13 @@ class Hybrid_Headless_Products_Controller {
                         ];
                     }
                 }
-                
+
                 $attr_data['terms'] = $terms;
 
                 // Get attribute type from taxonomy
                 $taxonomy = $attribute->get_name();
                 $attribute_id = wc_attribute_taxonomy_id_by_name($taxonomy);
-                
+
                 if ($attribute_id) {
                     $wc_attribute = wc_get_attribute($attribute_id);
                     $attr_data['type'] = $wc_attribute ? $wc_attribute->type : 'select';
@@ -298,7 +298,7 @@ class Hybrid_Headless_Products_Controller {
                 // Handle custom attributes
                 $attr_data['type'] = 'select';
                 $options = $attribute->get_options();
-                
+
                 if (is_array($options)) {
                     foreach ($options as $option) {
                         $attr_data['terms'][] = [
@@ -318,13 +318,13 @@ class Hybrid_Headless_Products_Controller {
             $has_variations = true;
             foreach ($product->get_available_variations() as $variation_data) {
                 $variation = wc_get_product($variation_data['variation_id']);
-                
+
                 // Get attribute details with descriptions
                 $variation_attributes = [];
                 foreach ($variation->get_variation_attributes() as $attr_name => $attr_value) {
                     $taxonomy = str_replace('attribute_', '', $attr_name);
                     $term = get_term_by('slug', $attr_value, $taxonomy);
-                    
+
                     $variation_attributes[$taxonomy] = [
                         'name' => wc_attribute_label($taxonomy),
                         'value' => $term ? $term->name : $attr_value,
@@ -332,11 +332,11 @@ class Hybrid_Headless_Products_Controller {
                         'slug' => $attr_value
                     ];
                 }
-                
+
                 if ($variation) { // Return all variations regardless of stock status
                     $variation_stock['total_stock'] += $variation->get_stock_quantity();
                     $variation_stock['in_stock'] = true;
-                    
+
                     $variations[] = [
                         'id' => $variation->get_id(),
                         'attributes' => $variation_attributes,
@@ -437,7 +437,7 @@ class Hybrid_Headless_Products_Controller {
         }
 
         $wc_product = wc_get_product( $product->ID );
-        
+
         if ( ! $wc_product ) {
             return new WP_Error(
                 'product_not_found',
@@ -449,7 +449,7 @@ class Hybrid_Headless_Products_Controller {
         // Set cache headers for stock monitoring
         header('Cache-Control: no-store, max-age=0');
         header('Pragma: no-cache');
-        
+
         return rest_ensure_response( $this->prepare_product_data( $wc_product ) );
     }
 
@@ -473,7 +473,7 @@ class Hybrid_Headless_Products_Controller {
     public function get_product_variations($request) {
         $product_id = $request['id'];
         $product = wc_get_product($product_id);
-        
+
         if (!$product || !$product->is_type('variable')) {
             return new WP_Error(
                 'invalid_product',
@@ -508,7 +508,7 @@ class Hybrid_Headless_Products_Controller {
     public function get_stock($request) {
         $variation_id = $request['variation_id'];
         $product = wc_get_product($variation_id);
-        
+
         if (!$product) {
             return new WP_Error(
                 'invalid_variation',
@@ -535,7 +535,7 @@ class Hybrid_Headless_Products_Controller {
     public function get_product_stock($request) {
         $product_id = $request['id'];
         $product = wc_get_product($product_id);
-        
+
         if (!$product) {
             return new WP_Error(
                 'product_not_found',
@@ -543,25 +543,25 @@ class Hybrid_Headless_Products_Controller {
                 ['status' => 404]
             );
         }
-        
+
         $stock_data = [
             'product_id' => $product_id,
             'stock_status' => $product->get_stock_status(),
             'stock_quantity' => $product->get_stock_quantity(),
             'variations' => []
         ];
-        
+
         if ($product->is_type('variable')) {
             foreach ($product->get_available_variations() as $variation) {
                 $variation_product = wc_get_product($variation['variation_id']);
                 $stock_data['variations'][] = [
-                    'variation_id' => $variation['variation_id'],
+                    'id' => $variation['variation_id'],
                     'stock_quantity' => $variation_product->get_stock_quantity(),
                     'stock_status' => $variation_product->get_stock_status()
                 ];
             }
         }
-        
+
         return rest_ensure_response($stock_data);
     }
 

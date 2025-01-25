@@ -17,7 +17,7 @@ interface TripsResponse {
 
 export function useTrips(): UseQueryResult<ApiResponse<Trip[]>> {
   const queryClient = useQueryClient();
-  
+
   return useQuery<ApiResponse<Trip[]>>({
     queryKey: tripKeys.all,
     queryFn: async () => {
@@ -38,7 +38,7 @@ export function useTrips(): UseQueryResult<ApiResponse<Trip[]>> {
 
         // Filter out the membership product and transform the data
         const filteredData = trips
-          .filter((trip: Trip) => trip.id !== 1272)
+          //.filter((trip: Trip) => trip.id !== 1272) // disable the membership filter out
           .map((trip: Trip) => ({
             ...trip,
             // Ensure categories is always an array
