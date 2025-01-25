@@ -29,7 +29,7 @@ export function MainHeader() {
 
 	const mainLinks = [
 		{ label: "Upcoming Trips", href: "/trips" },
-		{ label: "Become a Member", href: "/trips/get-caving-crew-membership" },
+		{ label: "Become a Member", href: "/trip/get-caving-crew-membership" },
 	];
 
 	const aboutLinks = [

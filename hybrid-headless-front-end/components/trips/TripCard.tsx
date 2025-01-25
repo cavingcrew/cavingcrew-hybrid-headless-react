@@ -15,8 +15,8 @@ export default function TripCard({ trip }: TripCardProps) {
 
 	return (
 		<Link
-			href={`/trips/${trip.slug}`}
-			prefetch={true}
+			href={`/trip/${trip.slug}`}
+			prefetch={false}
 			style={{ textDecoration: "none", color: "inherit" }}
 		>
 			<Card
