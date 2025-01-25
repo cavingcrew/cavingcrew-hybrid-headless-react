@@ -42,7 +42,7 @@ export interface ProductStockResponse {
 	stock_quantity: number | null;
 	stock_status: string;
 	variations: Array<{
-		variation_id: number;
+		id: number;
 		stock_quantity: number | null;
 		stock_status: string;
 		attributes: Record<string, string>;
