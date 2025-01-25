@@ -1,15 +1,3 @@
-export interface ProductStockResponse {
-	product_id: number;
-	stock_status: string;
-	stock_quantity: number | null;
-	variations: Array<{
-		id: number;
-		stock_quantity: number | null;
-		stock_status: string;
-		attributes?: Record<string, string>;
-	}>;
-}
-
 export interface Variation {
 	id: number;
 	attributes: {
@@ -35,18 +23,6 @@ export interface Variation {
 	purchasable: boolean;
 	has_purchased?: boolean;
 	can_purchase?: boolean;
-}
-
-export interface ProductStockResponse {
-	product_id: number;
-	stock_quantity: number | null;
-	stock_status: string;
-	variations: Array<{
-		id: number;
-		stock_quantity: number | null;
-		stock_status: string;
-		attributes: Record<string, string>;
-	}>;
 }
 
 export interface ProductVariationsResponse {
