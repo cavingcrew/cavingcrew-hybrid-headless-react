@@ -55,7 +55,7 @@ export function MainHeader() {
 		{ label: "My Crew Trips", href: "/my-account/orders", fullRefresh: true },
 		{
 			label: "Logout",
-			href: "/my-account/customer-logout/?_wpnonce=be52231fdc",
+			href: "/my-account/customer-logout/",
 			fullRefresh: true,
 		},
 		{
