@@ -26,6 +26,14 @@ export function useTrips(): UseQueryResult<ApiResponse<Trip[]>> {
           response.data.products :
           [];
 
+        // Prime individual trip caches
+        trips.forEach(trip => {
+          queryClient.setQueryData(tripKeys.detail(trip.slug), { 
+            data: trip, 
+            success: true 
+          });
+        });
+
         // Filter out the membership product and transform the data
         const filteredData = trips
           .filter((trip: Trip) => trip.id !== 1272)
@@ -46,8 +54,8 @@ export function useTrips(): UseQueryResult<ApiResponse<Trip[]>> {
         message: response.message || 'Failed to fetch trips'
       };
     },
-    staleTime: 1000 * 60 * 5,
-    gcTime: 1000 * 60 * 60,
+    staleTime: 1000 * 30, // 30 seconds stale time for faster background updates
+    gcTime: 1000 * 60 * 60 * 24, // 24 hour cache lifetime
   });
 }
 

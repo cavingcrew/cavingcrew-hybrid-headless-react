@@ -16,8 +16,15 @@ export default function TripCard({ trip }: TripCardProps) {
 	return (
 		<Link
 			href={`/trip/${trip.slug}`}
-			prefetch={false}
+			prefetch
 			style={{ textDecoration: "none", color: "inherit" }}
+			onMouseEnter={() => {
+				// Pre-warm the query cache for individual trip
+				queryClient.prefetchQuery({
+					queryKey: tripKeys.detail(trip.slug),
+					queryFn: () => ({ data: trip, success: true }), // Use local data immediately
+				});
+			}}
 		>
 			<Card
 				shadow="sm"
