@@ -67,7 +67,7 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
   };
 
   const hasAvailableVariations = trip.variations?.some(v => 
-    v.stock_status === 'instock' && v.stock_quantity > 0
+    v.stock_status === 'instock' && (v.stock_quantity ?? 0) > 0
   );
   if ((trip.has_variations && !hasAvailableVariations) || (!trip.has_variations && !trip.purchasable)) {
     return (
