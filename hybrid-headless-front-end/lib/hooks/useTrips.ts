@@ -16,6 +16,8 @@ interface TripsResponse {
 }
 
 export function useTrips(): UseQueryResult<ApiResponse<Trip[]>> {
+  const queryClient = useQueryClient();
+  
   return useQuery<ApiResponse<Trip[]>>({
     queryKey: tripKeys.all,
     queryFn: async () => {
@@ -27,7 +29,7 @@ export function useTrips(): UseQueryResult<ApiResponse<Trip[]>> {
           [];
 
         // Prime individual trip caches
-        trips.forEach(trip => {
+        trips.forEach((trip: Trip) => {
           queryClient.setQueryData(tripKeys.detail(trip.slug), {
             data: trip,
             success: true
