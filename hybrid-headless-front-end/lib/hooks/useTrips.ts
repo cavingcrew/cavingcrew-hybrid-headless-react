@@ -28,9 +28,9 @@ export function useTrips(): UseQueryResult<ApiResponse<Trip[]>> {
 
         // Prime individual trip caches
         trips.forEach(trip => {
-          queryClient.setQueryData(tripKeys.detail(trip.slug), { 
-            data: trip, 
-            success: true 
+          queryClient.setQueryData(tripKeys.detail(trip.slug), {
+            data: trip,
+            success: true
           });
         });
 
@@ -65,24 +65,26 @@ export function useTrip(slug: string) {
   return useQuery({
     queryKey: tripKeys.detail(slug),
     queryFn: async () => {
-      // Check list cache first
+      // 1. Check list cache first
       const listData = queryClient.getQueryData<ApiResponse<Trip[]>>(tripKeys.all);
-      const cachedTrip = listData?.data?.find(t => t.slug === slug);
-      
-      if (cachedTrip) {
-        // Prefetch fresh data in background
-        queryClient.prefetchQuery({
-          queryKey: tripKeys.detail(slug),
-          queryFn: () => apiService.getTrip(slug)
-        });
-        return { data: cachedTrip, success: true };
+      const cachedFromList = listData?.data?.find(t => t.slug === slug);
+
+      // 2. Return immediately if found in list cache
+      if (cachedFromList) {
+        return { data: cachedFromList, success: true };
       }
-      
-      // Fallback to API call
+
+      // 3. Check if we have any cached version
+      const cachedDetail = queryClient.getQueryData<ApiResponse<Trip>>(tripKeys.detail(slug));
+      if (cachedDetail) {
+        return cachedDetail;
+      }
+
+      // 4. Only fetch from network if no cache exists
       return apiService.getTrip(slug);
     },
-    staleTime: 1000 * 60 * 5,
-    gcTime: 1000 * 60 * 60,
+    staleTime: 1000 * 30, // 30 seconds stale time for background updates
+    gcTime: 1000 * 60 * 60 * 24, // 24 hour cache lifetime
     enabled: !!slug,
   });
 }
@@ -93,7 +95,7 @@ export function useTripsByCategory(categorySlug: string) {
     queryFn: async () => {
       try {
         const response = await apiService.getTripsByCategory(categorySlug);
-        
+
         if (!response.success || !response.data) {
           return {
             success: false,
