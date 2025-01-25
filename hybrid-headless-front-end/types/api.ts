@@ -1,18 +1,17 @@
 export interface ProductStockResponse {
 	product_id: number;
-	stock_quantity: number | null;
 	stock_status: string;
+	stock_quantity: number | null;
 	variations: Array<{
-		variation_id: number;
+		id: number;
 		stock_quantity: number | null;
 		stock_status: string;
-		attributes: Record<string, string>;
+		attributes?: Record<string, string>;
 	}>;
 }
 
 export interface Variation {
 	id: number;
-	variation_id: number;
 	attributes: {
 		[key: string]: {
 			name: string;

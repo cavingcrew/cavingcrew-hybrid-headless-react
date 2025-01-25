@@ -89,8 +89,8 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
           <Stack mt="xs" gap="sm">
             {trip.variations.map((variation) => (
               <Radio 
-                key={variation.variation_id}
-                value={variation.variation_id.toString()}
+                key={variation.id}
+                value={variation.id.toString()}
                 label={
                   <Group gap="xs">
                     <Text span>{Object.values(variation.attributes).map(attr => attr.value).join(' - ')}</Text>
