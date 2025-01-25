@@ -38,13 +38,16 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
   });
 
   useEffect(() => {
-    if (stockData?.data) {
+    if (stockData?.data?.variations) {
       queryClient.setQueryData(tripKeys.all, (old: ApiResponse<Trip[]> | undefined) => {
         if (!old?.data) return old;
         return {
           ...old,
           data: old.data.map(t => 
-            t.id === trip.id ? { ...t, variations: stockData.data?.variations || [] } : t
+            t.id === trip.id ? { 
+              ...t, 
+              variations: stockData.data.variations.filter(v => v.variation_id) 
+            } : t
           )
         };
       });
@@ -56,7 +59,9 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
     window.location.href = `/checkout/?add-to-cart=${selectedVariation}`;
   };
 
-  const hasAvailableVariations = trip.variations?.some(v => v.stock_status === 'instock');
+  const hasAvailableVariations = trip.variations?.some(v => 
+    v.variation_id && v.stock_status === 'instock'
+  );
   if ((trip.has_variations && !hasAvailableVariations) || (!trip.has_variations && !trip.purchasable)) {
     return (
       <Alert color="yellow" title={trip.has_variations ? "Sold Out" : "Not Available"}>
@@ -81,8 +86,8 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
           <Stack mt="xs" gap="sm">
             {trip.variations.map((variation) => (
               <Radio 
-                key={variation.id}
-                value={variation.id.toString()}
+                key={variation.variation_id}
+                value={variation.variation_id?.toString() ?? ''}
                 label={
                   <Group gap="xs">
                     <Text span>{Object.values(variation.attributes).map(attr => attr.value).join(' - ')}</Text>
@@ -91,7 +96,7 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
                       variant="light"
                     >
                       {variation.stock_status === 'instock' ? 
-                        `${variation.stock_quantity} spots left` : 
+                        `${variation.stock_quantity ?? 'N/A'} spots left` : 
                         'Sold out'
                       }
                     </Badge>
