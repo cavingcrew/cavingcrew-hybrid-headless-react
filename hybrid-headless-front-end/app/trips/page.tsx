@@ -1,6 +1,7 @@
 'use client';
 
 import { Container, Title, SimpleGrid } from '@mantine/core';
+import { CacheSync } from '@/components/CacheSync';
 import { TripCard } from '@/components/trips';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { ErrorState } from '@/components/ui/ErrorState';
@@ -22,6 +23,7 @@ export default function TripsPage() {
 
   return (
     <Container size="lg">
+      {data?.data && <CacheSync trips={data.data} />}
       <Title order={1} mb="xl">All Available Trips</Title>
       <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="lg">
         {data.data

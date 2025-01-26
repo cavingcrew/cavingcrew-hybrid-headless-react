@@ -31,8 +31,13 @@ export function useTrips(): UseQueryResult<ApiResponse<Trip[]>> {
         // Prime individual trip caches
         trips.forEach((trip: Trip) => {
           queryClient.setQueryData(tripKeys.detail(trip.slug), {
-            data: trip,
-            success: true
+            data: {
+              ...trip,
+              variations: trip.variations || [],
+              categories: trip.categories || []
+            },
+            success: true,
+            timestamp: Date.now()
           });
         });
 
@@ -67,26 +72,13 @@ export function useTrip(slug: string) {
   return useQuery({
     queryKey: tripKeys.detail(slug),
     queryFn: async () => {
-      // 1. Check list cache first
-      const listData = queryClient.getQueryData<ApiResponse<Trip[]>>(tripKeys.all);
-      const cachedFromList = listData?.data?.find(t => t.slug === slug);
-
-      // 2. Return immediately if found in list cache
-      if (cachedFromList) {
-        return { data: cachedFromList, success: true };
-      }
-
-      // 3. Check if we have any cached version
-      const cachedDetail = queryClient.getQueryData<ApiResponse<Trip>>(tripKeys.detail(slug));
-      if (cachedDetail) {
-        return cachedDetail;
-      }
-
-      // 4. Only fetch from network if no cache exists
+      const cached = queryClient.getQueryData<ApiResponse<Trip>>(tripKeys.detail(slug));
+      if (cached) return cached;
+      
       return apiService.getTrip(slug);
     },
-    staleTime: 1000 * 30, // 30 seconds stale time for background updates
-    gcTime: 1000 * 60 * 60 * 24, // 24 hour cache lifetime
+    staleTime: Infinity, // Never consider stale
+    gcTime: 1000 * 60 * 60 * 24 * 7, // Keep for 1 week
     enabled: !!slug,
   });
 }

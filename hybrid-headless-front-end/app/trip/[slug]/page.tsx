@@ -1,5 +1,9 @@
 'use client';
 
+export const dynamic = 'force-static'
+export const revalidate = false
+export const fetchCache = 'only-cache'
+
 import { useParams } from 'next/navigation';
 import { TripDetails } from '@/components/trips/TripDetails';
 import { LoadingState } from '@/components/ui/LoadingState';

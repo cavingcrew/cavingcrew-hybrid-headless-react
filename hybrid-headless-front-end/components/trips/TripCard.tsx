@@ -22,11 +22,18 @@ export default function TripCard({ trip }: TripCardProps) {
 			prefetch={false}
 			style={{ textDecoration: "none", color: "inherit" }}
 			onMouseEnter={() => {
-				// Manually prefetch using React Query
 				queryClient.prefetchQuery({
 					queryKey: tripKeys.detail(trip.slug),
-					queryFn: () => ({ data: trip, success: true }),
+					queryFn: () => ({
+						data: trip,
+						success: true,
+						timestamp: Date.now()
+					}),
+					staleTime: Infinity
 				});
+				
+				// Prefetch HTML for instant navigation
+				router.prefetch(`/trip/${trip.slug}`);
 			}}
 		>
 			<Card
