@@ -1,8 +1,8 @@
 'use client';
 
 import { useRouter, usePathname } from 'next/navigation';
-import { useEffect, type ReactNode } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
+import { useEffect, type ReactNode } from 'react';
 import { tripKeys } from '@/lib/hooks/useTrips';
 
 export function ClientRouterProvider({ children }: { children: ReactNode }) {
@@ -11,36 +11,72 @@ export function ClientRouterProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    // Disable Next.js prefetching
-    const originalPush = router.push;
-    const originalPrefetch = router.prefetch;
+    // Intercept all navigation events
+    const handleClick = (e: MouseEvent) => {
+      const link = (e.target as HTMLElement).closest('a');
+      if (!link) return;
 
-    // @ts-ignore - we're intentionally modifying the router
-    router.push = (href: string) => {
-      // Check if we have data in the cache before navigation
-      if (href.includes('/trip/')) {
+      const href = link.getAttribute('href');
+      if (!href) return;
+
+      // Don't intercept external links or special routes
+      if (
+        href.startsWith('http') ||
+        href.startsWith('/wp-') ||
+        href.startsWith('/my-account') ||
+        href.includes('checkout') ||
+        href.includes('cart')
+      ) {
+        return;
+      }
+
+      e.preventDefault();
+
+      // Handle trip detail pages
+      if (href.startsWith('/trip/')) {
         const slug = href.split('/').pop();
         const cachedData = queryClient.getQueryData(tripKeys.detail(slug || ''));
-        if (!cachedData) {
-          // If no cache, let's prefetch before navigation
-          queryClient.prefetchQuery({
-            queryKey: tripKeys.detail(slug || ''),
-            staleTime: Infinity
-          });
+        
+        // If we have cached data, use it immediately
+        if (cachedData) {
+          router.push(href);
+          return;
         }
+
+        // If no cache, prefetch and then navigate
+        queryClient.prefetchQuery({
+          queryKey: tripKeys.detail(slug || ''),
+          staleTime: Infinity
+        }).then(() => {
+          router.push(href);
+        });
+        return;
       }
-      originalPush(href);
+
+      // Handle trips listing page
+      if (href === '/trips' || href === '/trips/') {
+        const cachedData = queryClient.getQueryData(tripKeys.all);
+        if (cachedData) {
+          router.push(href);
+          return;
+        }
+
+        // If no cache, prefetch and then navigate
+        queryClient.prefetchQuery({
+          queryKey: tripKeys.all,
+          staleTime: Infinity
+        }).then(() => {
+          router.push(href);
+        });
+        return;
+      }
+
+      // Default navigation
+      router.push(href);
     };
 
-    // Disable prefetch completely
-    // @ts-ignore - we're intentionally modifying the router
-    router.prefetch = () => Promise.resolve();
-
-    return () => {
-      // @ts-ignore - restore original methods
-      router.push = originalPush;
-      router.prefetch = originalPrefetch;
-    };
+    document.addEventListener('click', handleClick);
+    return () => document.removeEventListener('click', handleClick);
   }, [router, queryClient]);
 
   return <>{children}</>;
