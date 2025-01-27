@@ -1,20 +1,3 @@
-"use client";
-
-import dynamic from "next/dynamic";
-import React from "react";
-import { LoadingState } from "../../components/ui/LoadingState";
-
-const CatchAllContent = dynamic(
-	() => import("./CatchAllContent").then((mod) => mod.CatchAllContent),
-	{
-		loading: () => <LoadingState />,
-		ssr: false,
-	},
-);
-
-export default function CatchAllPage() {
-	return <><p>ALERT ALERT</p><CatchAllContent /></>;
-}
 'use client';
 
 import { useParams } from 'next/navigation';
@@ -29,7 +12,7 @@ import dynamic from 'next/dynamic';
 export default function CatchAllPage() {
   const params = useParams();
   const [path, setPath] = useState<string[]>([]);
-  
+
   useEffect(() => {
     // Get the current path from window.location
     const currentPath = window.location.pathname.split('/').filter(Boolean);
