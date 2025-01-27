@@ -15,7 +15,13 @@ export function CatchAllContent() {
   const [path, setPath] = useState<string[]>([]);
 
   useEffect(() => {
-    const segments = Array.isArray(params.slug) ? params.slug : [params.slug];
+    // Filter out any undefined values and ensure we have strings
+    const segments = Array.isArray(params.slug) 
+      ? params.slug.filter((segment): segment is string => segment !== undefined)
+      : params.slug 
+        ? [params.slug].filter((segment): segment is string => segment !== undefined)
+        : [];
+    
     setPath(segments);
   }, [params.slug]);
 
