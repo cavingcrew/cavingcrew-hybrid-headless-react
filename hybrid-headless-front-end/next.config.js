@@ -8,7 +8,6 @@ const nextConfig = {
 	experimental: {
 		optimizeCss: true,
 		scrollRestoration: true,
-		serverActions: false,
 	},
 	transpilePackages: ["@tanstack/react-query"],
 	webpack: (config) => {
