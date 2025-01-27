@@ -16,25 +16,22 @@ export default function TripCard({ trip }: TripCardProps) {
 	const queryClient = useQueryClient();
 	const router = useRouter();
 
-	return (
-		<Link
-			href={`/trip/${trip.slug}`}
-			prefetch={false}
-			style={{ textDecoration: "none", color: "inherit" }}
-			onMouseEnter={() => {
-				queryClient.prefetchQuery({
-					queryKey: tripKeys.detail(trip.slug),
-					queryFn: () => ({
-						data: trip,
-						success: true,
-						timestamp: Date.now()
-					}),
-					staleTime: Infinity
-				});
-				
-				// Prefetch HTML for instant navigation
-				router.prefetch(`/trip/${trip.slug}`);
-			}}
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    queryClient.setQueryData(tripKeys.detail(trip.slug), {
+      data: trip,
+      success: true,
+      timestamp: Date.now()
+    });
+    router.push(`/trip/${trip.slug}`);
+  };
+
+  return (
+    <Link
+      href={`/trip/${trip.slug}`}
+      prefetch={false}
+      onClick={handleClick}
+      style={{ textDecoration: "none", color: "inherit" }}
 		>
 			<Card
 				shadow="sm"

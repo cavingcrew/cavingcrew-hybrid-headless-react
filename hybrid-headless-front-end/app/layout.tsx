@@ -1,8 +1,10 @@
+'use client';
+
 import '@mantine/core/styles.css';
-export const fetchCache = 'default-cache';
 import { ColorSchemeScript } from '@mantine/core';
 import { MantineProvider } from '@/components/providers/MantineProvider';
 import { QueryProvider } from '@/components/providers/QueryProvider';
+import { ClientRouterProvider } from '@/components/providers/ClientRouterProvider';
 import { MainHeader } from '@/components/layout/MainHeader';
 import { MainFooter } from '@/components/layout/MainFooter';
 
@@ -15,6 +17,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <QueryProvider>
           <MantineProvider>
+            <ClientRouterProvider>
               <div style={{ 
                 minHeight: '100vh',
                 display: 'flex',
@@ -26,6 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 </main>
                 <MainFooter />
               </div>
+            </ClientRouterProvider>
           </MantineProvider>
         </QueryProvider>
       </body>
