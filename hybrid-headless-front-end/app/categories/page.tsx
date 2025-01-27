@@ -1,3 +1,5 @@
+"use client";
+
 import { Container, Title, SimpleGrid, Card, Text, Group } from '@mantine/core';
 import { apiService } from '@/lib/api-service';
 import Link from 'next/link';

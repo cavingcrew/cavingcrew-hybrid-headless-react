@@ -5,6 +5,9 @@ const nextConfig = {
 	images: {
 		domains: ["localhost", "www.cavingcrew.com", "cavingcrew.com"],
 	},
+	experimental: {
+		clientRouterFilter: true,
+	},
 	transpilePackages: ["@tanstack/react-query"],
 	webpack: (config) => {
 		config.resolve.fallback = { fs: false };

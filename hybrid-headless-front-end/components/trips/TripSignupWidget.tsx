@@ -13,7 +13,7 @@ import {
   Group,
   Text
 } from '@mantine/core';
-import { useIsClient } from '@mantine/hooks';
+import { useIsClient } from '@uidotdev/usehooks';
 import { IconLogin } from '@tabler/icons-react';
 import { apiService } from '@/lib/api-service';
 import type { Trip, ApiResponse } from '@/types/api';
@@ -72,7 +72,7 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
   };
 
   // Safe window access for login URL
-  const loginUrl = isClient 
+  const loginUrl = isClient
     ? `/wp-login.php?redirect_to=${encodeURIComponent(window.location.href)}#signup`
     : '';
 
