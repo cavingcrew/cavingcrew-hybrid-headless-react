@@ -23,7 +23,7 @@ export default function TripCard({ trip }: TripCardProps) {
       success: true,
       timestamp: Date.now()
     });
-    router.push(`/trip/${trip.slug}`);
+    router.push(`/trip/${trip.slug}`, undefined, { shallow: true });
   };
 
   return (

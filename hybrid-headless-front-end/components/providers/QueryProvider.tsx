@@ -14,9 +14,12 @@ export function QueryProvider({ children }: QueryProviderProps) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 1000 * 60 * 5,  // 5 minutes
-            gcTime: 1000 * 60 * 60,    // 1 hour
+            staleTime: Infinity, // Never consider data stale
+            gcTime: 1000 * 60 * 60 * 24, // Keep cache for 24 hours
             refetchOnWindowFocus: false,
+            refetchOnMount: false,
+            refetchOnReconnect: false,
+            retry: false,
             structuralSharing: true,
             // Disable initial data to prevent SSR hydration issues
             initialData: undefined,

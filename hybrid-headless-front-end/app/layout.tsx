@@ -17,7 +17,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <QueryProvider>
           <MantineProvider>
-            <ClientRouterProvider>
+            <ClientNavigationProvider>
               <div style={{ 
                 minHeight: '100vh',
                 display: 'flex',
@@ -29,7 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 </main>
                 <MainFooter />
               </div>
-            </ClientRouterProvider>
+            </ClientNavigationProvider>
           </MantineProvider>
         </QueryProvider>
       </body>
