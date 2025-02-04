@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from 'next/navigation';
 import {
 	Box,
 	Burger,
@@ -23,6 +24,7 @@ const shouldFullRefresh = (href: string) => {
 };
 
 export function MainHeader() {
+	const router = useRouter();
 	const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] =
 		useDisclosure(false);
 	const [userMenuOpened, setUserMenuOpened] = useState(false);
@@ -68,28 +70,20 @@ export function MainHeader() {
 	// Desktop menu
 	const DesktopMenu = () => (
 		<Group gap={20}>
-			{mainLinks.map((link) => {
-				if (shouldFullRefresh(link.href)) {
-					return (
-						<UnstyledButton
-							key={link.href}
-							component="a"
-							href={link.href}
-							onClick={() => {
-								window.location.href = link.href;
-							}}
-						>
-							{link.label}
-						</UnstyledButton>
-					);
-				}
-
-				return (
-					<UnstyledButton key={link.href} component={Link} href={link.href}>
-						{link.label}
-					</UnstyledButton>
-				);
-			})}
+			{mainLinks.map((link) => (
+				<UnstyledButton
+					key={link.href}
+					onClick={() => {
+						if (shouldFullRefresh(link.href)) {
+							window.location.href = link.href;
+						} else {
+							router.push(link.href);
+						}
+					}}
+				>
+					{link.label}
+				</UnstyledButton>
+			))}
 
 			<Menu trigger="hover" openDelay={100} closeDelay={400}>
 				<Menu.Target>
@@ -177,30 +171,21 @@ export function MainHeader() {
 			hiddenFrom="sm"
 		>
 			<Stack>
-				{mainLinks.map((link) =>
-					shouldFullRefresh(link.href) ? (
-						<UnstyledButton
-							key={link.href}
-							component="a"
-							href={link.href}
-							onClick={() => {
-								closeDrawer();
+				{mainLinks.map((link) => (
+					<UnstyledButton
+						key={link.href}
+						onClick={() => {
+							closeDrawer();
+							if (shouldFullRefresh(link.href)) {
 								window.location.href = link.href;
-							}}
-						>
-							{link.label}
-						</UnstyledButton>
-					) : (
-						<UnstyledButton
-							key={link.href}
-							component={Link}
-							href={link.href}
-							onClick={closeDrawer}
-						>
-							{link.label}
-						</UnstyledButton>
-					),
-				)}
+							} else {
+								router.push(link.href);
+							}
+						}}
+					>
+						{link.label}
+					</UnstyledButton>
+				))}
 
 				<Box>
 					<Text fw={500} mb="xs">
