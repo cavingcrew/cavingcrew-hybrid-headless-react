@@ -65,6 +65,7 @@ class Hybrid_Headless_Routes_Controller {
             'trip'       => '/trips/{slug}',
             'categories' => '/categories',
             'category'   => '/categories/{slug}',
+            'test'       => '/test-client-nav'
         );
     }
 
@@ -239,6 +240,7 @@ class Hybrid_Headless_Routes_Controller {
             '^trips/[^/]+/?',
             '^categories/?',
             '^categories/[^/]+/?',
+            '^test-client-nav/?$'
         );
 
         foreach ($frontend_patterns as $pattern) {

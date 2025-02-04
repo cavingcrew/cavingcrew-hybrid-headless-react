@@ -36,3 +36,41 @@ export default function TestPage() {
     </div>
   );
 }
+'use client';
+
+import { Container, Title, Text, Button, Stack } from '@mantine/core';
+import { useRouter } from 'next/navigation';
+
+export default function TestClientNavPage() {
+  const router = useRouter();
+
+  return (
+    <Container size="lg" py="xl">
+      <Stack gap="xl">
+        <Title>Client Navigation Test Page</Title>
+        
+        <Text>
+          This page tests client-side navigation in our hybrid WordPress/Next.js setup.
+          Click the buttons below to test different navigation scenarios.
+        </Text>
+
+        <Stack gap="md">
+          <Button 
+            onClick={() => router.push('/trips')}
+            variant="filled"
+          >
+            Navigate to Trips (Client-side)
+          </Button>
+
+          <Button
+            component="a"
+            href="/my-account"
+            variant="outline"
+          >
+            Navigate to My Account (Full page refresh)
+          </Button>
+        </Stack>
+      </Stack>
+    </Container>
+  );
+}
