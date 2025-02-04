@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from 'next/navigation';
 import {
 	Box,
 	Burger,
@@ -16,6 +15,7 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import { IconChevronDown } from "@tabler/icons-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React from "react";
 import { useState } from "react";
 
@@ -139,7 +139,7 @@ export function MainHeader() {
 							key={link.href}
 							onClick={() => {
 								link.fullRefresh
-									? window.location.href = link.href
+									? (window.location.href = link.href)
 									: router.push(link.href);
 							}}
 						>
