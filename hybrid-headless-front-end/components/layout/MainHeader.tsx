@@ -134,27 +134,18 @@ export function MainHeader() {
 					</UnstyledButton>
 				</Menu.Target>
 				<Menu.Dropdown>
-					{accountLinks.map((link) => {
-						if (link.fullRefresh) {
-							return (
-								<Menu.Item
-									key={link.href}
-									component="a"
-									href={link.href}
-									onClick={() => {
-										window.location.href = link.href;
-									}}
-								>
-									{link.label}
-								</Menu.Item>
-							);
-						}
-						return (
-							<Menu.Item key={link.href} component={Link} href={link.href}>
-								{link.label}
-							</Menu.Item>
-						);
-					})}
+					{accountLinks.map((link) => (
+						<Menu.Item
+							key={link.href}
+							onClick={() => {
+								link.fullRefresh
+									? window.location.href = link.href
+									: router.push(link.href);
+							}}
+						>
+							{link.label}
+						</Menu.Item>
+					))}
 				</Menu.Dropdown>
 			</Menu>
 		</Group>
