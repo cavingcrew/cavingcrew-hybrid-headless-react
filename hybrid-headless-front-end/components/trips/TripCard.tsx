@@ -17,10 +17,9 @@ export default function TripCard({ trip }: TripCardProps) {
 	const router = useRouter();
 
 	return (
-		<Link
-			href={`/trip/${trip.slug}`}
-			prefetch
-			style={{ textDecoration: "none", color: "inherit" }}
+		<div 
+			onClick={() => router.push(`/trip/${trip.slug}`)}
+			style={{ cursor: 'pointer' }}
 			onMouseEnter={() => {
 				// Pre-warm the query cache for individual trip
 				queryClient.prefetchQuery({
@@ -67,6 +66,6 @@ export default function TripCard({ trip }: TripCardProps) {
 					</Text>
 				</Group>
 			</Card>
-		</Link>
+		</div>
 	);
 }

@@ -95,26 +95,22 @@ export function MainHeader() {
 					</UnstyledButton>
 				</Menu.Target>
 				<Menu.Dropdown>
-					{aboutLinks.map((link) => {
-						if (link.external) {
-							return (
-								<Menu.Item
-									key={link.href}
-									component="a"
-									href={link.href}
-									target="_blank"
-									rel="noopener noreferrer"
-								>
-									{link.label}
-								</Menu.Item>
-							);
-						}
-						return (
-							<Menu.Item key={link.href} component={Link} href={link.href}>
-								{link.label}
-							</Menu.Item>
-						);
-					})}
+					{aboutLinks.map((link) => (
+						<Menu.Item 
+							key={link.href}
+							onClick={() => {
+								if (link.external) {
+									window.open(link.href, '_blank');
+								} else if (shouldFullRefresh(link.href)) {
+									window.location.href = link.href;
+								} else {
+									router.push(link.href);
+								}
+							}}
+						>
+							{link.label}
+						</Menu.Item>
+					))}
 				</Menu.Dropdown>
 			</Menu>
 
@@ -258,11 +254,11 @@ export function MainHeader() {
 		>
 			<Container size="lg" h="100%">
 				<Group h="100%" justify="space-between">
-					<Link href="/" style={{ textDecoration: "none" }}>
+					<UnstyledButton onClick={() => router.push('/')}>
 						<Text size="xl" fw={700}>
 							The Caving Crew
 						</Text>
-					</Link>
+					</UnstyledButton>
 
 					{/* Desktop menu */}
 					<Group visibleFrom="sm">
