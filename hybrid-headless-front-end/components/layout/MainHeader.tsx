@@ -96,11 +96,11 @@ export function MainHeader() {
 				</Menu.Target>
 				<Menu.Dropdown>
 					{aboutLinks.map((link) => (
-						<Menu.Item 
+						<Menu.Item
 							key={link.href}
 							onClick={() => {
 								if (link.external) {
-									window.open(link.href, '_blank');
+									window.open(link.href, "_blank");
 								} else if (shouldFullRefresh(link.href)) {
 									window.location.href = link.href;
 								} else {
@@ -254,7 +254,7 @@ export function MainHeader() {
 		>
 			<Container size="lg" h="100%">
 				<Group h="100%" justify="space-between">
-					<UnstyledButton onClick={() => router.push('/')}>
+					<UnstyledButton onClick={() => router.push("/")}>
 						<Text size="xl" fw={700}>
 							The Caving Crew
 						</Text>

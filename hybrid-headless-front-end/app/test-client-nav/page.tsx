@@ -13,7 +13,7 @@ export default function TestPage() {
 
       {/* Method 1: useRouter programmatic navigation */}
       <button
-        onClick={() => router.push('/')}
+        onClick={() => router.push('/trips')}
         style={{ padding: '0.5rem', backgroundColor: '#e0f2fe' }}
       >
         Client Nav via useRouter
@@ -21,7 +21,7 @@ export default function TestPage() {
 
       {/* Method 2: Next.js Link component */}
       <Link
-        href="/"
+        href="/trips"
         style={{ padding: '0.5rem', backgroundColor: '#f0fdf4', textDecoration: 'none' }}
       >
         Client Nav via &lt;Link&gt; Component
@@ -29,7 +29,7 @@ export default function TestPage() {
 
       {/* Method 3: Regular anchor tag */}
       <a
-        href="/"
+        href="/trips"
         style={{ padding: '0.5rem', backgroundColor: '#fee2e2' }}
       >
         Full Reload via &lt;a&gt; Tag

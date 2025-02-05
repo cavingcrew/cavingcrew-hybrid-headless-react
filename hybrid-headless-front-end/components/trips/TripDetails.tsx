@@ -39,7 +39,6 @@ export function TripDetails({ trip }: TripDetailsProps) {
 		<Stack gap="xl">
 			{/* Header Section */}
 			<Stack gap="md">
-				<Title order={1}>{trip.name}</Title>
 				<TripSignupWidget trip={trip} />
 				{acf?.event_description && (
 					<div
