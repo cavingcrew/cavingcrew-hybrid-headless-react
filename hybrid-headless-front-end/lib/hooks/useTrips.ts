@@ -23,12 +23,10 @@ export function useTrips(): UseQueryResult<ApiResponse<Trip[]>> {
     queryFn: async () => {
       const response = await apiService.getTrips();
       if (response.success && response.data) {
-        // Transform the data structure
         const trips = Array.isArray(response.data.products) ?
           response.data.products :
           [];
 
-        // Prime individual trip caches
         trips.forEach((trip: Trip) => {
           queryClient.setQueryData(tripKeys.detail(trip.slug), {
             data: trip,
@@ -36,12 +34,9 @@ export function useTrips(): UseQueryResult<ApiResponse<Trip[]>> {
           });
         });
 
-        // Filter out the membership product and transform the data
         const filteredData = trips
-          //.filter((trip: Trip) => trip.id !== 1272) // disable the membership filter out
           .map((trip: Trip) => ({
             ...trip,
-            // Ensure categories is always an array
             categories: trip.categories || []
           }));
 
@@ -56,8 +51,11 @@ export function useTrips(): UseQueryResult<ApiResponse<Trip[]>> {
         message: response.message || 'Failed to fetch trips'
       };
     },
-    staleTime: 1000 * 30, // 30 seconds stale time for faster background updates
-    gcTime: 1000 * 60 * 60 * 24, // 24 hour cache lifetime
+    staleTime: 1000 * 30,
+    gcTime: 1000 * 60 * 10,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
+    refetchOnMount: true
   });
 }
 
@@ -67,27 +65,26 @@ export function useTrip(slug: string) {
   return useQuery({
     queryKey: tripKeys.detail(slug),
     queryFn: async () => {
-      // 1. Check list cache first
       const listData = queryClient.getQueryData<ApiResponse<Trip[]>>(tripKeys.all);
       const cachedFromList = listData?.data?.find(t => t.slug === slug);
 
-      // 2. Return immediately if found in list cache
       if (cachedFromList) {
         return { data: cachedFromList, success: true };
       }
 
-      // 3. Check if we have any cached version
       const cachedDetail = queryClient.getQueryData<ApiResponse<Trip>>(tripKeys.detail(slug));
       if (cachedDetail) {
         return cachedDetail;
       }
 
-      // 4. Only fetch from network if no cache exists
       return apiService.getTrip(slug);
     },
-    staleTime: 1000 * 30, // 30 seconds stale time for background updates
-    gcTime: 1000 * 60 * 60 * 24, // 24 hour cache lifetime
+    staleTime: 1000 * 30,
+    gcTime: 1000 * 60 * 60 * 24,
     enabled: !!slug,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
+    refetchOnMount: true
   });
 }
 
@@ -106,11 +103,10 @@ export function useTripsByCategory(categorySlug: string) {
           };
         }
 
-        // Transform the data structure
         const filteredData = response.data.filter(trip => trip.id !== 1272)
           .map(trip => ({
             ...trip,
-            categories: trip.categories || [] // Ensure categories array exists
+            categories: trip.categories || []
           }));
 
         return {
