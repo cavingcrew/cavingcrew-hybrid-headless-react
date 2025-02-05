@@ -129,6 +129,13 @@ class Hybrid_Headless_Frontend {
             return;
         }
 
+        // Add proper caching headers for static assets
+        if (strpos($request_uri, '/_next/static') === 0) {
+            header('Cache-Control: public, max-age=31536000, immutable');
+        } else {
+            header('Cache-Control: public, max-age=3600');
+        }
+
         $mime_types = [
             'js' => 'application/javascript',
             'css' => 'text/css',
@@ -270,49 +277,20 @@ class Hybrid_Headless_Frontend {
             return false;
         }
 
-        $wordpress_paths = array(
-            'my-account',
-            'checkout',
-            'cart',
-            'wp-login.php',
-            'wp-admin',
-            'wp-content',
-            'wp-includes',
-            'wp-json',
-            'wp-cron.php',
-            'wp-activate.php',
-            'wp-signup.php',
-            'wp-trackback.php',
-            'xmlrpc.php',
-            'feed',
-            'comments',
-        );
+        // Define patterns that should be handled by Next.js
+        $nextjs_patterns = [
+            '^trips(/.*)?$',
+            '^categories(/.*)?$',
+            '^trip(/.*)?$', 
+            '^category(/.*)?$',
+            '^test-client-nav$'
+        ];
 
-        // Check if the current path is a WordPress-specific path
-        foreach ($wordpress_paths as $path) {
-            if (strpos($current_path, $path) === 0) {
-                return true;
-            }
-        }
-
-        // Check if the current path is one of the frontend routes
-        $frontend_routes = array(
-            'categories',
-            'category',
-            'trips',
-            'trip',
-            'route-descriptions',
-        );
-
-        foreach ($frontend_routes as $route) {
-            if (strpos($current_path, $route) === 0) {
+        // Check if current path matches any Next.js pattern
+        foreach ($nextjs_patterns as $pattern) {
+            if (preg_match("#{$pattern}#", $current_path)) {
                 return false;
             }
-        }
-
-        // Handle the root path
-        if ($current_path === '') {
-            return false;
         }
 
         // Default to WordPress for all other routes
