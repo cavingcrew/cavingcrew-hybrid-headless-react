@@ -192,11 +192,11 @@ class Hybrid_Headless_Frontend {
             return;
         }
 
-        // Set RSC headers if needed
-        if (strpos($_SERVER['REQUEST_URI'], '_rsc=') !== false) {
-            header('X-NextJS-Routing: client');
-            header('Cache-Control: no-cache, no-store, must-revalidate');
-        }
+        // Set Next.js specific headers
+        header('X-NextJS-RSC: 1');
+        header('X-NextJS-Routing: client');
+        header('X-NextJS-Client-Routing: enabled');
+        header('Cache-Control: no-cache, no-store, must-revalidate');
         
         // If not a static file, proxy to Next.js
         $nextjs_url = $this->get_nextjs_url();
