@@ -4,7 +4,6 @@ import { Badge, Card, Group, Image, Text } from "@mantine/core";
 import Link from "next/link";
 import { useQueryClient } from '@tanstack/react-query';
 import { tripKeys } from '@/lib/hooks/useTrips';
-import { useRouter } from "next/navigation";
 import React from "react";
 import type { Trip } from "../../types/api";
 
@@ -14,17 +13,15 @@ interface TripCardProps {
 
 export default function TripCard({ trip }: TripCardProps) {
 	const queryClient = useQueryClient();
-	const router = useRouter();
 
 	return (
-		<div 
-			onClick={() => router.push(`/trip/${trip.slug}`)}
-			style={{ cursor: 'pointer' }}
+		<Link 
+			href={`/trip/${trip.slug}`}
+			style={{ textDecoration: "none", color: "inherit" }}
 			onMouseEnter={() => {
-				// Pre-warm the query cache for individual trip
 				queryClient.prefetchQuery({
 					queryKey: tripKeys.detail(trip.slug),
-					queryFn: () => ({ data: trip, success: true }), // Use local data immediately
+					queryFn: () => ({ data: trip, success: true }),
 				});
 			}}
 		>
@@ -33,11 +30,7 @@ export default function TripCard({ trip }: TripCardProps) {
 				padding="lg"
 				radius="md"
 				withBorder
-				style={{
-					textDecoration: "none",
-					color: "inherit",
-					cursor: "pointer",
-				}}
+				style={{ cursor: "pointer" }}
 			>
 				{trip.images?.[0] && (
 					<Card.Section>
@@ -66,6 +59,6 @@ export default function TripCard({ trip }: TripCardProps) {
 					</Text>
 				</Group>
 			</Card>
-		</div>
+		</Link>
 	);
 }
