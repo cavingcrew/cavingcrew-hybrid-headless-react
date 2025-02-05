@@ -107,7 +107,7 @@ class Hybrid_Headless_Frontend {
         }
 
         // Only allow specific characters in the path
-        if (!preg_match('/^\/_next\/static\/[a-zA-Z0-9\-_\/\.%]+$/', $path)) {
+        if (!preg_match('/^\/_next\/(static|image)\/[a-zA-Z0-9\-_\/\.%]+$/', $path)) {
             return false;
         }
 
@@ -130,8 +130,10 @@ class Hybrid_Headless_Frontend {
         }
 
         // Add proper caching headers for static assets
-        if (strpos($request_uri, '/_next/static') === 0) {
+        if (strpos($request_uri, '/_next/static') === 0 || strpos($request_uri, '/_next/image') === 0) {
             header('Cache-Control: public, max-age=31536000, immutable');
+        } elseif (strpos($request_uri, '/static') === 0) {
+            header('Cache-Control: public, max-age=3600');
         } else {
             header('Cache-Control: public, max-age=3600');
         }

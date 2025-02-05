@@ -6,6 +6,19 @@ The Hybrid Headless React Plugin is a sophisticated WordPress plugin that enable
 
 ## Features
 
+### Static Asset Handling
+The plugin automatically serves and caches static assets with optimal headers:
+- Next.js static files (`/_next/static`, `/_next/image`):
+  - Immutable caching (1 year)
+  - Gzip/Brotli compression support
+- Application static files (`/static`):
+  - 1 hour cache duration
+  - Standard compression
+- Automatic security validation for static file paths
+- Direct filesystem serving for better performance
+
+No additional server configuration required when using the PHP plugin - it handles static assets internally through WordPress's rewrite system.
+
 ### 1. Smart Route Handling
 - Configurable proxy functionality that can be enabled/disabled via admin UI or WP-CLI
 - Automatically detects and routes requests between headless and traditional WordPress paths
@@ -47,11 +60,13 @@ For Apache servers, use this configuration to properly handle Next.js routes and
 <Location "/_next/image">
    ProxyPass http://localhost:3000/_next/image
    ProxyPassReverse http://localhost:3000/_next/image
+   Header set Cache-Control "public, max-age=31536000, immutable"
 </Location>
 
 <Location "/static">
    ProxyPass http://localhost:3000/static
    ProxyPassReverse http://localhost:3000/static
+   Header set Cache-Control "public, max-age=3600"
 </Location>
 ```
 
