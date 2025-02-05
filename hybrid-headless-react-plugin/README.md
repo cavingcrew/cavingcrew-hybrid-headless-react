@@ -21,6 +21,40 @@ The Hybrid Headless React Plugin is a sophisticated WordPress plugin that enable
   - `/route-descriptions/`
   - `/_next/` (Next.js static assets)
 
+### Server Configuration
+
+#### Apache Configuration
+For Apache servers, use this configuration to properly handle Next.js routes and client-side navigation:
+```apache
+<LocationMatch "^(/trips(/.*)?|/categories(/.*)?|/trip(/.*)?|/category(/.*)?|/test-client-nav)(\?.*)?$">
+   ProxyPass http://localhost:3000
+   ProxyPassReverse http://localhost:3000
+   # Headers for Next.js client-side routing
+   Header set X-NextJS-RSC "1"
+   Header set X-NextJS-Routing "client"
+   Header set X-NextJS-Client-Routing "enabled"
+   # Disable caching for dynamic content
+   Header set Cache-Control "no-cache, no-store, must-revalidate"
+</LocationMatch>
+
+<!-- Static assets handling -->
+<Location "/_next/static">
+   ProxyPass http://localhost:3000/_next/static
+   ProxyPassReverse http://localhost:3000/_next/static
+   Header set Cache-Control "public, max-age=31536000, immutable"
+</Location>
+
+<Location "/_next/image">
+   ProxyPass http://localhost:3000/_next/image
+   ProxyPassReverse http://localhost:3000/_next/image
+</Location>
+
+<Location "/static">
+   ProxyPass http://localhost:3000/static
+   ProxyPassReverse http://localhost:3000/static
+</Location>
+```
+
 ### 2. Advanced API Integration
 - Custom REST API endpoints optimized for headless frontends
 - Complete WooCommerce product data exposure
