@@ -184,6 +184,12 @@ class Hybrid_Headless_Frontend {
             $this->serve_static_file($request_uri);
             return;
         }
+
+        // Set RSC headers if needed
+        if (strpos($_SERVER['REQUEST_URI'], '_rsc=') !== false) {
+            header('X-NextJS-Routing: client');
+            header('Cache-Control: no-cache, no-store, must-revalidate');
+        }
         
         // If not a static file, proxy to Next.js
         $nextjs_url = $this->get_nextjs_url();
@@ -202,6 +208,7 @@ class Hybrid_Headless_Frontend {
                 'Accept' => $_SERVER['HTTP_ACCEPT'] ?? '*/*',
                 'Accept-Language' => $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '',
                 'User-Agent' => $_SERVER['HTTP_USER_AGENT'] ?? '',
+                'X-NextJS-Routing' => strpos($_SERVER['REQUEST_URI'], '_rsc=') !== false ? 'client' : '',
             ),
         );
         
