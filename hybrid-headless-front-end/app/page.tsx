@@ -4,7 +4,7 @@ import { Container, Title, Text, Stack, Group, Paper, SimpleGrid, Button, Anchor
 import { useTrips } from '@/lib/hooks/useTrips';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { ErrorState } from '@/components/ui/ErrorState';
-import { TripCard } from '@/components/trips';
+import TripCard from '@/components/trips/TripCard';
 import Link from 'next/link';
 
 export default function HomePage() {

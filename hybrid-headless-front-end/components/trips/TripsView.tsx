@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Group, SegmentedControl, Stack, Title, Text, SimpleGrid } from '@mantine/core';
-import { TripCard } from './TripCard';
+import TripCard from './TripCard';
 import type { Trip } from '@/types/api';
 
 interface TripsViewProps {
