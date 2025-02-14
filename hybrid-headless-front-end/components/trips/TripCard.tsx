@@ -6,6 +6,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { tripKeys } from '@/lib/hooks/useTrips';
 import React from "react";
 import type { Trip } from "../../types/api";
+import { getTripAvailability } from "@/utils/trip-utils";
 
 interface TripCardProps {
 	trip: Trip;
@@ -44,8 +45,8 @@ export default function TripCard({ trip }: TripCardProps) {
 
 				<Group justify="space-between" mt="md" mb="xs">
 					<Text fw={500}>{trip.name}</Text>
-					<Badge color={trip.stock_status === "instock" ? "green" : "red"}>
-						{trip.stock_status === "instock" ? "Available" : "Sold Out"}
+					<Badge color={getTripAvailability(trip).badgeColor}>
+						{getTripAvailability(trip).statusMessage}
 					</Badge>
 				</Group>
 
