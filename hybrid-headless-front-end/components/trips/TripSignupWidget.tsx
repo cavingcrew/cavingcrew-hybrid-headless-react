@@ -11,6 +11,7 @@ import {
   Group,
   Text
 } from '@mantine/core';
+import { WordPressLoginWidget } from '@/components/auth/WordPressLoginWidget';
 import { IconLogin } from '@tabler/icons-react';
 import { apiService } from '@/lib/api-service';
 import type { Trip, ApiResponse } from '@/types/api';
@@ -117,19 +118,10 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
       )}
 
       {userStatus?.data && !userStatus.data.isLoggedIn && trip.acf?.event_non_members_welcome !== 'yes' ? (
-        <Alert color="blue" mt="md" icon={<IconLogin size={18} />}>
-          <Group gap="xs">
-            <Text>Please log in to sign up for this trip</Text>
-            <Button
-              variant="light"
-              component="a"
-              href={`/wp-login.php?redirect_to=${encodeURIComponent(window.location.href)}#signup`}
-              leftSection={<IconLogin size={16} />}
-            >
-              Log In Now
-            </Button>
-          </Group>
-        </Alert>
+        <Box mt="md">
+          <Text mb="md">Please log in to sign up for this trip</Text>
+          <WordPressLoginWidget />
+        </Box>
       ) : (
         <Group mt="md">
           <Text fw={500}>

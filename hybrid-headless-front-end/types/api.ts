@@ -148,3 +148,10 @@ export interface CategoryResponse {
 		slug: string;
 	};
 }
+
+export interface UserStatusResponse {
+  isLoggedIn: boolean;
+  isMember: boolean;
+  username?: string;
+  email?: string;
+}
