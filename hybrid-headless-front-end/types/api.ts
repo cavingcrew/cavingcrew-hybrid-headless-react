@@ -150,8 +150,8 @@ export interface CategoryResponse {
 }
 
 export interface UserStatusResponse {
-  isLoggedIn: boolean;
-  isMember: boolean;
-  username?: string;
-  email?: string;
+	isLoggedIn: boolean;
+	isMember: boolean;
+	username?: string;
+	email?: string;
 }
