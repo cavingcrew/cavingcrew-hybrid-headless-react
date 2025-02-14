@@ -75,9 +75,15 @@ export default function TripCard({ trip }: TripCardProps) {
 					</Text>
 				)}
 
-				<Text size="sm" c="dimmed" lineClamp={2} mt={4}>
-					{trip.acf.event_description || "No description available"}
-				</Text>
+				<Text 
+					size="sm" 
+					c="dimmed" 
+					lineClamp={2} 
+					mt={4}
+					dangerouslySetInnerHTML={{
+						__html: trip.acf.event_description || "No description available"
+					}}
+				/>
 
 				<Group mt="md" justify="space-between">
 					<Text size="xl" fw={700} c="blue">
