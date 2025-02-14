@@ -90,7 +90,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
 								<Group gap="xs">
 									<IconCoin size={20} />
 									<Text>
-										{acf.event_non_members_welcome === 'no' 
+										{acf.event_non_members_welcome === 'no'
 											? `Price: £${acf.event_cost || trip.price} (Members Only)`
 											: `Member Price: £${acf.event_cost || trip.price}`}
 									</Text>
@@ -106,15 +106,15 @@ export function TripDetails({ trip }: TripDetailsProps) {
 					</Paper>
 
           {/* Requirements Section */}
-          {(acf?.event_skills_required || 
-            acf?.event_gear_required || 
-            acf?.event_must_caved_with_us_before || 
+          {(acf?.event_skills_required ||
+            acf?.event_gear_required ||
+            acf?.event_must_caved_with_us_before ||
             acf?.event_non_members_welcome ||
             (acf?.event_volunteering_required && acf.event_volunteering_required > 0) ||
             (acf?.event_attendance_required && acf.event_attendance_required > 0)) && (
             <Paper withBorder p="md" radius="md" mt="md">
               <Title order={3} mb="md">Requirements</Title>
-              
+
               <Grid>
                 {/* Skills & Requirements Column */}
                 <Grid.Col span={{ base: 12, md: 6 }}>
@@ -159,11 +159,11 @@ export function TripDetails({ trip }: TripDetailsProps) {
                     {acf?.event_must_caved_with_us_before && (
                       <Group gap="xs">
                         <Badge
-                          color={acf.event_must_caved_with_us_before === 'yes' ? 'red' : 'green'}
+                          color={acf.event_must_caved_with_us_before === 'yes' ? 'blue' : 'green'}
                           variant="light"
                           leftSection={acf.event_must_caved_with_us_before === 'yes' ? '⚠️' : '✅'}
                         >
-                          {acf.event_must_caved_with_us_before === 'yes' 
+                          {acf.event_must_caved_with_us_before === 'yes'
                             ? 'You must have caved with us before'
                             : 'No previous experience needed'}
                         </Badge>
@@ -178,8 +178,8 @@ export function TripDetails({ trip }: TripDetailsProps) {
                           variant="light"
                           leftSection={acf.event_non_members_welcome === 'yes' ? '✅' : '🔒'}
                         >
-                          {acf.event_non_members_welcome === 'yes' 
-                            ? 'No Membership Required' 
+                          {acf.event_non_members_welcome === 'yes'
+                            ? 'No Membership Required'
                             : 'Membership Required'}
                         </Badge>
                         {acf.event_non_members_welcome === 'no' && acf.event_why_are_only_members_allowed && (
@@ -226,7 +226,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
               </Grid>
 
               {/* Additional Requirements Note */}
-              {(acf?.event_skills_required === 'Open to All Abilities' || 
+              {(acf?.event_skills_required === 'Open to All Abilities' ||
                 acf?.event_gear_required === 'None') && (
                 <Text size="sm" c="green" mt="sm">
                   🎉 Newcomer friendly - no experience or special gear needed!
