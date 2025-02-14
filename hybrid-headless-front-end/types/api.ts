@@ -80,7 +80,7 @@ export interface Trip {
 		event_start_date_time: string;
 		event_finish_date_time?: string;
 		event_description?: string;
-		event_how_does_this_work: string;
+		event_how_does_this_work?: string;
 		event_location?: string;
 		event_cave_name?: string;
 		event_possible_location?: string;
