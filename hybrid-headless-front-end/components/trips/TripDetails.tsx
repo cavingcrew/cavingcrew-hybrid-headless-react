@@ -204,10 +204,29 @@ export function TripDetails({ trip }: TripDetailsProps) {
               </Stack>
 
               {/* Newbie Friendly Note */}
-              {(acf?.event_skills_required === 'Open to All Abilities' ||
+              {(acf?.event_skills_required === 'Open to All Abilities' || 
                 acf?.event_gear_required === 'None') && (
                 <Alert color="green" mt="md" variant="light" icon={<IconSparkles size={18} />}>
-                  Newbie friendly - no experience or special gear needed!
+                  {[
+                    acf?.event_skills_required === 'Open to All Abilities' && 'No experience needed',
+                    acf?.event_gear_required === 'None' && 'No special gear required'
+                  ].filter(Boolean).join(' - ')}
+                </Alert>
+              )}
+
+              {/* Gear Requirements Clarification */}
+              {acf?.event_gear_required && acf.event_gear_required !== 'None' && (
+                <Alert color="blue" mt="md" variant="light" icon={<IconTools size={18} />}>
+                  {(() => {
+                    switch(acf.event_gear_required) {
+                      case 'Horizontal Caving Gear':
+                        return "You'll need basic caving gear (helmet, light, overalls) which can be borrowed";
+                      case 'Horizontal Caving Gear and SRT Kit':
+                        return "You'll need full caving gear and vertical equipment (available to borrow)";
+                      default:
+                        return "Specialist equipment required - check kit list below";
+                    }
+                  })()}
                 </Alert>
               )}
             </Paper>
