@@ -25,7 +25,7 @@ import {
 	IconTools,
 	IconHistory,
 	IconUsers,
-	IconHandHeart,
+	IconHeartHandshake,
 	IconCalendarEvent,
 	IconSparkles,
 } from "@tabler/icons-react";
@@ -47,7 +47,6 @@ export function TripDetails({ trip }: TripDetailsProps) {
 		<Stack gap="xl">
 			{/* Header Section */}
 			<Stack gap="md">
-				<TripSignupWidget trip={trip} />
 				{acf?.event_description && (
 					<div
 						dangerouslySetInnerHTML={{ __html: acf.event_description ?? "" }}
@@ -122,7 +121,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
             (acf?.event_attendance_required && acf.event_attendance_required > 0)) && (
             <Paper withBorder p="md" radius="md" mt="md">
               <Title order={3} mb="md">Requirements</Title>
-              
+
               <Stack gap="md">
                 {/* Skills Required */}
                 {acf?.event_skills_required && (
@@ -153,7 +152,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
                     <div>
                       <Text fw={500}>Previous Experience:</Text>
                       <Text>
-                        {acf.event_must_caved_with_us_before === 'yes' 
+                        {acf.event_must_caved_with_us_before === 'yes'
                           ? 'Must have caved with us before'
                           : 'No previous experience needed'}
                       </Text>
@@ -168,8 +167,8 @@ export function TripDetails({ trip }: TripDetailsProps) {
                     <div>
                       <Text fw={500}>Membership:</Text>
                       <Text>
-                        {acf.event_non_members_welcome === 'yes' 
-                          ? 'Not required - open to all' 
+                        {acf.event_non_members_welcome === 'yes'
+                          ? 'Not required - open to all'
                           : 'Required to participate'}
                       </Text>
                       {acf.event_non_members_welcome === 'no' && acf.event_why_are_only_members_allowed && (
@@ -184,7 +183,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
                 {/* Volunteering Requirement */}
                 {acf?.event_volunteering_required && acf.event_volunteering_required > 0 && (
                   <Group gap="xs">
-                    <IconHandHeart size={20} />
+                    <IconHeartHandshake size={20} />
                     <div>
                       <Text fw={500}>Volunteering:</Text>
                       <Text>Contribute to {acf.event_volunteering_required} events</Text>
@@ -225,6 +224,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
 					)}
 				</Grid.Col>
 			</Grid>
+			<TripSignupWidget trip={trip} />
 
 			{/* What does signing up pay for section */}
 			{acf?.event_paying_for && (
