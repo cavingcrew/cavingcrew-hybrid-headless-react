@@ -28,6 +28,7 @@ import {
 	IconHeartHandshake,
 	IconCalendarEvent,
 	IconSparkles,
+	IconUser,
 } from "@tabler/icons-react";
 import React from "react";
 import type { Trip } from "../../types/api";
@@ -89,7 +90,16 @@ export function TripDetails({ trip }: TripDetailsProps) {
 									<IconMapPin size={20} />
 									<Text>
 										Location: {acf.event_cave_name || ""}
+										{acf.event_location && `, a ${acf.event_location}`}
 										{acf.event_possible_location && ` near ${acf.event_possible_location}`}
+									</Text>
+								</Group>
+							)}
+							{acf?.event_trip_leader && (
+								<Group gap="xs">
+									<IconUser size={20} />
+									<Text>
+										Lead by: {acf.event_trip_leader}
 									</Text>
 								</Group>
 							)}
