@@ -203,11 +203,11 @@ export function TripDetails({ trip }: TripDetailsProps) {
                 )}
               </Stack>
 
-              {/* Newcomer Friendly Note */}
+              {/* Newbie Friendly Note */}
               {(acf?.event_skills_required === 'Open to All Abilities' ||
                 acf?.event_gear_required === 'None') && (
                 <Alert color="green" mt="md" variant="light" icon={<IconSparkles size={18} />}>
-                  Newcomer friendly - no experience or special gear needed!
+                  Newbie friendly - no experience or special gear needed!
                 </Alert>
               )}
             </Paper>
