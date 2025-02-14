@@ -77,23 +77,31 @@ export function TripDetails({ trip }: TripDetailsProps) {
 									</Text>
 								</Group>
 							)}
-							{acf?.event_location && (
+							{(acf?.event_location || acf?.event_cave_name) && (
 								<Group gap="xs">
 									<IconMapPin size={20} />
 									<Text>
-										Location: {acf.event_cave_name || ""} near{" "}
-										{acf.event_possible_location || ""}
+										Location: {acf.event_cave_name || ""}
+										{acf.event_possible_location && ` near ${acf.event_possible_location}`}
 									</Text>
 								</Group>
 							)}
-							<Group gap="xs">
-								<IconCoin size={20} />
-								<Text>Member Price: £{acf?.event_cost || trip.price}</Text>
-							</Group>
-							<Group gap="xs">
-								<IconCoin size={20} />
-								<Text>Non-Member Price: £{trip.price}</Text>
-							</Group>
+							{(acf?.event_cost || trip.price) && (
+								<Group gap="xs">
+									<IconCoin size={20} />
+									<Text>
+										{acf.event_non_members_welcome === 'no' 
+											? `Price: £${acf.event_cost || trip.price} (Members Only)`
+											: `Member Price: £${acf.event_cost || trip.price}`}
+									</Text>
+								</Group>
+							)}
+							{acf?.event_non_members_welcome !== 'no' && trip.price && (
+								<Group gap="xs">
+									<IconCoin size={20} />
+									<Text>Non-Member Price: £{trip.price}</Text>
+								</Group>
+							)}
 						</Stack>
 					</Paper>
 
@@ -102,8 +110,8 @@ export function TripDetails({ trip }: TripDetailsProps) {
             acf?.event_gear_required || 
             acf?.event_must_caved_with_us_before || 
             acf?.event_non_members_welcome ||
-            acf?.event_volunteering_required ||
-            acf?.event_attendance_required) && (
+            (acf?.event_volunteering_required && acf.event_volunteering_required > 0) ||
+            (acf?.event_attendance_required && acf.event_attendance_required > 0)) && (
             <Paper withBorder p="md" radius="md" mt="md">
               <Title order={3} mb="md">Requirements</Title>
               

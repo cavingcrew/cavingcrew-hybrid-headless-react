@@ -133,10 +133,12 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
       ) : (
         <Group mt="md">
           <Text fw={500}>
-            Price: {userStatus?.data?.isMember && trip.acf?.event_cost ? 
-              `£${trip.acf.event_cost} (Member)` : 
-              `£${trip.price}${userStatus?.data?.isMember ? '' : ' (Non-member)'}`
-            }
+            {trip.acf.event_non_members_welcome === 'no' 
+              ? `Price: £${trip.acf.event_cost || trip.price} (Members Only)`
+              : (userStatus?.data?.isMember && trip.acf?.event_cost 
+                  ? `£${trip.acf.event_cost} (Member)`
+                  : `£${trip.price}${userStatus?.data?.isMember ? '' : ' (Non-member)'}`
+                )}
           </Text>
           <Button
             onClick={handleSignUp}
