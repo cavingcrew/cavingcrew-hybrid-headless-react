@@ -1,12 +1,12 @@
 export interface ProductStockResponse {
-  product_id: number;
-  stock_status: string;
-  stock_quantity: number | null;
-  variations: Array<{
-    id: number;
-    stock_quantity: number | null;
-    stock_status: string;
-  }>;
+	product_id: number;
+	stock_status: string;
+	stock_quantity: number | null;
+	variations: Array<{
+		id: number;
+		stock_quantity: number | null;
+		stock_status: string;
+	}>;
 }
 
 export interface Variation {
@@ -93,18 +93,18 @@ export interface Trip {
 		event_accomodation_description?: string;
 		hut_photo?: string;
 		hut_facilities_description?: string;
-		event_dogs_come?: 'yes' | 'no';
+		event_dogs_come?: "yes" | "no";
 		event_paying_for?: string;
 		event_type: string;
 		event_gear_required: string;
 		event_must_caved_with_us_before: string;
 		event_skills_required: string;
 		event_trip_leader: string;
-		event_non_members_welcome?: 'yes' | 'no';
+		event_non_members_welcome?: "yes" | "no";
 		event_why_are_only_members_allowed?: string;
 		event_volunteering_required?: number;
 		event_attendance_required?: number;
-		event_u18s_come?: 'yes' | 'no';
+		event_u18s_come?: "yes" | "no";
 		event_members_discount?: string;
 		membership_faq?: boolean;
 		overnight_plans?: Array<{
