@@ -161,11 +161,11 @@ export function TripDetails({ trip }: TripDetailsProps) {
                         <Badge
                           color={acf.event_must_caved_with_us_before === 'yes' ? 'red' : 'green'}
                           variant="light"
-                          leftSection={acf.event_must_caved_with_us_before === 'yes' ? '🔒' : '✅'}
+                          leftSection={acf.event_must_caved_with_us_before === 'yes' ? '⚠️' : '✅'}
                         >
                           {acf.event_must_caved_with_us_before === 'yes' 
-                            ? 'Must have caved with us before'
-                            : 'Open to newcomers'}
+                            ? 'You must have caved with us before'
+                            : 'No previous experience needed'}
                         </Badge>
                       </Group>
                     )}
@@ -176,11 +176,11 @@ export function TripDetails({ trip }: TripDetailsProps) {
                         <Badge
                           color={acf.event_non_members_welcome === 'yes' ? 'green' : 'red'}
                           variant="light"
-                          leftSection={acf.event_non_members_welcome === 'yes' ? '👥' : '👤'}
+                          leftSection={acf.event_non_members_welcome === 'yes' ? '✅' : '🔒'}
                         >
                           {acf.event_non_members_welcome === 'yes' 
-                            ? 'Non-members welcome' 
-                            : 'Members only'}
+                            ? 'No Membership Required' 
+                            : 'Membership Required'}
                         </Badge>
                         {acf.event_non_members_welcome === 'no' && acf.event_why_are_only_members_allowed && (
                           <Text size="sm" c="dimmed">
@@ -229,7 +229,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
               {(acf?.event_skills_required === 'Open to All Abilities' || 
                 acf?.event_gear_required === 'None') && (
                 <Text size="sm" c="green" mt="sm">
-                  🎉 This trip is specially designed to be accessible to newcomers!
+                  🎉 Newcomer friendly - no experience or special gear needed!
                 </Text>
               )}
             </Paper>

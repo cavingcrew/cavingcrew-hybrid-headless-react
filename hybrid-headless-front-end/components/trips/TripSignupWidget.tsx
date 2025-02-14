@@ -134,9 +134,9 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
         <Group mt="md">
           <Text fw={500}>
             {trip.acf.event_non_members_welcome === 'no' 
-              ? `Price: £${trip.acf.event_cost || trip.price} (Members Only)`
+              ? `Price: £${trip.acf.event_cost || trip.price} (Membership Required)`
               : (userStatus?.data?.isMember && trip.acf?.event_cost 
-                  ? `£${trip.acf.event_cost} (Member)`
+                  ? `£${trip.acf.event_cost} (Member Price)`
                   : `£${trip.price}${userStatus?.data?.isMember ? '' : ' (Non-member)'}`
                 )}
           </Text>

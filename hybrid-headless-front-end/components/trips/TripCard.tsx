@@ -57,6 +57,10 @@ export default function TripCard({ trip }: TripCardProps) {
 				<Group mt="md" justify="space-between">
 					<Text size="xl" fw={700} c="blue">
 						£{trip.acf.event_cost || trip.price}
+						{trip.acf.event_non_members_welcome === 'no' && 
+							' (Membership Required)'}
+						{trip.acf.event_non_members_welcome === 'yes' && 
+							' (Membership Not Required)'}
 					</Text>
 				</Group>
 			</Card>
