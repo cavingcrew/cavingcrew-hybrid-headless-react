@@ -339,6 +339,7 @@ class Hybrid_Headless_Products_Controller {
 
                     $variations[] = [
                         'id' => $variation->get_id(),
+                        'description' => $variation->get_description(),
                         'attributes' => $variation_attributes,
                         'stock_quantity' => $variation->get_stock_quantity(),
                         'stock_status' => $variation->get_stock_status(),
