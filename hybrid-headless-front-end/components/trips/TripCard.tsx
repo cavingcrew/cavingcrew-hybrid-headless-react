@@ -3,7 +3,7 @@
 import { Badge, Card, Group, Image, Text, Tooltip } from "@mantine/core";
 import Link from "next/link";
 import { useQueryClient } from '@tanstack/react-query';
-import { IconRope, IconStairs } from "@tabler/icons-react";
+import { IconArrowBarUp, IconStairs } from "@tabler/icons-react";
 import { tripKeys } from '@/lib/hooks/useTrips';
 import type { Trip } from "../../types/api";
 import { getTripAvailability } from "@/utils/trip-utils";
@@ -11,21 +11,21 @@ import { getTripAvailability } from "@/utils/trip-utils";
 const requiresSRT = (trip: Trip) => {
   // Check if trip is in SRT training category
   const isSRTTraining = trip.categories.some(cat => cat.slug === 'srt-training');
-
+  
   // Check gear requirements from ACF
   const gearRequiresSRT = trip.acf.event_gear_required?.toLowerCase().includes('srt');
-
+  
   return isSRTTraining || gearRequiresSRT;
 };
 
 const formatDateWithOrdinal = (dateString: string) => {
   const date = new Date(dateString);
-  const options: Intl.DateTimeFormatOptions = {
-    weekday: 'short',
-    day: 'numeric',
-    month: 'short'
+  const options: Intl.DateTimeFormatOptions = { 
+    weekday: 'short', 
+    day: 'numeric', 
+    month: 'short' 
   };
-
+  
   return date.toLocaleDateString('en-GB', options)
     .replace(/(\d+)/, (_, day) => {
       const suffixes = ['th', 'st', 'nd', 'rd'];
@@ -41,12 +41,12 @@ interface TripCardProps {
 export default function TripCard({ trip }: TripCardProps) {
 	const queryClient = useQueryClient();
   const { statusMessage, badgeColor } = getTripAvailability(trip);
-  const eventDate = trip.acf.event_start_date_time
+  const eventDate = trip.acf.event_start_date_time 
     ? formatDateWithOrdinal(trip.acf.event_start_date_time)
     : null;
 
 	return (
-		<Link
+		<Link 
 			href={`/trip/${trip.slug}`}
 			style={{ textDecoration: "none", color: "inherit" }}
 			onMouseEnter={() => {
@@ -72,11 +72,7 @@ export default function TripCard({ trip }: TripCardProps) {
 						/>
 					</Card.Section>
 				)}
-				{eventDate && (
-					<Text size="sm" c="dimmed">
-						{eventDate}
-					</Text>
-				)}
+
 				<Group justify="space-between" mt="md" mb="xs">
 					<Text fw={500}>{trip.name}</Text>
 					<Badge color={badgeColor}>
@@ -84,12 +80,16 @@ export default function TripCard({ trip }: TripCardProps) {
 					</Badge>
 				</Group>
 
+				{eventDate && (
+					<Text size="sm" c="dimmed">
+						{eventDate}
+					</Text>
+				)}
 
-
-				<Text
-					size="sm"
-					c="dimmed"
-					lineClamp={2}
+				<Text 
+					size="sm" 
+					c="dimmed" 
+					lineClamp={2} 
 					mt={4}
 					dangerouslySetInnerHTML={{
 						__html: trip.acf.event_description || "No description available"
@@ -100,7 +100,7 @@ export default function TripCard({ trip }: TripCardProps) {
           <Tooltip label={requiresSRT(trip) ? "Requires SRT skills" : "Horizontal caving only"}>
             <Group gap="xs">
               {requiresSRT(trip) ? (
-                <IconRope size={24} color="red" />
+                <IconArrowBarUp size={24} color="red" />
               ) : (
                 <IconStairs size={24} color="green" />
               )}
