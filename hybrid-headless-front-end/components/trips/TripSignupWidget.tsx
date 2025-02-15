@@ -126,11 +126,29 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
               const memberPrice = calculateMemberPrice(variation.price, memberDiscount);
               
               return (
-                <Paper key={variation.id} withBorder p="md" radius="md">
+                <Paper 
+                  key={variation.id} 
+                  withBorder 
+                  p="md" 
+                  radius="md"
+                  style={{ 
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    borderColor: selectedVariation === variation.id.toString() ? '#228be6' : undefined,
+                    borderWidth: selectedVariation === variation.id.toString() ? 2 : 1,
+                    backgroundColor: selectedVariation === variation.id.toString() ? '#f1f3f5' : undefined,
+                    boxShadow: selectedVariation === variation.id.toString() ? '0 0 0 2px rgba(34, 139, 230, 0.2)' : undefined,
+                    '&:hover': {
+                      backgroundColor: '#f8f9fa',
+                      transform: 'translateY(-2px)',
+                    },
+                  }}
+                  onClick={() => setSelectedVariation(variation.id.toString())}
+                >
                   <Radio 
                     value={variation.id.toString()}
                     label={
-                      <Stack gap="xs">
+                      <Stack gap="xs" w="100%">
                         <Group justify="space-between">
                           <Text fw={500}>
                             {attribute?.value || "Signup Option"}
@@ -184,6 +202,20 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
                       </Stack>
                     }
                     disabled={!inStock}
+                    styles={{
+                      root: {
+                        width: '100%',
+                        '& .mantine-Radio-body': {
+                          alignItems: 'start',
+                        },
+                        '& .mantine-Radio-radio': {
+                          opacity: 0,
+                          width: 0,
+                          height: 0,
+                          position: 'absolute',
+                        }
+                      }
+                    }}
                   />
                 </Paper>
               );
