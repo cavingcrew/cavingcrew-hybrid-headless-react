@@ -15,15 +15,16 @@ import {
   Anchor
 } from '@mantine/core';
 
-const calculateMemberPrice = (basePrice: string, discountPercent?: string) => {
+const calculateMemberPrice = (basePrice: string, discountPounds?: string) => {
   const numericPrice = Number(basePrice);
-  const numericDiscount = Number(discountPercent || 0);
+  const numericDiscount = Number(discountPounds || 0);
   
   if (isNaN(numericPrice)) return 0;
   if (isNaN(numericDiscount) || numericDiscount <= 0) return numericPrice;
   
-  return numericPrice * (1 - numericDiscount / 100);
+  return Math.max(numericPrice - numericDiscount, 0); // Ensure price doesn't go negative
 };
+
 import { WordPressLoginWidget } from '@/components/auth/WordPressLoginWidget';
 import { IconLogin, IconInfoCircle } from '@tabler/icons-react';
 import { apiService } from '@/lib/api-service';
@@ -122,6 +123,7 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
             {trip.variations.map((variation) => {
               const attribute = Object.values(variation.attributes)[0];
               const inStock = variation.stock_status === 'instock';
+              const memberPrice = calculateMemberPrice(variation.price, memberDiscount);
               
               return (
                 <Paper key={variation.id} withBorder p="md" radius="md">
@@ -154,7 +156,7 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
                           {isMember ? (
                             <>
                               <Text fw={500}>
-                                Member Price: £{calculateMemberPrice(variation.price, memberDiscount).toFixed(2)}
+                                Member Price: £{memberPrice.toFixed(2)}
                               </Text>
                               {memberDiscount && parseFloat(memberDiscount) > 0 && (
                                 <Text td="line-through" c="dimmed">
@@ -167,7 +169,7 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
                               <Text fw={500}>Price: £{variation.price}</Text>
                               {memberDiscount && parseFloat(memberDiscount) > 0 && isLoggedIn && (
                                 <Text c="green" size="sm">
-                                  Save £{(parseFloat(variation.price) - calculateMemberPrice(variation.price, memberDiscount)).toFixed(2)} with membership
+                                  Save £{parseFloat(memberDiscount)} with membership
                                 </Text>
                               )}
                             </>
@@ -189,7 +191,7 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
       {!isMember && memberDiscount && parseFloat(memberDiscount) > 0 && (
         <Alert color="teal" variant="light" icon={<IconInfoCircle />}>
           <Text size="sm">
-            Members save {memberDiscount}% on this trip!{' '}
+            Members save £{memberDiscount} on this trip!{' '}
             <Anchor 
               href="https://www.cavingcrew.com/trip/get-caving-crew-membership/" 
               target="_blank"
