@@ -136,7 +136,7 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
           <Stack gap="lg">
             {trip.variations.map((variation) => {
               const attribute = Object.values(variation.attributes)[0];
-              const inStock = variation.stock_status === 'instock';
+              let inStock = variation.stock_status === 'instock';
               let isBcaMemberVariation = false;
 
               // TEMPORARY HACK: Hardcoded BCA member giggle trip handling
