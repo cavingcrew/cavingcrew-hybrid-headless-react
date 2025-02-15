@@ -108,7 +108,6 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
         <Alert color="yellow" title={trip.has_variations ? "Sold Out" : "Not Available"}>
           {trip.has_variations ? "All options are currently sold out" : "This trip is currently not available for signups"}
         </Alert>
-        </Stack>
       </Paper>
     );
   }
@@ -125,7 +124,6 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
           pointerEvents: requiresLogin ? 'none' : 'auto'
         }}
       >
-        <Stack>
       <Title order={3} mb="md">Sign Up Options</Title>
 
       {trip.has_variations && hasAvailableVariations && (
@@ -356,5 +354,6 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
         />
       </>
     )}
+    </Stack>
   );
 }
