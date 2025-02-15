@@ -72,18 +72,18 @@ export default function TripCard({ trip }: TripCardProps) {
 						/>
 					</Card.Section>
 				)}
-				{eventDate && (
-					<Text size="sm" c="dimmed">
-						{eventDate}
-					</Text>
-				)}
+
 				<Group justify="space-between" mt="md" mb="xs">
 					<Text fw={500}>{trip.name}</Text>
 					<Badge color={badgeColor}>
 						{statusMessage}
 					</Badge>
 				</Group>
-
+				{eventDate && (
+					<Text size="sm" c="dimmed">
+						{eventDate}
+					</Text>
+				)}
 
 
 				<Text

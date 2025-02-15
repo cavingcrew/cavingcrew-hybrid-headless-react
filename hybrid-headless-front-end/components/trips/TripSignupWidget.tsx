@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { 
-  Box, 
-  Button, 
-  Radio, 
+import {
+  Box,
+  Button,
+  Radio,
   Alert,
   Badge,
   Stack,
@@ -14,16 +14,6 @@ import {
   Divider,
   Anchor
 } from '@mantine/core';
-
-const calculateMemberPrice = (basePrice: string, discountPounds?: string) => {
-  const numericPrice = Number(basePrice);
-  const numericDiscount = Number(discountPounds || 0);
-  
-  if (isNaN(numericPrice)) return 0;
-  if (isNaN(numericDiscount) || numericDiscount <= 0) return numericPrice;
-  
-  return Math.max(numericPrice - numericDiscount, 0); // Ensure price doesn't go negative
-};
 
 import { WordPressLoginWidget } from '@/components/auth/WordPressLoginWidget';
 import { IconLogin, IconInfoCircle } from '@tabler/icons-react';
@@ -37,7 +27,17 @@ interface TripSignupWidgetProps {
   loginReason?: string;
 }
 
-export function TripSignupWidget({ 
+const calculateMemberPrice = (basePrice: string, discountPounds?: string) => {
+  const numericPrice = Number(basePrice);
+  const numericDiscount = Number(discountPounds || 0);
+
+  if (isNaN(numericPrice)) return 0;
+  if (isNaN(numericDiscount) || numericDiscount <= 0) return numericPrice;
+
+  return Math.max(numericPrice - numericDiscount, 0); // Ensure price doesn't go negative
+};
+
+export function TripSignupWidget({
   trip,
   requiresLogin = false,
   loginReason = "This trip requires login to sign up"
@@ -79,12 +79,12 @@ export function TripSignupWidget({
         if (!old?.data) return old;
         return {
           ...old,
-          data: old.data.map(t => 
-            t.id === trip.id ? { 
-              ...t, 
+          data: old.data.map(t =>
+            t.id === trip.id ? {
+              ...t,
               variations: t.variations.map(v => {
                 const stockVar = (stockData?.data?.variations ?? []).find((sv: { id: number }) => sv.id === v.id);
-                return stockVar ? { 
+                return stockVar ? {
                   ...v,
                   stock_quantity: stockVar.stock_quantity,
                   stock_status: stockVar.stock_status
@@ -102,7 +102,7 @@ export function TripSignupWidget({
     window.location.href = `/checkout/?add-to-cart=${selectedVariation}`;
   };
 
-  const hasAvailableVariations = trip.variations?.some(v => 
+  const hasAvailableVariations = trip.variations?.some(v =>
     v.stock_status === 'instock' && (v.stock_quantity ?? 0) > 0
   );
 
@@ -118,10 +118,10 @@ export function TripSignupWidget({
 
   return (
     <Stack gap="md">
-      <Paper 
-        withBorder 
-        p="md" 
-        radius="md" 
+      <Paper
+        withBorder
+        p="md"
+        radius="md"
         mb="xl"
         style={{
           opacity: requiresLogin ? 0.6 : 1,
@@ -146,7 +146,7 @@ export function TripSignupWidget({
               // TEMPORARY HACK: Hardcoded BCA member giggle trip handling
               // Remove when proper membership benefits system is implemented
               // See ticket #BCA-MEMBERSHIP-123
-              if (trip.acf.event_type === 'giggletrip' && 
+              if (trip.acf.event_type === 'giggletrip' &&
                   variation.sku.includes('GIGGLE--bcamember') &&
                   userStatus?.data?.isLoggedIn &&
                   userStatus?.data?.isMember) {
@@ -155,12 +155,12 @@ export function TripSignupWidget({
               }
 
               const memberPrice = calculateMemberPrice(variation.price, memberDiscount);
-              
+
               return (
-                <Paper 
-                  key={variation.id} 
-                  withBorder 
-                  p="md" 
+                <Paper
+                  key={variation.id}
+                  withBorder
+                  p="md"
                   radius="md"
                   style={{
                     cursor: requiresLogin ? 'default' : 'pointer',
@@ -168,13 +168,13 @@ export function TripSignupWidget({
                     borderColor: selectedVariation === variation.id.toString() ? '#228be6' : undefined,
                     borderWidth: selectedVariation === variation.id.toString() ? 2 : 1,
                     opacity: isBcaMemberVariation ? 0.7 : (requiresLogin ? 0.8 : 1),
-                    backgroundColor: isBcaMemberVariation ? '#f8f9fa' : 
+                    backgroundColor: isBcaMemberVariation ? '#f8f9fa' :
                       selectedVariation === variation.id.toString() ? '#f1f3f5' : undefined,
                     boxShadow: selectedVariation === variation.id.toString() ? '0 0 0 2px rgba(34, 139, 230, 0.2)' : undefined
                   }}
                   onClick={() => setSelectedVariation(variation.id.toString())}
                 >
-                  <Radio 
+                  <Radio
                     value={variation.id.toString()}
                     label={
                       <Stack gap="xs" w="100%">
@@ -182,12 +182,12 @@ export function TripSignupWidget({
                           <Text fw={500}>
                             {attribute?.value || "Signup Option"}
                           </Text>
-                          <Badge 
+                          <Badge
                             color={inStock ? 'green' : 'red'}
                             variant="light"
                           >
-                            {inStock ? 
-                              `${variation.stock_quantity ?? 'N/A'} spots left` : 
+                            {inStock ?
+                              `${variation.stock_quantity ?? 'N/A'} spots left` :
                               'Sold out'
                             }
                           </Badge>
@@ -197,7 +197,7 @@ export function TripSignupWidget({
                             Not Available - Included in your membership
                           </Badge>
                         )}
-                        
+
                         {variation.description && (
                           <div
                             dangerouslySetInnerHTML={{ __html: variation.description }}
@@ -264,8 +264,8 @@ export function TripSignupWidget({
         <Alert color="teal" variant="light" icon={<IconInfoCircle />}>
           <Text size="sm">
             Members save £{memberDiscount} on this trip!{' '}
-            <Anchor 
-              href="https://www.cavingcrew.com/trip/get-caving-crew-membership/" 
+            <Anchor
+              href="https://www.cavingcrew.com/trip/get-caving-crew-membership/"
               target="_blank"
               c="blue"
             >
@@ -301,7 +301,7 @@ export function TripSignupWidget({
           ) : (
             <Stack gap="md">
               <Alert color="blue" icon={<IconInfoCircle />}>
-                {mustCavedBefore 
+                {mustCavedBefore
                   ? "This trip requires previous experience with us - please log in"
                   : "Membership required to sign up - please log in"}
               </Alert>
@@ -346,14 +346,14 @@ export function TripSignupWidget({
         </Group>
       )}
     </Paper>
-    
+
     {requiresLogin && (
       <>
         <Alert color="blue" title="Login Required">
           {loginReason} - please log in to continue
         </Alert>
-        <WordPressLoginWidget 
-          onSuccess={() => window.location.reload()} 
+        <WordPressLoginWidget
+          onSuccess={() => window.location.reload()}
           redirectTo={window.location.pathname}
         />
       </>
