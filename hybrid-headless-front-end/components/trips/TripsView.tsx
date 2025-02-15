@@ -20,7 +20,7 @@ export function TripsView({ trips }: TripsViewProps) {
 
   const filteredTrips = trips.filter(trip => {
     if (filterMode === 'beginner') {
-      return trip.categories.some(cat => cat.slug === 'giggletrips');
+      return trip.acf.event_type === 'giggletrip';
     }
     return true;
   });
