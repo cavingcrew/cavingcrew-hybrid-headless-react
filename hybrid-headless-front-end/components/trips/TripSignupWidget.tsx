@@ -194,7 +194,7 @@ export function TripSignupWidget({
                         </Group>
                         {isBcaMemberVariation && (
                           <Badge color="gray" variant="light" mt="sm">
-                            Not Available - Included in your membership
+                            Not Available as you're a Caving Crew Member
                           </Badge>
                         )}
 
