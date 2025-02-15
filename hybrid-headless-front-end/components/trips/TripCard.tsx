@@ -96,26 +96,43 @@ export default function TripCard({ trip }: TripCardProps) {
 					}}
 				/>
 
-        <Group mt="md" justify="space-between">
-          <Tooltip label={requiresSRT(trip) ? "Requires SRT skills" : "Horizontal caving only"}>
-            <Group gap="xs">
-              {requiresSRT(trip) ? (
-                <IconArrowBarUp size={24} color="red" />
-              ) : (
-                <IconStairs size={24} color="green" />
-              )}
-              <Text size="sm" c="dimmed">
-                {requiresSRT(trip) ? "SRT Required" : "Horizontal Caving"}
-              </Text>
-            </Group>
-          </Tooltip>
+        {trip.acf.event_type !== 'events' && trip.acf.event_type !== 'membership' && (
+          <Group mt="md" justify="space-between">
+            <Tooltip label={
+              trip.acf.event_type === 'overnight' 
+                ? "Combination of horizontal and vertical caving" 
+                : requiresSRT(trip) 
+                  ? "Requires SRT skills" 
+                  : "Horizontal caving only"
+            }>
+              <Group gap="xs">
+                {trip.acf.event_type === 'overnight' ? (
+                  <>
+                    <IconStairs size={24} color="blue" />
+                    <IconArrowBarUp size={24} color="blue" />
+                  </>
+                ) : requiresSRT(trip) ? (
+                  <IconArrowBarUp size={24} color="red" />
+                ) : (
+                  <IconStairs size={24} color="green" />
+                )}
+                <Text size="sm" c="dimmed">
+                  {trip.acf.event_type === 'overnight' 
+                    ? "Horizontal/Vertical Caving"
+                    : requiresSRT(trip) 
+                      ? "SRT Required" 
+                      : "Horizontal Caving"}
+                </Text>
+              </Group>
+            </Tooltip>
 
-          {trip.acf.event_non_members_welcome === 'no' && (
-            <Badge color="blue" variant="light">
-              Members Only
-            </Badge>
-          )}
-        </Group>
+            {trip.acf.event_non_members_welcome === 'no' && (
+              <Badge color="blue" variant="light">
+                Members Only
+              </Badge>
+            )}
+          </Group>
+        )}
 			</Card>
 		</Link>
 	);
