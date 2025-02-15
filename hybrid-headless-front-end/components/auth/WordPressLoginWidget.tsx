@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { 
+import {
   Alert,
   Button,
   Group,
@@ -20,9 +20,9 @@ interface WordPressLoginWidgetProps {
   onSuccess?: () => void;
 }
 
-export function WordPressLoginWidget({ 
+export function WordPressLoginWidget({
   redirectTo = typeof window !== 'undefined' ? window.location.href : '/',
-  onSuccess 
+  onSuccess
 }: WordPressLoginWidgetProps) {
   const queryClient = useQueryClient();
   const [username, setUsername] = useState('');
@@ -54,7 +54,7 @@ export function WordPressLoginWidget({
 
       // Check if login was successful
       const userResponse = await apiService.getUserStatus();
-      
+
       if (userResponse.data?.isLoggedIn) {
         // Invalidate user status query and any other related queries
         queryClient.invalidateQueries({ queryKey: ['userStatus'] });
@@ -98,8 +98,8 @@ export function WordPressLoginWidget({
         />
 
         <Group justify="space-between" mt="md">
-          <Button 
-            type="submit" 
+          <Button
+            type="submit"
             leftSection={<IconLogin size={16} />}
             loading={isLoading}
           >
@@ -113,12 +113,6 @@ export function WordPressLoginWidget({
           </Text>
         </Group>
 
-        <Text c="dimmed" size="sm" mt="md">
-          Don't have an account?{' '}
-          <a href="/wp-login.php?action=register" style={{ textDecoration: 'none' }}>
-            Create one
-          </a>
-        </Text>
       </Stack>
     </form>
   );
