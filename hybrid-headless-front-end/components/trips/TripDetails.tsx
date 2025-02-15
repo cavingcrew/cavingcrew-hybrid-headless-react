@@ -15,6 +15,9 @@ import {
 	Text,
 	Title,
 } from "@mantine/core";
+import { useQuery } from '@tanstack/react-query';
+import { WordPressLoginWidget } from '@/components/auth/WordPressLoginWidget';
+import { apiService } from '@/lib/api-service';
 import { TripSignupWidget } from "./TripSignupWidget";
 import {
 	IconCalendar,
@@ -39,6 +42,16 @@ interface TripDetailsProps {
 
 export function TripDetails({ trip }: TripDetailsProps) {
 	const acf = trip.acf;
+	const { data: userStatus } = useQuery({
+		queryKey: ['userStatus'],
+		queryFn: () => apiService.getUserStatus(),
+	});
+
+	const requiresLogin = (
+		(acf.event_non_members_welcome === 'no' || 
+		 acf.event_must_caved_with_us_before === 'yes') &&
+		!userStatus?.data?.isLoggedIn
+	);
 
 	const startDate = acf?.event_start_date_time
 		? new Date(acf.event_start_date_time)
@@ -253,7 +266,22 @@ export function TripDetails({ trip }: TripDetailsProps) {
 					)}
 				</Grid.Col>
 			</Grid>
-			<TripSignupWidget trip={trip} />
+			{requiresLogin ? (
+				<Stack gap="md">
+					<Alert color="blue" title="Login Required">
+						{acf.event_non_members_welcome === 'no' && 
+							"This trip requires membership signup - please log in to continue"}
+						{acf.event_must_caved_with_us_before === 'yes' && 
+							"This trip requires previous experience with us - please log in to continue"}
+					</Alert>
+					<WordPressLoginWidget 
+						onSuccess={() => window.location.reload()} 
+						redirectTo={`/trip/${trip.slug}`}
+					/>
+				</Stack>
+			) : (
+				<TripSignupWidget trip={trip} />
+			)}
 
 			{/* What does signing up pay for section */}
 			{acf?.event_paying_for && (
