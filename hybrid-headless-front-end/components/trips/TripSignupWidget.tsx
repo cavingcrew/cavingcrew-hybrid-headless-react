@@ -44,6 +44,7 @@ export function TripSignupWidget({
 }: TripSignupWidgetProps) {
   const [selectedVariation, setSelectedVariation] = useState<string>('');
   const [selectedPrice, setSelectedPrice] = useState<string>('');
+  const [isSelectedVariationValid, setIsSelectedVariationValid] = useState(false);
   const nonMembersWelcome = trip.acf.event_non_members_welcome === 'yes';
   const mustCavedBefore = trip.acf.event_must_caved_with_us_before === 'yes';
   const { data: userStatus } = useQuery({
@@ -63,6 +64,21 @@ export function TripSignupWidget({
       setSelectedPrice(variation?.price || '');
     }
   }, [selectedVariation, trip.variations]);
+
+  // Validate selected variation
+  useEffect(() => {
+    if (selectedVariation) {
+      const variation = trip.variations.find(v => v.id.toString() === selectedVariation);
+      const valid = variation?.stock_status === 'instock' && 
+                   (variation.stock_quantity ?? 0) > 0 &&
+                   !(trip.acf.event_type === 'giggletrip' && 
+                     variation.sku.includes('GIGGLE--bcamember') &&
+                     userStatus?.data?.isMember);
+      setIsSelectedVariationValid(!!valid);
+    } else {
+      setIsSelectedVariationValid(false);
+    }
+  }, [selectedVariation, trip.variations, userStatus?.data?.isMember]);
 
   // Poll stock data
   const queryClient = useQueryClient();
@@ -172,7 +188,11 @@ export function TripSignupWidget({
                       selectedVariation === variation.id.toString() ? '#f1f3f5' : undefined,
                     boxShadow: selectedVariation === variation.id.toString() ? '0 0 0 2px rgba(34, 139, 230, 0.2)' : undefined
                   }}
-                  onClick={() => setSelectedVariation(variation.id.toString())}
+                  onClick={() => {
+                    if (inStock && !isBcaMemberVariation) {
+                      setSelectedVariation(variation.id.toString());
+                    }
+                  }}
                 >
                   <Radio
                     value={variation.id.toString()}
@@ -336,7 +356,7 @@ export function TripSignupWidget({
               </Stack>
               <Button
                 onClick={handleSignUp}
-                disabled={!selectedVariation || (!isMember && !nonMembersWelcome)}
+                disabled={!isSelectedVariationValid || (!isMember && !nonMembersWelcome)}
                 size="lg"
               >
                 {isMember ? "Signup for Trip" : "Continue as Non-Member"}
