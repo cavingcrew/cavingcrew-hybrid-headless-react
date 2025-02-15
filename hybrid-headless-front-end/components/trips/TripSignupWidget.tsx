@@ -11,8 +11,15 @@ import {
   Group,
   Text,
   Paper,
-  Divider
+  Divider,
+  Anchor
 } from '@mantine/core';
+
+const calculateMemberPrice = (basePrice: string, discountPercent?: string) => {
+  if (!discountPercent || isNaN(parseFloat(discountPercent))) return parseFloat(basePrice);
+  const discount = parseFloat(discountPercent) / 100;
+  return parseFloat(basePrice) * (1 - discount);
+};
 import { WordPressLoginWidget } from '@/components/auth/WordPressLoginWidget';
 import { IconLogin, IconInfoCircle } from '@tabler/icons-react';
 import { apiService } from '@/lib/api-service';
@@ -31,6 +38,10 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
     queryFn: () => apiService.getUserStatus(),
     refetchInterval: 30000
   });
+
+  const memberDiscount = trip.acf.event_members_discount;
+  const isMember = userStatus?.data?.isMember;
+  const isLoggedIn = userStatus?.data?.isLoggedIn;
 
   // Update price when variation changes
   useEffect(() => {
@@ -136,11 +147,26 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
                         )}
 
                         <Group justify="space-between" mt="sm">
-                          <Text fw={500}>Price: £{variation.price}</Text>
-                          {variation.regular_price && variation.price !== variation.regular_price && (
-                            <Text td="line-through" c="dimmed">
-                              £{variation.regular_price}
-                            </Text>
+                          {isMember ? (
+                            <>
+                              <Text fw={500}>
+                                Member Price: £{calculateMemberPrice(variation.price, memberDiscount).toFixed(2)}
+                              </Text>
+                              {memberDiscount && parseFloat(memberDiscount) > 0 && (
+                                <Text td="line-through" c="dimmed">
+                                  £{variation.price}
+                                </Text>
+                              )}
+                            </>
+                          ) : (
+                            <>
+                              <Text fw={500}>Price: £{variation.price}</Text>
+                              {memberDiscount && parseFloat(memberDiscount) > 0 && isLoggedIn && (
+                                <Text c="green" size="sm">
+                                  Save £{(parseFloat(variation.price) - calculateMemberPrice(variation.price, memberDiscount)).toFixed(2)} with membership
+                                </Text>
+                              )}
+                            </>
                           )}
                         </Group>
                       </Stack>
@@ -156,6 +182,22 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
 
       <Divider my="md" />
 
+      {!isMember && memberDiscount && parseFloat(memberDiscount) > 0 && (
+        <Alert color="teal" variant="light" icon={<IconInfoCircle />}>
+          <Text size="sm">
+            Members save {memberDiscount}% on this trip!{' '}
+            <Anchor 
+              href="https://www.cavingcrew.com/trip/get-caving-crew-membership/" 
+              target="_blank"
+              c="blue"
+            >
+              Get instant membership
+            </Anchor>{' '}
+            to unlock discounts. Membership is cheaper than you think and can be cancelled anytime.
+          </Text>
+        </Alert>
+      )}
+
       {userStatus?.data && !userStatus.data.isLoggedIn && trip.acf?.event_non_members_welcome !== 'yes' ? (
         <Stack gap="md">
           <Alert color="blue" icon={<IconInfoCircle />}>
@@ -169,7 +211,11 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
         <Group justify="space-between">
           <Stack gap={0}>
             <Text fw={500}>
-              {selectedPrice ? `Total: £${selectedPrice}` : "Select an option above"}
+              {selectedPrice ? `Total: £${
+                isMember 
+                  ? calculateMemberPrice(selectedPrice, memberDiscount).toFixed(2)
+                  : selectedPrice
+              }` : "Select an option above"}
             </Text>
             {trip.acf.event_non_members_welcome === 'no' && (
               <Text size="sm" c="dimmed">Membership required</Text>

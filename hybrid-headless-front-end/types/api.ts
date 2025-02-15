@@ -105,7 +105,7 @@ export interface Trip {
 		event_volunteering_required?: number;
 		event_attendance_required?: number;
 		event_u18s_come?: "yes" | "no";
-		event_members_discount?: string;
+		event_members_discount?: string; // Percentage discount for members
 		membership_faq?: boolean;
 		overnight_plans?: Array<{
 			overnight_plans_day: string;
