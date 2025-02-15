@@ -37,7 +37,11 @@ interface TripSignupWidgetProps {
   loginReason?: string;
 }
 
-export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
+export function TripSignupWidget({ 
+  trip,
+  requiresLogin = false,
+  loginReason = "This trip requires login to sign up"
+}: TripSignupWidgetProps) {
   const [selectedVariation, setSelectedVariation] = useState<string>('');
   const [selectedPrice, setSelectedPrice] = useState<string>('');
   const nonMembersWelcome = trip.acf.event_non_members_welcome === 'yes';
