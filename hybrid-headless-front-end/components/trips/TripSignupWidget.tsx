@@ -33,6 +33,8 @@ import { tripKeys } from '@/lib/hooks/useTrips';
 
 interface TripSignupWidgetProps {
   trip: Trip;
+  requiresLogin?: boolean;
+  loginReason?: string;
 }
 
 export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
@@ -111,7 +113,17 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
   }
 
   return (
-    <Paper withBorder p="md" radius="md" mb="xl">
+    <Stack gap="md">
+      <Paper 
+        withBorder 
+        p="md" 
+        radius="md" 
+        mb="xl"
+        style={{
+          opacity: requiresLogin ? 0.6 : 1,
+          pointerEvents: requiresLogin ? 'none' : 'auto'
+        }}
+      >
       <Title order={3} mb="md">Sign Up Options</Title>
 
       {trip.has_variations && hasAvailableVariations && (
@@ -147,10 +159,11 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
                   p="md" 
                   radius="md"
                   style={{ 
-                    cursor: 'pointer',
+                    cursor: requiresLogin ? 'default' : 'pointer',
                     transition: 'all 0.2s ease',
                     borderColor: selectedVariation === variation.id.toString() ? '#228be6' : undefined,
                     borderWidth: selectedVariation === variation.id.toString() ? 2 : 1,
+                    opacity: requiresLogin ? 0.8 : 1,
                     backgroundColor: isBcaMemberVariation ? '#f8f9fa' : 
                       selectedVariation === variation.id.toString() ? '#f1f3f5' : undefined,
                     boxShadow: selectedVariation === variation.id.toString() ? '0 0 0 2px rgba(34, 139, 230, 0.2)' : undefined,
@@ -334,5 +347,17 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
         </Group>
       )}
     </Paper>
+    
+    {requiresLogin && (
+      <>
+        <Alert color="blue" title="Login Required">
+          {loginReason} - please log in to continue
+        </Alert>
+        <WordPressLoginWidget 
+          onSuccess={() => window.location.reload()} 
+          redirectTo={window.location.pathname}
+        />
+      </>
+    )}
   );
 }

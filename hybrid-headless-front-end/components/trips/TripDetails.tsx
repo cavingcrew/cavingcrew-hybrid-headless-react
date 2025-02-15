@@ -266,22 +266,15 @@ export function TripDetails({ trip }: TripDetailsProps) {
 					)}
 				</Grid.Col>
 			</Grid>
-			{requiresLogin ? (
-				<Stack gap="md">
-					<Alert color="blue" title="Login Required">
-						{acf.event_non_members_welcome === 'no' && 
-							"This trip requires membership signup - please log in to continue"}
-						{acf.event_must_caved_with_us_before === 'yes' && 
-							"This trip requires previous experience with us - please log in to continue"}
-					</Alert>
-					<WordPressLoginWidget 
-						onSuccess={() => window.location.reload()} 
-						redirectTo={`/trip/${trip.slug}`}
-					/>
-				</Stack>
-			) : (
-				<TripSignupWidget trip={trip} />
-			)}
+			<TripSignupWidget 
+				trip={trip} 
+				requiresLogin={requiresLogin}
+				loginReason={
+					acf.event_non_members_welcome === 'no' 
+						? "This trip requires membership signup"
+						: "This trip requires previous experience with us"
+				}
+			/>
 
 			{/* What does signing up pay for section */}
 			{acf?.event_paying_for && (
