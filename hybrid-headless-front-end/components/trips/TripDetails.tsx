@@ -90,7 +90,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
 									<IconMapPin size={20} />
 									<Text>
 										Location: {acf.event_cave_name || ""}
-										{acf.event_location && `, a ${acf.event_location}`}
+										{acf.event_location && `, ${acf.event_location}`}
 										{acf.event_possible_location && ` near ${acf.event_possible_location}`}
 									</Text>
 								</Group>
@@ -214,7 +214,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
               </Stack>
 
               {/* Newbie Friendly Note */}
-              {(acf?.event_skills_required === 'Open to All Abilities' || 
+              {(acf?.event_skills_required === 'Open to All Abilities' ||
                 acf?.event_gear_required === 'None') && (
                 <Alert color="green" mt="md" variant="light" icon={<IconSparkles size={18} />}>
                   {[
