@@ -9,10 +9,12 @@ import {
   Stack,
   Title,
   Group,
-  Text
+  Text,
+  Paper,
+  Divider
 } from '@mantine/core';
 import { WordPressLoginWidget } from '@/components/auth/WordPressLoginWidget';
-import { IconLogin } from '@tabler/icons-react';
+import { IconLogin, IconInfoCircle } from '@tabler/icons-react';
 import { apiService } from '@/lib/api-service';
 import type { Trip, ApiResponse } from '@/types/api';
 import { tripKeys } from '@/lib/hooks/useTrips';
@@ -23,11 +25,20 @@ interface TripSignupWidgetProps {
 
 export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
   const [selectedVariation, setSelectedVariation] = useState<string>('');
+  const [selectedPrice, setSelectedPrice] = useState<string>('');
   const { data: userStatus } = useQuery({
     queryKey: ['userStatus'],
     queryFn: () => apiService.getUserStatus(),
     refetchInterval: 30000
   });
+
+  // Update price when variation changes
+  useEffect(() => {
+    if (selectedVariation) {
+      const variation = trip.variations.find(v => v.id.toString() === selectedVariation);
+      setSelectedPrice(variation?.price || '');
+    }
+  }, [selectedVariation, trip.variations]);
 
   // Poll stock data
   const queryClient = useQueryClient();
@@ -70,76 +81,110 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
   const hasAvailableVariations = trip.variations?.some(v => 
     v.stock_status === 'instock' && (v.stock_quantity ?? 0) > 0
   );
+
   if ((trip.has_variations && !hasAvailableVariations) || (!trip.has_variations && !trip.purchasable)) {
     return (
-      <Alert color="yellow" title={trip.has_variations ? "Sold Out" : "Not Available"}>
-        {trip.has_variations ? "All options are currently sold out" : "This trip is currently not available for signups"}
-      </Alert>
+      <Paper withBorder p="md" radius="md" mb="xl">
+        <Alert color="yellow" title={trip.has_variations ? "Sold Out" : "Not Available"}>
+          {trip.has_variations ? "All options are currently sold out" : "This trip is currently not available for signups"}
+        </Alert>
+      </Paper>
     );
   }
 
   return (
-    <Box mb="xl">
-      <Title order={3} mb="md">Sign Up</Title>
+    <Paper withBorder p="md" radius="md" mb="xl">
+      <Title order={3} mb="md">Sign Up Options</Title>
 
       {trip.has_variations && hasAvailableVariations && (
         <Radio.Group
           value={selectedVariation}
           onChange={setSelectedVariation}
           name="tripVariation"
-          label="Select your option:"
-          description="Choose the option that best describes you"
           required
         >
-          <Stack mt="xs" gap="sm">
-            {trip.variations.map((variation) => (
-              <Radio 
-                key={variation.id}
-                value={variation.id.toString()}
-                label={
-                  <Group gap="xs">
-                    <Text span>{Object.values(variation.attributes).map(attr => attr.value).join(' - ')}</Text>
-                    <Badge 
-                      color={variation.stock_status === 'instock' ? 'green' : 'red'}
-                      variant="light"
-                    >
-                      {variation.stock_status === 'instock' ? 
-                        `${variation.stock_quantity ?? 'N/A'} spots left` : 
-                        'Sold out'
-                      }
-                    </Badge>
-                  </Group>
-                }
-                disabled={variation.stock_status !== 'instock'}
-              />
-            ))}
+          <Stack gap="lg">
+            {trip.variations.map((variation) => {
+              const attribute = Object.values(variation.attributes)[0];
+              const inStock = variation.stock_status === 'instock';
+              
+              return (
+                <Paper key={variation.id} withBorder p="md" radius="md">
+                  <Radio 
+                    value={variation.id.toString()}
+                    label={
+                      <Stack gap="xs">
+                        <Group justify="space-between">
+                          <Text fw={500}>
+                            {attribute?.value || "Signup Option"}
+                          </Text>
+                          <Badge 
+                            color={inStock ? 'green' : 'red'}
+                            variant="light"
+                          >
+                            {inStock ? 
+                              `${variation.stock_quantity ?? 'N/A'} spots left` : 
+                              'Sold out'
+                            }
+                          </Badge>
+                        </Group>
+                        
+                        {attribute?.description && (
+                          <Text size="sm" c="dimmed">
+                            {attribute.description}
+                          </Text>
+                        )}
+
+                        <Group justify="space-between" mt="sm">
+                          <Text fw={500}>Price: £{variation.price}</Text>
+                          {variation.regular_price && variation.price !== variation.regular_price && (
+                            <Text td="line-through" c="dimmed">
+                              £{variation.regular_price}
+                            </Text>
+                          )}
+                        </Group>
+                      </Stack>
+                    }
+                    disabled={!inStock}
+                  />
+                </Paper>
+              );
+            })}
           </Stack>
         </Radio.Group>
       )}
 
+      <Divider my="md" />
+
       {userStatus?.data && !userStatus.data.isLoggedIn && trip.acf?.event_non_members_welcome !== 'yes' ? (
-        <Box mt="md">
-          <Text mb="md">Please log in to sign up for this trip</Text>
-          <WordPressLoginWidget />
-        </Box>
-      ) : (
-        <Group mt="md">
-          <Text fw={500}>
+        <Stack gap="md">
+          <Alert color="blue" icon={<IconInfoCircle />}>
             {trip.acf.event_non_members_welcome === 'no' 
-              ? `Price: £${trip.acf.event_cost || trip.price} (Membership Required)`
-              : (userStatus?.data?.isMember && trip.acf?.event_cost 
-                  ? `£${trip.acf.event_cost} (Member Price)`
-                  : `£${trip.price}${userStatus?.data?.isMember ? '' : ' (Non-member)'}`
-                )}
-          </Text>
+              ? "Membership required to sign up - please log in"
+              : "Please log in to complete your signup"}
+          </Alert>
+          <WordPressLoginWidget />
+        </Stack>
+      ) : (
+        <Group justify="space-between">
+          <Stack gap={0}>
+            <Text fw={500}>
+              {selectedPrice ? `Total: £${selectedPrice}` : "Select an option above"}
+            </Text>
+            {trip.acf.event_non_members_welcome === 'no' && (
+              <Text size="sm" c="dimmed">Membership required</Text>
+            )}
+          </Stack>
+          
           <Button
             onClick={handleSignUp}
             disabled={!selectedVariation}
+            size="lg"
           >
-            Sign Up Now
+            Continue to Checkout
           </Button>
         </Group>
       )}
-    </Box>
+    </Paper>
   );
 }
