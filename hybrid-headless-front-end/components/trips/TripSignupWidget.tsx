@@ -125,6 +125,19 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
             {trip.variations.map((variation) => {
               const attribute = Object.values(variation.attributes)[0];
               const inStock = variation.stock_status === 'instock';
+              let isBcaMemberVariation = false;
+
+              // TEMPORARY HACK: Hardcoded BCA member giggle trip handling
+              // Remove when proper membership benefits system is implemented
+              // See ticket #BCA-MEMBERSHIP-123
+              if (trip.acf.event_type === 'giggletrip' && 
+                  variation.sku.includes('GIGGLE--bcamember') &&
+                  userStatus?.data?.isLoggedIn &&
+                  userStatus?.data?.isMember) {
+                isBcaMemberVariation = true;
+                inStock = false; // Force out of stock for members
+              }
+
               const memberPrice = calculateMemberPrice(variation.price, memberDiscount);
               
               return (
@@ -138,8 +151,10 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
                     transition: 'all 0.2s ease',
                     borderColor: selectedVariation === variation.id.toString() ? '#228be6' : undefined,
                     borderWidth: selectedVariation === variation.id.toString() ? 2 : 1,
-                    backgroundColor: selectedVariation === variation.id.toString() ? '#f1f3f5' : undefined,
+                    backgroundColor: isBcaMemberVariation ? '#f8f9fa' : 
+                      selectedVariation === variation.id.toString() ? '#f1f3f5' : undefined,
                     boxShadow: selectedVariation === variation.id.toString() ? '0 0 0 2px rgba(34, 139, 230, 0.2)' : undefined,
+                    opacity: isBcaMemberVariation ? 0.7 : 1,
                     '&:hover': {
                       backgroundColor: '#f8f9fa',
                       transform: 'translateY(-2px)',
@@ -165,6 +180,11 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
                             }
                           </Badge>
                         </Group>
+                        {isBcaMemberVariation && (
+                          <Badge color="gray" variant="light" mt="sm">
+                            Not Available - Included in your membership
+                          </Badge>
+                        )}
                         
                         {variation.description && (
                           <div
@@ -203,7 +223,7 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
                         </Group>
                       </Stack>
                     }
-                    disabled={!inStock}
+                    disabled={!inStock || isBcaMemberVariation}
                     styles={{
                       root: {
                         width: '100%',
