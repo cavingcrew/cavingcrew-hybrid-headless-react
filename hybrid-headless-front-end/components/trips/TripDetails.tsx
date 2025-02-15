@@ -48,7 +48,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
 	});
 
 	const requiresLogin = (
-		(acf.event_non_members_welcome === 'no' || 
+		(acf.event_non_members_welcome === 'no' ||
 		 acf.event_must_caved_with_us_before === 'yes') &&
 		!userStatus?.data?.isLoggedIn
 	);
@@ -104,7 +104,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
 									<Text>
 										Location: {acf.event_cave_name || ""}
 										{acf.event_location && `, ${acf.event_location}`}
-										{acf.event_possible_location && ` near ${acf.event_possible_location}`}
+										{acf.event_possible_location && ` ${acf.event_possible_location}`}
 									</Text>
 								</Group>
 							)}
@@ -232,7 +232,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
                 <Alert color="green" mt="md" variant="light" icon={<IconSparkles size={18} />}>
                   {[
                     acf?.event_skills_required === 'Open to All Abilities' && 'No experience needed',
-                    acf?.event_gear_required === 'None' && 'No special gear required'
+                    acf?.event_gear_required === 'None' && 'All gear can be provided'
                   ].filter(Boolean).join(' - ')}
                 </Alert>
               )}
@@ -243,9 +243,9 @@ export function TripDetails({ trip }: TripDetailsProps) {
                   {(() => {
                     switch(acf.event_gear_required) {
                       case 'Horizontal Caving Gear':
-                        return "You'll need basic caving gear (helmet, light, overalls) which can be borrowed";
+                        return "You'll need your own personal caving gear (helmet, light, caving suit, wellies)";
                       case 'Horizontal Caving Gear and SRT Kit':
-                        return "You'll need full caving gear and vertical equipment (available to borrow)";
+                        return "You'll need your own full caving gear and vertical equipment";
                       default:
                         return "Specialist equipment required - check kit list below";
                     }
@@ -266,13 +266,13 @@ export function TripDetails({ trip }: TripDetailsProps) {
 					)}
 				</Grid.Col>
 			</Grid>
-			<TripSignupWidget 
-				trip={trip} 
+			<TripSignupWidget
+				trip={trip}
 				requiresLogin={requiresLogin}
 				loginReason={
-					acf.event_non_members_welcome === 'no' 
+					acf.event_non_members_welcome === 'no'
 						? "This trip requires membership signup"
-						: "This trip requires previous experience with us"
+						: "This trip requires previous experience caving with us"
 				}
 			/>
 
