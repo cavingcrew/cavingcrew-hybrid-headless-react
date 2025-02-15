@@ -16,9 +16,13 @@ import {
 } from '@mantine/core';
 
 const calculateMemberPrice = (basePrice: string, discountPercent?: string) => {
-  if (!discountPercent || isNaN(parseFloat(discountPercent))) return parseFloat(basePrice);
-  const discount = parseFloat(discountPercent) / 100;
-  return parseFloat(basePrice) * (1 - discount);
+  const numericPrice = Number(basePrice);
+  const numericDiscount = Number(discountPercent || 0);
+  
+  if (isNaN(numericPrice)) return 0;
+  if (isNaN(numericDiscount) || numericDiscount <= 0) return numericPrice;
+  
+  return numericPrice * (1 - numericDiscount / 100);
 };
 import { WordPressLoginWidget } from '@/components/auth/WordPressLoginWidget';
 import { IconLogin, IconInfoCircle } from '@tabler/icons-react';
@@ -210,13 +214,6 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
       ) : (
         <Group justify="space-between">
           <Stack gap={0}>
-            <Text fw={500}>
-              {selectedPrice ? `Total: £${
-                isMember 
-                  ? calculateMemberPrice(selectedPrice, memberDiscount).toFixed(2)
-                  : selectedPrice
-              }` : "Select an option above"}
-            </Text>
             {trip.acf.event_non_members_welcome === 'no' && (
               <Text size="sm" c="dimmed">Membership required</Text>
             )}
@@ -227,7 +224,7 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
             disabled={!selectedVariation}
             size="lg"
           >
-            Continue to Checkout
+            Signup for Trip
           </Button>
         </Group>
       )}
