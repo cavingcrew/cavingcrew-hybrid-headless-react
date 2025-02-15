@@ -146,10 +146,16 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
                           </Badge>
                         </Group>
                         
-                        {attribute?.description && (
-                          <Text size="sm" c="dimmed">
-                            {attribute.description}
-                          </Text>
+                        {variation.description && (
+                          <div
+                            dangerouslySetInnerHTML={{ __html: variation.description }}
+                            style={{
+                              fontSize: '0.875rem',
+                              color: '#868e96',
+                              lineHeight: 1.6,
+                              marginTop: '0.5rem'
+                            }}
+                          />
                         )}
 
                         <Group justify="space-between" mt="sm">
