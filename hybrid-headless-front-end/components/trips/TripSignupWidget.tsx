@@ -38,6 +38,8 @@ interface TripSignupWidgetProps {
 export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
   const [selectedVariation, setSelectedVariation] = useState<string>('');
   const [selectedPrice, setSelectedPrice] = useState<string>('');
+  const nonMembersWelcome = trip.acf.event_non_members_welcome === 'yes';
+  const mustCavedBefore = trip.acf.event_must_caved_with_us_before === 'yes';
   const { data: userStatus } = useQuery({
     queryKey: ['userStatus'],
     queryFn: () => apiService.getUserStatus(),
@@ -242,30 +244,73 @@ export function TripSignupWidget({ trip }: TripSignupWidgetProps) {
         </Alert>
       )}
 
-      {userStatus?.data && !userStatus.data.isLoggedIn && trip.acf?.event_non_members_welcome !== 'yes' ? (
+      {userStatus?.data && !userStatus.data.isLoggedIn ? (
         <Stack gap="md">
-          <Alert color="blue" icon={<IconInfoCircle />}>
-            {trip.acf.event_non_members_welcome === 'no' 
-              ? "Membership required to sign up - please log in"
-              : "Please log in to complete your signup"}
-          </Alert>
-          <WordPressLoginWidget />
+          {nonMembersWelcome && !mustCavedBefore ? (
+            <>
+              <Alert color="blue" icon={<IconInfoCircle />}>
+                New to caving? You can sign up as a guest. Existing members should log in.
+              </Alert>
+              <Group justify="space-between">
+                <Stack gap={0}>
+                  <Text size="sm" c="dimmed">Guest signup available</Text>
+                </Stack>
+                <Button
+                  onClick={handleSignUp}
+                  disabled={!selectedVariation}
+                  size="lg"
+                >
+                  Continue as Guest
+                </Button>
+              </Group>
+              <Divider label="or" labelPosition="center" />
+              <WordPressLoginWidget />
+            </>
+          ) : (
+            <Stack gap="md">
+              <Alert color="blue" icon={<IconInfoCircle />}>
+                {mustCavedBefore 
+                  ? "This trip requires previous experience with us - please log in"
+                  : "Membership required to sign up - please log in"}
+              </Alert>
+              <WordPressLoginWidget />
+            </Stack>
+          )}
         </Stack>
       ) : (
         <Group justify="space-between">
-          <Stack gap={0}>
-            {trip.acf.event_non_members_welcome === 'no' && (
-              <Text size="sm" c="dimmed">Membership required</Text>
-            )}
-          </Stack>
-          
-          <Button
-            onClick={handleSignUp}
-            disabled={!selectedVariation}
-            size="lg"
-          >
-            Signup for Trip
-          </Button>
+          {!isMember && !nonMembersWelcome ? (
+            <Alert color="blue" w="100%">
+              Membership required.{" "}
+              <Anchor href="/membership" c="blue">
+                Get membership
+              </Anchor>{" "}
+              to sign up
+            </Alert>
+          ) : !isMember && mustCavedBefore ? (
+            <Alert color="blue" w="100%">
+              This trip requires previous experience.{" "}
+              <Anchor href="/membership" c="blue">
+                Become a member
+              </Anchor>{" "}
+              to verify your experience
+            </Alert>
+          ) : (
+            <>
+              <Stack gap={0}>
+                {!isMember && (
+                  <Text size="sm" c="dimmed">Non-member signup</Text>
+                )}
+              </Stack>
+              <Button
+                onClick={handleSignUp}
+                disabled={!selectedVariation || (!isMember && !nonMembersWelcome)}
+                size="lg"
+              >
+                {isMember ? "Signup for Trip" : "Continue as Non-Member"}
+              </Button>
+            </>
+          )}
         </Group>
       )}
     </Paper>
