@@ -1,11 +1,22 @@
 "use client";
 
-import { Badge, Card, Group, Image, Text } from "@mantine/core";
+import { Badge, Card, Group, Image, Text, Tooltip } from "@mantine/core";
 import Link from "next/link";
 import { useQueryClient } from '@tanstack/react-query';
+import { IconRope, IconStairs } from "@tabler/icons-react";
 import { tripKeys } from '@/lib/hooks/useTrips';
 import type { Trip } from "../../types/api";
 import { getTripAvailability } from "@/utils/trip-utils";
+
+const requiresSRT = (trip: Trip) => {
+  // Check if trip is in SRT training category
+  const isSRTTraining = trip.categories.some(cat => cat.slug === 'srt-training');
+  
+  // Check gear requirements from ACF
+  const gearRequiresSRT = trip.acf.event_gear_required?.toLowerCase().includes('srt');
+  
+  return isSRTTraining || gearRequiresSRT;
+};
 
 const formatDateWithOrdinal = (dateString: string) => {
   const date = new Date(dateString);
@@ -85,15 +96,26 @@ export default function TripCard({ trip }: TripCardProps) {
 					}}
 				/>
 
-				<Group mt="md" justify="space-between">
-					<Text size="xl" fw={700} c="blue">
-						£{trip.acf.event_cost || trip.price}
-						{trip.acf.event_non_members_welcome === 'no' && 
-							' (Membership Required)'}
-						{trip.acf.event_non_members_welcome === 'yes' && 
-							' (Membership Not Required)'}
-					</Text>
-				</Group>
+        <Group mt="md" justify="space-between">
+          <Tooltip label={requiresSRT(trip) ? "Requires SRT skills" : "Horizontal caving only"}>
+            <Group gap="xs">
+              {requiresSRT(trip) ? (
+                <IconRope size={24} color="red" />
+              ) : (
+                <IconStairs size={24} color="green" />
+              )}
+              <Text size="sm" c="dimmed">
+                {requiresSRT(trip) ? "SRT Required" : "Horizontal Caving"}
+              </Text>
+            </Group>
+          </Tooltip>
+
+          {trip.acf.event_non_members_welcome === 'no' && (
+            <Badge color="blue" variant="light">
+              Members Only
+            </Badge>
+          )}
+        </Group>
 			</Card>
 		</Link>
 	);
