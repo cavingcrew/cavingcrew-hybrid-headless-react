@@ -48,6 +48,7 @@ export interface ProductVariationsResponse {
 export interface BasicCategory {
 	id: number;
 	name: string;
+	description: string;
 	slug: string;
 }
 
