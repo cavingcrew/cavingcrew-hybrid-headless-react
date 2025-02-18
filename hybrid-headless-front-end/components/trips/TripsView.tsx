@@ -106,29 +106,33 @@ export function TripsView({ trips }: TripsViewProps) {
       </Stack>
 
       {/* Controls Section */}
-      <Group justify="space-between">
+      <Group justify="space-between" wrap="nowrap">
         <SegmentedControl
           value={sortMode}
           onChange={(value) => setSortMode(value as 'category' | 'date')}
           data={[
-            { label: 'Group by Category', value: 'category' },
-            { label: 'Sort by Date', value: 'date' },
+            { label: 'By Category', value: 'category' },
+            { label: 'By Date', value: 'date' },
           ]}
         />
 
-        <Select
-          value={filterMode}
-          onChange={(value) => setFilterMode(value as any)}
-          data={[
-            { value: 'all', label: 'All Trips' },
-            { value: 'horizontal', label: 'Horizontal Caving' },
-            { value: 'vertical', label: 'Vertical Caving' },
-            { value: 'extra-welcoming', label: 'Extra Welcoming' },
-            { value: 'available', label: 'Available Only' },
-          ]}
-          placeholder="Filter trips"
-          style={{ width: 200 }}
-        />
+        <Group gap="xs" wrap="nowrap">
+          <Badge variant="transparent" px={0} mr="sm">
+            Filter spots:
+          </Badge>
+          <SegmentedControl
+            value={filterMode}
+            onChange={(value) => setFilterMode(value as any)}
+            data={[
+              { label: 'All', value: 'all' },
+              { label: 'Horizontal', value: 'horizontal' },
+              { label: 'Vertical', value: 'vertical' },
+              { label: 'Extra-Welcoming', value: 'extra-welcoming' },
+              { label: 'Available', value: 'available' },
+            ]}
+            color="blue"
+          />
+        </Group>
       </Group>
 
       {/* Content Section */}
