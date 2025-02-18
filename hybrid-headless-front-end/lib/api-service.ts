@@ -87,9 +87,11 @@ export const apiService = {
   },
 
 
-  async getTrips(page = 1, perPage = 12): Promise<ApiResponse<any>> {
+  async getTrips(page = 1, perPage = 30): Promise<ApiResponse<any>> {
     try {
-      const response = await fetch(`${API_BASE_URL}/hybrid-headless/v1/products`);
+      const response = await fetch(
+        `${API_BASE_URL}/hybrid-headless/v1/products?page=${page}&per_page=${perPage}`
+      );
       if (!response.ok) {
         throw new Error('Failed to fetch trips');
       }
