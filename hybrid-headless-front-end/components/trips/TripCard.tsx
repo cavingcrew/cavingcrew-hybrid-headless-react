@@ -1,5 +1,13 @@
 "use client";
 
+const isMembershipCategory = (trip: Trip) => {
+  return trip.categories.some(cat => cat.slug === 'memberships');
+};
+
+const isTrainingCategory = (trip: Trip) => {
+  return trip.categories.some(cat => cat.slug === 'training-trips');
+};
+
 import { Badge, Card, Group, Image, Text, Tooltip } from "@mantine/core";
 import Link from "next/link";
 import { useQueryClient } from '@tanstack/react-query';
@@ -75,9 +83,11 @@ export default function TripCard({ trip }: TripCardProps) {
 
 				<Group justify="space-between" mt="md" mb="xs">
 					<Text fw={500}>{trip.name}</Text>
-					<Badge color={badgeColor}>
-						{statusMessage}
-					</Badge>
+					{!isMembershipCategory(trip) && (
+						<Badge color={badgeColor}>
+							{statusMessage}
+						</Badge>
+					)}
 				</Group>
 				{eventDate && (
 					<Text size="sm" c="dimmed">
@@ -96,7 +106,7 @@ export default function TripCard({ trip }: TripCardProps) {
 					}}
 				/>
 
-        {trip.acf.event_type !== 'events' && trip.acf.event_type !== 'membership' && (
+        {!isMembershipCategory(trip) && !isTrainingCategory(trip) && (
           <Group mt="md" justify="space-between">
             <Tooltip label={
               trip.acf.event_type === 'overnight' 
