@@ -139,13 +139,21 @@ class Hybrid_Headless_Products_Controller {
                 'sanitize_callback' => 'absint',
             ),
             'per_page' => array(
-                'default'           => 10,
+                'default'           => 30,
                 'sanitize_callback' => 'absint',
             ),
             'category' => array(
                 'default'           => '',
                 'sanitize_callback' => 'sanitize_text_field',
             ),
+            'orderby' => array(
+                'default'           => 'date',
+                'sanitize_callback' => 'sanitize_text_field',
+            ),
+            'order' => array(
+                'default'           => 'ASC',
+                'sanitize_callback' => 'sanitize_text_field',
+            )
         );
     }
 
@@ -160,6 +168,20 @@ class Hybrid_Headless_Products_Controller {
             'post_type'      => 'product',
             'posts_per_page' => $request['per_page'],
             'paged'          => $request['page'],
+            'meta_key'       => 'event_start_date_time',
+            'orderby'        => 'meta_value',
+            'order'          => 'ASC',
+            'meta_query'     => array(
+                'relation' => 'OR',
+                array(
+                    'key'     => 'event_start_date_time',
+                    'compare' => 'EXISTS'
+                ),
+                array(
+                    'key'     => 'event_start_date_time',
+                    'compare' => 'NOT EXISTS'
+                )
+            ),
             'tax_query'      => array(
                 array(
                     'taxonomy' => 'product_visibility',
