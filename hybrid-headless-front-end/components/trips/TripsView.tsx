@@ -5,12 +5,12 @@ import { Group, SegmentedControl, Stack, Title, Text, SimpleGrid, Button, Anchor
 import Link from 'next/link';
 
 const CATEGORY_ORDER = [
-  'Extra-Welcoming Trips',
-  'Evening Trips',
-  'Weekend Trips',
-  'Training Trips',
-  'Membership',
-  'Social Events'
+  'extra-welcoming-trips',
+  'evening-trips',
+  'weekend-trips',
+  'training-trips',
+  'membership',
+  'social-events'
 ];
 import TripCard from './TripCard';
 import type { Trip } from '@/types/api';
@@ -43,13 +43,15 @@ export function TripsView({ trips }: TripsViewProps) {
   });
 
   const tripsByCategory = sortedTrips.reduce((acc, trip) => {
-    const category = trip.categories[0]?.name || 'Other Trips';
+    const categorySlug = trip.categories[0]?.slug || 'other-trips';
     const mappedCategory = {
       'extra-welcoming-trips': 'Extra-Welcoming Trips',
-      'evening-day-caving': 'Evening Trips',
-      'overnight-trips': 'Weekend Trips',
-      'training-trips': 'Training Trips'
-    }[category] || category;
+      'evening-trips': 'Evening Trips',
+      'weekend-trips': 'Weekend Trips',
+      'training-trips': 'Training Trips',
+      'membership': 'Membership',
+      'social-events': 'Social Events'
+    }[categorySlug] || categorySlug;
 
     if (!acc[mappedCategory]) acc[mappedCategory] = [];
     acc[mappedCategory].push(trip);
