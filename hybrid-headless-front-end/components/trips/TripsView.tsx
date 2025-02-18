@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 const CATEGORY_ORDER = [
   'Extra-Welcoming Trips',
-  'Evening Trips', 
+  'Evening Trips',
   'Weekend Trips',
   'Training Trips',
   'Membership',
@@ -45,10 +45,10 @@ export function TripsView({ trips }: TripsViewProps) {
   const tripsByCategory = sortedTrips.reduce((acc, trip) => {
     const category = trip.categories[0]?.name || 'Other Trips';
     const mappedCategory = {
-      'giggletrips': 'Extra-Welcoming Trips',
-      'evening-trips': 'Evening Trips',
-      'weekend-trips': 'Weekend Trips',
-      'training': 'Training Trips'
+      'extra-welcoming-trips': 'Extra-Welcoming Trips',
+      'evening-day-caving': 'Evening Trips',
+      'overnight-trips': 'Weekend Trips',
+      'training-trips': 'Training Trips'
     }[category] || category;
 
     if (!acc[mappedCategory]) acc[mappedCategory] = [];
@@ -69,11 +69,11 @@ export function TripsView({ trips }: TripsViewProps) {
       {/* Category Sections */}
       {CATEGORY_ORDER.map(category => {
         const categoryTrips = tripsByCategory[category] || [];
-        
+
         return (
           <Stack key={category} gap="md">
             <Title order={2}>{category}</Title>
-            
+
             {/* Category-specific descriptions */}
             {category === 'Extra-Welcoming Trips' && (
               <Text>
@@ -123,7 +123,7 @@ export function TripsView({ trips }: TripsViewProps) {
       <Stack gap="md">
         <Title order={2}>Membership</Title>
         <Text>
-          Getting membership to the Crew makes it easier and cheaper to access all the trips 
+          Getting membership to the Crew makes it easier and cheaper to access all the trips
           we do and will take 2 minutes to sign up for.
         </Text>
         <Button component={Link} href="/membership" variant="filled" size="lg">
@@ -139,7 +139,7 @@ export function TripsView({ trips }: TripsViewProps) {
           <Anchor href="https://facebook.com/groups/thesocialclan" target="_blank">
             The Social Clan
           </Anchor>
-          {' '}to help everyone relax and get to know each other. Check out the Facebook group to 
+          {' '}to help everyone relax and get to know each other. Check out the Facebook group to
           find out about ad-hoc events.
         </Text>
       </Stack>
