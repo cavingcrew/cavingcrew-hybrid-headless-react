@@ -25,17 +25,32 @@ export default function HomePage() {
   const giggleTrips = data.data
     ?.filter(trip => 
       trip.categories.some(cat => cat.slug === 'giggletrips')
-    ) || [];
+    )
+    .sort((a, b) => {
+      const dateA = new Date(a.acf.event_start_date_time).getTime();
+      const dateB = new Date(b.acf.event_start_date_time).getTime();
+      return dateA - dateB;
+    }) || [];
 
   const eveningTrips = data.data
     ?.filter(trip => 
       trip.categories.some(cat => cat.slug === 'evening-trips')
-    ) || [];
+    )
+    .sort((a, b) => {
+      const dateA = new Date(a.acf.event_start_date_time).getTime();
+      const dateB = new Date(b.acf.event_start_date_time).getTime();
+      return dateA - dateB;
+    }) || [];
 
   const weekendTrips = data.data
     ?.filter(trip => 
       trip.categories.some(cat => cat.slug === 'weekend-trips')
-    ) || [];
+    )
+    .sort((a, b) => {
+      const dateA = new Date(a.acf.event_start_date_time).getTime();
+      const dateB = new Date(b.acf.event_start_date_time).getTime();
+      return dateA - dateB;
+    }) || [];
 
   return (
     <Container size="lg">

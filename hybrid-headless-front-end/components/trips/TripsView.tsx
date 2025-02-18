@@ -52,7 +52,7 @@ export function TripsView({ trips }: TripsViewProps) {
         new Date(a.acf.event_start_date_time).getTime() : 0;
       const dateB = b.acf.event_start_date_time ? 
         new Date(b.acf.event_start_date_time).getTime() : 0;
-      return dateB - dateA; // Newest first
+      return dateA - dateB; // Closest first
     });
   }, [filteredTrips]);
 
