@@ -20,7 +20,7 @@ export default function TripsPage() {
     />;
   }
 
-  const filteredTrips = data.data.filter(trip => trip.id !== 1272);
+  const filteredTrips = data.data;
 
   return (
     <Container size="lg">

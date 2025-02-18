@@ -103,7 +103,7 @@ export function useTripsByCategory(categorySlug: string) {
           };
         }
 
-        const filteredData = response.data.filter(trip => trip.id !== 1272)
+        const filteredData = response.data
           .map(trip => ({
             ...trip,
             categories: trip.categories || []
