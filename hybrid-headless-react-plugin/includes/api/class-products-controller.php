@@ -483,9 +483,10 @@ class Hybrid_Headless_Products_Controller {
         if ( $terms && ! is_wp_error( $terms ) ) {
             foreach ( $terms as $term ) {
                 $categories[] = array(
-                    'id'   => $term->term_id,
-                    'name' => $term->name,
-                    'slug' => $term->slug,
+                    'id'          => $term->term_id,
+                    'name'        => $term->name,
+                    'slug'        => $term->slug,
+                    'description' => $term->description
                 );
             }
         }
