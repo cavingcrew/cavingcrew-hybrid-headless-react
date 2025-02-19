@@ -155,71 +155,31 @@ export function TripsView({ trips }: TripsViewProps) {
         />
 
         {/* Filter Controls */}
-        <SegmentedControl
-          value={filterMode}
-          onChange={(value) => setFilterMode(value as any)}
-          data={[
-            {
-              value: 'all',
-              label: (
-                <Group gap="xs" justify="center" wrap="nowrap">
-                  <IconList size={18} />
-                  <Text size="sm">All</Text>
-                </Group>
-              ),
-            },
-            {
-              value: 'horizontal',
-              label: (
-                <Group gap="xs" justify="center" wrap="nowrap">
-                  <IconStairs size={18} />
-                  <Text size="sm">Horizontal</Text>
-                </Group>
-              ),
-            },
-            {
-              value: 'vertical',
-              label: (
-                <Group gap="xs" justify="center" wrap="nowrap">
-                  <IconArrowBarUp size={18} />
-                  <Text size="sm">Vertical</Text>
-                </Group>
-              ),
-            },
-            {
-              value: 'extra-welcoming',
-              label: (
-                <Group gap="xs" justify="center" wrap="nowrap">
-                  <IconSparkles size={18} />
-                  <Text size="sm">Welcoming</Text>
-                </Group>
-              ),
-            },
-            {
-              value: 'available',
-              label: (
-                <Group gap="xs" justify="center" wrap="nowrap">
-                  <IconChecklist size={18} />
-                  <Text size="sm">Available</Text>
-                </Group>
-              ),
-            },
-          ]}
-          color="blue"
-          fullWidth
-          styles={{
-            root: {
-              flex: 1,
-              minWidth: '100%',
-              [`@media (min-width: ${theme.breakpoints.sm})`]: {
-                minWidth: '300px',
-              },
-            },
-            label: {
-              padding: '4px 8px',
-            },
-          }}
-        />
+        <Group gap="xs" wrap>
+          {[
+            { value: 'all', label: 'All', icon: <IconList size={18} /> },
+            { value: 'horizontal', label: 'Horizontal', icon: <IconStairs size={18} /> },
+            { value: 'vertical', label: 'Vertical', icon: <IconArrowBarUp size={18} /> },
+            { value: 'extra-welcoming', label: 'Welcoming', icon: <IconSparkles size={18} /> },
+            { value: 'available', label: 'Available', icon: <IconChecklist size={18} /> },
+          ].map((filter) => (
+            <Button
+              key={filter.value}
+              variant={filterMode === filter.value ? 'filled' : 'outline'}
+              onClick={() => setFilterMode(filter.value as any)}
+              leftSection={filter.icon}
+              size="compact-md"
+              style={{ 
+                flex: '1 1 auto',
+                minWidth: '120px',
+                maxWidth: '200px',
+              }}
+            >
+              <Text size="sm" visibleFrom="xs">{filter.label}</Text>
+              <Text hiddenFrom="xs" size="sm">{filter.label.slice(0, 3)}</Text>
+            </Button>
+          ))}
+        </Group>
       </Stack>
 
       {/* Content Section */}
