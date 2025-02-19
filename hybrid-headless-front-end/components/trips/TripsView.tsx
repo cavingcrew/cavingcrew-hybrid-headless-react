@@ -176,10 +176,10 @@ export function TripsView({ trips }: TripsViewProps) {
               style={{
                 flex: '0 1 auto',
                 minWidth: '120px',
+                padding: '6px 12px',
               }}
             >
-              <Text size="sm" visibleFrom="xs">{filter.label}</Text>
-              <Text hiddenFrom="xs" size="sm">{filter.label.slice(0, 3)}</Text>
+              <Text size="sm" style={{ whiteSpace: 'nowrap' }}>{filter.label}</Text>
             </Button>
           ))}
         </Group>
