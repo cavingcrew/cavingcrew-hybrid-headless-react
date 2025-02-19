@@ -155,7 +155,11 @@ export function TripsView({ trips }: TripsViewProps) {
         />
 
         {/* Filter Controls */}
-        <Group gap="xs" wrap>
+        <Group 
+          gap="xs" 
+          wrap={{ base: 'wrap', sm: 'nowrap' }}
+          justify={{ sm: 'center' }}
+        >
           {[
             { value: 'all', label: 'All', icon: <IconList size={18} /> },
             { value: 'horizontal', label: 'Horizontal', icon: <IconStairs size={18} /> },
@@ -170,9 +174,8 @@ export function TripsView({ trips }: TripsViewProps) {
               leftSection={filter.icon}
               size="compact-md"
               style={{ 
-                flex: '1 1 auto',
+                flex: '0 1 auto',
                 minWidth: '120px',
-                maxWidth: '200px',
               }}
             >
               <Text size="sm" visibleFrom="xs">{filter.label}</Text>
