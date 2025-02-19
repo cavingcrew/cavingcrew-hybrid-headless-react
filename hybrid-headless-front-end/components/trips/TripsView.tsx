@@ -158,7 +158,7 @@ export function TripsView({ trips }: TripsViewProps) {
         <Group 
           gap="xs" 
           wrap="wrap"
-          justify={{ sm: 'center' }}
+          justify="center"
         >
           {[
             { value: 'all', label: 'All', icon: <IconList size={18} /> },
