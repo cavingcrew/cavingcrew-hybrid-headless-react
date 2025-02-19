@@ -157,7 +157,7 @@ export function TripsView({ trips }: TripsViewProps) {
         {/* Filter Controls */}
         <Group 
           gap="xs" 
-          wrap
+          wrap="wrap"
           justify={{ sm: 'center' }}
         >
           {[
