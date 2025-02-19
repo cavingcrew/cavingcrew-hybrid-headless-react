@@ -147,7 +147,7 @@ export function TripsView({ trips }: TripsViewProps) {
             root: {
               flex: 1,
               minWidth: '100%',
-              [theme.fn.largerThan('sm')]: {
+              [`@media (min-width: ${theme.breakpoints.sm})`]: {
                 minWidth: '300px',
               },
             },
@@ -211,7 +211,7 @@ export function TripsView({ trips }: TripsViewProps) {
             root: {
               flex: 1,
               minWidth: '100%',
-              [theme.fn.largerThan('sm')]: {
+              [`@media (min-width: ${theme.breakpoints.sm})`]: {
                 minWidth: '300px',
               },
             },
