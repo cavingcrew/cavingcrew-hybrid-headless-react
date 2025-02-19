@@ -23,6 +23,7 @@ interface TripsViewProps {
 }
 
 export function TripsView({ trips }: TripsViewProps) {
+  const theme = useMantineTheme();
   const [sortMode, setSortMode] = useState<'category' | 'date'>('category');
   const [filterMode, setFilterMode] = useState<
     'all' | 'horizontal' | 'vertical' | 'extra-welcoming' | 'available'
