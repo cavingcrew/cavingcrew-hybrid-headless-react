@@ -3,8 +3,18 @@
 import { useState, useMemo } from 'react';
 import { 
   Stack, Title, Text, SimpleGrid, 
-  SegmentedControl, Select, Group, Badge 
+  SegmentedControl, Select, Group, Badge,
+  useMantineTheme
 } from '@mantine/core';
+import { 
+  IconCategory, 
+  IconCalendar,
+  IconStairs,
+  IconArrowBarUp,
+  IconSparkles,
+  IconChecklist,
+  IconList 
+} from "@tabler/icons-react";
 import TripCard from './TripCard';
 import type { Trip } from '@/types/api';
 
@@ -106,34 +116,110 @@ export function TripsView({ trips }: TripsViewProps) {
       </Stack>
 
       {/* Controls Section */}
-      <Group justify="space-between" wrap="nowrap">
+      <Stack gap="md">
+        {/* Sort Controls */}
         <SegmentedControl
           value={sortMode}
           onChange={(value) => setSortMode(value as 'category' | 'date')}
           data={[
-            { label: 'By Category', value: 'category' },
-            { label: 'By Date', value: 'date' },
+            {
+              value: 'category',
+              label: (
+                <Group gap="xs" justify="center" wrap="nowrap">
+                  <IconCategory size={18} />
+                  <Text size="sm">Category</Text>
+                </Group>
+              ),
+            },
+            {
+              value: 'date',
+              label: (
+                <Group gap="xs" justify="center" wrap="nowrap">
+                  <IconCalendar size={18} />
+                  <Text size="sm">Date</Text>
+                </Group>
+              ),
+            },
           ]}
+          fullWidth
+          styles={{
+            root: {
+              flex: 1,
+              minWidth: '100%',
+              [theme.fn.largerThan('sm')]: {
+                minWidth: '300px',
+              },
+            },
+          }}
         />
 
-        <Group gap="xs" wrap="nowrap">
-          <Badge variant="transparent" px={0} mr="sm">
-            Filter spots:
-          </Badge>
-          <SegmentedControl
-            value={filterMode}
-            onChange={(value) => setFilterMode(value as any)}
-            data={[
-              { label: 'All', value: 'all' },
-              { label: 'Horizontal', value: 'horizontal' },
-              { label: 'Vertical', value: 'vertical' },
-              { label: 'Extra-Welcoming', value: 'extra-welcoming' },
-              { label: 'Available', value: 'available' },
-            ]}
-            color="blue"
-          />
-        </Group>
-      </Group>
+        {/* Filter Controls */}
+        <SegmentedControl
+          value={filterMode}
+          onChange={(value) => setFilterMode(value as any)}
+          data={[
+            {
+              value: 'all',
+              label: (
+                <Group gap="xs" justify="center" wrap="nowrap">
+                  <IconList size={18} />
+                  <Text size="sm">All</Text>
+                </Group>
+              ),
+            },
+            {
+              value: 'horizontal',
+              label: (
+                <Group gap="xs" justify="center" wrap="nowrap">
+                  <IconStairs size={18} />
+                  <Text size="sm">Horizontal</Text>
+                </Group>
+              ),
+            },
+            {
+              value: 'vertical',
+              label: (
+                <Group gap="xs" justify="center" wrap="nowrap">
+                  <IconArrowBarUp size={18} />
+                  <Text size="sm">Vertical</Text>
+                </Group>
+              ),
+            },
+            {
+              value: 'extra-welcoming',
+              label: (
+                <Group gap="xs" justify="center" wrap="nowrap">
+                  <IconSparkles size={18} />
+                  <Text size="sm">Welcoming</Text>
+                </Group>
+              ),
+            },
+            {
+              value: 'available',
+              label: (
+                <Group gap="xs" justify="center" wrap="nowrap">
+                  <IconChecklist size={18} />
+                  <Text size="sm">Available</Text>
+                </Group>
+              ),
+            },
+          ]}
+          color="blue"
+          fullWidth
+          styles={{
+            root: {
+              flex: 1,
+              minWidth: '100%',
+              [theme.fn.largerThan('sm')]: {
+                minWidth: '300px',
+              },
+            },
+            label: {
+              padding: '4px 8px',
+            },
+          }}
+        />
+      </Stack>
 
       {/* Content Section */}
       {sortMode === 'category' ? (
