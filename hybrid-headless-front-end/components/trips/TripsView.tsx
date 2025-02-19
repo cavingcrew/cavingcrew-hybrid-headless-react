@@ -1,19 +1,19 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { 
-  Stack, Title, Text, SimpleGrid, 
+import {
+  Stack, Title, Text, SimpleGrid,
   SegmentedControl, Select, Group, Badge,
-  useMantineTheme
+  useMantineTheme, Button
 } from '@mantine/core';
-import { 
-  IconCategory, 
+import {
+  IconCategory,
   IconCalendar,
   IconStairs,
   IconArrowBarUp,
   IconSparkles,
   IconChecklist,
-  IconList 
+  IconList
 } from "@tabler/icons-react";
 import TripCard from './TripCard';
 import type { Trip } from '@/types/api';
@@ -33,17 +33,17 @@ export function TripsView({ trips }: TripsViewProps) {
     const now = new Date();
     return trips.filter(trip => {
       // Common date sorting fallback for trips without dates
-      const tripDate = trip.acf.event_start_date_time 
+      const tripDate = trip.acf.event_start_date_time
         ? new Date(trip.acf.event_start_date_time)
         : new Date(0); // Default to epoch if no date
 
       // Filter logic
-      const isAvailable = trip.stock_status === 'instock' && 
+      const isAvailable = trip.stock_status === 'instock' &&
         (trip.stock_quantity ?? 1) > 0;
       const isExtraWelcoming = trip.categories.some(
         cat => cat.slug === 'extra-welcoming-trips'
       );
-      const isVertical = trip.acf.event_type === 'overnight' || 
+      const isVertical = trip.acf.event_type === 'overnight' ||
         trip.acf.event_gear_required?.toLowerCase().includes('srt');
 
       return (
@@ -59,9 +59,9 @@ export function TripsView({ trips }: TripsViewProps) {
 
   const sortedTrips = useMemo(() => {
     return [...filteredTrips].sort((a, b) => {
-      const dateA = a.acf.event_start_date_time ? 
+      const dateA = a.acf.event_start_date_time ?
         new Date(a.acf.event_start_date_time).getTime() : 0;
-      const dateB = b.acf.event_start_date_time ? 
+      const dateB = b.acf.event_start_date_time ?
         new Date(b.acf.event_start_date_time).getTime() : 0;
       return dateA - dateB; // Closest first
     });
@@ -69,10 +69,10 @@ export function TripsView({ trips }: TripsViewProps) {
 
   // Category grouping logic
   const categoryMap = useMemo(() => {
-    const map = new Map<string, { 
-      name: string; 
-      description: string; 
-      trips: Trip[] 
+    const map = new Map<string, {
+      name: string;
+      description: string;
+      trips: Trip[]
     }>();
 
     sortedTrips.forEach(trip => {
@@ -155,8 +155,8 @@ export function TripsView({ trips }: TripsViewProps) {
         />
 
         {/* Filter Controls */}
-        <Group 
-          gap="xs" 
+        <Group
+          gap="xs"
           wrap="wrap"
           justify="center"
         >
@@ -173,7 +173,7 @@ export function TripsView({ trips }: TripsViewProps) {
               onClick={() => setFilterMode(filter.value as any)}
               leftSection={filter.icon}
               size="compact-md"
-              style={{ 
+              style={{
                 flex: '0 1 auto',
                 minWidth: '120px',
               }}
@@ -195,7 +195,7 @@ export function TripsView({ trips }: TripsViewProps) {
                 {category.trips.length} upcoming
               </Badge>
             </Group>
-            
+
             {category.description && (
               <Text dangerouslySetInnerHTML={{ __html: category.description }} />
             )}
