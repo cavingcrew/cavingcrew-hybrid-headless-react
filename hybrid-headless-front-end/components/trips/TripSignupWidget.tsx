@@ -48,14 +48,23 @@ export function TripSignupWidget({
   const [isSelectedVariationValid, setIsSelectedVariationValid] = useState(false);
   const nonMembersWelcome = trip.acf.event_non_members_welcome === 'yes';
   const mustCavedBefore = trip.acf.event_must_caved_with_us_before === 'yes';
-  const { data: userStatus } = useQuery({
-    queryKey: ['userStatus'],
-    queryFn: () => apiService.getUserStatus(),
-    refetchInterval: 30000
-  });
+  const { purchasedProducts, isLoggedIn, isMember } = useUserStatus();
+  const hasPurchased = trip.variations.some(v => 
+    purchasedProducts?.includes(v.id)
+  );
+
+  if (hasPurchased) {
+    return (
+      <Paper withBorder p="md" radius="md" mb="xl">
+        <Alert color="green" title="Already Signed Up">
+          You're already signed up for this trip! 
+          View your <Anchor href="/my-account">account page</Anchor> for details.
+        </Alert>
+      </Paper>
+    );
+  }
 
   const memberDiscount = trip.acf.event_members_discount;
-  const isMember = userStatus?.data?.isMember;
   const isLoggedIn = userStatus?.data?.isLoggedIn;
 
   // Update price when variation changes
