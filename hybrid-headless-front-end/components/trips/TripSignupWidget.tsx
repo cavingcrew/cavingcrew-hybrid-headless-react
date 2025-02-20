@@ -50,22 +50,10 @@ export function TripSignupWidget({
   const mustCavedBefore = trip.acf.event_must_caved_with_us_before === 'yes';
   const { purchasedProducts, isLoggedIn, isMember } = useUserStatus();
   const hasPurchased = trip.variations.some(v => 
-    purchasedProducts?.includes(v.id)
+    purchasedProducts.includes(v.id)
   );
 
-  if (hasPurchased) {
-    return (
-      <Paper withBorder p="md" radius="md" mb="xl">
-        <Alert color="green" title="Already Signed Up">
-          You're already signed up for this trip! 
-          View your <Anchor href="/my-account">account page</Anchor> for details.
-        </Alert>
-      </Paper>
-    );
-  }
-
   const memberDiscount = trip.acf.event_members_discount;
-  const isLoggedIn = userStatus?.data?.isLoggedIn;
 
   // Update price when variation changes
   useEffect(() => {
@@ -83,12 +71,12 @@ export function TripSignupWidget({
                    (variation.stock_quantity ?? 0) > 0 &&
                    !(trip.acf.event_type === 'giggletrip' && 
                      variation.sku.includes('GIGGLE--bcamember') &&
-                     userStatus?.data?.isMember);
+                     isMember);
       setIsSelectedVariationValid(!!valid);
     } else {
       setIsSelectedVariationValid(false);
     }
-  }, [selectedVariation, trip.variations, userStatus?.data?.isMember]);
+  }, [selectedVariation, trip.variations, isMember]);
 
   // Poll stock data
   const queryClient = useQueryClient();
@@ -144,250 +132,259 @@ export function TripSignupWidget({
 
   return (
     <Stack gap="md">
+      {hasPurchased && (
+        <Alert color="green" title="Already Signed Up">
+          You're already signed up for this trip! View your{' '}
+          <Anchor href="/my-account">account page</Anchor> for details.
+        </Alert>
+      )}
+
       <Paper
         withBorder
         p="md"
         radius="md"
         mb="xl"
         style={{
-          opacity: requiresLogin ? 0.6 : 1,
-          pointerEvents: requiresLogin ? 'none' : 'auto'
+          opacity: requiresLogin || hasPurchased ? 0.6 : 1,
+          pointerEvents: requiresLogin || hasPurchased ? 'none' : 'auto'
         }}
       >
-      <Title order={3} mb="md">Sign Up Options</Title>
+        <Title order={3} mb="md">Sign Up Options</Title>
 
-      {trip.has_variations && hasAvailableVariations && (
-        <Radio.Group
-          value={selectedVariation}
-          onChange={setSelectedVariation}
-          name="tripVariation"
-          required
-        >
-          <Stack gap="lg">
-            {trip.variations.map((variation) => {
-              const attribute = Object.values(variation.attributes)[0];
-              let inStock = variation.stock_status === 'instock';
-              let isBcaMemberVariation = false;
+        {trip.has_variations && hasAvailableVariations && (
+          <Radio.Group
+            value={selectedVariation}
+            onChange={setSelectedVariation}
+            name="tripVariation"
+            required
+          >
+            <Stack gap="lg">
+              {trip.variations.map((variation) => {
+                const attribute = Object.values(variation.attributes)[0];
+                let inStock = variation.stock_status === 'instock';
+                let isBcaMemberVariation = false;
+                const isPurchased = purchasedProducts.includes(variation.id);
 
-              // TEMPORARY HACK: Hardcoded BCA member giggle trip handling
-              // Remove when proper membership benefits system is implemented
-              // See ticket #BCA-MEMBERSHIP-123
-              if (trip.acf.event_type === 'giggletrip' &&
-                  variation.sku.includes('GIGGLE--bcamember') &&
-                  userStatus?.data?.isLoggedIn &&
-                  userStatus?.data?.isMember) {
-                isBcaMemberVariation = true;
-                inStock = false; // Force out of stock for members
-              }
+                // TEMPORARY HACK: Hardcoded BCA member giggle trip handling
+                if (trip.acf.event_type === 'giggletrip' &&
+                    variation.sku.includes('GIGGLE--bcamember') &&
+                    isLoggedIn &&
+                    isMember) {
+                  isBcaMemberVariation = true;
+                  inStock = false; // Force out of stock for members
+                }
 
-              const memberPrice = calculateMemberPrice(variation.price, memberDiscount);
+                const memberPrice = calculateMemberPrice(variation.price, memberDiscount);
 
-              return (
-                <Paper
-                  key={variation.id}
-                  withBorder
-                  p="md"
-                  radius="md"
-                  style={{
-                    cursor: requiresLogin ? 'default' : 'pointer',
-                    transition: 'all 0.2s ease',
-                    borderColor: selectedVariation === variation.id.toString() ? '#228be6' : undefined,
-                    borderWidth: selectedVariation === variation.id.toString() ? 2 : 1,
-                    opacity: isBcaMemberVariation ? 0.7 : (requiresLogin ? 0.8 : 1),
-                    backgroundColor: isBcaMemberVariation ? '#f8f9fa' :
-                      selectedVariation === variation.id.toString() ? '#f1f3f5' : undefined,
-                    boxShadow: selectedVariation === variation.id.toString() ? '0 0 0 2px rgba(34, 139, 230, 0.2)' : undefined
-                  }}
-                  onClick={() => {
-                    if (inStock && !isBcaMemberVariation) {
-                      setSelectedVariation(variation.id.toString());
-                    }
-                  }}
-                >
-                  <Radio
-                    value={variation.id.toString()}
-                    label={
-                      <Stack gap="xs" w="100%">
-                        <Group justify="space-between">
-                          <Text fw={500}>
-                            {attribute?.value || "Signup Option"}
-                          </Text>
-                          <Badge
-                            color={inStock ? 'green' : 'red'}
-                            variant="light"
-                          >
-                            {inStock ?
-                              `${variation.stock_quantity ?? 'N/A'} spots left` :
-                              'Sold out'
-                            }
-                          </Badge>
-                        </Group>
-                        {isBcaMemberVariation && (
-                          <Badge color="gray" variant="light" mt="sm">
-                            Not Available as you're a Caving Crew Member
-                          </Badge>
-                        )}
-
-                        {variation.description && (
-                          <div
-                            dangerouslySetInnerHTML={{ __html: variation.description }}
-                            style={{
-                              fontSize: '0.875rem',
-                              color: '#868e96',
-                              lineHeight: 1.6,
-                              marginTop: '0.5rem'
-                            }}
-                          />
-                        )}
-
-                        <Group justify="space-between" mt="sm">
-                          {isMember ? (
-                            <>
-                              <Text fw={500}>
-                                Member Price: £{memberPrice.toFixed(2)}
-                              </Text>
-                              {memberDiscount && parseFloat(memberDiscount) > 0 && (
-                                <Text td="line-through" c="dimmed">
-                                  £{variation.price}
-                                </Text>
-                              )}
-                            </>
-                          ) : (
-                            <>
-                              <Text fw={500}>Price: £{variation.price}</Text>
-                              {memberDiscount && parseFloat(memberDiscount) > 0 && isLoggedIn && (
-                                <Text c="green" size="sm">
-                                  Save £{parseFloat(memberDiscount)} with membership
-                                </Text>
-                              )}
-                            </>
-                          )}
-                        </Group>
-                      </Stack>
-                    }
-                    disabled={!inStock || isBcaMemberVariation}
-                    styles={{
-                      root: {
-                        width: '100%',
-                        '& .mantine-Radio-body': {
-                          alignItems: 'start',
-                        },
-                        '& .mantine-Radio-radio': {
-                          opacity: 0,
-                          width: 0,
-                          height: 0,
-                          position: 'absolute',
-                        }
+                return (
+                  <Paper
+                    key={variation.id}
+                    withBorder
+                    p="md"
+                    radius="md"
+                    style={{
+                      cursor: requiresLogin || isPurchased ? 'default' : 'pointer',
+                      transition: 'all 0.2s ease',
+                      borderColor: selectedVariation === variation.id.toString() ? '#228be6' : undefined,
+                      borderWidth: selectedVariation === variation.id.toString() ? 2 : 1,
+                      opacity: isBcaMemberVariation ? 0.7 : (requiresLogin ? 0.8 : 1),
+                      backgroundColor: isBcaMemberVariation ? '#f8f9fa' :
+                        selectedVariation === variation.id.toString() ? '#f1f3f5' : undefined,
+                      boxShadow: selectedVariation === variation.id.toString() ? '0 0 0 2px rgba(34, 139, 230, 0.2)' : undefined
+                    }}
+                    onClick={() => {
+                      if (inStock && !isBcaMemberVariation && !isPurchased) {
+                        setSelectedVariation(variation.id.toString());
                       }
                     }}
-                  />
-                </Paper>
-              );
-            })}
-          </Stack>
-        </Radio.Group>
-      )}
+                  >
+                    <Radio
+                      value={variation.id.toString()}
+                      label={
+                        <Stack gap="xs" w="100%">
+                          <Group justify="space-between">
+                            <Text fw={500}>
+                              {attribute?.value || "Signup Option"}
+                            </Text>
+                            <Badge
+                              color={isPurchased ? 'green' : (inStock ? 'green' : 'red')}
+                              variant="light"
+                            >
+                              {isPurchased ? 'Purchased' : 
+                               inStock ? `${variation.stock_quantity ?? 'N/A'} spots left` :
+                               'Sold out'}
+                            </Badge>
+                          </Group>
+                          {isBcaMemberVariation && (
+                            <Badge color="gray" variant="light" mt="sm">
+                              Not Available as you're a Caving Crew Member
+                            </Badge>
+                          )}
 
-      <Divider my="md" />
+                          {variation.description && (
+                            <div
+                              dangerouslySetInnerHTML={{ __html: variation.description }}
+                              style={{
+                                fontSize: '0.875rem',
+                                color: '#868e96',
+                                lineHeight: 1.6,
+                                marginTop: '0.5rem'
+                              }}
+                            />
+                          )}
 
-      {!isMember && memberDiscount && parseFloat(memberDiscount) > 0 && (
-        <Alert color="teal" variant="light" icon={<IconInfoCircle />}>
-          <Text size="sm">
-            Members save £{memberDiscount} on this trip!{' '}
-            <Anchor
-              href="https://www.cavingcrew.com/trip/get-caving-crew-membership/"
-              target="_blank"
-              c="blue"
-            >
-              Get instant membership
-            </Anchor>{' '}
-            to unlock discounts. Membership is cheaper than you think and can be cancelled anytime.
-          </Text>
-        </Alert>
-      )}
-
-      {userStatus?.data && !userStatus.data.isLoggedIn ? (
-        <Stack gap="md">
-          {nonMembersWelcome && !mustCavedBefore ? (
-            <>
-              <Alert color="blue" icon={<IconInfoCircle />}>
-                New to caving? You can sign up as a guest. Existing members should log in.
-              </Alert>
-              <Group justify="space-between">
-                <Stack gap={0}>
-                  <Text size="sm" c="dimmed">Guest signup available</Text>
-                </Stack>
-                <Button
-                  onClick={handleSignUp}
-                  disabled={!selectedVariation}
-                  size="lg"
-                >
-                  Continue as Guest
-                </Button>
-              </Group>
-              <Divider label="or" labelPosition="center" />
-              <WordPressLoginWidget />
-            </>
-          ) : (
-            <Stack gap="md">
-              <Alert color="blue" icon={<IconInfoCircle />}>
-                {mustCavedBefore
-                  ? "This trip requires previous experience with us - please log in"
-                  : "Membership required to sign up - please log in"}
-              </Alert>
-              <WordPressLoginWidget />
+                          <Group justify="space-between" mt="sm">
+                            {isMember ? (
+                              <>
+                                <Text fw={500}>
+                                  Member Price: £{memberPrice.toFixed(2)}
+                                </Text>
+                                {memberDiscount && parseFloat(memberDiscount) > 0 && (
+                                  <Text td="line-through" c="dimmed">
+                                    £{variation.price}
+                                  </Text>
+                                )}
+                              </>
+                            ) : (
+                              <>
+                                <Text fw={500}>Price: £{variation.price}</Text>
+                                {memberDiscount && parseFloat(memberDiscount) > 0 && isLoggedIn && (
+                                  <Text c="green" size="sm">
+                                    Save £{parseFloat(memberDiscount)} with membership
+                                  </Text>
+                                )}
+                              </>
+                            )}
+                          </Group>
+                        </Stack>
+                      }
+                      disabled={!inStock || isBcaMemberVariation || isPurchased}
+                      styles={{
+                        root: {
+                          width: '100%',
+                          '& .mantine-Radio-body': {
+                            alignItems: 'start',
+                          },
+                          '& .mantine-Radio-radio': {
+                            opacity: 0,
+                            width: 0,
+                            height: 0,
+                            position: 'absolute',
+                          }
+                        }
+                      }}
+                    />
+                  </Paper>
+                );
+              })}
             </Stack>
-          )}
-        </Stack>
-      ) : (
-        <Group justify="space-between">
-          {!isMember && !nonMembersWelcome ? (
-            <Alert color="blue" w="100%">
-              Membership required.{" "}
-              <Anchor href="/membership" c="blue">
-                Get membership
-              </Anchor>{" "}
-              to sign up
-            </Alert>
-          ) : !isMember && mustCavedBefore ? (
-            <Alert color="blue" w="100%">
-              This trip requires previous experience.{" "}
-              <Anchor href="/membership" c="blue">
-                Become a member
-              </Anchor>{" "}
-              to verify your experience
-            </Alert>
-          ) : (
-            <>
-              <Stack gap={0}>
-                {!isMember && (
-                  <Text size="sm" c="dimmed">Non-member signup</Text>
+          </Radio.Group>
+        )}
+
+        <Divider my="md" />
+
+        {!isMember && memberDiscount && parseFloat(memberDiscount) > 0 && (
+          <Alert color="teal" variant="light" icon={<IconInfoCircle />}>
+            <Text size="sm">
+              Members save £{memberDiscount} on this trip!{' '}
+              <Anchor
+                href="https://www.cavingcrew.com/trip/get-caving-crew-membership/"
+                target="_blank"
+                c="blue"
+              >
+                Get instant membership
+              </Anchor>{' '}
+              to unlock discounts. Membership is cheaper than you think and can be cancelled anytime.
+            </Text>
+          </Alert>
+        )}
+
+        {!hasPurchased && (
+          <>
+            {!isLoggedIn ? (
+              <Stack gap="md">
+                {nonMembersWelcome && !mustCavedBefore ? (
+                  <>
+                    <Alert color="blue" icon={<IconInfoCircle />}>
+                      New to caving? You can sign up as a guest. Existing members should log in.
+                    </Alert>
+                    <Group justify="space-between">
+                      <Stack gap={0}>
+                        <Text size="sm" c="dimmed">Guest signup available</Text>
+                      </Stack>
+                      <Button
+                        onClick={handleSignUp}
+                        disabled={!selectedVariation}
+                        size="lg"
+                      >
+                        Continue as Guest
+                      </Button>
+                    </Group>
+                    <Divider label="or" labelPosition="center" />
+                    <WordPressLoginWidget />
+                  </>
+                ) : (
+                  <Stack gap="md">
+                    <Alert color="blue" icon={<IconInfoCircle />}>
+                      {mustCavedBefore
+                        ? "This trip requires previous experience with us - please log in"
+                        : "Membership required to sign up - please log in"}
+                    </Alert>
+                    <WordPressLoginWidget />
+                  </Stack>
                 )}
               </Stack>
-              <Button
-                onClick={handleSignUp}
-                disabled={!isSelectedVariationValid || (!isMember && !nonMembersWelcome)}
-                size="lg"
-              >
-                {isMember ? "Signup for Trip" : "Continue as Non-Member"}
-              </Button>
-            </>
-          )}
-        </Group>
-      )}
-    </Paper>
+            ) : (
+              <Group justify="space-between">
+                {!isMember && !nonMembersWelcome ? (
+                  <Alert color="blue" w="100%">
+                    Membership required.{" "}
+                    <Anchor href="/membership" c="blue">
+                      Get membership
+                    </Anchor>{" "}
+                    to sign up
+                  </Alert>
+                ) : !isMember && mustCavedBefore ? (
+                  <Alert color="blue" w="100%">
+                    This trip requires previous experience.{" "}
+                    <Anchor href="/membership" c="blue">
+                      Become a member
+                    </Anchor>{" "}
+                    to verify your experience
+                  </Alert>
+                ) : (
+                  <>
+                    <Stack gap={0}>
+                      {!isMember && (
+                        <Text size="sm" c="dimmed">Non-member signup</Text>
+                      )}
+                    </Stack>
+                    <Button
+                      onClick={handleSignUp}
+                      disabled={!isSelectedVariationValid || (!isMember && !nonMembersWelcome)}
+                      size="lg"
+                    >
+                      {isMember ? "Signup for Trip" : "Continue as Non-Member"}
+                    </Button>
+                  </>
+                )}
+              </Group>
+            )}
+          </>
+        )}
+      </Paper>
 
-    {requiresLogin && (
-      <>
-        <Alert color="blue" title="Login Required">
-          {loginReason} - please log in to continue
-        </Alert>
-        <WordPressLoginWidget
-          onSuccess={() => window.location.reload()}
-          redirectTo={window.location.pathname}
-        />
-      </>
-    )}
+      {requiresLogin && !hasPurchased && (
+        <>
+          <Alert color="blue" title="Login Required">
+            {loginReason} - please log in to continue
+          </Alert>
+          <WordPressLoginWidget
+            onSuccess={() => window.location.reload()}
+            redirectTo={window.location.pathname}
+          />
+        </>
+      )}
     </Stack>
   );
 }

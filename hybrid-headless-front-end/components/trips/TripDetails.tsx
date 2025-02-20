@@ -15,7 +15,7 @@ import {
 	Text,
 	Title,
 } from "@mantine/core";
-import { useQuery } from '@tanstack/react-query';
+import { useUserStatus } from '@/lib/hooks/useUser';
 import { WordPressLoginWidget } from '@/components/auth/WordPressLoginWidget';
 import { apiService } from '@/lib/api-service';
 import { TripSignupWidget } from "./TripSignupWidget";
@@ -42,20 +42,20 @@ interface TripDetailsProps {
 
 export function TripDetails({ trip }: TripDetailsProps) {
 	const acf = trip.acf;
-	const { data: userStatus } = useQuery({
-		queryKey: ['userStatus'],
-		queryFn: () => apiService.getUserStatus(),
-	});
+	const { purchasedProducts, isLoggedIn } = useUserStatus();
+	const startDate = acf?.event_start_date_time
+		? new Date(acf.event_start_date_time)
+		: null;
 
 	const requiresLogin = (
 		(acf.event_non_members_welcome === 'no' ||
 		 acf.event_must_caved_with_us_before === 'yes') &&
-		!userStatus?.data?.isLoggedIn
+		!isLoggedIn
 	);
 
-	const startDate = acf?.event_start_date_time
-		? new Date(acf.event_start_date_time)
-		: null;
+	const hasPurchased = trip.variations.some(v => 
+		purchasedProducts.includes(v.id)
+	);
 
 	return (
 		<Stack gap="xl">
@@ -266,15 +266,25 @@ export function TripDetails({ trip }: TripDetailsProps) {
 					)}
 				</Grid.Col>
 			</Grid>
-			<TripSignupWidget
-				trip={trip}
-				requiresLogin={requiresLogin}
-				loginReason={
-					acf.event_non_members_welcome === 'no'
-						? "This trip requires membership signup"
-						: "This trip requires previous experience caving with us"
-				}
-			/>
+
+			{hasPurchased ? (
+				<Paper withBorder p="md" radius="md">
+					<Alert color="green" title="You're Signed Up!">
+						You're already booked on this trip. Check your email for confirmation
+						or visit your <Anchor href="/my-account">account page</Anchor> for details.
+					</Alert>
+				</Paper>
+			) : (
+				<TripSignupWidget
+					trip={trip}
+					requiresLogin={requiresLogin}
+					loginReason={
+						acf.event_non_members_welcome === 'no'
+							? "This trip requires membership signup"
+							: "This trip requires previous experience caving with us"
+					}
+				/>
+			)}
 
 			{/* What does signing up pay for section */}
 			{acf?.event_paying_for && (
