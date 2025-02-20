@@ -2,7 +2,7 @@
 
 import {
 	Accordion,
-	Alert,
+	Alert, Anchor,
 	Badge,
 	Button,
 	Container,
@@ -53,7 +53,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
 		!isLoggedIn
 	);
 
-	const hasPurchased = trip.variations.some(v => 
+	const hasPurchased = trip.variations.some(v =>
 		purchasedProducts.includes(v.id)
 	);
 
