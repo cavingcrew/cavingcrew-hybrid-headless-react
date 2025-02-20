@@ -133,9 +133,11 @@ export function TripSignupWidget({
   return (
     <Stack gap="md">
       {hasPurchased && (
-        <Alert color="green" title="Already Signed Up">
-          You're already signed up for this trip! View your{' '}
-          <Anchor href="/my-account">account page</Anchor> for details.
+        <Alert color="green" title="You're Signed Up!" mb="md">
+          <Text>
+            You're already booked on this trip. Check your email for confirmation
+            or visit your <Anchor href="/my-account">account page</Anchor> for details.
+          </Text>
         </Alert>
       )}
 

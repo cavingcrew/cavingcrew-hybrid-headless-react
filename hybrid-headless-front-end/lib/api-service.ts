@@ -19,7 +19,13 @@ export const apiService = {
       });
       if (!response.ok) throw new Error('Failed to fetch user status');
       const data = await response.json();
-      return { data, success: true };
+      return { 
+        success: true,
+        data: {
+          purchased_products: data.purchased_products,
+          isLoggedIn: data.isLoggedIn
+        }
+      };
     } catch (error) {
       return {
         success: false,

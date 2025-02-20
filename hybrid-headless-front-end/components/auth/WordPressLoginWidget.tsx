@@ -57,7 +57,8 @@ export function WordPressLoginWidget({
 
       if (userResponse.data?.isLoggedIn) {
         // Invalidate user status query and any other related queries
-        queryClient.invalidateQueries({ queryKey: ['userStatus'] });
+        queryClient.invalidateQueries({ queryKey: userKeys.status() });
+        queryClient.invalidateQueries({ queryKey: userKeys.purchases() });
         queryClient.invalidateQueries({ queryKey: tripKeys.all });
         onSuccess?.();
       } else {

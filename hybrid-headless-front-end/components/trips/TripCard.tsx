@@ -75,8 +75,17 @@ export default function TripCard({ trip }: TripCardProps) {
 				padding="lg"
 				radius="md"
 				withBorder
-				style={{ cursor: "pointer" }}
+				style={{ cursor: "pointer", position: "relative" }}
 			>
+        {hasPurchased && (
+          <Badge 
+            color="green" 
+            variant="light" 
+            style={{ position: 'absolute', top: 10, right: 10, zIndex: 1 }}
+          >
+            Booked
+          </Badge>
+        )}
 				{trip.images?.[0] && (
 					<Card.Section>
 						<Image

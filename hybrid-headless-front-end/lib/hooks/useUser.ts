@@ -7,7 +7,14 @@ export const userKeys = {
   purchases: () => [...userKeys.all, 'purchases'] as const,
 };
 
+import { useEffect } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { apiService } from '../api-service';
+import type { ApiResponse, UserPurchasesResponse } from '../../types/api';
+
 export function useUserStatus() {
+  const queryClient = useQueryClient();
+  
   const { data: status } = useQuery({
     queryKey: userKeys.status(),
     queryFn: async () => {
@@ -18,19 +25,32 @@ export function useUserStatus() {
     staleTime: 1000 * 30,
   });
 
-  const { data: purchases } = useQuery({
+  const { data: purchases } = useQuery<ApiResponse<UserPurchasesResponse>>({
     queryKey: userKeys.purchases(),
     queryFn: async () => {
       const response = await apiService.getUserPurchases();
       if (!response.success) throw new Error(response.message);
-      return response.data;
+      return response;
     },
     enabled: !!status?.isLoggedIn,
     staleTime: 1000 * 60 * 5,
   });
 
+  useEffect(() => {
+    if (status?.isLoggedIn) {
+      queryClient.prefetchQuery({
+        queryKey: userKeys.purchases(),
+        queryFn: async () => {
+          const response = await apiService.getUserPurchases();
+          if (!response.success) throw new Error(response.message);
+          return response;
+        },
+      });
+    }
+  }, [status?.isLoggedIn, queryClient]);
+
   return {
     ...status,
-    purchasedProducts: purchases?.purchasedProducts || [],
+    purchasedProducts: purchases?.data?.purchased_products || [],
   };
 }
