@@ -132,13 +132,22 @@ class Hybrid_Headless_Rest_API {
     }
 
     public function get_user_purchases() {
-        $user_id = get_current_user_id();
+        // Use the same manual auth validation as get_user_status
+        $user_id = 0;
+        $logged_in = false;
+        
+        if (isset($_COOKIE[LOGGED_IN_COOKIE])) {
+            $cookie = $_COOKIE[LOGGED_IN_COOKIE];
+            $user_id = wp_validate_auth_cookie($cookie, 'logged_in');
+            $logged_in = (bool)$user_id;
+        }
+
         $response = [
             'purchased_products' => [],
-            'isLoggedIn' => is_user_logged_in()
+            'isLoggedIn' => $logged_in
         ];
 
-        if (!$user_id) {
+        if (!$logged_in) {
             return rest_ensure_response($response);
         }
 
@@ -192,6 +201,18 @@ class Hybrid_Headless_Rest_API {
      */
     public function handle_cors($served, $result, $request, $server) {
         error_log('[API Auth] Starting CORS/Auth handling');
+        
+        // Initialize authentication first
+        if (isset($_COOKIE[LOGGED_IN_COOKIE])) {
+            $user_id = wp_validate_auth_cookie($_COOKIE[LOGGED_IN_COOKIE], 'logged_in');
+            if ($user_id) {
+                wp_set_current_user($user_id);
+                // Force WC customer initialization
+                if (class_exists('WooCommerce') && WC()->customer) {
+                    WC()->customer = new WC_Customer($user_id, true);
+                }
+            }
+        }
         
         // Set CORS headers
         $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
