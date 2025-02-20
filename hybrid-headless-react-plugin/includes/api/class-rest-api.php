@@ -71,6 +71,18 @@ class Hybrid_Headless_Rest_API {
                 )
             )
         );
+
+        register_rest_route(
+            self::API_NAMESPACE,
+            '/user-purchases',
+            array(
+                array(
+                    'methods' => WP_REST_Server::READABLE,
+                    'callback' => array($this, 'get_user_purchases'),
+                    'permission_callback' => '__return_true',
+                )
+            )
+        );
     }
 
     public function get_user_status() {
@@ -117,6 +129,56 @@ class Hybrid_Headless_Rest_API {
     private function is_member($user_id) {
         if (!$user_id) return false;
         return (bool) get_user_meta($user_id, 'cc_member', true);
+    }
+
+    public function get_user_purchases() {
+        $user_id = get_current_user_id();
+        $response = [
+            'purchased_products' => [],
+            'isLoggedIn' => is_user_logged_in()
+        ];
+
+        if (!$user_id) {
+            return rest_ensure_response($response);
+        }
+
+        // Get all customer orders
+        $orders = wc_get_orders([
+            'customer_id' => $user_id,
+            'limit' => -1,
+            'status' => ['on-hold', 'processing', 'completed'],
+        ]);
+
+        $product_ids = [];
+
+        foreach ($orders as $order) {
+            // Check for completed orders with cancelled attendance
+            if ($order->get_status() === 'completed') {
+                $cc_attendance = $order->get_meta('cc_attendance');
+                if (strpos($cc_attendance, 'cancelled') !== false) {
+                    continue;
+                }
+            }
+
+            // Get items and process products
+            foreach ($order->get_items() as $item) {
+                $product = $item->get_product();
+                
+                if ($product) {
+                    $product_id = $product->get_parent_id() ?: $product->get_id();
+                    
+                    // Skip product 1272
+                    if ($product_id == 1272) continue;
+                    
+                    $product_ids[] = $product_id;
+                }
+            }
+        }
+
+        // Return unique product IDs
+        $response['purchased_products'] = array_values(array_unique($product_ids));
+        
+        return rest_ensure_response($response);
     }
 
     /**
