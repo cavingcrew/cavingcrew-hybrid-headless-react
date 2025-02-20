@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useUserStatus } from '@/lib/hooks/useUser';
 import {
   Box,
   Button,

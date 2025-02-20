@@ -7,11 +7,7 @@ import type {
 } from '../types/api';
 
 export const apiService = {
-  async getUserStatus(): Promise<ApiResponse<{
-    isLoggedIn: boolean;
-    isMember: boolean;
-    cartCount: number;
-  }>> {
+  async getUserStatus(): Promise<ApiResponse<UserStatusResponse>> {
     try {
       const response = await fetch(`${API_BASE_URL}/hybrid-headless/v1/user-status`, {
         credentials: 'include', // Required for cookies
@@ -154,6 +150,24 @@ export const apiService = {
       return { data: data.products || [], success: true };
     } catch (error) {
       return { data: [], success: false, message: error instanceof Error ? error.message : 'Failed to fetch category trips' };
+    }
+  },
+
+  async getUserPurchases(): Promise<ApiResponse<UserPurchasesResponse>> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/hybrid-headless/v1/user-purchases`, {
+        credentials: 'include',
+        headers: { 'Cache-Control': 'no-store' }
+      });
+      if (!response.ok) throw new Error('Failed to fetch user purchases');
+      const data = await response.json();
+      return { data, success: true };
+    } catch (error) {
+      return {
+        success: false,
+        data: null,
+        message: error instanceof Error ? error.message : 'Failed to fetch user purchases'
+      };
     }
   }
 };

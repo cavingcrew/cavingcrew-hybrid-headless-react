@@ -9,6 +9,7 @@ const isTrainingCategory = (trip: Trip) => {
 };
 
 import { Badge, Card, Group, Image, Text, Tooltip } from "@mantine/core";
+import { useUserStatus } from '@/lib/hooks/useUser';
 import Link from "next/link";
 import { useQueryClient } from '@tanstack/react-query';
 import {IconArrowBarUp, IconStairs} from "@tabler/icons-react";
@@ -53,8 +54,13 @@ export default function TripCard({ trip }: TripCardProps) {
     ? formatDateWithOrdinal(trip.acf.event_start_date_time)
     : null;
 
+  const { purchasedProducts } = useUserStatus();
+  const hasPurchased = trip.variations.some(v => 
+    purchasedProducts?.includes(v.id)
+  );
+
 	return (
-		<Link
+    <Link
 			href={`/trip/${trip.slug}`}
 			style={{ textDecoration: "none", color: "inherit" }}
 			onMouseEnter={() => {
@@ -142,6 +148,11 @@ export default function TripCard({ trip }: TripCardProps) {
               </Badge>
             )}
           </Group>
+        )}
+        {hasPurchased && (
+          <Badge color="green" variant="light" mt="sm">
+            Booked
+          </Badge>
         )}
 			</Card>
 		</Link>

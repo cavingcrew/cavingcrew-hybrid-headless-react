@@ -156,4 +156,10 @@ export interface UserStatusResponse {
 	isMember: boolean;
 	username?: string;
 	email?: string;
+	purchasedProducts?: number[];
+}
+
+export interface UserPurchasesResponse {
+  purchasedProducts: number[];
+  isLoggedIn: boolean;
 }
