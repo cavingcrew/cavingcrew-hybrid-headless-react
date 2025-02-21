@@ -1,6 +1,3 @@
-import { useQuery } from '@tanstack/react-query';
-import { apiService } from '../api-service';
-
 export const userKeys = {
   all: ['user'] as const,
   status: () => [...userKeys.all, 'status'] as const,
@@ -14,7 +11,7 @@ import type { ApiResponse, UserPurchasesResponse } from '../../types/api';
 
 export function useUserStatus() {
   const queryClient = useQueryClient();
-  
+
   const { data: status } = useQuery({
     queryKey: userKeys.status(),
     queryFn: async () => {
