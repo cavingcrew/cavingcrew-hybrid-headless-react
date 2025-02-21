@@ -59,6 +59,14 @@ export default function TripCard({ trip }: TripCardProps) {
     purchasedProducts?.includes(v.id)
   );
 
+  console.log('[TripCard] Rendering', {
+    tripId: trip.id,
+    tripSlug: trip.slug,
+    variations: trip.variations.map(v => v.id),
+    purchasedProducts,
+    hasPurchased
+  });
+
 	return (
     <Link
 			href={`/trip/${trip.slug}`}
