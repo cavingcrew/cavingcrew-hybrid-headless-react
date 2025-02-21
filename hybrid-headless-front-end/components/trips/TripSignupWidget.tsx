@@ -374,18 +374,6 @@ export function TripSignupWidget({
           </>
         )}
       </Paper>
-
-      {requiresLogin && !hasPurchased && (
-        <>
-          <Alert color="blue" title="Login Required">
-            {loginReason} - please log in to continue
-          </Alert>
-          <WordPressLoginWidget
-            onSuccess={() => window.location.reload()}
-            redirectTo={window.location.pathname}
-          />
-        </>
-      )}
     </Stack>
   );
 }
