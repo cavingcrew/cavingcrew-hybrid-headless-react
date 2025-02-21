@@ -55,7 +55,7 @@ export default function TripCard({ trip }: TripCardProps) {
     : null;
 
   const { purchasedProducts } = useUser();
-  const hasPurchased = purchasedProducts?.includes(trip.id) || 
+  const hasPurchased = purchasedProducts?.includes(trip.id) ||
     trip.variations.some(v => purchasedProducts?.includes(v.id));
 
   console.log('[TripCard] Rendering', {
@@ -84,15 +84,7 @@ export default function TripCard({ trip }: TripCardProps) {
 				withBorder
 				style={{ cursor: "pointer", position: "relative" }}
 			>
-        {hasPurchased && (
-          <Badge 
-            color="green" 
-            variant="light" 
-            style={{ position: 'absolute', top: 10, right: 10, zIndex: 1 }}
-          >
-            Booked
-          </Badge>
-        )}
+
 				{trip.images?.[0] && (
 					<Card.Section>
 						<Image
@@ -131,10 +123,10 @@ export default function TripCard({ trip }: TripCardProps) {
         {!isMembershipCategory(trip) && !isTrainingCategory(trip) && (
           <Group mt="md" justify="space-between">
             <Tooltip label={
-              trip.acf.event_type === 'overnight' 
-                ? "Combination of horizontal and vertical caving" 
-                : requiresSRT(trip) 
-                  ? "Requires SRT skills" 
+              trip.acf.event_type === 'overnight'
+                ? "Combination of horizontal and vertical caving"
+                : requiresSRT(trip)
+                  ? "Requires SRT skills"
                   : "Horizontal caving only"
             }>
               <Group gap="xs">
@@ -149,10 +141,10 @@ export default function TripCard({ trip }: TripCardProps) {
                   <IconStairs size={24} color="green" />
                 )}
                 <Text size="sm" c="dimmed">
-                  {trip.acf.event_type === 'overnight' 
+                  {trip.acf.event_type === 'overnight'
                     ? "Horizontal/Vertical Caving"
-                    : requiresSRT(trip) 
-                      ? "SRT Required" 
+                    : requiresSRT(trip)
+                      ? "SRT Required"
                       : "Horizontal Caving"}
                 </Text>
               </Group>
@@ -167,7 +159,7 @@ export default function TripCard({ trip }: TripCardProps) {
         )}
         {hasPurchased && (
           <Badge color="green" variant="light" mt="sm">
-            Booked
+            Signed Up
           </Badge>
         )}
 			</Card>
