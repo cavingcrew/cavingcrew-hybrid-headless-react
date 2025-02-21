@@ -368,7 +368,6 @@ export function TripDetails({ trip }: TripDetailsProps) {
 			{isOvernightTrip && (
 				<TripOvernightHut
 					location={acf.event_location}
-					description={acf.event_accomodation_description}
 					facilities={acf.hut_facilities_description}
 					photo={acf.hut_photo}
 				/>
