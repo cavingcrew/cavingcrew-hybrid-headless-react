@@ -15,7 +15,11 @@ export function useUserStatus() {
   const { data: status } = useQuery({
     queryKey: userKeys.status(),
     queryFn: async () => {
+      console.groupCollapsed('[useUserStatus] Fetching user status');
       const response = await apiService.getUserStatus();
+      console.log('User status response:', response);
+      console.groupEnd();
+      
       if (!response.success) throw new Error(response.message);
       return response.data;
     },
@@ -25,7 +29,14 @@ export function useUserStatus() {
   const { data: purchases } = useQuery<ApiResponse<UserPurchasesResponse>>({
     queryKey: userKeys.purchases(),
     queryFn: async () => {
+      console.groupCollapsed('[useUserStatus] Fetching user purchases');
       const response = await apiService.getUserPurchases();
+      console.log('User purchases response:', response);
+      if (response.success) {
+        console.log('Purchased product IDs:', response.data.purchased_products);
+      }
+      console.groupEnd();
+      
       if (!response.success) throw new Error(response.message);
       return response;
     },
@@ -46,8 +57,16 @@ export function useUserStatus() {
     }
   }, [status?.isLoggedIn, queryClient]);
 
-  return {
+  const result = {
     ...status,
     purchasedProducts: purchases?.data?.purchased_products || [],
   };
+
+  console.groupCollapsed('[useUserStatus] Current user status');
+  console.log('Status:', status);
+  console.log('Purchases:', purchases?.data);
+  console.log('Combined result:', result);
+  console.groupEnd();
+
+  return result;
 }
