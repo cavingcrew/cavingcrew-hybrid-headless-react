@@ -2,14 +2,12 @@
 
 import {
 	Accordion,
-	Alert, Anchor,
-	Badge, Box,
-	Button,
-	Container,
+	Alert,
+	Anchor,
+	Box,
 	Grid,
 	Group,
 	Image,
-	List,
 	Paper,
 	Stack,
 	Text,
@@ -17,8 +15,6 @@ import {
 } from "@mantine/core";
 import { TripOvernightHut } from './TripOvernightHut';
 import { useUser } from '@/lib/hooks/useUser';
-import { WordPressLoginWidget } from '@/components/auth/WordPressLoginWidget';
-import { apiService } from '@/lib/api-service';
 import { TripSignupWidget } from "./TripSignupWidget";
 import {
 	IconCalendar,
