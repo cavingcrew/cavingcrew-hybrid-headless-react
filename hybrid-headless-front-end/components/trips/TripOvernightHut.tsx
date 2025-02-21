@@ -1,4 +1,4 @@
-import { Paper, Image, Stack, Text, Title, Box } from "@mantine/core";
+import { Grid, Image, Stack, Text, Title, Box } from "@mantine/core";
 
 interface TripOvernightHutProps {
   location?: string;
@@ -14,28 +14,45 @@ export function TripOvernightHut({
   photo
 }: TripOvernightHutProps) {
   return (
-    <Paper withBorder p="md" radius="md" mt="md">
-      <Title order={2} mb="md">Accommodation Details</Title>
+    <Box mt="md">
+      <Title order={2} mb="md" className="ct-headline">Where we'll be staying</Title>
       
-      {photo && (
-        <Image
-          src={photo}
-          alt={`Accommodation at ${location}`}
-          radius="md"
-          mb="md"
-        />
-      )}
+      <Grid gutter="xl">
+        {photo && (
+          <Grid.Col span={{ base: 12, md: 4 }}>
+            <Image
+              src={photo}
+              alt={`Accommodation at ${location}`}
+              radius="md"
+              width={300}
+              height={225}
+              style={{ 
+                border: '1px solid #e9ecef',
+                borderRadius: 8,
+                maxWidth: 300
+              }}
+            />
+          </Grid.Col>
+        )}
 
-      {description && (
-        <Text mb="md" dangerouslySetInnerHTML={{ __html: description }} />
-      )}
+        <Grid.Col span={{ base: 12, md: 8 }}>
+          <Stack gap="md">
+            {description && (
+              <Text size="md" component="div" className="ct-text-block">
+                <div dangerouslySetInnerHTML={{ __html: description }} />
+              </Text>
+            )}
 
-      {facilities && (
-        <Box>
-          <Title order={3} mb="sm">Cottage Facilities</Title>
-          <div dangerouslySetInnerHTML={{ __html: facilities }} />
-        </Box>
-      )}
-    </Paper>
+            {facilities && (
+              <Box mt="sm" className="ct-div-block">
+                <Text size="md" component="div">
+                  <div dangerouslySetInnerHTML={{ __html: facilities }} />
+                </Text>
+              </Box>
+            )}
+          </Stack>
+        </Grid.Col>
+      </Grid>
+    </Box>
   );
 }
