@@ -293,8 +293,6 @@ export function TripDetails({ trip }: TripDetailsProps) {
 					<Box mt="md" style={{ opacity: 0.6, pointerEvents: 'none' }}>
 						<TripSignupWidget
 							trip={trip}
-							showRemainingSpots
-							remainingSpots={calculateRemainingSpots(trip)}
 						/>
 					</Box>
 				</Paper>
