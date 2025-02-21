@@ -151,15 +151,28 @@ export interface CategoryResponse {
 	};
 }
 
-export interface UserStatusResponse {
-	isLoggedIn: boolean;
-	isMember: boolean;
-	username?: string;
-	email?: string;
-	purchasedProducts?: number[];
-}
-
-export interface UserPurchasesResponse {
-  purchased_products: number[];
+export interface UserResponse {
   isLoggedIn: boolean;
+  isMember: boolean;
+  cartCount: number;
+  purchases: number[];
+  user?: {
+    id: number;
+    user_login: string;
+    user_email: string;
+    nickname?: string;
+    first_name?: string;
+    last_name?: string;
+    billing_first_name?: string;
+    billing_last_name?: string;
+    billing_email?: string;
+    billing_address_1?: string;
+    billing_address_2?: string;
+    billing_city?: string;
+    billing_postcode?: string;
+    billing_country?: string;
+    meta: {
+      [key: string]: string | null;
+    };
+  };
 }
