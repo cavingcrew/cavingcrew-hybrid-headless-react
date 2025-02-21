@@ -89,11 +89,11 @@ export function TripSignupWidget({
           if (!old?.data) return old;
           return {
             ...old,
-            data: old.data.map(t =>
+            data: old.data.map(t => 
               t.id === trip.id ? {
                 ...t,
                 variations: t.variations.map(v => {
-                  const stockVariant = stockResponse.data.variations.find(sv => sv.id === v.id);
+                  const stockVariant = stockResponse.data?.variations?.find(sv => sv.id === v.id);
                   return stockVariant ? {
                     ...v,
                     stock_quantity: stockVariant.stock_quantity,
