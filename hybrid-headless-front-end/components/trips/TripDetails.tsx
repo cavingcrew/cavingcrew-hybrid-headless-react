@@ -3,7 +3,7 @@
 import {
 	Accordion,
 	Alert, Anchor,
-	Badge,
+	Badge, Box,
 	Button,
 	Container,
 	Grid,
@@ -275,8 +275,8 @@ export function TripDetails({ trip }: TripDetailsProps) {
 
 			{hasPurchased ? (
 				<Paper withBorder p="md" radius="md">
-					<Alert 
-						color="green" 
+					<Alert
+						color="green"
 						title={
 							<>
 								You're Signed Up
