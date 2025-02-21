@@ -33,6 +33,7 @@ import {
 	IconCalendarEvent,
 	IconSparkles,
 	IconUser,
+	IconInfoCircle,
 } from "@tabler/icons-react";
 import React from "react";
 import type { Trip } from "../../types/api";
@@ -280,13 +281,13 @@ export function TripDetails({ trip }: TripDetailsProps) {
                     <div>
                       <Text fw={500}>Age Restrictions:</Text>
                       <Text>
-                        {acf.event_u18s_come === 'yes' 
+                        {acf.event_u18s_come === 'yes'
                           ? 'Open to accompanied under-18s'
                           : 'Participants must be 18 or older'}
                       </Text>
                       {acf.event_u18s_come === 'yes' && (
                         <Alert color="yellow" mt="sm" icon={<IconInfoCircle size={18} />}>
-                          This trip is specifically for families with under-18s. Adults without 
+                          This trip is specifically for families with under-18s. Adults without
                           accompanying minors cannot participate.
                         </Alert>
                       )}
