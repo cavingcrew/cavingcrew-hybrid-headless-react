@@ -57,6 +57,13 @@ export function TripDetails({ trip }: TripDetailsProps) {
 		purchasedProducts.includes(v.id)
 	);
 
+	console.log('[TripDetails] Rendering', {
+		tripId: trip.id,
+		variations: trip.variations.map(v => v.id),
+		purchasedProducts,
+		hasPurchased
+	});
+
 	return (
 		<Stack gap="xl">
 			{/* Header Section */}
