@@ -26,7 +26,7 @@ class Hybrid_Headless_Rest_API {
     public function __construct() {
         add_action( 'rest_api_init', array( $this, 'register_routes' ) );
         add_filter( 'rest_pre_serve_request', array( $this, 'handle_cors' ), 10, 4 );
-        
+
         // Load controllers
         $this->load_controllers();
     }
@@ -38,7 +38,7 @@ class Hybrid_Headless_Rest_API {
         require_once HYBRID_HEADLESS_PLUGIN_DIR . 'includes/api/class-products-controller.php';
         require_once HYBRID_HEADLESS_PLUGIN_DIR . 'includes/api/class-routes-controller.php';
         require_once HYBRID_HEADLESS_PLUGIN_DIR . 'includes/api/class-categories-controller.php';
-        
+
         new Hybrid_Headless_Products_Controller();
         new Hybrid_Headless_Routes_Controller();
         new Hybrid_Headless_Categories_Controller();
@@ -73,21 +73,21 @@ class Hybrid_Headless_Rest_API {
         );
     }
 
-    private function is_member($user_id) {
-        if (!$user_id) return false;
-        return (bool) get_user_meta($user_id, 'cc_member', true);
-    }
+private function is_member($user_id) {
+    if (!$user_id) return false;
+    return get_user_meta($user_id, 'cc_member', true) === 'yes';
+}
 
     /**
      * Get comprehensive user information
-     * 
+     *
      * @return WP_REST_Response
      */
     public function get_user() {
         // Validate auth cookie
         $user_id = 0;
         $logged_in = false;
-        
+
         if (isset($_COOKIE[LOGGED_IN_COOKIE])) {
             $cookie = $_COOKIE[LOGGED_IN_COOKIE];
             $user_id = wp_validate_auth_cookie($cookie, 'logged_in');
@@ -154,7 +154,7 @@ class Hybrid_Headless_Rest_API {
             'billing_phone',
             'admin-will-you-not-flake-please',
             'shipping_address_1',
-            'shipping_address_2', 
+            'shipping_address_2',
             'shipping_city',
             'shipping_postcode',
             'shipping_country',
@@ -268,7 +268,7 @@ class Hybrid_Headless_Rest_API {
             'gear_wellies_size',
             'admin_training_join_admin_team'
         ];
-        
+
         $response['user']['meta'] = [];
         foreach ($meta_keys as $key) {
             $response['user']['meta'][$key] = get_user_meta($user_id, $key, true) ?: null;
@@ -319,7 +319,7 @@ class Hybrid_Headless_Rest_API {
      */
     public function handle_cors($served, $result, $request, $server) {
         error_log('[API Auth] Starting CORS/Auth handling');
-        
+
         // Initialize authentication first
         if (isset($_COOKIE[LOGGED_IN_COOKIE])) {
             $user_id = wp_validate_auth_cookie($_COOKIE[LOGGED_IN_COOKIE], 'logged_in');
@@ -331,7 +331,7 @@ class Hybrid_Headless_Rest_API {
                 }
             }
         }
-        
+
         // Set CORS headers
         $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
         if (in_array($origin, ['https://www.cavingcrew.com', 'http://localhost:3000'])) {
@@ -369,7 +369,7 @@ class Hybrid_Headless_Rest_API {
         if (class_exists('WC') && !WC()->session) {
             WC()->session = new WC_Session_Handler();
             WC()->session->init();
-            
+
             // Force session cookie parameters
             add_filter('wc_session_cookie_params', function($params) {
                 return [
