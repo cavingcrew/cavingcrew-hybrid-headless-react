@@ -153,7 +153,6 @@ export function TripSignupWidget({
               onChange={setSelectedVariation}
               name="tripVariation"
               required
-              disabled={requiresLogin || hasPurchased}
             >
             <Stack gap="lg">
               {trip.variations.map((variation) => {
@@ -255,7 +254,7 @@ export function TripSignupWidget({
                           </Group>
                         </Stack>
                       }
-                      disabled={!inStock || isBcaMemberVariation || isPurchased}
+                      disabled={requiresLogin || hasPurchased || !inStock || isBcaMemberVariation || isPurchased}
                       styles={{
                         root: {
                           width: '100%',
@@ -263,7 +262,7 @@ export function TripSignupWidget({
                             alignItems: 'start',
                           },
                           '& .mantine-Radio-radio': {
-                            opacity: 0,
+                            opacity: requiresLogin || hasPurchased ? 0.6 : 1,
                             width: 0,
                             height: 0,
                             position: 'absolute',
