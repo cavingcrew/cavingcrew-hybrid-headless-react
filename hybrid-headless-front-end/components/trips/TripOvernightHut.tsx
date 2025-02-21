@@ -40,7 +40,7 @@ export function TripOvernightHut({
 
 
             {facilities && (
-              <Text size="sm" style={{ lineHeight: 1.6 }}>
+              <Text>
                 {facilities}
               </Text>
             )}
