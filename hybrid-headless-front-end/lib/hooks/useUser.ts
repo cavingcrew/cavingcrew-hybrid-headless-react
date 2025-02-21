@@ -19,7 +19,7 @@ export function useUserStatus() {
       const response = await apiService.getUserStatus();
       console.log('User status response:', response);
       console.groupEnd();
-      
+
       if (!response.success) throw new Error(response.message);
       return response.data;
     },
@@ -32,11 +32,11 @@ export function useUserStatus() {
       console.groupCollapsed('[useUserStatus] Fetching user purchases');
       const response = await apiService.getUserPurchases();
       console.log('User purchases response:', response);
-      if (response.success) {
+      if (response.success && response.data) {
         console.log('Purchased product IDs:', response.data.purchased_products);
       }
       console.groupEnd();
-      
+
       if (!response.success) throw new Error(response.message);
       return response;
     },
