@@ -275,10 +275,28 @@ export function TripDetails({ trip }: TripDetailsProps) {
 
 			{hasPurchased ? (
 				<Paper withBorder p="md" radius="md">
-					<Alert color="green" title="You're Signed Up!">
-						You're already booked on this trip. Check your email for confirmation
-						or visit your <Anchor href="/my-account">account page</Anchor> for details.
+					<Alert 
+						color="green" 
+						title={
+							<>
+								You're Signed Up
+								{isLoggedIn && user?.billing_first_name && `, ${user.billing_first_name}`}!
+							</>
+						}
+					>
+						<Text>
+							You're already booked on this trip. Check your email for confirmation
+							or visit your <Anchor href="/my-account">account page</Anchor> for details.
+						</Text>
 					</Alert>
+
+					<Box mt="md" style={{ opacity: 0.6, pointerEvents: 'none' }}>
+						<TripSignupWidget
+							trip={trip}
+							showRemainingSpots
+							remainingSpots={calculateRemainingSpots(trip)}
+						/>
+					</Box>
 				</Paper>
 			) : (
 				<TripSignupWidget
