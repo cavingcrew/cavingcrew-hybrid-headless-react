@@ -2,6 +2,34 @@ import { useQuery, useQueryClient, type UseQueryResult } from '@tanstack/react-q
 import { apiService } from '../api-service';
 import type { Trip, ApiResponse, CategoryResponse } from '../../types/api';
 
+const membershipPlaceholder: Trip = {
+  id: 1272,
+  name: "Caving Crew Membership",
+  slug: "caving-crew-membership",
+  price: "30.00",
+  description: "Become an official Caving Crew member",
+  short_description: "Annual membership subscription",
+  images: [],
+  categories: [{ id: 999, name: "Memberships", slug: "memberships", description: "" }],
+  has_purchased: false,
+  can_purchase: true,
+  variations: [],
+  has_variations: false,
+  is_variable: false,
+  stock_status: 'instock',
+  stock_quantity: null,
+  acf: {
+    event_type: "membership",
+    event_gear_required: "None",
+    event_must_caved_with_us_before: "no",
+    event_skills_required: "None required",
+    event_trip_leader: "Automated",
+    event_start_date_time: new Date().toISOString(),
+    event_non_members_welcome: "no",
+    event_members_discount: "0"
+  }
+};
+
 export const tripKeys = {
   all: ['trips'] as const,
   detail: (slug: string) => [...tripKeys.all, 'detail', slug] as const,
@@ -47,7 +75,7 @@ export function useTrips(): UseQueryResult<ApiResponse<Trip[]>> {
     },
     refetchOnReconnect: true,
     refetchOnMount: true,
-    placeholderData: { success: true, data: [], timestamp: 0 } // Instant initial render
+    placeholderData: { success: true, data: [membershipPlaceholder], timestamp: 0 } // Instant initial render with membership
   });
 }
 
