@@ -15,7 +15,7 @@ import {
 	Text,
 	Title,
 } from "@mantine/core";
-import { useUserStatus } from '@/lib/hooks/useUser';
+import { useUser } from '@/lib/hooks/useUser';
 import { WordPressLoginWidget } from '@/components/auth/WordPressLoginWidget';
 import { apiService } from '@/lib/api-service';
 import { TripSignupWidget } from "./TripSignupWidget";
@@ -42,7 +42,7 @@ interface TripDetailsProps {
 
 export function TripDetails({ trip }: TripDetailsProps) {
 	const acf = trip.acf;
-	const { purchasedProducts, isLoggedIn } = useUserStatus();
+	const { purchasedProducts, isLoggedIn } = useUser();
 	const startDate = acf?.event_start_date_time
 		? new Date(acf.event_start_date_time)
 		: null;

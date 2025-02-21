@@ -54,12 +54,11 @@ export function WordPressLoginWidget({
       });
 
       // Check if login was successful
-      const userResponse = await apiService.getUserStatus();
+      const userResponse = await apiService.getUser();
 
       if (userResponse.data?.isLoggedIn) {
-        // Invalidate user status query and any other related queries
-        queryClient.invalidateQueries({ queryKey: userKeys.status() });
-        queryClient.invalidateQueries({ queryKey: userKeys.purchases() });
+        // Invalidate user query and any other related queries
+        queryClient.invalidateQueries({ queryKey: userKeys.user() });
         queryClient.invalidateQueries({ queryKey: tripKeys.all });
         onSuccess?.();
       } else {

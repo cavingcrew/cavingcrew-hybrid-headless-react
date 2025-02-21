@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useUserStatus } from '@/lib/hooks/useUser';
+import { useUser } from '@/lib/hooks/useUser';
 import {
   Box,
   Button,
@@ -48,7 +48,7 @@ export function TripSignupWidget({
   const [isSelectedVariationValid, setIsSelectedVariationValid] = useState(false);
   const nonMembersWelcome = trip.acf.event_non_members_welcome === 'yes';
   const mustCavedBefore = trip.acf.event_must_caved_with_us_before === 'yes';
-  const { purchasedProducts, isLoggedIn, isMember } = useUserStatus();
+  const { purchasedProducts, isLoggedIn, isMember } = useUser();
   const hasPurchased = purchasedProducts.includes(trip.id) ||
     trip.variations.some(v => purchasedProducts.includes(v.id));
 
