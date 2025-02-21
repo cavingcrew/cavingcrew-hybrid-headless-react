@@ -22,7 +22,7 @@ export const apiService = {
       return { 
         success: true,
         data: {
-          purchased_products: data.purchased_products,
+          purchased_products: data.purchased_products || [],
           isLoggedIn: data.isLoggedIn
         }
       };
