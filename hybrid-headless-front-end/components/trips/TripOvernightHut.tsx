@@ -1,58 +1,59 @@
-import { Grid, Image, Stack, Text, Title, Box } from "@mantine/core";
+import { Card, Image, Stack, Text, Title, List, Flex } from "@mantine/core";
 
 interface TripOvernightHutProps {
   location?: string;
-  description?: string;
   facilities?: string;
   photo?: string;
 }
 
 export function TripOvernightHut({ 
   location,
-  description,
   facilities,
   photo
 }: TripOvernightHutProps) {
   return (
-    <Box mt="md">
-      <Title order={2} mb="md" className="ct-headline">Where we'll be staying</Title>
-      
-      <Grid gutter="xl">
+    <Card withBorder p="lg" radius="md" mt="md">
+      <Title order={2} mb="md">
+        Where we'll be staying
+      </Title>
+
+      <Flex gap="xl" direction={{ base: 'column', md: 'row' }}>
         {photo && (
-          <Grid.Col span={{ base: 12, md: 4 }}>
-            <Image
-              src={photo}
-              alt={`Accommodation at ${location}`}
-              radius="md"
-              width={300}
-              height={225}
-              style={{ 
-                border: '1px solid #e9ecef',
-                borderRadius: 8,
-                maxWidth: 300
-              }}
-            />
-          </Grid.Col>
+          <Image
+            src={photo}
+            alt={`Accommodation at ${location}`}
+            radius="md"
+            width={300}
+            height={225}
+            style={{ 
+              border: '1px solid #e9ecef',
+              borderRadius: 8,
+              flexShrink: 0
+            }}
+          />
         )}
 
-        <Grid.Col span={{ base: 12, md: 8 }}>
-          <Stack gap="md">
-            {description && (
-              <Text size="md" component="div" className="ct-text-block">
-                <div dangerouslySetInnerHTML={{ __html: description }} />
-              </Text>
-            )}
+        <Stack gap="sm">
+          <Text size="lg" fw={500}>
+            {location}
+          </Text>
 
-            {facilities && (
-              <Box mt="sm" className="ct-div-block">
-                <Text size="md" component="div">
-                  <div dangerouslySetInnerHTML={{ __html: facilities }} />
-                </Text>
-              </Box>
-            )}
-          </Stack>
-        </Grid.Col>
-      </Grid>
-    </Box>
+          {facilities && (
+            <List size="sm" spacing="xs" icon="•">
+              {facilities.split(', ').map((facility, index) => (
+                <List.Item key={index}>
+                  <Text span>{facility}</Text>
+                </List.Item>
+              ))}
+            </List>
+          )}
+
+          <Text mt="sm" c="dimmed">
+            Please note: There aren't supermarkets nearby. We'll need to bring 
+            everything with us for the weekend.
+          </Text>
+        </Stack>
+      </Flex>
+    </Card>
   );
 }
