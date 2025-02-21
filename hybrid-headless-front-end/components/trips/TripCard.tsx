@@ -11,9 +11,8 @@ const isTrainingCategory = (trip: Trip) => {
 import { Badge, Card, Group, Image, Text, Tooltip } from "@mantine/core";
 import { useUser } from '@/lib/hooks/useUser';
 import Link from "next/link";
-import { useQueryClient } from '@tanstack/react-query';
-import {IconArrowBarUp, IconStairs} from "@tabler/icons-react";
-import { tripKeys } from '@/lib/hooks/useTrips';
+import { IconArrowBarUp, IconStairs } from "@tabler/icons-react";
+import { useTripCache } from '@/lib/hooks/useCache';
 import type { Trip } from "../../types/api";
 import { getTripAvailability } from "@/utils/trip-utils";
 
@@ -68,15 +67,10 @@ export default function TripCard({ trip }: TripCardProps) {
 
 	return (
     <Link
-			href={`/trip/${trip.slug}`}
-			style={{ textDecoration: "none", color: "inherit" }}
-			onMouseEnter={() => {
-				queryClient.prefetchQuery({
-					queryKey: tripKeys.detail(trip.slug),
-					queryFn: () => ({ data: trip, success: true }),
-				});
-			}}
-		>
+      href={`/trip/${trip.slug}`}
+      style={{ textDecoration: "none", color: "inherit" }}
+      onMouseEnter={() => useTripCache().prefetchTrip(trip.slug)}
+    >
 			<Card
 				shadow="sm"
 				padding="lg"

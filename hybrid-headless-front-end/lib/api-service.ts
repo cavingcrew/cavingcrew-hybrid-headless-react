@@ -82,18 +82,18 @@ export const apiService = {
   },
 
 
-  async getTrips(page = 1, perPage = 30): Promise<ApiResponse<any>> {
+  async getTrips(useCache = true): Promise<ApiResponse<any>> {
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/hybrid-headless/v1/products?page=${page}&per_page=${perPage}`
-      );
-      if (!response.ok) {
-        throw new Error('Failed to fetch trips');
-      }
+      const cacheParam = useCache ? 'cachemeifyoucan=please' : 'nocache=please';
+      const url = `${API_BASE_URL}/hybrid-headless/v1/products?${cacheParam}`;
+      
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Failed to fetch trips');
       const data = await response.json();
       return { 
-        success: true,
-        data 
+        success: true, 
+        data: data.products || [],
+        timestamp: Date.now()
       };
     } catch (error) {
       return { 
