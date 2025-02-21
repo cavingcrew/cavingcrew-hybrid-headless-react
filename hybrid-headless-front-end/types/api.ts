@@ -107,8 +107,9 @@ export interface Trip {
 		event_volunteering_required?: number;
 		event_attendance_required?: number;
 		event_u18s_come?: "yes" | "no";
-		event_members_discount?: string; // Fixed £ discount for members
+		event_members_discount?: string;
 		membership_faq?: boolean;
+		event_allow_late_signup?: boolean;
 		overnight_plans?: Array<{
 			overnight_plans_day: string;
 			overnight_plans_description: string;
