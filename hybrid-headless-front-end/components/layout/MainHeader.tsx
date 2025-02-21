@@ -30,7 +30,7 @@ export function MainHeader() {
 	const [userMenuOpened, setUserMenuOpened] = useState(false);
 
 	const mainLinks = [
-		{ label: "Upcoming Trips", href: "/trips/" },
+		{ label: "Upcoming Trips", href: "/" },
 		{ label: "Become a Member", href: "/trip/get-caving-crew-membership/" },
 	];
 
