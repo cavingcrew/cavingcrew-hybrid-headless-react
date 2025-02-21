@@ -4,7 +4,7 @@ import React, { use } from 'react';
 import { TripDetails } from '@/components/trips/TripDetails';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { ErrorState } from '@/components/ui/ErrorState';
-import { useTrip } from '@/lib/hooks/useTrips';
+import { useTrip, useTrips } from '@/lib/hooks/useTrips';
 import { Container, Group, Badge, Title } from '@mantine/core';
 
 export default function TripPage({ params }: { params: Promise<{ slug: string }> }) {
