@@ -64,33 +64,31 @@ export function useTrip(slug: string) {
   return useQuery({
     queryKey: tripKeys.detail(slug),
     queryFn: async () => {
-      // First check main trips list
-      const cachedTrip = (tripsData?.data as Trip[] | undefined)?.find(t => t.slug === slug);
-      if (cachedTrip) return { data: cachedTrip, success: true };
+      // 1. Check main trips cache first
+      const tripsData = queryClient.getQueryData<ApiResponse<Trip[]>>(tripKeys.all);
+      const cachedTrip = tripsData?.data?.find(t => t.slug === slug);
+      
+      if (cachedTrip) {
+        console.log('[useTrip] Using cached trip data for', slug);
+        return { data: cachedTrip, success: true };
+      }
 
-      // Fallback to direct fetch
+      // 2. If not found, check if trips are still loading
+      const isTripsLoading = queryClient.isFetching(tripKeys.all);
+      if (isTripsLoading) {
+        console.log('[useTrip] Waiting for trips load...');
+        await queryClient.fetchQuery(tripKeys.all);
+        return { data: undefined, success: true }; // Will retry after cache update
+      }
+
+      // 3. Final fallback to direct API call
+      console.log('[useTrip] Fetching fresh data for', slug);
       return apiService.getTrip(slug);
     },
-    staleTime: 1000 * 30,
-    gcTime: 1000 * 60 * 60 * 24,
-    enabled: !!slug,
-    refetchOnWindowFocus: (query) => {
-      const dataAge = Date.now() - (query.state.data?.timestamp || 0);
-      return dataAge > 1000 * 30;
-    },
-    placeholderData: { // Instant trip page skeleton
-      data: {
-        id: -1,
-        slug,
-        name: '',
-        acf: {},
-        categories: [],
-        variations: [],
-        images: []
-      } as unknown as Trip,
-      success: true,
-      timestamp: 0
-    }
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    gcTime: 1000 * 60 * 60 * 24, // 24 hours
+    refetchOnWindowFocus: false,
+    enabled: !!slug
   });
 }
 

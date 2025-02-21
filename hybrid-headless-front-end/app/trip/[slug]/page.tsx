@@ -9,16 +9,14 @@ import { Container, Group, Badge, Title } from '@mantine/core';
 
 export default function TripPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
+  const { data: tripsData } = useTrips(); // Prime the cache
   const { data, isLoading, isFetching, error, refetch } = useTrip(slug);
 
-  // Add proper type assertion for the data object
-  const tripData = data?.data;
-  
-  // Update loading checks with proper typing
-  const showLoading = isLoading && !tripData;
-  const showStaleData = !!tripData && isFetching;
+  // Use tripsData as fallback while loading
+  const trip = data?.data || tripsData?.data?.find(t => t.slug === slug);
+  const showStaleData = !!trip && isFetching;
 
-  if (showLoading) {
+  if (isLoading && !trip) {
     return <LoadingState />;
   }
 

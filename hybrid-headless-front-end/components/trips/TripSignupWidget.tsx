@@ -78,38 +78,37 @@ export function TripSignupWidget({
     }
   }, [selectedVariation, trip.variations, isMember]);
 
-  // Poll stock data
-  const queryClient = useQueryClient();
-  const { data: stockData } = useQuery({
-    queryKey: ['productStock', trip.id],
-    queryFn: () => apiService.getProductStock(trip.id),
-    refetchInterval: 30000,
-    enabled: trip.has_variations
-  });
-
   useEffect(() => {
-    if (stockData?.data?.variations) {
-      queryClient.setQueryData(tripKeys.all, (old: ApiResponse<Trip[]> | undefined) => {
-        if (!old?.data) return old;
-        return {
-          ...old,
-          data: old.data.map(t =>
-            t.id === trip.id ? {
-              ...t,
-              variations: t.variations.map(v => {
-                const stockVar = (stockData?.data?.variations ?? []).find((sv: { id: number }) => sv.id === v.id);
-                return stockVar ? {
-                  ...v,
-                  stock_quantity: stockVar.stock_quantity,
-                  stock_status: stockVar.stock_status
-                } : v;
-              })
-            } : t
-          )
-        };
-      });
-    }
-  }, [stockData, queryClient, trip.id]);
+    if (!trip.has_variations) return;
+
+    const updateStock = async () => {
+      const stockResponse = await apiService.getProductStock(trip.id);
+      if (stockResponse.success) {
+        queryClient.setQueryData<ApiResponse<Trip[]>>(tripKeys.all, (old) => {
+          if (!old?.data) return old;
+          return {
+            ...old,
+            data: old.data.map(t => 
+              t.id === trip.id ? {
+                ...t,
+                variations: t.variations.map(v => {
+                  const stockVariant = stockResponse.data.variations.find(sv => sv.id === v.id);
+                  return stockVariant ? {
+                    ...v,
+                    stock_quantity: stockVariant.stock_quantity,
+                    stock_status: stockVariant.stock_status
+                  } : v;
+                })
+              } : t
+            )
+          };
+        });
+      }
+    };
+
+    const interval = setInterval(updateStock, 30000);
+    return () => clearInterval(interval);
+  }, [trip.id, trip.has_variations, queryClient]);
 
   const handleSignUp = () => {
     if (!selectedVariation) return;

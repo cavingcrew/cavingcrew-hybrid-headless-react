@@ -90,9 +90,20 @@ export const apiService = {
       const response = await fetch(url);
       if (!response.ok) throw new Error('Failed to fetch trips');
       const data = await response.json();
+      
+      // Normalize variations
+      const normalizedTrips = data.products.map((trip: Trip) => ({
+        ...trip,
+        variations: (trip.variations || []).map(v => ({
+          ...v,
+          stock_quantity: v.stock_quantity ?? null,
+          stock_status: v.stock_status || 'instock'
+        }))
+      }));
+
       return { 
         success: true, 
-        data: data.products || [],
+        data: normalizedTrips,
         timestamp: Date.now()
       };
     } catch (error) {
