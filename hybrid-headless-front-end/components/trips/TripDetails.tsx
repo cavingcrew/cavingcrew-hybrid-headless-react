@@ -84,8 +84,8 @@ export function TripDetails({ trip }: TripDetailsProps) {
                 <>
                   {/* Overnight Trip Date Display */}
                   {startDate && (
-                    <Group gap="xs">
-                      <IconCalendar size={20} />
+                    <Group gap="xs" wrap="nowrap" align="flex-start">
+                      <IconCalendar size={20} style={{ marginTop: 3 }} />
                       <Text>
                         From: {startDate.toLocaleDateString("en-GB", {
                           weekday: "long",
@@ -145,10 +145,10 @@ export function TripDetails({ trip }: TripDetailsProps) {
                 </>
               )}
 
-              {/* Modified Location Display */}
+              {/* Location Display */}
               {(acf?.event_location || acf?.event_cave_name) && (
-                <Group gap="xs">
-                  <IconMapPin size={20} />
+                <Group gap="xs" wrap="nowrap" align="flex-start">
+                  <IconMapPin size={20} style={{ marginTop: 3 }} />
                   <Text>
                     {isOvernightTrip ? 'Location: ' : ''}
                     {isOvernightTrip ? `${acf.event_accomodation_description} ${acf.event_location}` : acf.event_location}
@@ -157,16 +157,16 @@ export function TripDetails({ trip }: TripDetailsProps) {
                 </Group>
               )}
 							{acf?.event_trip_leader && (
-								<Group gap="xs">
-									<IconUser size={20} />
+								<Group gap="xs" wrap="nowrap" align="flex-start">
+									<IconUser size={20} style={{ marginTop: 3 }} />
 									<Text>
 										Lead by: {acf.event_trip_leader}
 									</Text>
 								</Group>
 							)}
 							{(acf?.event_cost || trip.price) && (
-								<Group gap="xs">
-									<IconCoin size={20} />
+								<Group gap="xs" wrap="nowrap" align="flex-start">
+									<IconCoin size={20} style={{ marginTop: 3 }} />
 									<Text>
 										{acf.event_non_members_welcome === 'no'
 											? `Price: £${acf.event_cost || trip.price} (Members Only)`
