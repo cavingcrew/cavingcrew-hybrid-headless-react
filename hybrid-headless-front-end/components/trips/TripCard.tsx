@@ -162,6 +162,16 @@ export default function TripCard({ trip }: TripCardProps) {
                 Members Only
               </Badge>
             )}
+            {trip.acf.event_u18s_come === 'yes' && (
+              <Badge color="pink" variant="light">
+                U18s Welcome
+              </Badge>
+            )}
+            {trip.acf.event_u18s_come === 'no' && (
+              <Badge color="gray" variant="light">
+                18+ Only
+              </Badge>
+            )}
           </Group>
         )}
 			</Card>

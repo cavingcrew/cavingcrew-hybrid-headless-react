@@ -13,7 +13,8 @@ import {
   IconArrowBarUp,
   IconSparkles,
   IconChecklist,
-  IconList
+  IconList,
+  IconBabyCarriage
 } from "@tabler/icons-react";
 import TripCard from './TripCard';
 import type { Trip } from '@/types/api';
@@ -26,7 +27,7 @@ export function TripsView({ trips }: TripsViewProps) {
   const theme = useMantineTheme();
   const [sortMode, setSortMode] = useState<'category' | 'date'>('category');
   const [filterMode, setFilterMode] = useState<
-    'all' | 'horizontal' | 'vertical' | 'extra-welcoming' | 'available'
+    'all' | 'horizontal' | 'vertical' | 'extra-welcoming' | 'available' | 'u18s'
   >('all');
 
   const filteredTrips = useMemo(() => {
@@ -45,13 +46,15 @@ export function TripsView({ trips }: TripsViewProps) {
       );
       const isVertical = trip.acf.event_type === 'overnight' ||
         trip.acf.event_gear_required?.toLowerCase().includes('srt');
+      const isU18Friendly = trip.acf.event_u18s_come === 'yes';
 
       return (
         (filterMode === 'all' ||
         (filterMode === 'horizontal' && !isVertical) ||
         (filterMode === 'vertical' && isVertical) ||
         (filterMode === 'extra-welcoming' && isExtraWelcoming) ||
-        (filterMode === 'available' && isAvailable)) &&
+        (filterMode === 'available' && isAvailable) ||
+        (filterMode === 'u18s' && isU18Friendly)) &&
         tripDate > now // Only show future trips
       );
     });
@@ -166,6 +169,7 @@ export function TripsView({ trips }: TripsViewProps) {
             { value: 'vertical', label: 'Vertical', icon: <IconArrowBarUp size={18} /> },
             { value: 'extra-welcoming', label: 'Welcoming', icon: <IconSparkles size={18} /> },
             { value: 'available', label: 'Available', icon: <IconChecklist size={18} /> },
+            { value: 'u18s', label: 'U18 Friendly', icon: <IconBabyCarriage size={18} /> },
           ].map((filter) => (
             <Button
               key={filter.value}
