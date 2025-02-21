@@ -1,4 +1,4 @@
-import { Card, Image, Stack, Text, Title, List, Flex } from "@mantine/core";
+import { Card, Image, Stack, Text, Title, Flex } from "@mantine/core";
 
 interface TripOvernightHutProps {
   location?: string;
@@ -39,19 +39,10 @@ export function TripOvernightHut({
           </Text>
 
           {facilities && (
-            <List size="sm" spacing="xs" icon="•">
-              {facilities.split(', ').map((facility, index) => (
-                <List.Item key={index}>
-                  <Text span>{facility}</Text>
-                </List.Item>
-              ))}
-            </List>
+            <Text size="sm" style={{ whiteSpace: 'pre-line' }}>
+              {facilities}
+            </Text>
           )}
-
-          <Text mt="sm" c="dimmed">
-            Please note: There aren't supermarkets nearby. We'll need to bring 
-            everything with us for the weekend.
-          </Text>
         </Stack>
       </Flex>
     </Card>
