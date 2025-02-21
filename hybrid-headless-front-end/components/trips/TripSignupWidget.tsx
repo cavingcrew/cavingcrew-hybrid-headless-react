@@ -46,6 +46,7 @@ export function TripSignupWidget({
   const [selectedVariation, setSelectedVariation] = useState<string>('');
   const [selectedPrice, setSelectedPrice] = useState<string>('');
   const [isSelectedVariationValid, setIsSelectedVariationValid] = useState(false);
+  const [isSigningUp, setIsSigningUp] = useState(false);
   const nonMembersWelcome = trip.acf.event_non_members_welcome === 'yes';
   const mustCavedBefore = trip.acf.event_must_caved_with_us_before === 'yes';
   const { purchasedProducts, isLoggedIn, isMember } = useUser();
@@ -112,6 +113,7 @@ export function TripSignupWidget({
 
   const handleSignUp = () => {
     if (!selectedVariation) return;
+    setIsSigningUp(true);
     window.location.href = `/checkout/?add-to-cart=${selectedVariation}`;
   };
 
@@ -303,7 +305,8 @@ export function TripSignupWidget({
                       </Stack>
                       <Button
                         onClick={handleSignUp}
-                        disabled={!selectedVariation}
+                        disabled={!selectedVariation || isSigningUp}
+                        loading={isSigningUp}
                         size="lg"
                       >
                         Continue as Guest
@@ -350,7 +353,8 @@ export function TripSignupWidget({
                     </Stack>
                     <Button
                       onClick={handleSignUp}
-                      disabled={!isSelectedVariationValid || (!isMember && !nonMembersWelcome) || requiresLogin || hasPurchased}
+                      disabled={!isSelectedVariationValid || (!isMember && !nonMembersWelcome) || requiresLogin || hasPurchased || isSigningUp}
+                      loading={isSigningUp}
                       size="lg"
                     >
                       {isMember ? "Signup for Trip" : "Continue as Non-Member"}
