@@ -147,8 +147,11 @@ export function TripDetails({ trip }: TripDetailsProps) {
                 <Group gap="xs" wrap="nowrap" align="flex-start">
                   <IconMapPin size={20} style={{ marginTop: 3 }} />
                   <Text>
-                    {isOvernightTrip ? 'Location: ' : ''}
-                    {isOvernightTrip ? `${acf.event_accomodation_description} ${acf.event_location}` : '' }
+                    Location:
+					  {isOvernightTrip
+						  ? `${acf.event_accomodation_description} ${acf.event_location}`
+						  : acf.event_possible_location && ` ${acf.event_possible_location}`
+					  }
                   </Text>
                 </Group>
               )}
