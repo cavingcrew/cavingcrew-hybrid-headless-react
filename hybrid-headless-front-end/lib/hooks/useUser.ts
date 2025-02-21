@@ -21,8 +21,8 @@ export function useUser() {
       if (!response.success) throw new Error(response.message);
       return response;
     },
-    staleTime: 1000 * 30,
-    refetchOnWindowFocus: true,
+    staleTime: 1000 * 600,
+    refetchOnWindowFocus: false,
     refetchOnReconnect: true,
   });
 
