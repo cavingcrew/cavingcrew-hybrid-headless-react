@@ -1,6 +1,7 @@
 'use client';
 
-import { Container, Title, Text, Stack, Group, Paper, SimpleGrid, Button, Anchor } from '@mantine/core';
+import { Container, Stack, Group, Paper, SimpleGrid, Button, Anchor, Title, Text } from '@mantine/core';
+import { WelcomeMessage } from '@/components/WelcomeMessage';
 import { useTrips } from '@/lib/hooks/useTrips';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { ErrorState } from '@/components/ui/ErrorState';
@@ -57,12 +58,7 @@ export default function HomePage() {
       <Stack gap="xl">
         {/* Hero Section */}
         <Paper p="xl" radius="md" withBorder>
-          <Stack gap="md">
-            <Title order={1}>We're the Caving Crew!</Title>
-            <Text size="lg">
-              A bunch of supportive, friendly people who like to encourage each other to cave and eat cake.
-            </Text>
-          </Stack>
+          <WelcomeMessage />
         </Paper>
 
         {/* Extra-Welcoming Trips Section */}
