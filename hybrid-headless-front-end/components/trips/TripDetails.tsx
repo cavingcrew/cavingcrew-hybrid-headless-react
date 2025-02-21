@@ -15,6 +15,7 @@ import {
 	Text,
 	Title,
 } from "@mantine/core";
+import { TripOvernightHut } from './TripOvernightHut';
 import { useUser } from '@/lib/hooks/useUser';
 import { WordPressLoginWidget } from '@/components/auth/WordPressLoginWidget';
 import { apiService } from '@/lib/api-service';
@@ -43,9 +44,9 @@ interface TripDetailsProps {
 export function TripDetails({ trip }: TripDetailsProps) {
 	const acf = trip.acf;
 	const { purchasedProducts, isLoggedIn, user } = useUser();
-	const startDate = acf?.event_start_date_time
-		? new Date(acf.event_start_date_time)
-		: null;
+	const startDate = acf?.event_start_date_time ? new Date(acf.event_start_date_time) : null;
+	const endDate = acf?.event_finish_date_time ? new Date(acf.event_finish_date_time) : null;
+	const isOvernightTrip = trip.categories.some(cat => cat.slug === 'overnight-trips');
 
 	const requiresLogin = (
 		(acf.event_non_members_welcome === 'no' ||
@@ -79,41 +80,82 @@ export function TripDetails({ trip }: TripDetailsProps) {
 				<Grid.Col span={{ base: 12, md: 8 }}>
 					<Paper withBorder p="md" radius="md">
 						<Stack gap="md">
-							{startDate && (
-								<Group gap="xs">
-									<IconCalendar size={20} />
-									<Text>
-										When:{" "}
-										{startDate.toLocaleDateString("en-GB", {
-											weekday: "long",
-											day: "numeric",
-											month: "long",
-										})}
-									</Text>
-								</Group>
-							)}
-							{startDate && (
-								<Group gap="xs">
-									<IconClock size={20} />
-									<Text>
-										Time: from{" "}
-										{startDate.toLocaleTimeString("en-GB", {
-											hour: "2-digit",
-											minute: "2-digit",
-										})}
-									</Text>
-								</Group>
-							)}
-							{(acf?.event_location || acf?.event_cave_name) && (
-								<Group gap="xs">
-									<IconMapPin size={20} />
-									<Text>
-										Location: {acf.event_cave_name || ""}
-										{acf.event_location && `, ${acf.event_location}`}
-										{acf.event_possible_location && ` ${acf.event_possible_location}`}
-									</Text>
-								</Group>
-							)}
+              {isOvernightTrip ? (
+                <>
+                  {/* Overnight Trip Date Display */}
+                  {startDate && (
+                    <Group gap="xs">
+                      <IconCalendar size={20} />
+                      <Text>
+                        From: {startDate.toLocaleDateString("en-GB", {
+                          weekday: "long",
+                          day: "numeric",
+                          month: "long",
+                        })}{' '}
+                        at {startDate.toLocaleTimeString("en-GB", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </Text>
+                    </Group>
+                  )}
+                  {endDate && (
+                    <Group gap="xs">
+                      <IconCalendar size={20} />
+                      <Text>
+                        Til: {endDate.toLocaleDateString("en-GB", {
+                          weekday: "long",
+                          day: "numeric",
+                          month: "long",
+                        })}{' '}
+                        at {endDate.toLocaleTimeString("en-GB", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </Text>
+                    </Group>
+                  )}
+                </>
+              ) : (
+                <>
+                  {/* Regular Trip Date Display */}
+                  {startDate && (
+                    <Group gap="xs">
+                      <IconCalendar size={20} />
+                      <Text>
+                        When: {startDate.toLocaleDateString("en-GB", {
+                          weekday: "long",
+                          day: "numeric",
+                          month: "long",
+                        })}
+                      </Text>
+                    </Group>
+                  )}
+                  {startDate && (
+                    <Group gap="xs">
+                      <IconClock size={20} />
+                      <Text>
+                        Time: from {startDate.toLocaleTimeString("en-GB", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </Text>
+                    </Group>
+                  )}
+                </>
+              )}
+
+              {/* Modified Location Display */}
+              {(acf?.event_location || acf?.event_cave_name) && (
+                <Group gap="xs">
+                  <IconMapPin size={20} />
+                  <Text>
+                    {isOvernightTrip ? 'Location: ' : ''}
+                    {isOvernightTrip ? `a comfortable cottage ${acf.event_location}` : acf.event_location}
+                    {acf.event_possible_location && ` ${acf.event_possible_location}`}
+                  </Text>
+                </Group>
+              )}
 							{acf?.event_trip_leader && (
 								<Group gap="xs">
 									<IconUser size={20} />
@@ -320,6 +362,16 @@ export function TripDetails({ trip }: TripDetailsProps) {
 						}}
 					/>
 				</Paper>
+			)}
+
+			{/* Accommodation Details for Overnight Trips */}
+			{isOvernightTrip && (
+				<TripOvernightHut 
+					location={acf.event_location}
+					description={acf.event_accomodation_description}
+					facilities={acf.hut_facilities_description}
+					photo={acf.hut_photo}
+				/>
 			)}
 
 			{/* FAQ Section */}
