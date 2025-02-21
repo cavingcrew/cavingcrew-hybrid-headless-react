@@ -1,15 +1,6 @@
 "use client";
 
 import { useQueryClient } from '@tanstack/react-query';
-
-const isMembershipCategory = (trip: Trip) => {
-  return trip.categories.some(cat => cat.slug === 'memberships');
-};
-
-const isTrainingCategory = (trip: Trip) => {
-  return trip.categories.some(cat => cat.slug === 'training-trips');
-};
-
 import { Badge, Card, Group, Image, Text, Tooltip } from "@mantine/core";
 import { useUser } from '@/lib/hooks/useUser';
 import Link from "next/link";
@@ -17,6 +8,14 @@ import { IconArrowBarUp, IconStairs } from "@tabler/icons-react";
 import { useTripCache } from '@/lib/hooks/useCache';
 import type { Trip } from "../../types/api";
 import { getTripAvailability } from "@/utils/trip-utils";
+
+const isMembershipCategory = (trip: Trip) => {
+    return trip.categories.some(cat => cat.slug === 'memberships');
+};
+
+const isTrainingCategory = (trip: Trip) => {
+    return trip.categories.some(cat => cat.slug === 'training-trips');
+};
 
 const requiresSRT = (trip: Trip) => {
   // Check if trip is in SRT training category
