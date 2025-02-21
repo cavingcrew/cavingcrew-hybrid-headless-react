@@ -38,37 +38,53 @@ No additional server configuration required when using the PHP plugin - it handl
 
 #### Apache Configuration
 For Apache servers, use this configuration to properly handle Next.js routes and client-side navigation:
-```apache
-<LocationMatch "^(/trips(/.*)?|/categories(/.*)?|/trip(/.*)?|/category(/.*)?|/test-client-nav)(\?.*)?$">
-   ProxyPass http://localhost:3000
-   ProxyPassReverse http://localhost:3000
-   # Headers for Next.js client-side routing
-   Header set X-NextJS-RSC "1"
-   Header set X-NextJS-Routing "client"
-   Header set X-NextJS-Client-Routing "enabled"
-   # Disable caching for dynamic content
-   Header set Cache-Control "no-cache, no-store, must-revalidate"
+
+# 1. FIRST: Block WC-Ajax specifically (before any proxying)
+# Redirect root wc-ajax calls to /checkout/
+RewriteEngine On
+RewriteCond %{QUERY_STRING} wc-ajax=([^&]+) [NC]
+RewriteRule ^/$ /index.php [QSA,L]
+
+# Then your other rules continue as before...
+<LocationMatch "^(/wp-admin|/wp-login\.php|/wp-json|/wp-content)">
+ProxyPass !
 </LocationMatch>
 
-<!-- Static assets handling -->
+# 2. SECOND: WordPress-specific routes exclusions
+<LocationMatch "^(/wp-admin|/wp-login\.php|/wp-json|/wp-content)">
+ProxyPass !
+</LocationMatch>
+
+# 3. THIRD: Static Next.js assets
 <Location "/_next/static">
-   ProxyPass http://localhost:3000/_next/static
-   ProxyPassReverse http://localhost:3000/_next/static
-   Header set Cache-Control "public, max-age=31536000, immutable"
+ProxyPass http://localhost:3000/_next/static
+ProxyPassReverse http://localhost:3000/_next/static
+Header set Cache-Control "public, max-age=31536000, immutable"
 </Location>
 
 <Location "/_next/image">
-   ProxyPass http://localhost:3000/_next/image
-   ProxyPassReverse http://localhost:3000/_next/image
-   Header set Cache-Control "public, max-age=31536000, immutable"
+ProxyPass http://localhost:3000/_next/image
+ProxyPassReverse http://localhost:3000/_next/image
 </Location>
+# 4. FOURTH: Next.js routes
+#<LocationMatch "^(/trips(/.*)?|/categories(/.*)?|/trip(/.*)?|/category(/.*)?|/test-client-nav)(\?.*)?$">
+#<LocationMatch "^(/trips(/.*)?|/categories(/.*)?|/trip(?!/get-caving-crew-membership(/.*)?)(/.*)?|/category(/.*)?|/test-client-nav)(\?.*)?$">  
+#<LocationMatch "^(/|/trips(/.*)?|/categories(/.*)?|/trip(?!/get-caving-crew-membership(/.*)?)(/.*)?|/category(/.*)?|/test-client-nav)(\?.*)?$">
+#<LocationMatch "^(/trips(/.*)?|/categories(/.*)?|/trip(?!/get-caving-crew-membership(/.*)?)(/.*)?|/category(/.*)?|/test-client-nav|/(?!\?wc-ajax=))$">
+#<LocationMatch "^(?!.*wc-ajax)(/|/trips(/.*)?|/categories(/.*)?|/trip(?!/get-caving-crew-membership(/.*)?)(/.*)?|/category(/.*)?|/test-client-nav)(\?.*)?$">
+#<LocationMatch "^(?!.*wc\-ajax)(/|/trips(/.*)?|/categories(/.*)?|/trip(?!/get\-caving\-crew\-membership(/.*)?)(/.*)?|/category(/.*)?|/test\-client\-nav)(\?.*)?$">
+<LocationMatch "^(/trips(/.*)?|/categories(/.*)?|/trip(?!/get-caving-crew-membership(/.*)?)(/.*)?|/category(/.*)?|/test-client-nav|/)?$">
+RewriteEngine On
+RewriteCond %{QUERY_STRING} !wc-ajax [NC]
+ProxyPass http://localhost:3000
+ProxyPassReverse http://localhost:3000
+# Force these to be handled by Next.js
+Header set X-NextJS-RSC "1"
+Header set X-NextJS-Routing "client"
+Header set X-NextJS-Client-Routing "enabled"
+Header set Cache-Control "no-cache, no-store, must-revalidate"
+</LocationMatch>
 
-<Location "/static">
-   ProxyPass http://localhost:3000/static
-   ProxyPassReverse http://localhost:3000/static
-   Header set Cache-Control "public, max-age=3600"
-</Location>
-```
 
 ### 2. Advanced API Integration
 - Custom REST API endpoints optimized for headless frontends

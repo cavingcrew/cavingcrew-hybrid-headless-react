@@ -151,7 +151,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
                   <IconMapPin size={20} />
                   <Text>
                     {isOvernightTrip ? 'Location: ' : ''}
-                    {isOvernightTrip ? `a comfortable cottage ${acf.event_location}` : acf.event_location}
+                    {isOvernightTrip ? `${acf.event_accomodation_description} ${acf.event_location}` : acf.event_location}
                     {acf.event_possible_location && ` ${acf.event_possible_location}`}
                   </Text>
                 </Group>
@@ -366,7 +366,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
 
 			{/* Accommodation Details for Overnight Trips */}
 			{isOvernightTrip && (
-				<TripOvernightHut 
+				<TripOvernightHut
 					location={acf.event_location}
 					description={acf.event_accomodation_description}
 					facilities={acf.hut_facilities_description}
