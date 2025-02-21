@@ -1,3 +1,10 @@
+export interface TripsResponse {
+  data: Trip[];
+  success: boolean;
+  message?: string;
+  timestamp?: number;
+}
+
 export interface ProductStockResponse {
 	product_id: number;
 	stock_status: string;

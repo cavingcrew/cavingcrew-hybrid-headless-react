@@ -9,12 +9,6 @@ export const tripKeys = {
   lists: () => [...tripKeys.all, 'list'] as const,
 };
 
-interface TripsResponse {
-  data: Trip[];
-  success: boolean;
-  message?: string;
-}
-
 export function useTrips(): UseQueryResult<ApiResponse<Trip[]>> {
   const queryClient = useQueryClient();
 
@@ -74,10 +68,13 @@ export function useTrip(slug: string) {
       }
 
       // 2. If not found, check if trips are still loading
-      const isTripsLoading = queryClient.isFetching(tripKeys.all);
+      const isTripsLoading = queryClient.isFetching({ queryKey: tripKeys.all });
       if (isTripsLoading) {
         console.log('[useTrip] Waiting for trips load...');
-        await queryClient.fetchQuery(tripKeys.all);
+        await queryClient.fetchQuery({
+          queryKey: tripKeys.all,
+          queryFn: () => apiService.getTrips(true)
+        });
         return { data: undefined, success: true }; // Will retry after cache update
       }
 
