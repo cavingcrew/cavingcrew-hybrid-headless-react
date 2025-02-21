@@ -145,7 +145,12 @@ class Hybrid_Headless_Purchase_Restrictions {
     }
 
     public function render_variation_messages($product) {
-        if (!$product->is_type('variable') || in_array($product->get_id(), $this->skip_products)) {
+        // First validate we have a proper product object
+        if (!$product instanceof WC_Product || !$product->is_type('variable')) {
+            return;
+        }
+
+        if (in_array($product->get_id(), $this->skip_products)) {
             return;
         }
 
@@ -153,7 +158,21 @@ class Hybrid_Headless_Purchase_Restrictions {
         $current_user_email = wp_get_current_user()->user_email;
         $has_purchases = false;
 
-        foreach ($product->get_children() as $variation_id) {
+        // Get children and validate they're variations
+        $variation_ids = $product->get_children();
+        
+        if (!is_array($variation_ids)) {
+            return;
+        }
+
+        foreach ($variation_ids as $variation_id) {
+            $variation = wc_get_product($variation_id);
+            
+            // Skip invalid variations
+            if (!$variation instanceof WC_Product_Variation) {
+                continue;
+            }
+
             if ($this->has_valid_purchase($current_user_email, $current_user_id, $variation_id)) {
                 $has_purchases = true;
                 echo sprintf(
