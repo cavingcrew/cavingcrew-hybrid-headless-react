@@ -46,6 +46,12 @@ class Hybrid_Headless_Admin {
             'sanitize_callback' => 'rest_sanitize_boolean',
         ));
 
+        register_setting('hybrid_headless', 'hybrid_headless_disable_notices', array(
+            'type' => 'boolean',
+            'default' => true,
+            'sanitize_callback' => 'rest_sanitize_boolean',
+        ));
+
         add_settings_section(
             'hybrid_headless_main',
             __( 'Main Settings', 'hybrid-headless' ),
@@ -76,6 +82,30 @@ class Hybrid_Headless_Admin {
             'hybrid-headless',
             'hybrid_headless_main'
         );
+
+        add_settings_field(
+            'disable_notices',
+            __('Suppress WooCommerce Notices', 'hybrid-headless'),
+            array($this, 'render_field_disable_notices'),
+            'hybrid-headless',
+            'hybrid_headless_main'
+        );
+    }
+
+    /**
+     * Render disable notices field
+     */
+    public function render_field_disable_notices() {
+        $value = get_option('hybrid_headless_disable_notices', true);
+        ?>
+        <label>
+            <input type="checkbox" name="hybrid_headless_disable_notices" value="1" <?php checked($value); ?>>
+            <?php esc_html_e('Suppress WooCommerce notices (recommended)', 'hybrid-headless'); ?>
+        </label>
+        <p class="description">
+            <?php esc_html_e('When enabled, suppresses all WooCommerce success/notice messages', 'hybrid-headless'); ?>
+        </p>
+        <?php
     }
 
     /**

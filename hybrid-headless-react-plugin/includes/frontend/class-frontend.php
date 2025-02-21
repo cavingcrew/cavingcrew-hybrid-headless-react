@@ -47,14 +47,16 @@ class Hybrid_Headless_Frontend {
     }
 
     public function remove_cart_notices() {
-        // Remove all add-to-cart notices
-        wc_clear_notices();
-        
-        // Prevent notices from being shown in the first place
-        remove_action('woocommerce_before_single_product', 'woocommerce_output_all_notices', 10);
-        remove_action('woocommerce_before_shop_loop', 'woocommerce_output_all_notices', 10);
-        remove_action('woocommerce_before_cart', 'woocommerce_output_all_notices', 10);
-        remove_action('woocommerce_before_checkout_form', 'woocommerce_output_all_notices', 10);
+        if (get_option('hybrid_headless_disable_notices', true)) {
+            // Remove all add-to-cart notices
+            wc_clear_notices();
+            
+            // Prevent notices from being shown in the first place
+            remove_action('woocommerce_before_single_product', 'woocommerce_output_all_notices', 10);
+            remove_action('woocommerce_before_shop_loop', 'woocommerce_output_all_notices', 10);
+            remove_action('woocommerce_before_cart', 'woocommerce_output_all_notices', 10);
+            remove_action('woocommerce_before_checkout_form', 'woocommerce_output_all_notices', 10);
+        }
     }
 
     /**
