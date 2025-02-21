@@ -22,8 +22,10 @@ export const apiService = {
       return { 
         success: true,
         data: {
-          purchased_products: data.purchased_products || [],
-          isLoggedIn: data.isLoggedIn
+          isLoggedIn: data.isLoggedIn,
+          isMember: data.isMember,
+          username: data.username,
+          email: data.email
         }
       };
     } catch (error) {
