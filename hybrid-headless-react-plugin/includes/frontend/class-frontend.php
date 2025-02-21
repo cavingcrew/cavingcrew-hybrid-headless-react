@@ -29,8 +29,12 @@ class Hybrid_Headless_Frontend {
         add_filter( 'template_include', array( $this, 'override_template' ), 999 );
         add_filter('login_redirect', array($this, 'handle_login_redirect'), 10, 3);
         add_filter('allowed_redirect_hosts', array($this, 'allow_redirect_hosts'));
-        add_filter('wc_add_to_cart_message_html', '__return_empty_string');
-        add_action('wp_loaded', array($this, 'remove_cart_notices'));
+
+        // Only add WooCommerce hooks if WC is active
+        if (class_exists('WooCommerce')) {
+            add_filter('wc_add_to_cart_message_html', '__return_empty_string');
+            add_action('wp_loaded', array($this, 'remove_cart_notices'));
+        }
     }
 
     public function handle_login_redirect($redirect_to, $requested_redirect_to, $user) {
@@ -47,15 +51,24 @@ class Hybrid_Headless_Frontend {
     }
 
     public function remove_cart_notices() {
-        if (get_option('hybrid_headless_disable_notices', true)) {
-            // Remove all add-to-cart notices
-            wc_clear_notices();
-            
-            // Prevent notices from being shown in the first place
-            remove_action('woocommerce_before_single_product', 'woocommerce_output_all_notices', 10);
-            remove_action('woocommerce_before_shop_loop', 'woocommerce_output_all_notices', 10);
-            remove_action('woocommerce_before_cart', 'woocommerce_output_all_notices', 10);
-            remove_action('woocommerce_before_checkout_form', 'woocommerce_output_all_notices', 10);
+        if (function_exists('wc_clear_notices') && function_exists('wc_get_notices')) {
+            if (get_option('hybrid_headless_disable_notices', true)) {
+                wc_clear_notices();
+                
+                // Only remove actions if they exist
+                if (has_action('woocommerce_before_single_product', 'woocommerce_output_all_notices')) {
+                    remove_action('woocommerce_before_single_product', 'woocommerce_output_all_notices', 10);
+                }
+                if (has_action('woocommerce_before_shop_loop', 'woocommerce_output_all_notices')) {
+                    remove_action('woocommerce_before_shop_loop', 'woocommerce_output_all_notices', 10);
+                }
+                if (has_action('woocommerce_before_cart', 'woocommerce_output_all_notices')) {
+                    remove_action('woocommerce_before_cart', 'woocommerce_output_all_notices', 10);
+                }
+                if (has_action('woocommerce_before_checkout_form', 'woocommerce_output_all_notices')) {
+                    remove_action('woocommerce_before_checkout_form', 'woocommerce_output_all_notices', 10);
+                }
+            }
         }
     }
 
