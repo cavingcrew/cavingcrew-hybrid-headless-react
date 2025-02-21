@@ -25,6 +25,7 @@ class Hybrid_Headless_Purchase_Restrictions {
             add_filter('woocommerce_is_purchasable', array($this, 'disable_repeat_purchase'), 10, 2);
             add_action('woocommerce_single_product_summary', array($this, 'purchase_disabled_message'), 31);
             add_action('woocommerce_variable_add_to_cart', array($this, 'render_variation_messages'), 31);
+            add_action('woocommerce_check_cart_items', array($this, 'validate_cart_items'));
         }
     }
 
@@ -277,6 +278,68 @@ class Hybrid_Headless_Purchase_Restrictions {
                 })
                 .find('.variations select').change();
             ");
+        }
+    }
+
+    public function validate_cart_items() {
+        if (WC()->cart->is_empty()) return;
+
+        $messages = [];
+        
+        foreach (WC()->cart->get_cart() as $cart_item) {
+            $product = $cart_item['data'];
+            $product_id = $product->get_id();
+            $parent_id = $product->is_type('variation') ? $product->get_parent_id() : $product_id;
+
+            // Skip whitelisted products
+            if (in_array($product_id, $this->skip_products) || in_array($parent_id, $this->skip_products)) {
+                continue;
+            }
+
+            // Get requirement values from parent product
+            $non_members_welcome = get_field('event_non_members_welcome', $parent_id);
+            $volunteer_required = (int) get_field('event_volunteering_required', $parent_id);
+            $attendance_required = (int) get_field('event_attendance_required', $parent_id);
+
+            // Check membership requirement
+            if ($non_members_welcome === 'no' && !$this->is_member()) {
+                $messages[] = __("Membership required for: ", 'hybrid-headless') . $product->get_name();
+            }
+
+            // Check volunteer requirement
+            if ($volunteer_required > 0) {
+                $user_volunteer = (int) get_user_meta(get_current_user_id(), 'stats_volunteer_for_numerator_cached', true);
+                if ($user_volunteer < $volunteer_required) {
+                    $messages[] = sprintf(
+                        __("%s requires %d volunteer events - you have %d", 'hybrid-headless'),
+                        $product->get_name(),
+                        $volunteer_required,
+                        $user_volunteer
+                    );
+                }
+            }
+
+            // Check attendance requirement
+            if ($attendance_required > 0) {
+                $user_attendance = (int) get_user_meta(get_current_user_id(), 'stats_attendance_attended_cached', true);
+                if ($user_attendance < $attendance_required) {
+                    $messages[] = sprintf(
+                        __("%s requires %d previous attendances - you have %d", 'hybrid-headless'),
+                        $product->get_name(),
+                        $attendance_required,
+                        $user_attendance
+                    );
+                }
+            }
+        }
+
+        if (!empty($messages)) {
+            wc_add_notice(
+                '<div class="wc-nonpurchasable-message">' . 
+                implode('<br><br>', $messages) . 
+                '</div>',
+                'error'
+            );
         }
     }
 }
