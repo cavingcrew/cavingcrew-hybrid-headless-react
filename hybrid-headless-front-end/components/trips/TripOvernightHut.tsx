@@ -1,4 +1,4 @@
-import { Card, Image, Stack, Text, Title, Flex } from "@mantine/core";
+import { Grid, Image, Stack, Text, Title, Box } from "@mantine/core";
 
 interface TripOvernightHutProps {
   location?: string;
@@ -12,39 +12,43 @@ export function TripOvernightHut({
   photo
 }: TripOvernightHutProps) {
   return (
-    <Card withBorder p="lg" radius="md" mt="md">
-      <Title order={2} mb="md">
-        Where we'll be staying
-      </Title>
-
-      <Flex gap="xl" direction={{ base: 'column', md: 'row' }}>
+    <Box mt="md">
+      <Title order={2} mb="md">Where we'll be staying</Title>
+      
+      <Grid gutter="xl">
         {photo && (
-          <Image
-            src={photo}
-            alt={`Accommodation at ${location}`}
-            radius="md"
-            width={300}
-            height={225}
-            style={{ 
-              border: '1px solid #e9ecef',
-              borderRadius: 8,
-              flexShrink: 0
-            }}
-          />
+          <Grid.Col span={{ base: 12, md: 4 }}>
+            <Image
+              src={photo}
+              alt={`Accommodation at ${location}`}
+              radius="md"
+              width={300}
+              height={200}
+              style={{ 
+                maxWidth: 300,
+                border: '1px solid #e9ecef',
+                borderRadius: 8,
+              }}
+            />
+          </Grid.Col>
         )}
 
-        <Stack gap="sm">
-          <Text size="lg" fw={500}>
-            {location}
-          </Text>
+        <Grid.Col span={{ base: 12, md: 8 }}>
+          <Stack gap="sm">
+            {location && (
+              <Text size="lg" fw={500}>
+                {location}
+              </Text>
+            )}
 
-          {facilities && (
-            <Text size="sm" style={{ whiteSpace: 'pre-line' }}>
-              {facilities}
-            </Text>
-          )}
-        </Stack>
-      </Flex>
-    </Card>
+            {facilities && (
+              <Text size="sm" style={{ lineHeight: 1.6 }}>
+                {facilities}
+              </Text>
+            )}
+          </Stack>
+        </Grid.Col>
+      </Grid>
+    </Box>
   );
 }
