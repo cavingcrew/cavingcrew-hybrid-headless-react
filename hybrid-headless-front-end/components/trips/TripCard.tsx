@@ -97,11 +97,18 @@ export default function TripCard({ trip }: TripCardProps) {
 
 				<Group justify="space-between" mt="md" mb="xs">
 					<Text fw={500}>{trip.name}</Text>
-					{!isMembershipCategory(trip) && (
-						<Badge color={badgeColor}>
-							{statusMessage}
-						</Badge>
-					)}
+					<Group gap="xs">
+						{!isMembershipCategory(trip) && (
+							<Badge color={badgeColor}>
+								{statusMessage}
+							</Badge>
+						)}
+						{hasPurchased && (
+							<Badge color="green" variant="light">
+								Signed Up
+							</Badge>
+						)}
+					</Group>
 				</Group>
 				{eventDate && (
 					<Text size="sm" c="dimmed">
@@ -156,11 +163,6 @@ export default function TripCard({ trip }: TripCardProps) {
               </Badge>
             )}
           </Group>
-        )}
-        {hasPurchased && (
-          <Badge color="green" variant="light" mt="sm">
-            Signed Up
-          </Badge>
         )}
 			</Card>
 		</Link>
