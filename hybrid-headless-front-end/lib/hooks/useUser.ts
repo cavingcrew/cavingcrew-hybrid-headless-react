@@ -1,3 +1,6 @@
+'use client';
+
+
 export const userKeys = {
   all: ['user'] as const,
   user: () => [...userKeys.all, 'data'] as const,

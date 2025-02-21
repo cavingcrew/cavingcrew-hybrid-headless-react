@@ -1,8 +1,8 @@
 import { API_BASE_URL } from './constants';
-import type { 
-  Trip, 
-  Category, 
-  ApiResponse, 
+import type {
+  Trip,
+  Category,
+  ApiResponse,
   ProductStockResponse,
   UserResponse
 } from '../types/api';
@@ -86,11 +86,11 @@ export const apiService = {
     try {
       const cacheParam = useCache ? 'cachemeifyoucan=please' : 'nocache=please';
       const url = `${API_BASE_URL}/hybrid-headless/v1/products?${cacheParam}`;
-      
+
       const response = await fetch(url);
       if (!response.ok) throw new Error('Failed to fetch trips');
       const data = await response.json();
-      
+
       // Normalize variations
       const normalizedTrips = data.products.map((trip: Trip) => ({
         ...trip,
@@ -101,16 +101,16 @@ export const apiService = {
         }))
       }));
 
-      return { 
-        success: true, 
+      return {
+        success: true,
         data: normalizedTrips,
         timestamp: Date.now()
       };
     } catch (error) {
-      return { 
-        success: false, 
+      return {
+        success: false,
         data: null,
-        message: error instanceof Error ? error.message : 'Failed to fetch trips' 
+        message: error instanceof Error ? error.message : 'Failed to fetch trips'
       };
     }
   },
@@ -122,15 +122,15 @@ export const apiService = {
         throw new Error(`Failed to fetch trip ${slug}`);
       }
       const data = await response.json();
-      return { 
-        data: data || null, 
-        success: true 
+      return {
+        data: data || null,
+        success: true
       };
     } catch (error) {
-      return { 
-        data: null, 
-        success: false, 
-        message: error instanceof Error ? error.message : 'Failed to fetch trip' 
+      return {
+        data: null,
+        success: false,
+        message: error instanceof Error ? error.message : 'Failed to fetch trip'
       };
     }
   },

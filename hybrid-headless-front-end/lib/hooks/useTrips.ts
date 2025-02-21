@@ -1,3 +1,6 @@
+'use client';
+
+
 import { useQuery, useQueryClient, type UseQueryResult } from '@tanstack/react-query';
 import { apiService } from '../api-service';
 import type { Trip, ApiResponse, CategoryResponse } from '../../types/api';
@@ -45,10 +48,10 @@ export function useTrips(): UseQueryResult<ApiResponse<Trip[]>> {
     queryFn: async () => {
       // Initial empty state for instant render
       const initialEmptyState = { success: true, data: [], timestamp: Date.now() };
-      
+
       // Initial cached request
       const cachedResponse = await apiService.getTrips(true);
-      
+
       // Queue background refresh
       queryClient.fetchQuery({
         queryKey: [...tripKeys.all, 'fresh'],
@@ -89,7 +92,7 @@ export function useTrip(slug: string) {
       // 1. Check main trips cache first
       const tripsData = queryClient.getQueryData<ApiResponse<Trip[]>>(tripKeys.all);
       const cachedTrip = tripsData?.data?.find(t => t.slug === slug);
-      
+
       if (cachedTrip) {
         console.log('[useTrip] Using cached trip data for', slug);
         return { data: cachedTrip, success: true };

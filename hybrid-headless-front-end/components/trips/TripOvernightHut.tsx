@@ -1,3 +1,6 @@
+'use client';
+
+
 import { Paper, Grid, Image, Stack, Text, Title, Box } from "@mantine/core";
 
 interface TripOvernightHutProps {

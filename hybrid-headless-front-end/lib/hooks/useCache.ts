@@ -1,3 +1,6 @@
+'use client';
+
+
 import { useQueryClient } from '@tanstack/react-query';
 import { tripKeys } from './useTrips';
 import type { ApiResponse, Trip } from '../../types/api';

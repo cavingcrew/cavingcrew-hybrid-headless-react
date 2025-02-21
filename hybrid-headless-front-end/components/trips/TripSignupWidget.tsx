@@ -1,3 +1,6 @@
+'use client';
+
+
 import { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useUser } from '@/lib/hooks/useUser';
@@ -89,7 +92,7 @@ export function TripSignupWidget({
           if (!old?.data) return old;
           return {
             ...old,
-            data: old.data.map(t => 
+            data: old.data.map(t =>
               t.id === trip.id ? {
                 ...t,
                 variations: t.variations.map(v => {
