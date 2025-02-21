@@ -62,68 +62,15 @@ class Hybrid_Headless_Rest_API {
 
         register_rest_route(
             self::API_NAMESPACE,
-            '/user-status',
+            '/user',
             array(
                 array(
                     'methods' => WP_REST_Server::READABLE,
-                    'callback' => array($this, 'get_user_status'),
+                    'callback' => array($this, 'get_user'),
                     'permission_callback' => '__return_true',
                 )
             )
         );
-
-        register_rest_route(
-            self::API_NAMESPACE,
-            '/user-purchases',
-            array(
-                array(
-                    'methods' => WP_REST_Server::READABLE,
-                    'callback' => array($this, 'get_user_purchases'),
-                    'permission_callback' => '__return_true',
-                )
-            )
-        );
-    }
-
-    public function get_user_status() {
-        // Manually validate WordPress auth cookies
-        $user_id = 0;
-        $logged_in = false;
-        
-        try {
-            if (isset($_COOKIE[LOGGED_IN_COOKIE])) {
-                $cookie = $_COOKIE[LOGGED_IN_COOKIE];
-                $user_id = wp_validate_auth_cookie($cookie, 'logged_in');
-                
-                if ($user_id) {
-                    wp_set_current_user($user_id);
-                    $logged_in = true;
-                }
-            }
-            
-            // Debug logging
-            error_log('[User Status] User ID: ' . $user_id);
-            error_log('[User Status] Logged in: ' . ($logged_in ? 'Yes' : 'No'));
-        } catch (Exception $e) {
-            error_log('[User Status] Error validating auth cookie: ' . $e->getMessage());
-            return rest_ensure_response([
-                'isLoggedIn' => false,
-                'isMember' => false,
-                'cartCount' => 0
-            ]);
-        }
-
-        // Get cart count safely
-        $cart_count = 0;
-        if (class_exists('WooCommerce') && WC()->cart) {
-            $cart_count = WC()->cart->get_cart_contents_count();
-        }
-
-        return rest_ensure_response([
-            'isLoggedIn' => $logged_in,
-            'isMember' => $this->is_member($user_id),
-            'cartCount' => $cart_count
-        ]);
     }
 
     private function is_member($user_id) {
@@ -131,8 +78,13 @@ class Hybrid_Headless_Rest_API {
         return (bool) get_user_meta($user_id, 'cc_member', true);
     }
 
-    public function get_user_purchases() {
-        // Use the same manual auth validation as get_user_status
+    /**
+     * Get comprehensive user information
+     * 
+     * @return WP_REST_Response
+     */
+    public function get_user() {
+        // Validate auth cookie
         $user_id = 0;
         $logged_in = false;
         
@@ -143,15 +95,74 @@ class Hybrid_Headless_Rest_API {
         }
 
         $response = [
-            'purchased_products' => [],
-            'isLoggedIn' => $logged_in
+            'isLoggedIn' => $logged_in,
+            'isMember' => $this->is_member($user_id),
+            'cartCount' => 0
         ];
 
         if (!$logged_in) {
             return rest_ensure_response($response);
         }
 
-        // Get all customer orders
+        // Get basic user info from wp_users table
+        $user = get_userdata($user_id);
+        $response['user'] = [
+            'id' => $user->ID,
+            'user_login' => $user->user_login,
+            'user_email' => $user->user_email,
+            'nickname' => $user->nickname,
+            'first_name' => $user->first_name,
+            'last_name' => $user->last_name,
+            'billing_first_name' => $user->billing_first_name,
+            'billing_last_name' => $user->billing_last_name,
+            'billing_email' => $user->billing_email,
+            'billing_address_1' => $user->billing_address_1,
+            'billing_address_2' => $user->billing_address_2,
+            'billing_city' => $user->billing_city,
+            'billing_postcode' => $user->billing_postcode,
+            'billing_country' => $user->billing_country,
+        ];
+
+        // Get specified user meta fields
+        $meta_keys = [
+            'admin-emergency-contact-name',
+            'admin-emergency-contact-phone',
+            'admin-emergency-contact-relationship',
+            'admin-medical-conditions',
+            'admin-medications',
+            'admin-allergies',
+            'admin-blood-group',
+            'admin-tetanus-date',
+            'admin-doctor-name',
+            'admin-doctor-phone',
+            'admin-doctor-address',
+            'admin-nhs-number',
+            'admin-club-membership',
+            'admin-bca-number',
+            'admin-bca-expiry',
+            'admin-dbs-number',
+            'admin-dbs-date',
+            'admin-qualifications',
+            'admin-training',
+            'admin-notes',
+            'cc_member',
+            'membership_renewal_date',
+            'membership_type',
+            'membership_status',
+            'membership_payment_status',
+            'membership_payment_method',
+            'membership_payment_date',
+            'membership_payment_amount',
+            'membership_payment_reference'
+        ];
+        
+        $response['user']['meta'] = [];
+        foreach ($meta_keys as $key) {
+            $response['user']['meta'][$key] = get_user_meta($user_id, $key, true) ?: null;
+        }
+
+        // Get purchases data
+        $response['purchases'] = [];
         $orders = wc_get_orders([
             'customer_id' => $user_id,
             'limit' => -1,
@@ -159,34 +170,28 @@ class Hybrid_Headless_Rest_API {
         ]);
 
         $product_ids = [];
-
         foreach ($orders as $order) {
-            // Check for completed orders with cancelled attendance
             if ($order->get_status() === 'completed') {
                 $cc_attendance = $order->get_meta('cc_attendance');
-                if (strpos($cc_attendance, 'cancelled') !== false) {
-                    continue;
-                }
+                if (strpos($cc_attendance, 'cancelled') !== false) continue;
             }
 
-            // Get items and process products
             foreach ($order->get_items() as $item) {
                 $product = $item->get_product();
-                
                 if ($product) {
                     $product_id = $product->get_parent_id() ?: $product->get_id();
-                    
-                    // Skip product 1272
                     if ($product_id == 1272) continue;
-                    
                     $product_ids[] = $product_id;
                 }
             }
         }
+        $response['purchases'] = array_values(array_unique($product_ids));
 
-        // Return unique product IDs
-        $response['purchased_products'] = array_values(array_unique($product_ids));
-        
+        // Get cart count
+        if (class_exists('WooCommerce') && WC()->cart) {
+            $response['cartCount'] = WC()->cart->get_cart_contents_count();
+        }
+
         return rest_ensure_response($response);
     }
 
