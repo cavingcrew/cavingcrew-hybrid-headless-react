@@ -55,9 +55,8 @@ export default function TripCard({ trip }: TripCardProps) {
     : null;
 
   const { purchasedProducts } = useUserStatus();
-  const hasPurchased = trip.variations.some(v => 
-    purchasedProducts?.includes(v.id)
-  );
+  const hasPurchased = purchasedProducts?.includes(trip.id) || 
+    trip.variations.some(v => purchasedProducts?.includes(v.id));
 
   console.log('[TripCard] Rendering', {
     tripId: trip.id,

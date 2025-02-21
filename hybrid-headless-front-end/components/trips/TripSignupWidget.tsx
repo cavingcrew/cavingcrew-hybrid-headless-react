@@ -49,9 +49,8 @@ export function TripSignupWidget({
   const nonMembersWelcome = trip.acf.event_non_members_welcome === 'yes';
   const mustCavedBefore = trip.acf.event_must_caved_with_us_before === 'yes';
   const { purchasedProducts, isLoggedIn, isMember } = useUserStatus();
-  const hasPurchased = trip.variations.some(v => 
-    purchasedProducts.includes(v.id)
-  );
+  const hasPurchased = purchasedProducts.includes(trip.id) ||
+    trip.variations.some(v => purchasedProducts.includes(v.id));
 
   const memberDiscount = trip.acf.event_members_discount;
 

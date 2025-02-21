@@ -53,9 +53,8 @@ export function TripDetails({ trip }: TripDetailsProps) {
 		!isLoggedIn
 	);
 
-	const hasPurchased = trip.variations.some(v =>
-		purchasedProducts.includes(v.id)
-	);
+	const hasPurchased = purchasedProducts.includes(trip.id) ||
+		trip.variations.some(v => purchasedProducts.includes(v.id));
 
 	console.log('[TripDetails] Rendering', {
 		tripId: trip.id,
