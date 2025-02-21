@@ -70,9 +70,9 @@ export function TripSignupWidget({
   useEffect(() => {
     if (selectedVariation) {
       const variation = trip.variations.find(v => v.id.toString() === selectedVariation);
-      const valid = variation?.stock_status === 'instock' && 
+      const valid = variation?.stock_status === 'instock' &&
                    (variation.stock_quantity ?? 0) > 0 &&
-                   !(trip.acf.event_type === 'giggletrip' && 
+                   !(trip.acf.event_type === 'giggletrip' &&
                      variation.sku.includes('GIGGLE--bcamember') &&
                      isMember);
       setIsSelectedVariationValid(!!valid);
@@ -135,21 +135,6 @@ export function TripSignupWidget({
 
   return (
     <Stack gap="md">
-      {hasPurchased && (
-        <Alert color="green" title="You're Signed Up!" mb="md">
-          <Text>
-            You're already booked on this trip. Check your email for confirmation
-            or visit your <Anchor href="/my-account">account page</Anchor> for details.
-            {showRemainingSpots && (
-              <Text mt="sm">
-                {remainingSpots > 0 
-                  ? `${remainingSpots} spot${remainingSpots !== 1 ? 's' : ''} remaining`
-                  : 'Fully booked'}
-              </Text>
-            )}
-          </Text>
-        </Alert>
-      )}
 
       <Paper withBorder p="md" radius="md" mb="xl">
         <Title order={3} mb="md">Sign Up Options</Title>
@@ -217,7 +202,7 @@ export function TripSignupWidget({
                               color={isPurchased ? 'green' : (inStock ? 'green' : 'red')}
                               variant="light"
                             >
-                              {isPurchased ? 'Purchased' : 
+                              {isPurchased ? 'Purchased' :
                                inStock ? `${variation.stock_quantity ?? 'N/A'} spots left` :
                                'Sold out'}
                             </Badge>
