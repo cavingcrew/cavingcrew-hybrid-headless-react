@@ -160,6 +160,6 @@ export interface UserStatusResponse {
 }
 
 export interface UserPurchasesResponse {
-  purchasedProducts: number[];
+  purchased_products: number[];
   isLoggedIn: boolean;
 }
