@@ -1,6 +1,3 @@
-'use client';
-
-
 const DEFAULT_API_URL = 'https://www.cavingcrew.com/wp-json';
 
 export const API_BASE_URL =
