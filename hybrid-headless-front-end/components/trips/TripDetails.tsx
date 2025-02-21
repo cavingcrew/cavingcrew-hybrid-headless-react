@@ -425,9 +425,3 @@ export function TripDetails({ trip }: TripDetailsProps) {
 	);
 }
 
-function calculateRemainingSpots(trip: Trip) {
-  if (trip.has_variations) {
-    return trip.variations.reduce((sum, v) => sum + (v.stock_quantity || 0), 0);
-  }
-  return trip.stock_quantity || 0;
-}

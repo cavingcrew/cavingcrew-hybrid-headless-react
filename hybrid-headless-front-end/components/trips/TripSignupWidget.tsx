@@ -26,8 +26,6 @@ interface TripSignupWidgetProps {
   trip: Trip;
   requiresLogin?: boolean;
   loginReason?: string;
-  showRemainingSpots?: boolean;
-  remainingSpots?: number;
 }
 
 const calculateMemberPrice = (basePrice: string, discountPounds?: string) => {
@@ -43,9 +41,7 @@ const calculateMemberPrice = (basePrice: string, discountPounds?: string) => {
 export function TripSignupWidget({
   trip,
   requiresLogin = false,
-  loginReason = "This trip requires login to sign up",
-  showRemainingSpots = false,
-  remainingSpots = 0
+  loginReason = "This trip requires login to sign up"
 }: TripSignupWidgetProps) {
   const [selectedVariation, setSelectedVariation] = useState<string>('');
   const [selectedPrice, setSelectedPrice] = useState<string>('');
