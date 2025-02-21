@@ -42,7 +42,7 @@ interface TripDetailsProps {
 
 export function TripDetails({ trip }: TripDetailsProps) {
 	const acf = trip.acf;
-	const { purchasedProducts, isLoggedIn } = useUser();
+	const { purchasedProducts, isLoggedIn, user } = useUser();
 	const startDate = acf?.event_start_date_time
 		? new Date(acf.event_start_date_time)
 		: null;
