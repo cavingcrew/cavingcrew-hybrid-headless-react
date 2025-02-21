@@ -12,6 +12,14 @@ if (!defined('ABSPATH')) {
 class Hybrid_Headless_Purchase_Restrictions {
     private $skip_products = array(1272);
 
+    private function is_member() {
+        if (!is_user_logged_in()) {
+            return false;
+        }
+        $user_id = get_current_user_id();
+        return get_user_meta($user_id, 'cc_member', true) === 'yes';
+    }
+
     public function __construct() {
         if (get_option('hybrid_headless_enable_purchase_restrictions', true)) {
             add_filter('woocommerce_is_purchasable', array($this, 'disable_repeat_purchase'), 10, 2);
@@ -66,9 +74,37 @@ class Hybrid_Headless_Purchase_Restrictions {
         if (defined('DOING_AJAX') && DOING_AJAX) return $purchasable;
         
         $current_user_id = get_current_user_id();
-        $current_user_email = wp_get_current_user()->user_email;
+        $current_user_email = is_user_logged_in() ? wp_get_current_user()->user_email : '';
         $product_id = $product->get_id();
         $parent_id = $product->is_type('variation') ? $product->get_parent_id() : $product_id;
+
+        // Get ACF fields from parent product
+        $non_members_welcome = get_field('event_non_members_welcome', $parent_id);
+        $volunteer_required = (int) get_field('event_volunteering_required', $parent_id);
+        $attendance_required = (int) get_field('event_attendance_required', $parent_id);
+
+        // 1. Membership requirement check
+        if ($non_members_welcome === 'no' && !$this->is_member()) {
+            return false;
+        }
+
+        // 2. Volunteer requirement check
+        if ($volunteer_required > 0) {
+            if (!is_user_logged_in()) return false;
+            $user_volunteer = (int) get_user_meta($current_user_id, 'stats_volunteer_for_numerator_cached', true);
+            if ($user_volunteer < $volunteer_required) {
+                return false;
+            }
+        }
+
+        // 3. Attendance requirement check
+        if ($attendance_required > 0) {
+            if (!is_user_logged_in()) return false;
+            $user_attendance = (int) get_user_meta($current_user_id, 'stats_attendance_attended_cached', true);
+            if ($user_attendance < $attendance_required) {
+                return false;
+            }
+        }
 
         if (in_array($product_id, $this->skip_products) || in_array($parent_id, $this->skip_products)) {
             return $purchasable;
@@ -110,15 +146,56 @@ class Hybrid_Headless_Purchase_Restrictions {
         if (!$product) return;
 
         $current_user_id = get_current_user_id();
-        $current_user_email = wp_get_current_user()->user_email;
         $product_id = $product->get_id();
         $parent_id = $product->is_type('variation') ? $product->get_parent_id() : $product_id;
+
+        // Get requirement values
+        $non_members_welcome = get_field('event_non_members_welcome', $parent_id);
+        $volunteer_required = (int) get_field('event_volunteering_required', $parent_id);
+        $attendance_required = (int) get_field('event_attendance_required', $parent_id);
+
+        $messages = array();
+
+        // Membership message
+        if ($non_members_welcome === 'no' && !$this->is_member()) {
+            $messages[] = __('This trip is only available to members.', 'hybrid-headless');
+        }
+
+        // Volunteer requirement message
+        if ($volunteer_required > 0) {
+            $user_volunteer = is_user_logged_in() ? 
+                (int) get_user_meta($current_user_id, 'stats_volunteer_for_numerator_cached', true) : 0;
+            
+            if ($user_volunteer < $volunteer_required) {
+                $msg = __('This trip requires at least %d volunteer events. ', 'hybrid-headless');
+                $msg .= is_user_logged_in() ?
+                    __('You have volunteered %d times.', 'hybrid-headless') :
+                    __('Please log in to check your eligibility.', 'hybrid-headless');
+                
+                $messages[] = sprintf($msg, $volunteer_required, $user_volunteer);
+            }
+        }
+
+        // Attendance requirement message
+        if ($attendance_required > 0) {
+            $user_attendance = is_user_logged_in() ? 
+                (int) get_user_meta($current_user_id, 'stats_attendance_attended_cached', true) : 0;
+            
+            if ($user_attendance < $attendance_required) {
+                $msg = __('This trip requires at least %d previous attendances. ', 'hybrid-headless');
+                $msg .= is_user_logged_in() ?
+                    __('You have attended %d times.', 'hybrid-headless') :
+                    __('Please log in to check your eligibility.', 'hybrid-headless');
+                
+                $messages[] = sprintf($msg, $attendance_required, $user_attendance);
+            }
+        }
 
         if (in_array($product_id, $this->skip_products) || in_array($parent_id, $this->skip_products)) {
             return;
         }
 
-        $message = '';
+        $purchase_message = '';
         
         if ($product->is_type('variable')) {
             foreach ($product->get_children() as $variation_id) {
@@ -139,8 +216,11 @@ class Hybrid_Headless_Purchase_Restrictions {
             }
         }
 
-        if ($message) {
-            echo $message;
+        if (!empty($messages)) {
+            echo sprintf(
+                '<div class="woocommerce"><div class="woocommerce-info wc-nonpurchasable-message">%s</div></div>',
+                implode('<br><br>', $messages)
+            );
         }
     }
 
