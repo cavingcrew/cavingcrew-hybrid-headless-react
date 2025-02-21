@@ -6,6 +6,7 @@ import {
   SegmentedControl, Select, Group, Badge,
   useMantineTheme, Button
 } from '@mantine/core';
+import { WelcomeMessage } from '@/components/WelcomeMessage/WelcomeMessage';
 import {
   IconCategory,
   IconCalendar,
@@ -112,12 +113,7 @@ export function TripsView({ trips }: TripsViewProps) {
   return (
     <Stack gap="xl">
       {/* Header Section */}
-      <Stack gap="md">
-        <Title order={1}>We're the Caving Crew!</Title>
-        <Text size="xl">
-          A bunch of supportive, friendly people who like to encourage each other to cave and eat cake.
-        </Text>
-      </Stack>
+      <WelcomeMessage />
 
       {/* Controls Section */}
       <Stack gap="md">
