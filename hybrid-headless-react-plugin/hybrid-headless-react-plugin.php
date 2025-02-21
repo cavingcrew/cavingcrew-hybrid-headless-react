@@ -86,6 +86,10 @@ final class Hybrid_Headless_Plugin {
         // Load frontend handlers
         require_once HYBRID_HEADLESS_PLUGIN_DIR . 'includes/frontend/class-frontend.php';
         new Hybrid_Headless_Frontend();
+
+        // Load purchase restrictions
+        require_once HYBRID_HEADLESS_PLUGIN_DIR . 'includes/purchase-restrictions/class-purchase-restrictions.php';
+        new Hybrid_Headless_Purchase_Restrictions();
     }
 
     /**
