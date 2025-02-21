@@ -140,25 +140,21 @@ export function TripSignupWidget({
         </Alert>
       )}
 
-      <Paper
-        withBorder
-        p="md"
-        radius="md"
-        mb="xl"
-        style={{
-          opacity: requiresLogin || hasPurchased ? 0.6 : 1,
-          pointerEvents: requiresLogin || hasPurchased ? 'none' : 'auto'
-        }}
-      >
+      <Paper withBorder p="md" radius="md" mb="xl">
         <Title order={3} mb="md">Sign Up Options</Title>
 
         {trip.has_variations && hasAvailableVariations && (
-          <Radio.Group
-            value={selectedVariation}
-            onChange={setSelectedVariation}
-            name="tripVariation"
-            required
-          >
+          <div style={{
+            opacity: requiresLogin || hasPurchased ? 0.6 : 1,
+            pointerEvents: requiresLogin || hasPurchased ? 'none' : 'auto'
+          }}>
+            <Radio.Group
+              value={selectedVariation}
+              onChange={setSelectedVariation}
+              name="tripVariation"
+              required
+              disabled={requiresLogin || hasPurchased}
+            >
             <Stack gap="lg">
               {trip.variations.map((variation) => {
                 const attribute = Object.values(variation.attributes)[0];
@@ -279,7 +275,8 @@ export function TripSignupWidget({
                 );
               })}
             </Stack>
-          </Radio.Group>
+            </Radio.Group>
+          </div>
         )}
 
         <Divider my="md" />
@@ -362,7 +359,7 @@ export function TripSignupWidget({
                     </Stack>
                     <Button
                       onClick={handleSignUp}
-                      disabled={!isSelectedVariationValid || (!isMember && !nonMembersWelcome)}
+                      disabled={!isSelectedVariationValid || (!isMember && !nonMembersWelcome) || requiresLogin || hasPurchased}
                       size="lg"
                     >
                       {isMember ? "Signup for Trip" : "Continue as Non-Member"}
