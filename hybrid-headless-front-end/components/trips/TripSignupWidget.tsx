@@ -84,7 +84,7 @@ export function TripSignupWidget({
 
     const updateStock = async () => {
       const stockResponse = await apiService.getProductStock(trip.id);
-      if (stockResponse.success) {
+      if (stockResponse.success && stockResponse.data) {
         queryClient.setQueryData<ApiResponse<Trip[]>>(tripKeys.all, (old) => {
           if (!old?.data) return old;
           return {
