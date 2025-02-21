@@ -199,7 +199,7 @@ export function TripSignupWidget({
                               variant="light"
                             >
                               {isPurchased ? 'Purchased' :
-                               inStock ? `${variation.stock_quantity ?? 'N/A'} spots left` :
+                               inStock ? `${variation.stock_quantity ?? 'N/A'} places left` :
                                'Sold out'}
                             </Badge>
                           </Group>
