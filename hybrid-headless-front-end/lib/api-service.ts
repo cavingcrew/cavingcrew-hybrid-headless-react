@@ -9,30 +9,20 @@ import type {
 } from '../types/api';
 
 export const apiService = {
-  async getUserStatus(): Promise<ApiResponse<UserStatusResponse>> {
+  async getUser(): Promise<ApiResponse<UserResponse>> {
     try {
-      const response = await fetch(`${API_BASE_URL}/hybrid-headless/v1/user-status`, {
-        credentials: 'include', // Required for cookies
-        headers: {
-          'Cache-Control': 'no-store' // Prevent caching of auth state
-        }
+      const response = await fetch(`${API_BASE_URL}/hybrid-headless/v1/user`, {
+        credentials: 'include',
+        headers: { 'Cache-Control': 'no-store' }
       });
-      if (!response.ok) throw new Error('Failed to fetch user status');
+      if (!response.ok) throw new Error('Failed to fetch user data');
       const data = await response.json();
-      return { 
-        success: true,
-        data: {
-          isLoggedIn: data.isLoggedIn,
-          isMember: data.isMember,
-          username: data.username,
-          email: data.email
-        }
-      };
+      return { data, success: true };
     } catch (error) {
       return {
         success: false,
         data: null,
-        message: error instanceof Error ? error.message : 'Failed to fetch user status'
+        message: error instanceof Error ? error.message : 'Failed to fetch user data'
       };
     }
   },
@@ -163,21 +153,4 @@ export const apiService = {
     }
   },
 
-  async getUserPurchases(): Promise<ApiResponse<UserPurchasesResponse>> {
-    try {
-      const response = await fetch(`${API_BASE_URL}/hybrid-headless/v1/user-purchases`, {
-        credentials: 'include',
-        headers: { 'Cache-Control': 'no-store' }
-      });
-      if (!response.ok) throw new Error('Failed to fetch user purchases');
-      const data = await response.json();
-      return { data, success: true };
-    } catch (error) {
-      return {
-        success: false,
-        data: null,
-        message: error instanceof Error ? error.message : 'Failed to fetch user purchases'
-      };
-    }
-  }
 };
