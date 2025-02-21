@@ -324,7 +324,12 @@ export function TripDetails({ trip }: TripDetailsProps) {
           )}
 				</Grid.Col>
 
-				<Grid.Col span={{ base: 12, md: 4 }}>
+				<Grid.Col 
+					span={{ base: 0, md: 4 }} 
+					style={{ 
+						display: { base: 'none', md: 'block' } 
+					}}
+				>
 					{trip.images?.[0] && (
 						<Image
 							src={trip.images[0].src}
