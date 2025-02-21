@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { tripKeys } from './useTrips';
-import type { ApiResponse, Trip } from '@/types/api';
+import type { ApiResponse, Trip } from '../../types/api';
 import { apiService } from '../api-service';
 
 export function useTripCache() {

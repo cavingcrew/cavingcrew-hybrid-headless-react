@@ -65,7 +65,7 @@ export function useTrip(slug: string) {
     queryKey: tripKeys.detail(slug),
     queryFn: async () => {
       // First check main trips list
-      const cachedTrip = tripsData?.data?.find(t => t.slug === slug);
+      const cachedTrip = (tripsData?.data as Trip[] | undefined)?.find(t => t.slug === slug);
       if (cachedTrip) return { data: cachedTrip, success: true };
 
       // Fallback to direct fetch

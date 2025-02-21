@@ -1,5 +1,7 @@
 "use client";
 
+import { useQueryClient } from '@tanstack/react-query';
+
 const isMembershipCategory = (trip: Trip) => {
   return trip.categories.some(cat => cat.slug === 'memberships');
 };
