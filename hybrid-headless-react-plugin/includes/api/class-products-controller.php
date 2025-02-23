@@ -631,33 +631,47 @@ class Hybrid_Headless_Products_Controller {
     }
 
     public function check_api_key_permissions(WP_REST_Request $request) {
-        // Verify WooCommerce API key authentication
-        if (!class_exists('WC_Authentication')) {
-            return new WP_Error(
-                'authentication_failed',
-                __('WooCommerce authentication system not available', 'hybrid-headless'),
-                array('status' => 503)
-            );
-        }
-
-        $user = WC_Authentication::authenticate($request);
+        // Force API key authentication only for this endpoint
+        add_filter('woocommerce_rest_is_request_from_rest_api', '__return_true');
         
+        // Authenticate using WooCommerce's core method
+        $user = WC_Authentication::authenticate($request);
+
+        // Log authentication attempt
+        error_log(sprintf(
+            '[API Auth] %s attempt by %s (%s)',
+            is_wp_error($user) ? 'Failed' : 'Successful',
+            $_SERVER['REMOTE_ADDR'],
+            $user->user_login ?? 'unknown'
+        ));
+
+        // Handle authentication errors
         if (is_wp_error($user)) {
             return new WP_Error(
-                'invalid_api_key',
-                __('Invalid or missing API key', 'hybrid-headless'),
+                'woocommerce_rest_authentication_error',
+                __('Invalid API credentials', 'hybrid-headless'),
                 array('status' => 401)
             );
         }
 
+        // Verify this is an API key user (not a regular user session)
+        if (!wc_rest_is_api_key_user($user->ID)) {
+            return new WP_Error(
+                'invalid_auth_method',
+                __('API key authentication required', 'hybrid-headless'),
+                array('status' => 401)
+            );
+        }
+
+        // Verify required capabilities
         if (!user_can($user->ID, 'manage_woocommerce')) {
             return new WP_Error(
                 'insufficient_permissions',
-                __('User does not have required permissions', 'hybrid-headless'),
+                __('API key lacks required permissions', 'hybrid-headless'),
                 array('status' => 403)
             );
         }
-        
+
         return true;
     }
 
