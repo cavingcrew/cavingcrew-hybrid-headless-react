@@ -51,6 +51,9 @@ export function TripSignupWidget({
   const [selectedPrice, setSelectedPrice] = useState<string>('');
   const [isSelectedVariationValid, setIsSelectedVariationValid] = useState(false);
   const [isSigningUp, setIsSigningUp] = useState(false);
+  const hasAvailableVariations = trip.variations?.some(v =>
+    v.stock_status === 'instock' && (v.stock_quantity ?? 0) > 0
+  );
   const nonMembersWelcome = trip.acf.event_non_members_welcome === 'yes';
   const mustCavedBefore = trip.acf.event_must_caved_with_us_before === 'yes';
   // Declare all derived variables first
@@ -145,10 +148,6 @@ export function TripSignupWidget({
     setIsSigningUp(true);
     window.location.href = `/checkout/?add-to-cart=${selectedVariation}`;
   };
-
-  const hasAvailableVariations = trip.variations?.some(v =>
-    v.stock_status === 'instock' && (v.stock_quantity ?? 0) > 0
-  );
 
   if ((trip.has_variations && !hasAvailableVariations) || (!trip.has_variations && !trip.purchasable)) {
     return (
