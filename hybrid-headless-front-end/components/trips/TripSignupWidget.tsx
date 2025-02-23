@@ -54,8 +54,8 @@ export function TripSignupWidget({
   const hasAvailableVariations = trip.variations?.some(v =>
     v.stock_status === 'instock' && (v.stock_quantity ?? 0) > 0
   );
-  const nonMembersWelcome = trip.acf.event_non_members_welcome === 'yes';
-  const mustCavedBefore = trip.acf.event_must_caved_with_us_before === 'yes';
+  const nonMembersWelcome = trip.acf?.['event_non-members_welcome'] === 'yes';
+  const mustCavedBefore = trip.acf?.event_must_caved_with_us_before === 'yes';
   // Declare all derived variables first
   const { purchasedProducts, isLoggedIn, isMember } = useUser();
   const hasPurchased = purchasedProducts.includes(trip.id) ||
