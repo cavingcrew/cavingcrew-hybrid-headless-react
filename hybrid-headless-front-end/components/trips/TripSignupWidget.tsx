@@ -53,10 +53,10 @@ export function TripSignupWidget({
   const [isSigningUp, setIsSigningUp] = useState(false);
   const nonMembersWelcome = trip.acf.event_non_members_welcome === 'yes';
   const mustCavedBefore = trip.acf.event_must_caved_with_us_before === 'yes';
+  // Declare all derived variables first
   const { purchasedProducts, isLoggedIn, isMember } = useUser();
   const hasPurchased = purchasedProducts.includes(trip.id) ||
     trip.variations.some(v => purchasedProducts.includes(v.id));
-
   const memberDiscount = trip.acf.event_members_discount;
 
   // Update price when variation changes
