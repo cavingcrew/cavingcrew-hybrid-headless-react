@@ -109,7 +109,8 @@ export interface Trip {
 		event_must_caved_with_us_before: string;
 		event_skills_required: string;
 		event_trip_leader: string;
-		event_non_members_welcome?: "yes" | "no";
+		'event_non-members_welcome'?: "yes" | "no";  // Hyphen version
+		event_non_members_welcome?: "yes" | "no";    // Underscore version
 		event_why_are_only_members_allowed?: string;
 		event_volunteering_required?: number;
 		event_attendance_required?: number;
