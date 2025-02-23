@@ -114,6 +114,32 @@ export function TripSignupWidget({
     return () => clearInterval(interval);
   }, [trip.id, trip.has_variations, queryClient]);
 
+  // Debug logging for variation selection
+  useEffect(() => {
+    console.log("DEBUG - Variation selected:", {
+      conditions: {
+        isLoggedIn,
+        hasAvailableVariations,
+        nonMembersWelcome: trip.acf.event_non_members_welcome === 'yes',
+        hasPurchased,
+        isSelectedVariationValid,
+        isMember,
+        requiresLogin,
+        isSigningUp,
+        memberDiscount: trip.acf.event_members_discount,
+        selectedVariation,
+        variationStock: trip.variations.find(v => v.id.toString() === selectedVariation)?.stock_quantity
+      },
+      disabledReasons: {
+        invalidVariation: !isSelectedVariationValid,
+        nonMemberBlocked: !isMember && !nonMembersWelcome,
+        requiresLogin,
+        purchased: hasPurchased,
+        isSigningUp
+      }
+    });
+  }, [selectedVariation, isSelectedVariationValid, isLoggedIn, hasAvailableVariations, hasPurchased, isMember, requiresLogin, isSigningUp, trip]);
+
   const handleSignUp = () => {
     if (!selectedVariation) return;
     setIsSigningUp(true);
@@ -152,6 +178,15 @@ export function TripSignupWidget({
             >
             <Stack gap="lg">
               {trip.variations.map((variation) => {
+                console.log(`Variation ${variation.id} clickable status:`, {
+                  inStock: variation.stock_status === 'instock',
+                  stockQuantity: variation.stock_quantity,
+                  isBcaMemberBlocked: trip.acf.event_type === 'giggletrip' && 
+                                    variation.sku.includes('GIGGLE--bcamember') && 
+                                    isMember,
+                  isPurchased: purchasedProducts.includes(variation.id)
+                });
+
                 const attribute = Object.values(variation.attributes)[0];
                 let inStock = variation.stock_status === 'instock';
                 let isBcaMemberVariation = false;
