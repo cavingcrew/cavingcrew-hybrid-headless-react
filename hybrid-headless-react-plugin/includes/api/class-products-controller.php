@@ -26,6 +26,19 @@ class Hybrid_Headless_Products_Controller {
     public function register_routes() {
         register_rest_route(
             Hybrid_Headless_Rest_API::API_NAMESPACE,
+            '/products/create-event',
+            array(
+                array(
+                    'methods'             => WP_REST_Server::CREATABLE,
+                    'callback'            => array( $this, 'create_event_product' ),
+                    'permission_callback' => array( $this, 'check_api_key_permissions' ),
+                    'args'               => $this->get_event_creation_args(),
+                ),
+            )
+        );
+
+        register_rest_route(
+            Hybrid_Headless_Rest_API::API_NAMESPACE,
             '/products',
             array(
                 array(
@@ -589,4 +602,163 @@ class Hybrid_Headless_Products_Controller {
         return rest_ensure_response($stock_data);
     }
 
+    private function get_event_creation_args() {
+        return array(
+            'event_type' => array(
+                'required'          => true,
+                'validate_callback' => function($param) {
+                    return in_array($param, ['giggletrip', 'overnight', 'tuesday', 'training']);
+                }
+            ),
+            'event_start_date_time' => array(
+                'required' => true,
+                'validate_callback' => function($param) {
+                    return DateTime::createFromFormat('Y-m-d H:i:s', $param) !== false;
+                }
+            ),
+            'event_name' => array(
+                'required' => true,
+                'sanitize_callback' => 'sanitize_text_field'
+            )
+        );
+    }
+
+    public function check_api_key_permissions() {
+        // Verify WooCommerce API key authentication
+        if (!class_exists('WC_Authentication')) {
+            return false;
+        }
+
+        $user = WC_Authentication::authenticate(request());
+        
+        if (is_wp_error($user) || !user_can($user->ID, 'manage_woocommerce')) {
+            return false;
+        }
+        
+        return true;
+    }
+
+    public function create_event_product(WP_REST_Request $request) {
+        $template_map = [
+            'giggletrip' => 11579,
+            'overnight' => 11583,
+            'tuesday' => 11576,
+            'training' => 123
+        ];
+
+        $event_type = $request['event_type'];
+        $template_id = $template_map[$event_type] ?? null;
+
+        if (!$template_id || !get_post($template_id)) {
+            return new WP_Error('invalid_template', 'Invalid event type', ['status' => 400]);
+        }
+
+        // Duplicate the template product
+        $new_product_id = $this->duplicate_product($template_id);
+        
+        if (is_wp_error($new_product_id)) {
+            return $new_product_id;
+        }
+
+        // Update product data
+        $this->update_product_data($new_product_id, [
+            'name' => $request['event_name'],
+            'slug' => sanitize_title($request['event_name'] . ' ' . date('Y-m-d', strtotime($request['event_start_date_time']))),
+            'status' => 'draft'
+        ]);
+
+        // Update ACF fields
+        update_field('event_start_date_time', $request['event_start_date_time'], $new_product_id);
+        update_field('event_type', $event_type, $new_product_id);
+
+        // Copy membership discounts
+        $this->copy_membership_discounts($template_id, $new_product_id);
+
+        return rest_ensure_response([
+            'product_id' => $new_product_id,
+            'edit_url' => get_edit_post_link($new_product_id, '')
+        ]);
+    }
+
+    private function duplicate_product($template_id) {
+        $template_product = wc_get_product($template_id);
+        
+        $new_product = new WC_Product();
+        $new_product->set_props($template_product->get_data());
+        $new_product->set_status('draft');
+        $new_product->set_name('Copy of ' . $template_product->get_name());
+        
+        try {
+            $new_product_id = $new_product->save();
+            
+            // Copy meta data
+            $this->copy_product_meta($template_id, $new_product_id);
+            $this->copy_product_terms($template_id, $new_product_id);
+            
+            return $new_product_id;
+        } catch (Exception $e) {
+            return new WP_Error('product_creation', $e->getMessage(), ['status' => 500]);
+        }
+    }
+
+    private function copy_product_meta($source_id, $destination_id) {
+        global $wpdb;
+        
+        $meta_data = $wpdb->get_results($wpdb->prepare(
+            "SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id = %d",
+            $source_id
+        ));
+
+        foreach ($meta_data as $meta) {
+            if ($meta->meta_key === '_sku') {
+                // Generate new SKU
+                update_post_meta($destination_id, '_sku', 
+                    date('Y-m-d') . '-' . $meta->meta_value . '-' . uniqid()
+                );
+            } else {
+                update_post_meta($destination_id, $meta->meta_key, $meta->meta_value);
+            }
+        }
+    }
+
+    private function copy_membership_discounts($source_id, $destination_id) {
+        // Copy WooCommerce Memberships discounts
+        $discount_rules = get_post_meta($source_id, '_memberships_discount', true);
+        
+        if ($discount_rules) {
+            update_post_meta($destination_id, '_memberships_discount', $discount_rules);
+        }
+
+        // Copy any membership plan associations
+        $plan_ids = wc_memberships_get_membership_plans();
+        
+        foreach ($plan_ids as $plan) {
+            $discount = $plan->get_discount($source_id);
+            if ($discount) {
+                $plan->set_discount($destination_id, $discount['amount'], $discount['type']);
+            }
+        }
+    }
+
+    private function copy_product_terms($source_id, $destination_id) {
+        $taxonomies = get_object_taxonomies('product');
+        
+        foreach ($taxonomies as $taxonomy) {
+            $terms = wp_get_object_terms($source_id, $taxonomy);
+            wp_set_object_terms($destination_id, wp_list_pluck($terms, 'term_id'), $taxonomy);
+        }
+    }
+
+    private function update_product_data($product_id, $data) {
+        $product = wc_get_product($product_id);
+        
+        foreach ($data as $key => $value) {
+            $setter = "set_$key";
+            if (method_exists($product, $setter)) {
+                $product->$setter($value);
+            }
+        }
+        
+        $product->save();
+    }
 }
