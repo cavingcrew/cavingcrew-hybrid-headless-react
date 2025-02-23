@@ -605,34 +605,57 @@ class Hybrid_Headless_Products_Controller {
     private function get_event_creation_args() {
         return array(
             'event_type' => array(
-                'required'          => true,
+                'required' => true,
                 'validate_callback' => function($param) {
                     return in_array($param, ['giggletrip', 'overnight', 'tuesday', 'training']);
-                }
+                },
+                'error' => __('Invalid event type. Must be one of: giggletrip, overnight, tuesday, training', 'hybrid-headless')
             ),
             'event_start_date_time' => array(
                 'required' => true,
                 'validate_callback' => function($param) {
-                    return DateTime::createFromFormat('Y-m-d H:i:s', $param) !== false;
-                }
+                    $date = DateTime::createFromFormat('Y-m-d H:i:s', $param);
+                    return $date && $date->format('Y-m-d H:i:s') === $param;
+                },
+                'error' => __('Invalid date format. Use YYYY-MM-DD HH:MM:SS in UTC', 'hybrid-headless')
             ),
             'event_name' => array(
                 'required' => true,
-                'sanitize_callback' => 'sanitize_text_field'
+                'sanitize_callback' => 'sanitize_text_field',
+                'validate_callback' => function($param) {
+                    return strlen($param) >= 5 && strlen($param) <= 100;
+                },
+                'error' => __('Event name must be between 5 and 100 characters', 'hybrid-headless')
             )
         );
     }
 
-    public function check_api_key_permissions() {
+    public function check_api_key_permissions(WP_REST_Request $request) {
         // Verify WooCommerce API key authentication
         if (!class_exists('WC_Authentication')) {
-            return false;
+            return new WP_Error(
+                'authentication_failed',
+                __('WooCommerce authentication system not available', 'hybrid-headless'),
+                array('status' => 503)
+            );
         }
 
-        $user = WC_Authentication::authenticate(request());
+        $user = WC_Authentication::authenticate($request);
         
-        if (is_wp_error($user) || !user_can($user->ID, 'manage_woocommerce')) {
-            return false;
+        if (is_wp_error($user)) {
+            return new WP_Error(
+                'invalid_api_key',
+                __('Invalid or missing API key', 'hybrid-headless'),
+                array('status' => 401)
+            );
+        }
+
+        if (!user_can($user->ID, 'manage_woocommerce')) {
+            return new WP_Error(
+                'insufficient_permissions',
+                __('User does not have required permissions', 'hybrid-headless'),
+                array('status' => 403)
+            );
         }
         
         return true;
@@ -683,21 +706,54 @@ class Hybrid_Headless_Products_Controller {
     private function duplicate_product($template_id) {
         $template_product = wc_get_product($template_id);
         
-        $new_product = new WC_Product();
-        $new_product->set_props($template_product->get_data());
-        $new_product->set_status('draft');
-        $new_product->set_name('Copy of ' . $template_product->get_name());
+        if (!$template_product || $template_product->get_status() !== 'publish') {
+            return new WP_Error(
+                'invalid_template',
+                __('Template product not found or not published', 'hybrid-headless'),
+                array('status' => 400)
+            );
+        }
         
         try {
+            $new_product = new WC_Product();
+            $new_product->set_props($template_product->get_data());
+            $new_product->set_status('draft');
+            $new_product->set_name('Copy of ' . $template_product->get_name());
+            
+            // Generate unique SKU
+            $base_sku = $template_product->get_sku();
+            $new_sku = date('Y-m-d') . '-' . $base_sku . '-' . uniqid();
+            $new_product->set_sku($new_sku);
+            
             $new_product_id = $new_product->save();
             
-            // Copy meta data
+            if (!$new_product_id) {
+                throw new Exception(__('Failed to create new product', 'hybrid-headless'));
+            }
+            
+            // Copy meta data and terms
             $this->copy_product_meta($template_id, $new_product_id);
             $this->copy_product_terms($template_id, $new_product_id);
             
+            // Log creation
+            error_log(sprintf(
+                '[Event Creation] New product %d created from template %d with SKU %s',
+                $new_product_id,
+                $template_id,
+                $new_sku
+            ));
+            
+            do_action('hybrid_headless_event_created', $new_product_id, $template_id);
+            
             return $new_product_id;
+            
         } catch (Exception $e) {
-            return new WP_Error('product_creation', $e->getMessage(), ['status' => 500]);
+            error_log('[Event Creation Error] ' . $e->getMessage());
+            return new WP_Error(
+                'product_creation',
+                __('Failed to create event product', 'hybrid-headless'),
+                array('status' => 500)
+            );
         }
     }
 
