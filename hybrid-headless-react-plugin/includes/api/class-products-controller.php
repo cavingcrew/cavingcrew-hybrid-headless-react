@@ -760,32 +760,34 @@ class Hybrid_Headless_Products_Controller {
     }
 
     private function copy_membership_discounts($source_id, $destination_id) {
-        // Copy WooCommerce Memberships discounts
-        $discount_rules = get_post_meta($source_id, '_memberships_discount', true);
-
-        if ($discount_rules) {
-            update_post_meta($destination_id, '_memberships_discount', $discount_rules);
-        }
-
-        // Copy any membership plan associations
         foreach (wc_memberships_get_membership_plans() as $plan) {
             try {
-                // Get discount rules using official API
                 $rules = $plan->get_rules('purchasing_discount');
+                $existing_rules = $plan->get_rules();
                 
                 foreach ($rules as $rule) {
-                    if ($rule->has_object_id($source_id)) {
-                        // Clone the rule for new product
-                        $plan->add_rule(array(
-                            'rule_type'         => 'purchasing_discount',
-                            'object_ids'        => array($destination_id),
-                            'active'            => $rule->is_active(),
-                            'amount'            => $rule->get_discount_amount(),
-                            'discount_type'     => $rule->get_discount_type(),
-                            'applies_to'        => $rule->get_applies_to(),
-                            'start_date'        => $rule->get_start_date(),
-                            'end_date'          => $rule->get_end_date(),
-                        ));
+                    if ($rule->has_object_id($source_id) && $rule->is_active()) {
+                        // Create new rule array preserving all critical properties
+                        $new_rule = [
+                            'rule_type' => 'purchasing_discount',
+                            'object_ids' => array($destination_id),
+                            'active' => $rule->is_active(),
+                            'discount_type' => $rule->get_discount_type(),
+                            'discount_amount' => $rule->get_discount_amount(),
+                            'access_schedule' => $rule->get_access_schedule(),
+                            'access_schedule_exclude_trial' => $rule->is_access_schedule_excluding_trial(),
+                            'content_type' => 'post_type',
+                            'content_type_name' => 'product'
+                        ];
+                        
+                        // Use Memberships' official rule saving method
+                        WC_Memberships_Admin_Membership_Plan_Rules::save_rules(
+                            $plan->get_id(),
+                            array_merge($existing_rules, [$new_rule]),
+                            'purchasing_discount'
+                        );
+                        
+                        $plan->compact_rules();
                         error_log("[Membership Discount] Copied rule from {$source_id} to {$destination_id}");
                     }
                 }
