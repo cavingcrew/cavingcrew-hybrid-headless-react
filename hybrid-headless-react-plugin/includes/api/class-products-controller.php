@@ -695,61 +695,47 @@ class Hybrid_Headless_Products_Controller {
     private function duplicate_product($template_id) {
         $template_product = wc_get_product($template_id);
 
- if (!$template_product || !in_array($template_product->get_status(), ['publish', 'draft'])) {
-     error_log('[Template Check] Template status: ' . $template_product->get_status());
-     return new WP_Error(
-         'invalid_template',
-         __('Template product not found or not in publish/draft state', 'hybrid-headless'),
-         array('status' => 400)
-     );
- }
+        if (!$template_product || !in_array($template_product->get_status(), ['publish', 'draft'])) {
+            error_log('[Template Validation] Invalid template product');
+            return new WP_Error('invalid_template', 'Invalid template product');
+        }
 
         try {
-            // Check if this is a template product
-         //   if (!get_post_meta($template_id, '_is_event_template', true)) {
-         //       error_log('[Template Check] Template ID ' . $template_id . ' validation: invalid');
-         //       throw new Exception(__('Product is not marked as a template', 'hybrid-headless'));
-         //   }
-           // error_log('[Template Check] Template ID ' . $template_id . ' validation: valid');
-
-            // Use duplicator to create true copy
-            require_once HYBRID_HEADLESS_PLUGIN_DIR . 'includes/class-wc-product-duplicator.php';
-            $duplicator = new WC_Product_Duplicator();
-            $new_product = $duplicator->duplicate($template_product);
-
-            if (!$new_product) {
-                throw new Exception(__('Failed to duplicate product', 'hybrid-headless'));
-            }
-
-            // Update the duplicate's properties
+            // Create new product without cloning
+            $new_product = new WC_Product_Variable();
+            
+            // Copy base properties
             $new_product->set_props([
-                'name' => $request['event_name'],
-                'status' => 'draft'
+                'name'          => '(TEMP) ' . $template_product->get_name(),
+                'description'   => $template_product->get_description(),
+                'status'        => 'draft',
+                'sku'           => $this->generate_temp_sku(),
+                // Reset critical fields
+                'total_sales'   => 0,
+                'stock_status'  => 'instock',
+                'stock_quantity' => null
             ]);
-
-            // Generate unique SKU
-            $base_sku = $template_product->get_sku();
-            $new_sku = date('Y-m-d') . '-' . $base_sku . '-' . uniqid();
-            if (empty($new_sku)) {
-                throw new Exception(__('Failed to generate unique SKU', 'hybrid-headless'));
-            }
-            $new_product->set_sku($new_sku);
-
+            
             $new_product_id = $new_product->save();
 
-            // Copy meta data and terms
+            // Copy filtered meta
             $this->copy_product_meta($template_id, $new_product_id);
-            $this->copy_product_terms($template_id, $new_product_id);
+            
+            // Canary check 1: Verify SKU was reset
+            if (get_post_meta($new_product_id, '_sku', true) === $template_product->get_sku()) {
+                error_log('[Canary] SKU duplication detected');
+            }
 
-            // Log creation
+            // Canary check 2: Verify template marker removed
+            if (get_post_meta($new_product_id, '_is_event_template', true)) {
+                error_log('[Canary] Template marker not removed');
+            }
+
             error_log(sprintf(
-                '[Event Creation] New product %d created from template %d with SKU %s',
+                '[Duplication Success] Created product %d from template %d',
                 $new_product_id,
-                $template_id,
-                $new_sku
+                $template_id
             ));
-
-            do_action('hybrid_headless_event_created', $new_product_id, $template_id);
 
             return $new_product_id;
 
