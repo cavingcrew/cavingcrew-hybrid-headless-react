@@ -780,70 +780,34 @@ class Hybrid_Headless_Products_Controller {
         foreach (wc_memberships_get_membership_plans() as $plan) {
             try {
                 error_log("[Membership Debug] Processing plan ID: " . $plan->get_id());
-
-                $rules = $plan->get_rules('purchasing_discount');
-                error_log("[Membership Debug] Found " . count($rules) . " purchasing discount rules");
-
-                $existing_rules = $plan->get_rules();
-                $original_rule_count = count($existing_rules);
-
-                foreach ($rules as $index => $rule) {
+                
+                // Get existing purchasing discount rules
+                $existing_rules = $plan->get_rules('purchasing_discount');
+                
+                // Find rules that apply to the template product
+                foreach ($existing_rules as $rule) {
                     $rule_product_ids = $rule->get_object_ids();
-                    error_log("[Membership Debug] Rule $index products: " . implode(', ', $rule_product_ids));
-
-                    if (in_array($source_id, $rule_product_ids, true) && $rule->is_active()) {
+                    
+                    if (in_array($source_id, $rule_product_ids) && $rule->is_active()) {
                         error_log("[Membership Debug] Found matching rule for source product");
+                        
+                        // Clone the rule with new product ID
+                        $new_rule = new WC_Memberships_Membership_Plan_Rule([
+                            'rule_type'          => 'purchasing_discount',
+                            'object_ids'         => [$destination_id],
+                            'membership_plan_id' => $plan->get_id(),
+                            'active'             => $rule->is_active(),
+                            'discount_type'      => $rule->get_discount_type(),
+                            'discount_amount'    => $rule->get_discount_amount(),
+                            'access_schedule'    => $rule->get_access_schedule(),
+                            'content_type'       => 'post_type',
+                            'content_type_name'  => 'product'
+                        ]);
 
-                        // Create new rule configuration
-                        $new_rule = [
-                            'rule_type' => 'purchasing_discount',
-                            'object_ids' => array($destination_id),
-                            'active' => $rule->is_active(),
-                            'discount_type' => $rule->get_discount_type(),
-                            'discount_amount' => $rule->get_discount_amount(),
-                            'access_schedule' => $rule->get_access_schedule(),
-                            'access_schedule_exclude_trial' => $rule->is_access_schedule_excluding_trial(),
-                            'content_type' => 'post_type',
-                            'content_type_name' => 'product'
-                        ];
-
-                        error_log("[Membership Debug] New rule data: " . print_r($new_rule, true));
-
-                        // Add to existing rules
-                        $existing_rules[] = $new_rule;
-                        error_log("[Membership Debug] Rule added to existing rules");
+                        // Add the new rule to the plan
+                        $plan->add_rule($new_rule);
+                        error_log("[Membership Debug] Successfully added new rule to plan");
                     }
-                }
-
-                if (count($existing_rules) > $original_rule_count) {
-                    error_log("[Membership Debug] Attempting to update rules for plan " . $plan->get_id());
-
-                    // Use official Memberships API to update rules
-                    $rules_handler = wc_memberships()->get_rules_instance();
-                    $result = $rules_handler->update_rules(array(
-                        'plan_id' => $plan->get_id(),
-                        'rule_type' => 'purchasing_discount',
-                        'rules' => $existing_rules
-                    ));
-
-                    // Verify update
-                    $updated_rules = $plan->get_rules('purchasing_discount');
-                    $found_new_rule = false;
-
-                    foreach ($updated_rules as $rule) {
-                        if (in_array($destination_id, $rule->get_object_ids())) {
-                            $found_new_rule = true;
-                            break;
-                        }
-                    }
-
-                    if ($found_new_rule) {
-                        error_log("[Membership Debug] Successfully updated rules for plan " . $plan->get_id());
-                    } else {
-                        error_log("[Membership Error] Failed to persist rules for plan " . $plan->get_id());
-                    }
-                } else {
-                    error_log("[Membership Debug] No new rules to add for plan " . $plan->get_id());
                 }
 
             } catch (Exception $e) {
