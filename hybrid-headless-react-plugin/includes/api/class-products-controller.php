@@ -607,9 +607,20 @@ class Hybrid_Headless_Products_Controller {
             'event_type' => array(
                 'required' => true,
                 'validate_callback' => function($param) {
-                    return in_array($param, ['giggletrip', 'overnight', 'tuesday', 'training']);
+                    // Allow all keys from the template map
+                    $valid_types = array_keys([
+                        'giggletrip' => 11579,
+                        'overnight' => 11583,
+                        'tuesday' => 11576,
+                        'training' => 123,
+                        'horizontal_training' => 12759,
+                        'basic_srt' => 12758,
+                        'known_location' => 11595,
+                        'mystery' => 11576
+                    ]);
+                    return in_array($param, $valid_types);
                 },
-                'error' => __('Invalid event type. Must be one of: giggletrip, overnight, tuesday, training', 'hybrid-headless')
+                'error' => __('Invalid event type. Valid types are: giggletrip, overnight, tuesday, training, horizontal_training, basic_srt, known_location, mystery', 'hybrid-headless')
             ),
             'event_start_date_time' => array(
                 'required' => true,
