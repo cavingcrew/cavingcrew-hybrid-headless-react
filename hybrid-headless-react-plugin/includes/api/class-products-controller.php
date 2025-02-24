@@ -646,7 +646,6 @@ class Hybrid_Headless_Products_Controller {
             $template_map = [
                 'giggletrip' => 11579,
                 'overnight' => 11583,
-                'tuesday' => 11576,
                 'training' => 123,
                 'horizontal_training' => 12759,
                 'basic_srt' => 12758,
@@ -665,12 +664,12 @@ class Hybrid_Headless_Products_Controller {
             $event_date = new DateTime($request['event_start_date_time']);
             $sku_date = $event_date->format('Y-m-d');
             $base_sku = sprintf('%s-%s', $sku_date, $event_type);
-            
+
             // Generate unique suffix with retry logic
             $new_sku = '';
             $retries = 0;
             $max_retries = 5;
-            
+
             do {
                 $unique_suffix = bin2hex(random_bytes(4)); // 8 character hex
                 $new_sku = $base_sku . '-' . $unique_suffix;
@@ -729,7 +728,7 @@ class Hybrid_Headless_Products_Controller {
             // Create new product
             $new_product = clone $template_product;
             $new_product->set_id(0);
-            
+
             // Reset critical properties
             $current_time = current_time('mysql', true); // GMT time
             $new_product->set_props([
@@ -749,7 +748,7 @@ class Hybrid_Headless_Products_Controller {
 
             // Copy filtered meta
             $this->copy_product_meta($template_id, $new_product_id);
-            
+
             // Canary check 1: Verify SKU was reset
             if (get_post_meta($new_product_id, '_sku', true) === $template_product->get_sku()) {
                 error_log('[Canary] SKU duplication detected');
@@ -784,19 +783,19 @@ class Hybrid_Headless_Products_Controller {
 
     private function duplicate_variation($variation_id, $new_parent_id) {
         $variation = wc_get_product($variation_id);
-        
+
         $new_variation = clone $variation;
         $new_variation->set_props([
             'parent_id' => $new_parent_id,
             'id' => 0
         ]);
-        
+
         // Preserve stock data
         $new_variation->set_stock_quantity($variation->get_stock_quantity());
         $new_variation->set_stock_status($variation->get_stock_status());
-        
+
         $new_variation_id = $new_variation->save();
-        
+
         // Copy variation meta
         $this->copy_variation_meta($variation_id, $new_variation_id);
     }
@@ -804,7 +803,7 @@ class Hybrid_Headless_Products_Controller {
     private function copy_variation_meta($source_id, $destination_id) {
         $excluded = ['_sumo_pp_*', '_yoast_*'];
         $meta = get_post_meta($source_id);
-        
+
         foreach ($meta as $key => $values) {
             foreach ($excluded as $pattern) {
                 if (fnmatch($pattern, $key)) continue 2;
@@ -824,7 +823,7 @@ class Hybrid_Headless_Products_Controller {
         ];
 
         $meta = get_post_meta($source_id);
-        
+
         foreach ($meta as $key => $values) {
             // Skip excluded patterns
             foreach ($excluded_patterns as $pattern) {
@@ -832,9 +831,9 @@ class Hybrid_Headless_Products_Controller {
                     continue 2;
                 }
             }
-            
+
             $value = maybe_unserialize($values[0]);
-            
+
             // Special handling for price
             if ($key === '_price') {
                 update_post_meta($destination_id, $key, '');
@@ -842,7 +841,7 @@ class Hybrid_Headless_Products_Controller {
                 update_post_meta($destination_id, $key, $value);
             }
         }
-        
+
         // Canary log
         error_log(sprintf(
             '[Meta Copy] Copied %d meta fields, excluded %d patterns',
@@ -861,7 +860,7 @@ class Hybrid_Headless_Products_Controller {
 
                 foreach ($rules as $rule) {
                     $object_ids = $rule->get_object_ids();
-                    
+
                     if (in_array($source_id, $object_ids) && !in_array($destination_id, $object_ids)) {
                         // Add new product to existing rule
                         $object_ids[] = $destination_id;
@@ -906,17 +905,17 @@ class Hybrid_Headless_Products_Controller {
 
     private function sku_exists($sku) {
         global $wpdb;
-        
+
         $product_id = $wpdb->get_var(
             $wpdb->prepare(
-                "SELECT post_id FROM $wpdb->postmeta 
-                WHERE meta_key = '_sku' 
-                AND meta_value = %s 
+                "SELECT post_id FROM $wpdb->postmeta
+                WHERE meta_key = '_sku'
+                AND meta_value = %s
                 LIMIT 1",
                 $sku
             )
         );
-        
+
         return $product_id !== null;
     }
 }
