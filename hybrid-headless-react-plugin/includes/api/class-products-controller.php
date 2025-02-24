@@ -774,7 +774,11 @@ class Hybrid_Headless_Products_Controller {
                 $existing_rules = $plan->get_rules();
                 
                 foreach ($rules as $rule) {
-                    if ($rule->has_object_id($source_id) && $rule->is_active()) {
+                    // Get the product IDs this rule applies to
+                    $rule_product_ids = $rule->get_object_ids();
+                    
+                    // Check if our template product is in the rule's product IDs
+                    if (in_array($source_id, $rule_product_ids, true) && $rule->is_active()) {
                         // Create new rule array preserving all critical properties
                         $new_rule = [
                             'rule_type' => 'purchasing_discount',
