@@ -642,12 +642,13 @@ class Hybrid_Headless_Products_Controller {
     }
 
     public function create_event_product(WP_REST_Request $request) {
-        $template_map = [
-            'giggletrip' => 11579,
-            'overnight' => 11583,
-            'tuesday' => 11576,
-            'training' => 123
-        ];
+        try {
+            $template_map = [
+                'giggletrip' => 11579,
+                'overnight' => 11583,
+                'tuesday' => 11576,
+                'training' => 123
+            ];
 
         $event_type = $request['event_type'];
         $template_id = $template_map[$event_type] ?? null;
@@ -767,12 +768,30 @@ class Hybrid_Headless_Products_Controller {
         }
 
         // Copy any membership plan associations
-        $plan_ids = wc_memberships_get_membership_plans();
-
-        foreach ($plan_ids as $plan) {
-            $discount = $plan->get_discount($source_id);
-            if ($discount) {
-                $plan->set_discount($destination_id, $discount['amount'], $discount['type']);
+        foreach (wc_memberships_get_membership_plans() as $plan) {
+            try {
+                // Get discount rules using official API
+                $rules = $plan->get_rules('purchasing_discount');
+                
+                foreach ($rules as $rule) {
+                    if ($rule->has_object_id($source_id)) {
+                        // Clone the rule for new product
+                        $plan->add_rule(array(
+                            'rule_type'         => 'purchasing_discount',
+                            'object_ids'        => array($destination_id),
+                            'active'            => $rule->is_active(),
+                            'amount'            => $rule->get_discount_amount(),
+                            'discount_type'     => $rule->get_discount_type(),
+                            'applies_to'        => $rule->get_applies_to(),
+                            'start_date'        => $rule->get_start_date(),
+                            'end_date'          => $rule->get_end_date(),
+                        ));
+                        error_log("[Membership Discount] Copied rule from {$source_id} to {$destination_id}");
+                    }
+                }
+            } catch (Exception $e) {
+                error_log("[Membership Error] {$e->getMessage()}");
+                continue;
             }
         }
     }
