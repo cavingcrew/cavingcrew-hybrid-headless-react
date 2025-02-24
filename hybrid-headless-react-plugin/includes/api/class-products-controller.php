@@ -903,7 +903,7 @@ class Hybrid_Headless_Products_Controller {
 
         $product->save();
     }
-}
+
     private function sku_exists($sku) {
         global $wpdb;
         
@@ -919,3 +919,4 @@ class Hybrid_Headless_Products_Controller {
         
         return $product_id !== null;
     }
+}
