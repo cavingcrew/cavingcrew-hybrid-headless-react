@@ -773,10 +773,10 @@ class Hybrid_Headless_Products_Controller {
         foreach (wc_memberships_get_membership_plans() as $plan) {
             try {
                 $rules = $plan->get_rules('purchasing_discount');
-                
+
                 foreach ($rules as $rule) {
                     $rule_product_ids = $rule->get_object_ids();
-                    
+
                     if (in_array($source_id, $rule_product_ids, true) && $rule->is_active()) {
                         // Create new rule configuration
                         $new_rule = [
