@@ -25,13 +25,13 @@ class Hybrid_Headless_Products_Controller {
      */
     public function register_routes() {
         register_rest_route(
-            Hybrid_Headless_Rest_API::API_NAMESPACE,
+            'wc-hybrid-headless/v1',
             '/products/create-event',
             array(
                 array(
                     'methods'             => WP_REST_Server::CREATABLE,
                     'callback'            => array( $this, 'create_event_product' ),
-                    'permission_callback' => array( $this, 'check_api_key_permissions' ),
+                    'permission_callback' => array( $this, 'check_woocommerce_permissions' ),
                     'args'               => $this->get_event_creation_args(),
                 ),
             )
@@ -630,48 +630,14 @@ class Hybrid_Headless_Products_Controller {
         );
     }
 
-    public function check_api_key_permissions(WP_REST_Request $request) {
-        // Force API key authentication only for this endpoint
-        add_filter('woocommerce_rest_is_request_from_rest_api', '__return_true');
-        
-        // Authenticate using WooCommerce's core method
-        $user = WC_Authentication::authenticate($request);
-
-        // Log authentication attempt
-        error_log(sprintf(
-            '[API Auth] %s attempt by %s (%s)',
-            is_wp_error($user) ? 'Failed' : 'Successful',
-            $_SERVER['REMOTE_ADDR'],
-            $user->user_login ?? 'unknown'
-        ));
-
-        // Handle authentication errors
-        if (is_wp_error($user)) {
+    public function check_woocommerce_permissions() {
+        if (!current_user_can('manage_woocommerce')) {
             return new WP_Error(
-                'woocommerce_rest_authentication_error',
-                __('Invalid API credentials', 'hybrid-headless'),
-                array('status' => 401)
+                'woocommerce_rest_cannot_create',
+                __('Sorry, you cannot create resources.', 'hybrid-headless'),
+                array('status' => rest_authorization_required_code())
             );
         }
-
-        // Verify this is an API key user (not a regular user session)
-        if (!wc_rest_is_api_key_user($user->ID)) {
-            return new WP_Error(
-                'invalid_auth_method',
-                __('API key authentication required', 'hybrid-headless'),
-                array('status' => 401)
-            );
-        }
-
-        // Verify required capabilities
-        if (!user_can($user->ID, 'manage_woocommerce')) {
-            return new WP_Error(
-                'insufficient_permissions',
-                __('API key lacks required permissions', 'hybrid-headless'),
-                array('status' => 403)
-            );
-        }
-
         return true;
     }
 
