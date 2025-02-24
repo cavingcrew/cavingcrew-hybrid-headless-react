@@ -701,22 +701,20 @@ class Hybrid_Headless_Products_Controller {
         }
 
         try {
-            // Create new product without cloning
-            $new_product = new WC_Product_Variable();
-            
-            // Copy base properties
+            // Create new product
+            $new_product = clone $template_product;
+            $new_product->set_id(0);
             $new_product->set_props([
-                'name'          => '(TEMP) ' . $template_product->get_name(),
-                'description'   => $template_product->get_description(),
-                'status'        => 'draft',
-                'sku'           => $this->generate_temp_sku(),
-                // Reset critical fields
-                'total_sales'   => 0,
-                'stock_status'  => 'instock',
+                'sku' => $this->generate_temp_sku(),
+                'total_sales' => 0,
                 'stock_quantity' => null
             ]);
-            
             $new_product_id = $new_product->save();
+
+            // Copy variations
+            foreach ($template_product->get_children() as $variation_id) {
+                $this->duplicate_variation($variation_id, $new_product_id);
+            }
 
             // Copy filtered meta
             $this->copy_product_meta($template_id, $new_product_id);
@@ -753,10 +751,41 @@ class Hybrid_Headless_Products_Controller {
         return 'TEMP-' . uniqid();
     }
 
+    private function duplicate_variation($variation_id, $new_parent_id) {
+        $variation = wc_get_product($variation_id);
+        
+        $new_variation = clone $variation;
+        $new_variation->set_props([
+            'parent_id' => $new_parent_id,
+            'id' => 0
+        ]);
+        
+        // Preserve stock data
+        $new_variation->set_stock_quantity($variation->get_stock_quantity());
+        $new_variation->set_stock_status($variation->get_stock_status());
+        
+        $new_variation_id = $new_variation->save();
+        
+        // Copy variation meta
+        $this->copy_variation_meta($variation_id, $new_variation_id);
+    }
+
+    private function copy_variation_meta($source_id, $destination_id) {
+        $excluded = ['_sumo_pp_*', '_yoast_*'];
+        $meta = get_post_meta($source_id);
+        
+        foreach ($meta as $key => $values) {
+            foreach ($excluded as $pattern) {
+                if (fnmatch($pattern, $key)) continue 2;
+            }
+            update_post_meta($destination_id, $key, maybe_unserialize($values[0]));
+        }
+    }
+
     private function copy_product_meta($source_id, $destination_id) {
         $excluded_patterns = [
             // Core WC
-            '_sku', 'total_sales', '_stock*', '_wc_*', 
+            '_sku', 'total_sales', '_stock_quantity', '_wc_*',
             // Third-party
             '_sumo_pp_*', '_yoast_*', 'wppb-*',
             // Template markers
@@ -797,44 +826,23 @@ class Hybrid_Headless_Products_Controller {
         foreach (wc_memberships_get_membership_plans() as $plan) {
             try {
                 $rules = $plan->get_rules('purchasing_discount');
-                $new_rules = [];
                 $modified = false;
 
                 foreach ($rules as $rule) {
-                    // Add existing rule
-                    $new_rules[] = $rule;
+                    $object_ids = $rule->get_object_ids();
                     
-                    // Check if rule applies to source product
-                    if (in_array($source_id, $rule->get_object_ids())) {
-                        // Create new rule with destination ID
-                        $new_rule = new WC_Memberships_Membership_Plan_Rule([
-                            'rule_type'          => 'purchasing_discount',
-                            'object_ids'         => array_merge(
-                                $rule->get_object_ids(),
-                                [$destination_id]
-                            ),
-                            'membership_plan_id' => $plan->get_id(),
-                            'active'             => $rule->is_active(),
-                            'discount_type'      => $rule->get_discount_type(),
-                            'discount_amount'    => $rule->get_discount_amount(),
-                            'access_schedule'    => $rule->get_access_schedule()
-                        ]);
-                        
-                        $new_rules[] = $new_rule;
+                    if (in_array($source_id, $object_ids) && !in_array($destination_id, $object_ids)) {
+                        // Add new product to existing rule
+                        $object_ids[] = $destination_id;
+                        $rule->set_object_ids(array_unique($object_ids));
                         $modified = true;
                     }
                 }
 
                 if ($modified) {
-                    // Canary check for rule updates
-                    error_log(sprintf(
-                        '[Membership] Updating plan %d with %d rules',
-                        $plan->get_id(),
-                        count($new_rules)
-                    ));
-                    
-                    // Replace all rules with updated set
-                    $plan->set_rules($new_rules);
+                    // Validate rule changes
+                    error_log("[Membership] Updated plan {$plan->get_id()} rules");
+                    $plan->compact_rules(); // Critical for persistence
                 }
 
             } catch (Exception $e) {
