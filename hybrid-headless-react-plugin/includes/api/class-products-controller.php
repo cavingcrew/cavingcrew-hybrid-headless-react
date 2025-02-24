@@ -704,7 +704,12 @@ class Hybrid_Headless_Products_Controller {
             // Create new product
             $new_product = clone $template_product;
             $new_product->set_id(0);
+        
+            // Set fresh dates
+            $current_time = current_time('mysql', true); // GMT time
             $new_product->set_props([
+                'date_created' => $current_time,
+                'date_modified' => $current_time,
                 'sku' => $this->generate_temp_sku(),
                 'total_sales' => 0,
                 'stock_quantity' => null
