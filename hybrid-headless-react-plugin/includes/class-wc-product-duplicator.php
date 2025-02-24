@@ -17,6 +17,10 @@ class WC_Product_Duplicator {
      * @return WC_Product New duplicated product
      */
     public function duplicate($product) {
+        // DEBUG: Log original product meta
+        $original_meta = get_post_meta($product->get_id());
+        error_log('[Duplicator] Original product meta: ' . print_r(array_keys($original_meta), true));
+        
         // Create new product as a duplicate
         $new_product = clone $product;
         $new_product->set_id(0); // Reset ID to create new
@@ -32,13 +36,22 @@ class WC_Product_Duplicator {
         // Save the duplicate
         $new_id = $new_product->save();
         
+        // DEBUG: Log meta before copying
+        $meta_before = get_post_meta($new_id);
+        error_log('[Duplicator] New product meta before copy (' . $new_id . '): ' . print_r(array_keys($meta_before), true));
+        
         // Copy all product meta
         $meta_data = get_post_meta($product->get_id());
         foreach ($meta_data as $meta_key => $meta_values) {
+            error_log('[Duplicator] Copying meta key: ' . $meta_key);
             foreach ($meta_values as $meta_value) {
                 add_post_meta($new_id, $meta_key, maybe_unserialize($meta_value));
             }
         }
+        
+        // DEBUG: Log meta after copying
+        $meta_after = get_post_meta($new_id);
+        error_log('[Duplicator] New product meta after copy (' . $new_id . '): ' . print_r(array_keys($meta_after), true));
         
         // Copy variations if variable product
         if ($product->is_type('variable')) {
@@ -61,6 +74,10 @@ class WC_Product_Duplicator {
      * @return int New variation ID
      */
     private function duplicate_variation($variation, $new_parent_id) {
+        // DEBUG: Log original variation meta
+        $original_meta = get_post_meta($variation->get_id());
+        error_log('[Duplicator] Original variation meta: ' . print_r(array_keys($original_meta), true));
+        
         $new_variation = clone $variation;
         $new_variation->set_id(0);
         $new_variation->set_parent_id($new_parent_id);
@@ -74,13 +91,22 @@ class WC_Product_Duplicator {
         
         $new_variation_id = $new_variation->save();
         
+        // DEBUG: Log meta before copying
+        $meta_before = get_post_meta($new_variation_id);
+        error_log('[Duplicator] New variation meta before copy (' . $new_variation_id . '): ' . print_r(array_keys($meta_before), true));
+        
         // Copy variation meta
         $meta_data = get_post_meta($variation->get_id());
         foreach ($meta_data as $meta_key => $meta_values) {
+            error_log('[Duplicator] Copying variation meta key: ' . $meta_key);
             foreach ($meta_values as $meta_value) {
                 add_post_meta($new_variation_id, $meta_key, maybe_unserialize($meta_value));
             }
         }
+        
+        // DEBUG: Log meta after copying
+        $meta_after = get_post_meta($new_variation_id);
+        error_log('[Duplicator] New variation meta after copy (' . $new_variation_id . '): ' . print_r(array_keys($meta_after), true));
         
         return $new_variation_id;
     }
