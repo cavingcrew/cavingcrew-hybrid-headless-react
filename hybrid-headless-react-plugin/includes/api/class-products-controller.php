@@ -650,38 +650,46 @@ class Hybrid_Headless_Products_Controller {
                 'training' => 123
             ];
 
-        $event_type = $request['event_type'];
-        $template_id = $template_map[$event_type] ?? null;
+            $event_type = $request['event_type'];
+            $template_id = $template_map[$event_type] ?? null;
 
-        if (!$template_id || !get_post($template_id)) {
-            return new WP_Error('invalid_template', 'Invalid event type', ['status' => 400]);
+            if (!$template_id || !get_post($template_id)) {
+                return new WP_Error('invalid_template', 'Invalid event type', ['status' => 400]);
+            }
+
+            // Duplicate the template product
+            $new_product_id = $this->duplicate_product($template_id);
+
+            if (is_wp_error($new_product_id)) {
+                return $new_product_id;
+            }
+
+            // Update product data
+            $this->update_product_data($new_product_id, [
+                'name' => $request['event_name'],
+                'slug' => sanitize_title($request['event_name'] . ' ' . date('Y-m-d', strtotime($request['event_start_date_time']))),
+                'status' => 'draft'
+            ]);
+
+            // Update ACF fields
+            update_field('event_start_date_time', $request['event_start_date_time'], $new_product_id);
+            update_field('event_type', $event_type, $new_product_id);
+
+            // Copy membership discounts
+            $this->copy_membership_discounts($template_id, $new_product_id);
+
+            return rest_ensure_response([
+                'product_id' => $new_product_id,
+                'edit_url' => get_edit_post_link($new_product_id, '')
+            ]);
+        } catch (Exception $e) {
+            error_log('[Event Creation Critical] ' . $e->getMessage() . "\n" . $e->getTraceAsString());
+            return new WP_Error(
+                'creation_failed',
+                __('Event creation failed: ', 'hybrid-headless') . $e->getMessage(),
+                array('status' => 500)
+            );
         }
-
-        // Duplicate the template product
-        $new_product_id = $this->duplicate_product($template_id);
-
-        if (is_wp_error($new_product_id)) {
-            return $new_product_id;
-        }
-
-        // Update product data
-        $this->update_product_data($new_product_id, [
-            'name' => $request['event_name'],
-            'slug' => sanitize_title($request['event_name'] . ' ' . date('Y-m-d', strtotime($request['event_start_date_time']))),
-            'status' => 'draft'
-        ]);
-
-        // Update ACF fields
-        update_field('event_start_date_time', $request['event_start_date_time'], $new_product_id);
-        update_field('event_type', $event_type, $new_product_id);
-
-        // Copy membership discounts
-        $this->copy_membership_discounts($template_id, $new_product_id);
-
-        return rest_ensure_response([
-            'product_id' => $new_product_id,
-            'edit_url' => get_edit_post_link($new_product_id, '')
-        ]);
     }
 
     private function duplicate_product($template_id) {
