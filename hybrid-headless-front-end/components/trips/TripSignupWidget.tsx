@@ -80,7 +80,7 @@ export function TripSignupWidget({
       const valid = variation?.stock_status === 'instock' &&
                    (variation.stock_quantity ?? 0) > 0 &&
                    !(trip.acf.event_type === 'giggletrip' &&
-                     variation.sku.includes('GIGGLE--bcamember') &&
+                     variation.sku.includes('bcamember') &&
                      isMember);
       setIsSelectedVariationValid(!!valid);
     } else {
@@ -183,8 +183,8 @@ export function TripSignupWidget({
                 console.log(`Variation ${variation.id} clickable status:`, {
                   inStock: variation.stock_status === 'instock',
                   stockQuantity: variation.stock_quantity,
-                  isBcaMemberBlocked: trip.acf.event_type === 'giggletrip' && 
-                                    variation.sku.includes('GIGGLE--bcamember') && 
+                  isBcaMemberBlocked: trip.acf.event_type === 'giggletrip' &&
+                                    variation.sku.includes('GIGGLE--bcamember') &&
                                     isMember,
                   isPurchased: purchasedProducts.includes(variation.id)
                 });
