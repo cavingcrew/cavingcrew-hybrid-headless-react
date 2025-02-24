@@ -705,10 +705,25 @@ class Hybrid_Headless_Products_Controller {
  }
 
         try {
-            $new_product = new WC_Product();
-            $new_product->set_props($template_product->get_data());
-            $new_product->set_status('draft');
-            $new_product->set_name('Copy of ' . $template_product->get_name());
+            // Check if this is a template product
+            if (!get_post_meta($template_id, '_is_event_template', true)) {
+                throw new Exception(__('Invalid template product', 'hybrid-headless'));
+            }
+
+            // Use duplicator to create true copy
+            require_once HYBRID_HEADLESS_PLUGIN_DIR . 'includes/class-wc-product-duplicator.php';
+            $duplicator = new WC_Product_Duplicator();
+            $new_product = $duplicator->duplicate($template_product);
+
+            if (!$new_product) {
+                throw new Exception(__('Failed to duplicate product', 'hybrid-headless'));
+            }
+
+            // Update the duplicate's properties
+            $new_product->set_props([
+                'name' => $request['event_name'],
+                'status' => 'draft'
+            ]);
 
             // Generate unique SKU
             $base_sku = $template_product->get_sku();
@@ -716,10 +731,6 @@ class Hybrid_Headless_Products_Controller {
             $new_product->set_sku($new_sku);
 
             $new_product_id = $new_product->save();
-
-            if (!$new_product_id) {
-                throw new Exception(__('Failed to create new product', 'hybrid-headless'));
-            }
 
             // Copy meta data and terms
             $this->copy_product_meta($template_id, $new_product_id);
@@ -748,23 +759,8 @@ class Hybrid_Headless_Products_Controller {
     }
 
     private function copy_product_meta($source_id, $destination_id) {
-        global $wpdb;
-
-        $meta_data = $wpdb->get_results($wpdb->prepare(
-            "SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id = %d",
-            $source_id
-        ));
-
-        foreach ($meta_data as $meta) {
-            if ($meta->meta_key === '_sku') {
-                // Generate new SKU
-                update_post_meta($destination_id, '_sku',
-                    date('Y-m-d') . '-' . $meta->meta_value . '-' . uniqid()
-                );
-            } else {
-                update_post_meta($destination_id, $meta->meta_key, $meta->meta_value);
-            }
-        }
+        // Skip meta copying since WC_Product_Duplicator handles this
+        return;
     }
 
     private function copy_membership_discounts($source_id, $destination_id) {
