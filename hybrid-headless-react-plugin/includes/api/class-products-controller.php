@@ -763,66 +763,98 @@ class Hybrid_Headless_Products_Controller {
         }
     }
 
+    private function generate_temp_sku() {
+        return 'TEMP-' . uniqid();
+    }
+
     private function copy_product_meta($source_id, $destination_id) {
-        // Skip meta copying since WC_Product_Duplicator handles this
-        return;
+        $excluded_patterns = [
+            // Core WC
+            '_sku', 'total_sales', '_stock*', '_wc_*', 
+            // Third-party
+            '_sumo_pp_*', '_yoast_*', 'wppb-*',
+            // Template markers
+            '_is_event_template', '_template_version'
+        ];
+
+        $meta = get_post_meta($source_id);
+        
+        foreach ($meta as $key => $values) {
+            // Skip excluded patterns
+            foreach ($excluded_patterns as $pattern) {
+                if (fnmatch($pattern, $key)) {
+                    continue 2;
+                }
+            }
+            
+            $value = maybe_unserialize($values[0]);
+            
+            // Special handling for price
+            if ($key === '_price') {
+                update_post_meta($destination_id, $key, '');
+            } else {
+                update_post_meta($destination_id, $key, $value);
+            }
+        }
+        
+        // Canary log
+        error_log(sprintf(
+            '[Meta Copy] Copied %d meta fields, excluded %d patterns',
+            count($meta),
+            count($excluded_patterns)
+        ));
     }
 
     private function copy_membership_discounts($source_id, $destination_id) {
-        // Check if Memberships is active
-        if (!function_exists('wc_memberships') || !function_exists('wc_memberships_get_membership_plans')) {
-            error_log('[Membership Discounts] WooCommerce Memberships not active');
-            return;
-        }
-
-        error_log("[Membership Debug] Starting discount copy from $source_id to $destination_id");
+        if (!function_exists('wc_memberships_get_membership_plans')) return;
 
         foreach (wc_memberships_get_membership_plans() as $plan) {
             try {
-                error_log("[Membership Debug] Processing plan ID: " . $plan->get_id());
-                
-                // Get existing purchasing discount rules
-                $existing_rules = $plan->get_rules('purchasing_discount');
-                $updated_rules = $existing_rules;
-                $rules_modified = false;
+                $rules = $plan->get_rules('purchasing_discount');
+                $new_rules = [];
+                $modified = false;
 
-                // Find rules that apply to the template product
-                foreach ($existing_rules as $rule) {
-                    $rule_product_ids = $rule->get_object_ids();
+                foreach ($rules as $rule) {
+                    // Add existing rule
+                    $new_rules[] = $rule;
                     
-                    if (in_array($source_id, $rule_product_ids) && $rule->is_active()) {
-                        error_log("[Membership Debug] Found matching rule for source product");
-                        
-                        // Clone the rule with new product ID
+                    // Check if rule applies to source product
+                    if (in_array($source_id, $rule->get_object_ids())) {
+                        // Create new rule with destination ID
                         $new_rule = new WC_Memberships_Membership_Plan_Rule([
                             'rule_type'          => 'purchasing_discount',
-                            'object_ids'         => array_merge($rule_product_ids, [$destination_id]),
+                            'object_ids'         => array_merge(
+                                $rule->get_object_ids(),
+                                [$destination_id]
+                            ),
                             'membership_plan_id' => $plan->get_id(),
                             'active'             => $rule->is_active(),
                             'discount_type'      => $rule->get_discount_type(),
                             'discount_amount'    => $rule->get_discount_amount(),
-                            'access_schedule'    => $rule->get_access_schedule(),
-                            'content_type'       => 'post_type',
-                            'content_type_name'  => 'product'
+                            'access_schedule'    => $rule->get_access_schedule()
                         ]);
-
-                        $updated_rules[] = $new_rule;
-                        $rules_modified = true;
+                        
+                        $new_rules[] = $new_rule;
+                        $modified = true;
                     }
                 }
 
-                if ($rules_modified) {
-                    error_log("[Membership Debug] Updating rules for plan {$plan->get_id()}");
-                    $plan->set_rules($updated_rules);
+                if ($modified) {
+                    // Canary check for rule updates
+                    error_log(sprintf(
+                        '[Membership] Updating plan %d with %d rules',
+                        $plan->get_id(),
+                        count($new_rules)
+                    ));
+                    
+                    // Replace all rules with updated set
+                    $plan->set_rules($new_rules);
                 }
 
             } catch (Exception $e) {
-                error_log("[Membership Error] Plan ID {$plan->get_id()}: " . $e->getMessage());
-                continue;
+                error_log('[Membership Error] ' . $e->getMessage());
             }
         }
-
-        error_log("[Membership Debug] Completed discount copy process");
     }
 
     private function copy_product_terms($source_id, $destination_id) {
