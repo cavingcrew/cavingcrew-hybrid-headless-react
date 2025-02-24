@@ -768,18 +768,21 @@ class Hybrid_Headless_Products_Controller {
     }
 
     private function copy_membership_discounts($source_id, $destination_id) {
+        // Check if Memberships is active
+        if (!function_exists('wc_memberships') || !function_exists('wc_memberships_get_membership_plans')) {
+            error_log('[Membership Discounts] WooCommerce Memberships not active');
+            return;
+        }
+
         foreach (wc_memberships_get_membership_plans() as $plan) {
             try {
                 $rules = $plan->get_rules('purchasing_discount');
-                $existing_rules = $plan->get_rules();
                 
                 foreach ($rules as $rule) {
-                    // Get the product IDs this rule applies to
                     $rule_product_ids = $rule->get_object_ids();
                     
-                    // Check if our template product is in the rule's product IDs
                     if (in_array($source_id, $rule_product_ids, true) && $rule->is_active()) {
-                        // Create new rule array preserving all critical properties
+                        // Create new rule configuration
                         $new_rule = [
                             'rule_type' => 'purchasing_discount',
                             'object_ids' => array($destination_id),
@@ -791,15 +794,16 @@ class Hybrid_Headless_Products_Controller {
                             'content_type' => 'post_type',
                             'content_type_name' => 'product'
                         ];
-                        
-                        // Use Memberships' official rule saving method
-                        WC_Memberships_Admin_Membership_Plan_Rules::save_rules(
-                            $plan->get_id(),
-                            array_merge($existing_rules, [$new_rule]),
-                            'purchasing_discount'
-                        );
-                        
+
+                        // Get existing rules and add new one
+                        $existing_rules = $plan->get_rules();
+                        $existing_rules[] = $new_rule;
+
+                        // Save using core Memberships API
+                        $plan->set_rules($existing_rules);
                         $plan->compact_rules();
+                        $plan->save();
+
                         error_log("[Membership Discount] Copied rule from {$source_id} to {$destination_id}");
                     }
                 }
