@@ -647,7 +647,11 @@ class Hybrid_Headless_Products_Controller {
                 'giggletrip' => 11579,
                 'overnight' => 11583,
                 'tuesday' => 11576,
-                'training' => 123
+                'training' => 123,
+                'horizontal_training' => 12759,
+                'basic_srt' => 12758,
+                'known_location' => 11595,
+                'mystery' => 11576
             ];
 
             $event_type = $request['event_type'];
@@ -657,6 +661,26 @@ class Hybrid_Headless_Products_Controller {
                 return new WP_Error('invalid_template', 'Invalid event type', ['status' => 400]);
             }
 
+            // Generate SKU components
+            $event_date = new DateTime($request['event_start_date_time']);
+            $sku_date = $event_date->format('Y-m-d');
+            $base_sku = sprintf('%s-%s', $sku_date, $event_type);
+            
+            // Generate unique suffix with retry logic
+            $new_sku = '';
+            $retries = 0;
+            $max_retries = 5;
+            
+            do {
+                $unique_suffix = bin2hex(random_bytes(4)); // 8 character hex
+                $new_sku = $base_sku . '-' . $unique_suffix;
+                $retries++;
+            } while ($retries <= $max_retries && $this->sku_exists($new_sku));
+
+            if ($this->sku_exists($new_sku)) {
+                throw new Exception(__('Failed to generate unique SKU after ' . $max_retries . ' attempts', 'hybrid-headless'));
+            }
+
             // Duplicate the template product
             $new_product_id = $this->duplicate_product($template_id);
 
@@ -664,11 +688,12 @@ class Hybrid_Headless_Products_Controller {
                 return $new_product_id;
             }
 
-            // Update product data
+            // Update product data with new SKU
             $this->update_product_data($new_product_id, [
                 'name' => $request['event_name'],
-                'slug' => sanitize_title($request['event_name'] . ' ' . date('Y-m-d', strtotime($request['event_start_date_time']))),
-                'status' => 'draft'
+                'slug' => sanitize_title($request['event_name'] . ' ' . $sku_date),
+                'status' => 'draft',
+                'sku' => $new_sku
             ]);
 
             // Update ACF fields
@@ -704,16 +729,17 @@ class Hybrid_Headless_Products_Controller {
             // Create new product
             $new_product = clone $template_product;
             $new_product->set_id(0);
-        
-            // Set fresh dates
+            
+            // Reset critical properties
             $current_time = current_time('mysql', true); // GMT time
             $new_product->set_props([
                 'date_created' => $current_time,
                 'date_modified' => $current_time,
-                'sku' => $this->generate_temp_sku(),
                 'total_sales' => 0,
-                'stock_quantity' => null
+                'stock_quantity' => null,
+                'sku' => '' // Will be set later
             ]);
+
             $new_product_id = $new_product->save();
 
             // Copy variations
@@ -878,3 +904,18 @@ class Hybrid_Headless_Products_Controller {
         $product->save();
     }
 }
+    private function sku_exists($sku) {
+        global $wpdb;
+        
+        $product_id = $wpdb->get_var(
+            $wpdb->prepare(
+                "SELECT post_id FROM $wpdb->postmeta 
+                WHERE meta_key = '_sku' 
+                AND meta_value = %s 
+                LIMIT 1",
+                $sku
+            )
+        );
+        
+        return $product_id !== null;
+    }
