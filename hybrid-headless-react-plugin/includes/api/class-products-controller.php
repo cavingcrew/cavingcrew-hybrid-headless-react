@@ -707,8 +707,10 @@ class Hybrid_Headless_Products_Controller {
         try {
             // Check if this is a template product
             if (!get_post_meta($template_id, '_is_event_template', true)) {
-                throw new Exception(__('Invalid template product', 'hybrid-headless'));
+                error_log('[Template Check] Template ID ' . $template_id . ' validation: invalid');
+                throw new Exception(__('Product is not marked as a template', 'hybrid-headless'));
             }
+            error_log('[Template Check] Template ID ' . $template_id . ' validation: valid');
 
             // Use duplicator to create true copy
             require_once HYBRID_HEADLESS_PLUGIN_DIR . 'includes/class-wc-product-duplicator.php';
@@ -728,6 +730,9 @@ class Hybrid_Headless_Products_Controller {
             // Generate unique SKU
             $base_sku = $template_product->get_sku();
             $new_sku = date('Y-m-d') . '-' . $base_sku . '-' . uniqid();
+            if (empty($new_sku)) {
+                throw new Exception(__('Failed to generate unique SKU', 'hybrid-headless'));
+            }
             $new_product->set_sku($new_sku);
 
             $new_product_id = $new_product->save();
@@ -773,10 +778,11 @@ class Hybrid_Headless_Products_Controller {
         foreach (wc_memberships_get_membership_plans() as $plan) {
             try {
                 $rules = $plan->get_rules('purchasing_discount');
-
+                $existing_rules = $plan->get_rules();
+                
                 foreach ($rules as $rule) {
                     $rule_product_ids = $rule->get_object_ids();
-
+                    
                     if (in_array($source_id, $rule_product_ids, true) && $rule->is_active()) {
                         // Create new rule configuration
                         $new_rule = [
@@ -791,18 +797,21 @@ class Hybrid_Headless_Products_Controller {
                             'content_type_name' => 'product'
                         ];
 
-                        // Get existing rules and add new one
-                        $existing_rules = $plan->get_rules();
+                        // Add to existing rules
                         $existing_rules[] = $new_rule;
-
-                        // Save using core Memberships API
-                        $plan->set_rules($existing_rules);
-                        $plan->compact_rules();
-                        $plan->save();
-
-                        error_log("[Membership Discount] Copied rule from {$source_id} to {$destination_id}");
                     }
                 }
+
+                // Use official Memberships API to update rules
+                $rules_handler = wc_memberships()->get_rules_instance();
+                $rules_handler->update_rules(array(
+                    'plan_id' => $plan->get_id(),
+                    'rule_type' => 'purchasing_discount',
+                    'rules' => $existing_rules
+                ));
+
+                error_log("[Membership Discount] Updated rules for plan {$plan->get_id()}");
+
             } catch (Exception $e) {
                 error_log("[Membership Error] {$e->getMessage()}");
                 continue;
