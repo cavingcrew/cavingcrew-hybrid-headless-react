@@ -658,7 +658,7 @@ class Hybrid_Headless_Products_Controller {
 
         // Duplicate the template product
         $new_product_id = $this->duplicate_product($template_id);
-        
+
         if (is_wp_error($new_product_id)) {
             return $new_product_id;
         }
@@ -685,36 +685,37 @@ class Hybrid_Headless_Products_Controller {
 
     private function duplicate_product($template_id) {
         $template_product = wc_get_product($template_id);
-        
-        if (!$template_product || $template_product->get_status() !== 'publish') {
-            return new WP_Error(
-                'invalid_template',
-                __('Template product not found or not published', 'hybrid-headless'),
-                array('status' => 400)
-            );
-        }
-        
+
+ if (!$template_product || !in_array($template_product->get_status(), ['publish', 'draft'])) {
+     error_log('[Template Check] Template status: ' . $template_product->get_status());
+     return new WP_Error(
+         'invalid_template',
+         __('Template product not found or not in publish/draft state', 'hybrid-headless'),
+         array('status' => 400)
+     );
+ }
+
         try {
             $new_product = new WC_Product();
             $new_product->set_props($template_product->get_data());
             $new_product->set_status('draft');
             $new_product->set_name('Copy of ' . $template_product->get_name());
-            
+
             // Generate unique SKU
             $base_sku = $template_product->get_sku();
             $new_sku = date('Y-m-d') . '-' . $base_sku . '-' . uniqid();
             $new_product->set_sku($new_sku);
-            
+
             $new_product_id = $new_product->save();
-            
+
             if (!$new_product_id) {
                 throw new Exception(__('Failed to create new product', 'hybrid-headless'));
             }
-            
+
             // Copy meta data and terms
             $this->copy_product_meta($template_id, $new_product_id);
             $this->copy_product_terms($template_id, $new_product_id);
-            
+
             // Log creation
             error_log(sprintf(
                 '[Event Creation] New product %d created from template %d with SKU %s',
@@ -722,11 +723,11 @@ class Hybrid_Headless_Products_Controller {
                 $template_id,
                 $new_sku
             ));
-            
+
             do_action('hybrid_headless_event_created', $new_product_id, $template_id);
-            
+
             return $new_product_id;
-            
+
         } catch (Exception $e) {
             error_log('[Event Creation Error] ' . $e->getMessage());
             return new WP_Error(
@@ -739,7 +740,7 @@ class Hybrid_Headless_Products_Controller {
 
     private function copy_product_meta($source_id, $destination_id) {
         global $wpdb;
-        
+
         $meta_data = $wpdb->get_results($wpdb->prepare(
             "SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id = %d",
             $source_id
@@ -748,7 +749,7 @@ class Hybrid_Headless_Products_Controller {
         foreach ($meta_data as $meta) {
             if ($meta->meta_key === '_sku') {
                 // Generate new SKU
-                update_post_meta($destination_id, '_sku', 
+                update_post_meta($destination_id, '_sku',
                     date('Y-m-d') . '-' . $meta->meta_value . '-' . uniqid()
                 );
             } else {
@@ -760,14 +761,14 @@ class Hybrid_Headless_Products_Controller {
     private function copy_membership_discounts($source_id, $destination_id) {
         // Copy WooCommerce Memberships discounts
         $discount_rules = get_post_meta($source_id, '_memberships_discount', true);
-        
+
         if ($discount_rules) {
             update_post_meta($destination_id, '_memberships_discount', $discount_rules);
         }
 
         // Copy any membership plan associations
         $plan_ids = wc_memberships_get_membership_plans();
-        
+
         foreach ($plan_ids as $plan) {
             $discount = $plan->get_discount($source_id);
             if ($discount) {
@@ -778,7 +779,7 @@ class Hybrid_Headless_Products_Controller {
 
     private function copy_product_terms($source_id, $destination_id) {
         $taxonomies = get_object_taxonomies('product');
-        
+
         foreach ($taxonomies as $taxonomy) {
             $terms = wp_get_object_terms($source_id, $taxonomy);
             wp_set_object_terms($destination_id, wp_list_pluck($terms, 'term_id'), $taxonomy);
@@ -787,14 +788,14 @@ class Hybrid_Headless_Products_Controller {
 
     private function update_product_data($product_id, $data) {
         $product = wc_get_product($product_id);
-        
+
         foreach ($data as $key => $value) {
             $setter = "set_$key";
             if (method_exists($product, $setter)) {
                 $product->$setter($value);
             }
         }
-        
+
         $product->save();
     }
 }
