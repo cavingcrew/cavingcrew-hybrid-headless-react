@@ -783,7 +783,9 @@ class Hybrid_Headless_Products_Controller {
                 
                 // Get existing purchasing discount rules
                 $existing_rules = $plan->get_rules('purchasing_discount');
-                
+                $updated_rules = $existing_rules;
+                $rules_modified = false;
+
                 // Find rules that apply to the template product
                 foreach ($existing_rules as $rule) {
                     $rule_product_ids = $rule->get_object_ids();
@@ -794,7 +796,7 @@ class Hybrid_Headless_Products_Controller {
                         // Clone the rule with new product ID
                         $new_rule = new WC_Memberships_Membership_Plan_Rule([
                             'rule_type'          => 'purchasing_discount',
-                            'object_ids'         => [$destination_id],
+                            'object_ids'         => array_merge($rule_product_ids, [$destination_id]),
                             'membership_plan_id' => $plan->get_id(),
                             'active'             => $rule->is_active(),
                             'discount_type'      => $rule->get_discount_type(),
@@ -804,10 +806,14 @@ class Hybrid_Headless_Products_Controller {
                             'content_type_name'  => 'product'
                         ]);
 
-                        // Add the new rule to the plan
-                        $plan->add_rule($new_rule);
-                        error_log("[Membership Debug] Successfully added new rule to plan");
+                        $updated_rules[] = $new_rule;
+                        $rules_modified = true;
                     }
+                }
+
+                if ($rules_modified) {
+                    error_log("[Membership Debug] Updating rules for plan {$plan->get_id()}");
+                    $plan->set_rules($updated_rules);
                 }
 
             } catch (Exception $e) {
