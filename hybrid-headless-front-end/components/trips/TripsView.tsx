@@ -240,24 +240,14 @@ export function TripsView({ trips }: TripsViewProps) {
                 <Table.Th style={{ width: '120px', minWidth: '120px' }}>Date</Table.Th>
                 <Table.Th>Trip Name</Table.Th>
                 <Table.Th
-                  style={{ 
-                    display: 'none',
-                    '@media (min-width: 36em)': {
-                      display: 'table-cell',
-                      width: '160px'
-                    }
-                  }}
+                  style={{ width: '160px' }}
+                  visibleFrom="sm"
                 >
                   Trip Type
                 </Table.Th>
                 <Table.Th
-                  style={{ 
-                    display: 'none',
-                    '@media (min-width: 36em)': {
-                      display: 'table-cell',
-                      minWidth: '200px'
-                    }
-                  }}
+                  style={{ minWidth: '200px' }}
+                  visibleFrom="sm"
                 >
                   Details
                 </Table.Th>
@@ -323,14 +313,8 @@ export function TripsView({ trips }: TripsViewProps) {
                       </Text>
                     </Table.Td>
                     <Table.Td
-                      style={{ 
-                        display: 'none',
-                        '@media (min-width: 36em)': {
-                          display: 'table-cell',
-                          width: '160px',
-                          paddingRight: '8px'
-                        }
-                      }}
+                      visibleFrom="sm"
+                      style={{ width: '160px', paddingRight: '8px' }}
                     >
                       <Badge
                         color={
@@ -378,13 +362,8 @@ export function TripsView({ trips }: TripsViewProps) {
                       </Badge>
                     </Table.Td>
                     <Table.Td
-                      style={{ 
-                        display: 'none',
-                        '@media (min-width: 36em)': {
-                          display: 'table-cell',
-                          minWidth: '200px'
-                        }
-                      }}
+                      visibleFrom="sm"
+                      style={{ minWidth: '200px' }}
                     >
                       <Group gap="xs">
                         {trip.acf.event_skills_required && (
