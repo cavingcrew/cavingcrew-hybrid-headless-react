@@ -17,7 +17,8 @@ import {
   IconList,
   IconBabyCarriage,
   IconLayoutGrid,
-  IconCalendarEvent
+  IconCalendarEvent,
+  IconSchool
 } from "@tabler/icons-react";
 import Link from "next/link";
 import TripCard from './TripCard';
@@ -268,17 +269,43 @@ export function TripsView({ trips }: TripsViewProps) {
                     </Table.Td>
                     <Table.Td>
                       <Badge
-                        color={isVertical ? 'red' : 'green'}
+                        color={
+                          trip.acf.event_type === 'Training' ? 'blue' :
+                          trip.acf.event_type === 'GiggleTrip' ? 'pink' :
+                          trip.acf.event_type === 'Overnight' ? 'red' :
+                          trip.acf.event_type === 'Mystery' ? 'grape' : 'green'
+                        }
                         variant="light"
                         leftSection={
-                          isVertical ? (
-                            <IconArrowBarUp size={14} style={{ marginRight: 4 }} />
+                          trip.acf.event_type === 'Overnight' ? (
+                            <IconCalendarEvent size={14} style={{ marginRight: 4 }} />
+                          ) : trip.acf.event_type === 'Training' ? (
+                            <IconSchool size={14} style={{ marginRight: 4 }} />
+                          ) : trip.acf.event_type === 'GiggleTrip' ? (
+                            <IconSparkles size={14} style={{ marginRight: 4 }} />
                           ) : (
                             <IconStairs size={14} style={{ marginRight: 4 }} />
                           )
                         }
                       >
-                        {isOvernight ? 'Overnight' : isVertical ? 'Vertical' : 'Horizontal'}
+                        {(() => {
+                          switch(trip.acf.event_type) {
+                            case 'Training':
+                              return 'Training Trip';
+                            case 'GiggleTrip':
+                              return 'Giggles Trip';
+                            case 'Overnight':
+                              return 'Overnight Trip'; 
+                            case 'Evening':
+                              return 'Evening Trip';
+                            case 'Day':
+                              return 'Day Trip';
+                            case 'Mystery':
+                              return 'Mystery Trip';
+                            default:
+                              return trip.acf.event_type || 'Caving Trip';
+                          }
+                        })()}
                       </Badge>
                     </Table.Td>
                     <Table.Td>
