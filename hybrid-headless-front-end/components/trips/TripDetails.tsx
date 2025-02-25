@@ -393,10 +393,8 @@ export function TripDetails({ trip }: TripDetailsProps) {
 					</Paper>
 
 					{/* Add access details for upcoming trips */}
-					{trip.acf.event_start_date_time &&
-						isWithinDays(trip.acf.event_start_date_time, 7) && (
-							<TripAccessDetails trip={trip} />
-					)}
+
+
 				</>
 			) : (
 				<TripSignupWidget
@@ -409,6 +407,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
 					}
 				/>
 			)}
+			<TripAccessDetails trip={trip} />
 
 			{/* What does signing up pay for section */}
 			{acf?.event_paying_for && (
