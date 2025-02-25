@@ -26,7 +26,12 @@ interface TripAccessDetailsProps {
 	trip: Trip;
 }
 
-const parseCoords = (coords: any) => {
+interface MapCoords {
+  lat?: number;
+  lng?: number;
+}
+
+const parseCoords = (coords: MapCoords | string | null | false) => {
 	if (!coords) return null;
 
 	// Handle ACF map object
@@ -140,7 +145,7 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 						<List spacing="sm">
 							{accessNotes.map((note, index) => (
 								<List.Item
-									key={index}
+									key={`access-note-${note}`}
 									icon={
 										<IconInfoCircle
 											size={16}
@@ -159,8 +164,9 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 				{trip.route?.acf.route_blurb && (
 					<Alert variant="light" color="yellow" icon={<IconInfoCircle />}>
 						<div
+							// Note: Content is sanitized by WordPress
 							dangerouslySetInnerHTML={{
-								__html: trip.route.acf.route_blurb,
+								__html: trip.route.acf.route_blurb || '',
 							}}
 						/>
 					</Alert>
