@@ -557,16 +557,14 @@ class Hybrid_Headless_Products_Controller {
     }
 
     private function get_route_data($route_id) {
-        if (!$route_id || !get_post_status($route_id)) {
-            return null;
-        }
+        $post_ref = $this->get_post_reference($route_id);
+        if (!$post_ref) return null;
 
-        $route_acf = get_fields($route_id);
-        $route_post = get_post($route_id);
-
+        $route_acf = get_fields($post_ref['ID']);
+        
         return [
-            'id' => $route_id,
-            'title' => $route_post->post_title,
+            'id' => $post_ref['ID'],
+            'title' => $post_ref['post_title'],
             'acf' => [
                 'route_name' => $route_acf['route_name'] ?? '',
                 'route_blurb' => $route_acf['route_blurb'] ?? '',
@@ -689,15 +687,17 @@ class Hybrid_Headless_Products_Controller {
         ] : null;
     }
 
-    private function get_location_data($location_id) {
-        if (!$location_id) return null;
+    private function get_location_data($location) {
+        $post_ref = $this->get_post_reference($location);
+        if (!$post_ref) return null;
         
-        $location_post = get_post($location_id);
+        $location_id = $post_ref['ID'];
         $location_acf = get_fields($location_id);
         
         return [
             'id' => $location_id,
-            'name' => $location_post->post_title,
+            'title' => $post_ref['post_title'],
+            'slug' => $post_ref['post_name'],
             'acf' => [
                 'location_name' => $location_acf['location_name'] ?? '',
                 'location_parking_latlong' => $location_acf['location_parking_latlong'] ?? '',
@@ -716,6 +716,34 @@ class Hybrid_Headless_Products_Controller {
             'alt' => get_post_meta($image_id, '_wp_attachment_image_alt', true),
             'caption' => wp_get_attachment_caption($image_id)
         ];
+    }
+
+    private function get_post_reference($post) {
+        // Handle numeric ID
+        if (is_numeric($post)) {
+            $post_id = (int)$post;
+        }
+        // Handle WP_Post object
+        elseif (is_a($post, 'WP_Post')) {
+            $post_id = $post->ID;
+        }
+        // Handle array format (ACF sometimes returns arrays)
+        elseif (is_array($post) && isset($post['ID'])) {
+            $post_id = (int)$post['ID'];
+        }
+        // Handle invalid formats
+        else {
+            return null;
+        }
+
+        $post = get_post($post_id);
+        return $post ? [
+            'ID' => $post->ID,
+            'post_title' => $post->post_title,
+            'post_name' => $post->post_name,
+            'post_type' => $post->post_type,
+            'permalink' => get_permalink($post)
+        ] : null;
     }
 
     private function get_product_categories( $product ) {
