@@ -368,34 +368,36 @@ export function TripDetails({ trip }: TripDetailsProps) {
 			</Grid>
 
 			{hasPurchased ? (
-				<Paper withBorder p="md" radius="md">
-					<Alert
-						color="green"
-						title={
-							<>
-								You're Signed Up
-								{isLoggedIn && user?.billing_first_name && `, ${user.billing_first_name}`}!
-							</>
-						}
-					>
-						<Text>
-							You're already booked on this trip. Check your email for confirmation
-							or visit your <Anchor href="/my-account">account page</Anchor> for details.
-						</Text>
-					</Alert>
+				<>
+					<Paper withBorder p="md" radius="md">
+						<Alert
+							color="green"
+							title={
+								<>
+									You're Signed Up
+									{isLoggedIn && user?.billing_first_name && `, ${user.billing_first_name}`}!
+								</>
+							}
+						>
+							<Text>
+								You're already booked on this trip. Check your email for confirmation
+								or visit your <Anchor href="/my-account">account page</Anchor> for details.
+							</Text>
+						</Alert>
 
-					<Box mt="md" style={{ opacity: 0.6, pointerEvents: 'none' }}>
-						<TripSignupWidget
-							trip={trip}
-						/>
-					</Box>
-				</Paper>)}
+						<Box mt="md" style={{ opacity: 0.6, pointerEvents: 'none' }}>
+							<TripSignupWidget
+								trip={trip}
+							/>
+						</Box>
+					</Paper>
 
-        {/* Add access details for upcoming trips */}
-        {trip.acf.event_start_date_time &&
-          isWithinDays(trip.acf.event_start_date_time, 7) && (
-            <TripAccessDetails trip={trip} />
-          )}
+					{/* Add access details for upcoming trips */}
+					{trip.acf.event_start_date_time &&
+						isWithinDays(trip.acf.event_start_date_time, 7) && (
+							<TripAccessDetails trip={trip} />
+					)}
+				</>
 			) : (
 				<TripSignupWidget
 					trip={trip}
