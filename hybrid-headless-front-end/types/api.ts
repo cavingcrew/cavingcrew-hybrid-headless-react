@@ -59,6 +59,93 @@ export interface BasicCategory {
 	slug: string;
 }
 
+// Hut Type
+export interface Hut {
+  id: number;
+  acf: {
+    hut_name: string;
+    hut_sales_description?: string;
+    hut_club_name?: string;
+    hut_address?: string;
+    hut_location?: number; // Post ID
+    hut_lat_long: string;
+    hut_parking_instructions?: string;
+    hut_facilities?: string[];
+    hut_arrival_and_directions?: string;
+    hut_image?: string;
+    hut_webaddress?: string;
+    hut_deposit_required?: 'yes' | 'no' | 'sometimes';
+    hut_capacity?: string;
+    hut_dogs_allowed?: 'yes' | 'no';
+    hut_booking_notes?: string;
+    hut_booking_contact_email?: string;
+  };
+}
+
+// Route Type
+export interface Route {
+  id: number;
+  acf: {
+    route_name: string;
+    route_blurb?: string;
+    route_entrance_location_id?: number; // Post ID
+    route_through_trip?: boolean;
+    route_exit_location_id?: number; // Post ID
+    route_time_for_eta?: string;
+    route_survey_image?: string;
+    route_survey_link?: {
+      url: string;
+      target?: string;
+    };
+    route_route_description?: Array<{
+      section_title: string;
+      section_content: string;
+    }>;
+    route_difficulty?: {
+      technical: number;
+      physical: number;
+    };
+    route_trip_star_rating?: number;
+    route_participants_skills_required?: {
+      minimum_experience: string;
+      recommended_training: string[];
+    };
+    route_group_tackle_required?: string;
+    route_personal_gear_required?: string[];
+    route_leading_difficulty?: {
+      srt_requirements: string;
+      pitch_difficulty: string;
+    };
+    route_additional_images?: Array<{
+      image: string;
+      caption?: string;
+    }>;
+  };
+}
+
+// Location Type
+export interface Location {
+  id: number;
+  acf: {
+    location_name: string;
+    location_poi_nearby?: string;
+    location_caving_region?: number; // Post ID
+    location_parking_latlong?: string;
+    location_parking_description?: string;
+    location_parking_entrance_route_description?: string;
+    location_map_from_parking_to_entrance?: string;
+    location_entrance_latlong?: string;
+    location_info_url?: string;
+    location_access_arrangement?: string[];
+    location_access_url?: string;
+    location_reference_links?: Array<{
+      link_title: string;
+      link_url: string;
+    }>;
+    location_sensitive_access?: boolean;
+  };
+}
+
 export interface Trip {
 	id: number;
 	name: string;
@@ -95,8 +182,8 @@ export interface Trip {
 
 		// Location Details
 		event_trip_leader: string;
-		event_route_id?: number;
-		event_cave_id?: number;
+		event_route_id?: number; // Reference to Route ID
+		event_cave_id?: number; // Reference to Location ID
 		event_cave_name?: string;
 		event_possible_location?: string;
 		event_location?: string;
@@ -143,7 +230,7 @@ export interface Trip {
 		event_paying_for?: string;
 
 		// Accommodation Details
-		hut_id?: number;
+		hut_id?: number; // Reference to Hut ID
 		hut_photo?: string;
 		hut_facilities_description?: string;
 		event_accomodation_description?: string;
