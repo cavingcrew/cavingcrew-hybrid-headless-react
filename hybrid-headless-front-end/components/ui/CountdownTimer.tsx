@@ -4,43 +4,38 @@ import { Text } from "@mantine/core";
 import React, { useEffect, useState } from "react";
 
 export function CountdownTimer({ targetDate }: { targetDate: Date | null }) {
-	const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
+  const [timeLeft, setTimeLeft] = useState(() => calculateTimeLeft(targetDate));
 
-	useEffect(() => {
-		function calculateTimeLeft() {
-			if (!targetDate) return null;
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft(calculateTimeLeft(targetDate));
+    }, 1000);
 
-			const now = new Date().getTime();
-			const targetTime = targetDate.getTime();
-			const difference = targetTime - now;
+    return () => clearInterval(timer);
+  }, [targetDate]);
 
-			if (difference <= 0) return null;
+  if (!timeLeft) return <Text component="span">soon</Text>;
 
-			return {
-				days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-				hours: Math.floor(
-					(difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
-				),
-				minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
-				seconds: Math.floor((difference % (1000 * 60)) / 1000),
-			};
-		}
+  return (
+    <Text component="span" fw={500}>
+      in {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}m
+    </Text>
+  );
+}
 
-		const timer = setInterval(() => {
-			setTimeLeft(calculateTimeLeft());
-		}, 1000);
+function calculateTimeLeft(targetDate: Date | null) {
+  if (!targetDate) return null;
 
-		// Initial calculation
-		setTimeLeft(calculateTimeLeft());
+  const now = new Date().getTime();
+  const targetTime = targetDate.getTime();
+  const difference = targetTime - now;
 
-		return () => clearInterval(timer);
-	}, [targetDate]);
+  if (difference <= 0) return null;
 
-	if (!timeLeft) return <Text component="span">soon</Text>;
-
-	return (
-		<Text component="span" fw={500}>
-			in {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}m
-		</Text>
-	);
+  return {
+    days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+    hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+    minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
+    seconds: Math.floor((difference % (1000 * 60)) / 1000),
+  };
 }
