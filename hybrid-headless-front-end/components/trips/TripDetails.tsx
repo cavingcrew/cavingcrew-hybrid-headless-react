@@ -4,6 +4,7 @@ import {
 	Accordion,
 	Alert,
 	Anchor,
+	Badge,
 	Box,
 	Grid,
 	Group,
