@@ -8,11 +8,11 @@ export interface SignupTiming {
 }
 
 export function isWithinDays(dateString: string, days: number): boolean {
-  const eventDate = new Date(dateString);
-  const today = new Date();
-  const diffTime = eventDate.getTime() - today.getTime();
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  return diffDays <= days && diffDays >= 0;
+	const eventDate = new Date(dateString);
+	const today = new Date();
+	const diffTime = eventDate.getTime() - today.getTime();
+	const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+	return diffDays <= days && diffDays >= 0;
 }
 
 export function getSignupTiming(trip: Trip): SignupTiming {
