@@ -27,15 +27,15 @@ interface TripAccessDetailsProps {
 }
 
 export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
-	const locationData = trip.acf.route?.acf.route_entrance_location_id?.acf;
+	const locationData = trip.route?.acf.route_entrance_location_id?.acf;
 	const accessNotes = locationData?.location_access_arrangement || [];
 	const parkingInstructions = locationData?.location_parking_instructions;
 	const entranceLatLong = locationData?.location_entrance_latlong;
 	const parkingLatLong = locationData?.location_parking_latlong;
 
 	console.log("[TripAccessDetails] Rendering with trip data:", {
-		route: trip.acf.route,
-		locationData: trip.acf.route?.acf.route_entrance_location_id?.acf,
+		route: trip.route,
+		locationData: trip.route?.acf.route_entrance_location_id?.acf,
 		accessNotes,
 		parkingInstructions,
 		entranceLatLong,
@@ -139,18 +139,18 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 				)}
 
 				{/* Route Description */}
-				{trip.acf.route?.acf.route_blurb && (
+				{trip.route?.acf.route_blurb && (
 					<Alert variant="light" color="yellow" icon={<IconInfoCircle />}>
 						<div
 							dangerouslySetInnerHTML={{
-								__html: trip.acf.route.acf.route_blurb,
+								__html: trip.route.acf.route_blurb,
 							}}
 						/>
 					</Alert>
 				)}
 			</Stack>
 
-			{trip.acf.route?.acf.route_route_description
+			{trip.route?.acf.route_route_description
 				?.route_description_segment_html && (
 				<>
 					<Divider my="md" />
