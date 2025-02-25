@@ -252,13 +252,10 @@ export function TripsView({ trips }: TripsViewProps) {
                   <Table.Tr
                     key={trip.id}
                     onClick={() => router.push(`/trip/${trip.slug}`)}
-                    sx={(theme) => ({
+                    style={{
                       cursor: 'pointer',
                       transition: 'background-color 0.2s',
-                      '&:hover': {
-                        backgroundColor: theme.colors.gray[1],
-                      },
-                    })}
+                    }}
                     role="link"
                     tabIndex={0}
                     onKeyPress={(e) => {
