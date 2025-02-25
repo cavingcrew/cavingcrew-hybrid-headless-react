@@ -6,29 +6,32 @@ import React, { useEffect, useState } from "react";
 export function CountdownTimer({ targetDate }: { targetDate: Date | null }) {
 	const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
 
-	function calculateTimeLeft() {
-		if (!targetDate) return null;
-
-		const now = new Date().getTime();
-		const targetTime = targetDate.getTime();
-		const difference = targetTime - now;
-
-		if (difference <= 0) return null;
-
-		return {
-			days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-			hours: Math.floor(
-				(difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
-			),
-			minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
-			seconds: Math.floor((difference % (1000 * 60)) / 1000),
-		};
-	}
-
 	useEffect(() => {
+		function calculateTimeLeft() {
+			if (!targetDate) return null;
+
+			const now = new Date().getTime();
+			const targetTime = targetDate.getTime();
+			const difference = targetTime - now;
+
+			if (difference <= 0) return null;
+
+			return {
+				days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+				hours: Math.floor(
+					(difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+				),
+				minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
+				seconds: Math.floor((difference % (1000 * 60)) / 1000),
+			};
+		}
+
 		const timer = setInterval(() => {
 			setTimeLeft(calculateTimeLeft());
 		}, 1000);
+
+		// Initial calculation
+		setTimeLeft(calculateTimeLeft());
 
 		return () => clearInterval(timer);
 	}, [targetDate]);
