@@ -95,6 +95,8 @@ export interface Trip {
 
 		// Location Details
 		event_trip_leader: string;
+		event_route_id?: number;
+		event_cave_id?: number;
 		event_cave_name?: string;
 		event_possible_location?: string;
 		event_location?: string;
