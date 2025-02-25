@@ -29,7 +29,7 @@ interface TripAccessDetailsProps {
 export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
   const locationData = trip.route?.acf.route_entrance_location_id?.acf;
   const accessNotes = locationData?.location_access_arrangement || [];
-  const parkingInstructions = locationData?.location_parking_description;
+  const parkingInstructions = locationData?.location_parking_instructions;
   const entranceCoords = locationData?.location_entrance_latlong;
   const parkingCoords = locationData?.location_parking_latlong;
   const routeDescription = locationData?.location_parking_entrance_route_description;
