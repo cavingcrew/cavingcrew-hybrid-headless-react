@@ -433,15 +433,12 @@ class Hybrid_Headless_Products_Controller {
             $product_data['route'] = $this->get_cave_as_route($acf_fields['event_cave_id']);
         }
 
-        return $product_data;
-
-        // Add hut data with original ACF field names if hut_id exists
+        // Add hut data if available
         if (!empty($acf_fields['hut_id'])) {
             $product_data['hut'] = $this->get_hut_data($acf_fields['hut_id']);
         }
 
         return $product_data;
-        );
     }
 
     /**
