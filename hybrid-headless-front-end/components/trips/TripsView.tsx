@@ -285,10 +285,10 @@ export function TripsView({ trips }: TripsViewProps) {
                     <Table.Td>
                       <Badge
                         color={
-                          trip.acf.event_type === 'training' ? 'blue' :
-                          trip.acf.event_type === 'giggletrip' ? 'pink' :
-                          trip.acf.event_type === 'overnight' ? 'red' :
-                          trip.acf.event_type === 'mystery' ? 'grape' : 'green'
+                          trip.acf.event_type === 'training' ? 'indigo' :
+                          trip.acf.event_type === 'giggletrip' ? 'blue' :
+                          trip.acf.event_type === 'overnight' ? 'teal' :
+                          trip.acf.event_type === 'mystery' ? 'cyan' : 'green'
                         }
                         variant="light"
                         leftSection={
@@ -318,7 +318,8 @@ export function TripsView({ trips }: TripsViewProps) {
                             case 'overnight':
                               return 'Overnight / Weekend Trip';
                             case 'known':
-                              return 'Known Location Trip';
+                              const startHour = startDate?.getHours() || 0;
+                              return startHour >= 17 ? 'Evening Caving' : 'Day Caving';
                             case 'mystery':
                               return 'Mystery Trip';
                             default:

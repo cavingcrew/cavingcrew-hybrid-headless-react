@@ -163,6 +163,31 @@ export function TripDetails({ trip }: TripDetailsProps) {
 									</Text>
 								</Group>
 							)}
+              <Group gap="xs" wrap="nowrap" align="flex-start">
+                <IconCalendarEvent size={20} style={{ marginTop: 3 }} />
+                <Badge
+                  color={
+                    trip.acf.event_type === 'training' ? 'indigo' :
+                    trip.acf.event_type === 'giggletrip' ? 'blue' :
+                    trip.acf.event_type === 'overnight' ? 'teal' :
+                    trip.acf.event_type === 'mystery' ? 'cyan' : 'green'
+                  }
+                  variant="light"
+                >
+                  {(() => {
+                    switch(trip.acf.event_type) {
+                      case 'training': return 'Training Event';
+                      case 'giggletrip': return 'Giggletrip';
+                      case 'overnight': return 'Overnight Trip';
+                      case 'known': 
+                        const startHour = startDate?.getHours() || 0;
+                        return startHour >= 17 ? 'Evening Caving' : 'Day Caving';
+                      case 'mystery': return 'Mystery Trip';
+                      default: return trip.acf.event_type?.replace(/-/g, ' ') || 'Caving Trip';
+                    }
+                  })()}
+                </Badge>
+              </Group>
 							{(acf?.event_cost || trip.price) && (
 								<Group gap="xs" wrap="nowrap" align="flex-start">
 									<IconCoin size={20} style={{ marginTop: 3 }} />
