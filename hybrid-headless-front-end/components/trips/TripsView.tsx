@@ -229,14 +229,32 @@ export function TripsView({ trips }: TripsViewProps) {
           ))}
         </SimpleGrid>
       ) : (
-        <Table.ScrollContainer minWidth={800}>
-          <Table verticalSpacing="sm" striped highlightOnHover>
+        <Table.ScrollContainer minWidth="100%">
+          <Table verticalSpacing="sm" striped highlightOnHover style={{ tableLayout: 'fixed', width: '100%' }}>
             <Table.Thead>
               <Table.Tr>
-                <Table.Th>Date</Table.Th>
+                <Table.Th style={{ width: '120px' }}>Date</Table.Th>
                 <Table.Th>Trip Name</Table.Th>
-                <Table.Th>Trip Type</Table.Th>
-                <Table.Th>Details</Table.Th>
+                <Table.Th
+                  style={{ 
+                    display: 'none',
+                    '@media (min-width: 36em)': {
+                      display: 'table-cell'
+                    }
+                  }}
+                >
+                  Trip Type
+                </Table.Th>
+                <Table.Th
+                  style={{ 
+                    display: 'none',
+                    '@media (min-width: 36em)': {
+                      display: 'table-cell'
+                    }
+                  }}
+                >
+                  Details
+                </Table.Th>
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>
@@ -265,11 +283,11 @@ export function TripsView({ trips }: TripsViewProps) {
                     }}
                     aria-label={`View ${trip.name} details`}
                   >
-                    <Table.Td>
+                    <Table.Td style={{ width: '120px', minWidth: '120px' }}>
                       {startDate ? (
-                        <Group gap="xs">
+                        <Group gap={4} wrap="nowrap">
                           <IconCalendarEvent size={16} />
-                          <Text>
+                          <Text size="sm" style={{ whiteSpace: 'nowrap' }}>
                             {startDate.toLocaleDateString('en-GB', {
                               weekday: 'short',
                               day: 'numeric',
@@ -279,10 +297,33 @@ export function TripsView({ trips }: TripsViewProps) {
                         </Group>
                       ) : 'TBD'}
                     </Table.Td>
-                    <Table.Td>
-                      <Text>{trip.name}</Text>
+                    <Table.Td
+                      style={{ 
+                        display: 'none',
+                        '@media (min-width: 36em)': {
+                          display: 'table-cell'
+                        }
+                      }}
+                    >
+                      <Text size="sm" style={{ 
+                        whiteSpace: 'normal',
+                        lineHeight: 1.3,
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden'
+                      }}>
+                        {trip.name}
+                      </Text>
                     </Table.Td>
-                    <Table.Td>
+                    <Table.Td
+                      style={{ 
+                        display: 'none',
+                        '@media (min-width: 36em)': {
+                          display: 'table-cell'
+                        }
+                      }}
+                    >
                       <Badge
                         color={
                           trip.acf.event_type === 'training' ? 'indigo' :
