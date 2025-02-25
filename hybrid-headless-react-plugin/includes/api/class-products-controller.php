@@ -571,7 +571,9 @@ class Hybrid_Headless_Products_Controller {
                 'route_time_for_eta' => $route_acf['route_time_for_eta'] ?? '',
                 'route_survey_image' => $this->get_image_data($route_acf['route_survey_image'] ?? 0),
                 'route_survey_link' => $route_acf['route_survey_link'] ?? null,
-                'route_route_description' => $route_acf['route_route_description'] ?? [],
+                'route_route_description' => !empty($route_acf['route_route_description']) ? 
+                    array_shift($route_acf['route_route_description']) : 
+                    null,
                 'route_difficulty' => $this->map_grouped_fields($route_acf['route_difficulty'] ?? [], [
                     'route_difficulty_psychological_claustrophobia',
                     'route_difficulty_objective_tightness',
