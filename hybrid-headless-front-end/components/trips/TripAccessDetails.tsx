@@ -82,7 +82,7 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 				</Alert>
 			)}
 			<Title order={2} mb="md">
-				Your Trip Access Details
+				Trip Details
 			</Title>
 
 			<Stack gap="md">
