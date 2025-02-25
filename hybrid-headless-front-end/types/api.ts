@@ -105,6 +105,7 @@ export interface Trip {
 
 		// Requirements
 		event_skills_required:
+			| "None required"
 			| "Open to All Abilities"
 			| "Advanced Horizontal Skills"
 			| "Basic SRT"
