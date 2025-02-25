@@ -187,7 +187,10 @@ export interface Trip {
 				};
 				route_route_description?: {
 					route_description_segment_html?: string;
-				};
+				} | Array<{
+					section_title: string;
+					section_content: string;
+				}>;
 			};
 		};
 
