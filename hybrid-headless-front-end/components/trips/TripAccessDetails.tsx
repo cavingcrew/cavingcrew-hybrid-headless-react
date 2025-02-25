@@ -33,17 +33,23 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 	const entranceLatLong = locationData?.location_entrance_latlong;
 	const parkingLatLong = locationData?.location_parking_latlong;
 
-	console.log('[TripAccessDetails] Rendering with trip data:', {
+	console.log("[TripAccessDetails] Rendering with trip data:", {
 		route: trip.acf.route,
 		locationData: trip.acf.route?.acf.route_entrance_location_id?.acf,
 		accessNotes,
 		parkingInstructions,
 		entranceLatLong,
-		parkingLatLong
+		parkingLatLong,
 	});
 
 	return (
-		<Paper withBorder p="md" radius="md" mt="md" style={{border: '2px solid red'}}>
+		<Paper
+			withBorder
+			p="md"
+			radius="md"
+			mt="md"
+			style={{ border: "2px solid red" }}
+		>
 			{!locationData && (
 				<Alert color="yellow" mb="md">
 					No access details available for this trip
