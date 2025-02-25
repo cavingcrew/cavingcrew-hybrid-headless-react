@@ -124,9 +124,19 @@ export interface Route {
 	acf: {
 		route_name: string;
 		route_blurb?: string;
-		route_entrance_location_id?: //reference the Location Type here // TODO
+		route_entrance_location_id?: {
+			id: number;
+			title: string;
+			slug: string;
+			acf: Location['acf'];
+		};
 		route_through_trip?: boolean;
-		route_exit_location_id?: number; //reference the Location Type here // TODO
+		route_exit_location_id?: {
+			id: number;
+			title: string;
+			slug: string;
+			acf: Location['acf'];
+		};
 		route_time_for_eta?: string;
 		route_survey_image?: string;
 		route_survey_link?: {
@@ -193,7 +203,7 @@ export interface Trip {
 	variations: Variation[];
 	has_variations: boolean;
 	is_variable: boolean;
-	route?:  //just reference the route Type here // TODO
+	route?: Route;
 	acf: {
 		// Event Type
 		event_type: string;
