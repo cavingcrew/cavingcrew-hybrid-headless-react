@@ -185,12 +185,14 @@ export interface Trip {
 						location_parking_latlong?: string;
 					};
 				};
-				route_route_description?: {
-					route_description_segment_html?: string;
-				} | Array<{
-					section_title: string;
-					section_content: string;
-				}>;
+				route_route_description?:
+					| {
+							route_description_segment_html?: string;
+					  }
+					| Array<{
+							section_title: string;
+							section_content: string;
+					  }>;
 			};
 		};
 
