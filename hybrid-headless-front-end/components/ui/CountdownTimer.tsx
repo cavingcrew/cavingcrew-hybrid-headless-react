@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Text } from '@mantine/core';
 
 export function CountdownTimer({ targetDate }: { targetDate: Date | null }) {

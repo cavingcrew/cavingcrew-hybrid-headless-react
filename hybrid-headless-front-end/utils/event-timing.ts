@@ -1,4 +1,4 @@
-import type { Trip } from '@/types/api';
+import type { Trip } from '../types/api';
 
 export interface SignupTiming {
   opensAt: Date | null;
@@ -20,8 +20,8 @@ export function getSignupTiming(trip: Trip): SignupTiming {
   };
 
   // Calculate base open/close times based on event type
-  let opensAt = new Date(startDate);
-  let closesAt = new Date(startDate);
+  let opensAt = new Date(startDate.getTime());
+  let closesAt = new Date(startDate.getTime());
 
   switch(trip.acf.event_type) {
     case 'overnight':
