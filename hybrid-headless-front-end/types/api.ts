@@ -82,13 +82,54 @@ export interface Hut {
 	};
 }
 
+// Location Type
+export interface Location {
+	id: number;
+	acf: {
+		location_name: string;
+		location_poi_nearby?: string;
+		location_caving_region?: number; // Post ID
+		location_parking_latlong?: {
+			address: string;
+			lat: number;
+			lng: number;
+			zoom?: number;
+			place_id?: string;
+			street_name?: string;
+			street_name_short?: string;
+			city?: string;
+			state?: string;
+			post_code?: string;
+			country?: string;
+			country_short?: string;
+		};
+		location_parking_description?: string;
+		location_parking_entrance_route_description?: string;
+		location_map_from_parking_to_entrance?: string;
+		location_entrance_latlong?: string;
+		location_info_url?: string;
+		location_access_arrangement?: string; // Stored as JSON string
+		location_access_url?: string;
+		location_reference_links?: Array<{
+			link_title: string;
+			link_url: string;
+		}>;
+		location_sensitive_access?: boolean;
+	};
+}
+
 // Route Type
 export interface Route {
 	id: number;
 	acf: {
 		route_name: string;
 		route_blurb?: string;
-		route_entrance_location_id?: number; // Post ID
+		route_entrance_location_id?: {
+			id: number;
+			title: string;
+			slug: string;
+			acf: Location['acf'];
+		};
 		route_through_trip?: boolean;
 		route_exit_location_id?: number; // Post ID
 		route_time_for_eta?: string;
@@ -97,52 +138,40 @@ export interface Route {
 			url: string;
 			target?: string;
 		};
-		route_route_description?: Array<{
-			section_title: string;
-			section_content: string;
-		}>;
+		route_route_description?:
+			| {
+					route_description_segment_html?: string;
+			  }
+			| Array<{
+					section_title: string;
+					section_content: string;
+			  }>;
 		route_difficulty?: {
 			technical: number;
 			physical: number;
 		};
 		route_trip_star_rating?: number;
 		route_participants_skills_required?: {
-			minimum_experience: string;
-			recommended_training: string[];
+			route_participants_skills_required_horizontal_level?: string;
+			route_participants_skills_required_srt_level?: string;
+			minimum_experience?: string;
+			recommended_training?: string[];
 		};
 		route_group_tackle_required?: string;
-		route_personal_gear_required?: string[];
+		route_personal_gear_required?: string; // Stored as JSON string
 		route_leading_difficulty?: {
-			srt_requirements: string;
-			pitch_difficulty: string;
+			route_leading_difficulty_srt_leading_level_required?: number | null;
+			route_leading_difficulty_srt_leading_skills_required?: string[];
+			route_leading_difficulty_horizontal_leading_level_required?: {
+				ID: number;
+				post_title: string;
+				post_name: string;
+				permalink: string;
+			};
+			route_leading_difficulty_horizontal_leading_skills_required?: string[];
+			route_leading_difficulty_navigation_difficulty?: string;
 		};
-		route_additional_images?: Array<{
-			image: string;
-			caption?: string;
-		}>;
-	};
-}
-
-// Location Type
-export interface Location {
-	id: number;
-	acf: {
-		location_name: string;
-		location_poi_nearby?: string;
-		location_caving_region?: number; // Post ID
-		location_parking_latlong?: string;
-		location_parking_description?: string;
-		location_parking_entrance_route_description?: string;
-		location_map_from_parking_to_entrance?: string;
-		location_entrance_latlong?: string;
-		location_info_url?: string;
-		location_access_arrangement?: string[];
-		location_access_url?: string;
-		location_reference_links?: Array<{
-			link_title: string;
-			link_url: string;
-		}>;
-		location_sensitive_access?: boolean;
+		route_additional_images?: string; // Stored as JSON string
 	};
 }
 
@@ -174,10 +203,14 @@ export interface Trip {
 			route_blurb?: string;
 			route_entrance_location_id?: {
 				acf: {
-					location_access_arrangement?: string[];
+					location_access_arrangement?: string;
 					location_parking_instructions?: string;
 					location_entrance_latlong?: string;
-					location_parking_latlong?: string;
+					location_parking_latlong?: {
+						address: string;
+						lat: number;
+						lng: number;
+					};
 				};
 			};
 			route_route_description?:
