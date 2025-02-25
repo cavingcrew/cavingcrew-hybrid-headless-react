@@ -7,6 +7,14 @@ export interface SignupTiming {
 	status: "early" | "open" | "closed" | "late";
 }
 
+export function isWithinDays(dateString: string, days: number): boolean {
+  const eventDate = new Date(dateString);
+  const today = new Date();
+  const diffTime = eventDate.getTime() - today.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  return diffDays <= days && diffDays >= 0;
+}
+
 export function getSignupTiming(trip: Trip): SignupTiming {
 	const now = new Date();
 	const startDate = trip.acf.event_start_date_time

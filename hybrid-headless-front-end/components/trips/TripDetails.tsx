@@ -15,6 +15,8 @@ import {
 	Title,
 } from "@mantine/core";
 import { TripOvernightHut } from './TripOvernightHut';
+import { TripAccessDetails } from './TripAccessDetails';
+import { isWithinDays } from '../../utils/event-timing';
 import { useUser } from '@/lib/hooks/useUser';
 import { TripSignupWidget } from "./TripSignupWidget";
 import {
@@ -387,6 +389,12 @@ export function TripDetails({ trip }: TripDetailsProps) {
 						/>
 					</Box>
 				</Paper>
+
+        {/* Add access details for upcoming trips */}
+        {trip.acf.event_start_date_time && 
+          isWithinDays(trip.acf.event_start_date_time, 7) && (
+            <TripAccessDetails trip={trip} />
+        )}
 			) : (
 				<TripSignupWidget
 					trip={trip}
