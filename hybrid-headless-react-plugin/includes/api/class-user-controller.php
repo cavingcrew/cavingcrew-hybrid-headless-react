@@ -156,8 +156,6 @@ class Hybrid_Headless_User_Controller {
             'membership_cancellation_date',
             'cc_membership_cancellation_intent_date',
             'admin-membership-type',
-            'admin_agm_voting_code_2024',
-            'admin_agm_voting_code_2023',
             'membership_joining_date',
             'cc_membership_join_date',
             'admin-club-constitution-acceptance-noted-date',
