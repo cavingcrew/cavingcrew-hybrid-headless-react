@@ -172,7 +172,7 @@ export interface Trip {
 	acf: {
 		// Event Type
 		event_type: string;
-		
+
 		// Route Information
 		route?: {
 			acf: {
