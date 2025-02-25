@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Stack, Title, Text, SimpleGrid,
   SegmentedControl, Select, Group, Badge,
@@ -31,6 +32,7 @@ interface TripsViewProps {
 
 export function TripsView({ trips }: TripsViewProps) {
   const theme = useMantineTheme();
+  const router = useRouter();
   const [sortMode, setSortMode] = useState<'category' | 'date' | 'schedule'>('category');
   const [filterMode, setFilterMode] = useState<
     'all' | 'horizontal' | 'vertical' | 'extra-welcoming' | 'available' | 'u18s'
@@ -248,7 +250,25 @@ export function TripsView({ trips }: TripsViewProps) {
                 const isOvernight = trip.acf.event_type === 'overnight';
 
                 return (
-                  <Table.Tr key={trip.id}>
+                  <Table.Tr
+                    key={trip.id}
+                    onClick={() => router.push(`/trip/${trip.slug}`)}
+                    sx={(theme) => ({
+                      cursor: 'pointer',
+                      transition: 'background-color 0.2s',
+                      '&:hover': {
+                        backgroundColor: theme.colors.gray[1],
+                      },
+                    })}
+                    role="link"
+                    tabIndex={0}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        router.push(`/trip/${trip.slug}`);
+                      }
+                    }}
+                    aria-label={`View ${trip.name} details`}
+                  >
                     <Table.Td>
                       {startDate ? (
                         <Group gap="xs">
@@ -264,9 +284,7 @@ export function TripsView({ trips }: TripsViewProps) {
                       ) : 'TBD'}
                     </Table.Td>
                     <Table.Td>
-                      <Anchor component={Link} href={`/trip/${trip.slug}`}>
-                        {trip.name}
-                      </Anchor>
+                      <Text>{trip.name}</Text>
                     </Table.Td>
                     <Table.Td>
                       <Badge
