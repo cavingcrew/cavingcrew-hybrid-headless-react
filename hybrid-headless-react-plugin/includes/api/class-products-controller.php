@@ -268,6 +268,9 @@ class Hybrid_Headless_Products_Controller {
         $cache_key = 'product_stock_' . $product->get_id();
         $stock_info = wp_cache_get($cache_key);
 
+        // Get ACF fields
+        $acf_fields = get_fields($product->get_id());
+
         // Initialize variation data
         $variations = [];
         $has_variations = false;
@@ -416,11 +419,19 @@ class Hybrid_Headless_Products_Controller {
             'short_description' => $product->get_short_description(),
             'images' => $this->get_product_images($product),
             'categories' => $this->get_product_categories($product),
-            'acf' => get_fields($product->get_id()),
+            'acf' => $acf_fields,
             'variations' => $stock_info['variations'],
             'has_variations' => $stock_info['has_variations'],
             'is_variable' => $stock_info['is_variable'],
             'purchasable' => $stock_info['purchasable']
+        );
+
+        // Add hut data with original ACF field names if hut_id exists
+        if (!empty($acf_fields['hut_id'])) {
+            $product_data['hut'] = $this->get_hut_data($acf_fields['hut_id']);
+        }
+
+        return $product_data;
         );
     }
 
@@ -487,6 +498,53 @@ class Hybrid_Headless_Products_Controller {
         header('Pragma: no-cache');
 
         return rest_ensure_response( $this->prepare_product_data( $wc_product ) );
+    }
+
+    private function get_hut_data($hut_id) {
+        if (!$hut_id || !get_post_status($hut_id)) {
+            return null;
+        }
+
+        $hut_acf = get_fields($hut_id);
+        
+        return [
+            'hut_id' => $hut_id,
+            'hut_name' => $hut_acf['hut_name'] ?? '',
+            'hut_sales_description' => $hut_acf['hut_sales_description'] ?? '',
+            'hut_club_name' => $hut_acf['hut_club_name'] ?? '',
+            'hut_address' => $hut_acf['hut_address'] ?? '',
+            'hut_location' => $this->get_hut_location_data($hut_acf['hut_location'] ?? 0),
+            'hut_lat_long' => $hut_acf['hut_lat_long'] ?? '',
+            'hut_parking_instructions' => $hut_acf['hut_parking_instructions'] ?? '',
+            'hut_facilities' => $hut_acf['hut_facilities'] ?? [],
+            'hut_arrival_and_directions' => $hut_acf['hut_arrival_and_directions'] ?? '',
+            'hut_image' => $this->get_hut_image_data($hut_acf['hut_image'] ?? 0),
+            'hut_dogs_allowed' => $hut_acf['hut_dogs_allowed'] ?? 'no'
+        ];
+    }
+
+    private function get_hut_location_data($location_post_id) {
+        if (!$location_post_id) return null;
+        
+        $location_post = get_post($location_post_id);
+        
+        return $location_post ? [
+            'ID' => $location_post->ID,
+            'post_title' => $location_post->post_title,
+            'post_name' => $location_post->post_name,
+            'permalink' => get_permalink($location_post)
+        ] : null;
+    }
+
+    private function get_hut_image_data($image_id) {
+        if (!$image_id) return null;
+        
+        return [
+            'ID' => $image_id,
+            'url' => wp_get_attachment_url($image_id),
+            'alt' => get_post_meta($image_id, '_wp_attachment_image_alt', true),
+            'caption' => wp_get_attachment_caption($image_id)
+        ];
     }
 
     private function get_product_categories( $product ) {
