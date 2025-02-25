@@ -1,41 +1,43 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import { Text } from '@mantine/core';
+import { Text } from "@mantine/core";
+import React, { useEffect, useState } from "react";
 
 export function CountdownTimer({ targetDate }: { targetDate: Date | null }) {
-  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
+	const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
 
-  function calculateTimeLeft() {
-    if (!targetDate) return null;
-    
-    const now = new Date().getTime();
-    const targetTime = targetDate.getTime();
-    const difference = targetTime - now;
+	function calculateTimeLeft() {
+		if (!targetDate) return null;
 
-    if (difference <= 0) return null;
+		const now = new Date().getTime();
+		const targetTime = targetDate.getTime();
+		const difference = targetTime - now;
 
-    return {
-      days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-      hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-      minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
-      seconds: Math.floor((difference % (1000 * 60)) / 1000)
-    };
-  }
+		if (difference <= 0) return null;
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft(calculateTimeLeft());
-    }, 1000);
+		return {
+			days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+			hours: Math.floor(
+				(difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+			),
+			minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
+			seconds: Math.floor((difference % (1000 * 60)) / 1000),
+		};
+	}
 
-    return () => clearInterval(timer);
-  }, [targetDate]);
+	useEffect(() => {
+		const timer = setInterval(() => {
+			setTimeLeft(calculateTimeLeft());
+		}, 1000);
 
-  if (!timeLeft) return <Text component="span">soon</Text>;
+		return () => clearInterval(timer);
+	}, [targetDate]);
 
-  return (
-    <Text component="span" fw={500}>
-      in {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}m
-    </Text>
-  );
+	if (!timeLeft) return <Text component="span">soon</Text>;
+
+	return (
+		<Text component="span" fw={500}>
+			in {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}m
+		</Text>
+	);
 }
