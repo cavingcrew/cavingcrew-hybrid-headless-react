@@ -27,20 +27,20 @@ interface TripAccessDetailsProps {
 }
 
 const parseCoords = (coords: any) => {
-  if (!coords) return null;
-  
-  // Handle ACF map object
-  if (typeof coords === 'object' && coords.lat && coords.lng) {
-    return `${coords.lat},${coords.lng}`;
-  }
-  
-  // Handle string format
-  if (typeof coords === 'string') {
-    const [lat, lng] = coords.split(',');
-    if (lat && lng) return `${lat.trim()},${lng.trim()}`;
-  }
-  
-  return null;
+	if (!coords) return null;
+
+	// Handle ACF map object
+	if (typeof coords === "object" && coords.lat && coords.lng) {
+		return `${coords.lat},${coords.lng}`;
+	}
+
+	// Handle string format
+	if (typeof coords === "string") {
+		const [lat, lng] = coords.split(",");
+		if (lat && lng) return `${lat.trim()},${lng.trim()}`;
+	}
+
+	return null;
 };
 
 export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
@@ -173,20 +173,29 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 					<Title order={3} mb="sm">
 						Route Description
 					</Title>
-					{Array.isArray(trip.route.acf.route_route_description) ? (
-						trip.route.acf.route_route_description.map((section, index) => (
-							<div key={index}>
-								<Text fw={500} mb="xs">{section.section_title}</Text>
-								<div dangerouslySetInnerHTML={{ __html: section.section_content }} />
-							</div>
-						))
-					) : trip.route.acf.route_route_description.route_description_segment_html && (
-						<div
-							dangerouslySetInnerHTML={{
-								__html: trip.route.acf.route_route_description.route_description_segment_html
-							}}
-						/>
-					)}
+					{Array.isArray(trip.route.acf.route_route_description)
+						? trip.route.acf.route_route_description.map((section, index) => (
+								<div key={index}>
+									<Text fw={500} mb="xs">
+										{section.section_title}
+									</Text>
+									<div
+										dangerouslySetInnerHTML={{
+											__html: section.section_content,
+										}}
+									/>
+								</div>
+							))
+						: trip.route.acf.route_route_description
+								.route_description_segment_html && (
+								<div
+									dangerouslySetInnerHTML={{
+										__html:
+											trip.route.acf.route_route_description
+												.route_description_segment_html,
+									}}
+								/>
+							)}
 				</>
 			)}
 		</Paper>
