@@ -110,6 +110,7 @@ export interface Location {
 		location_info_url?: string;
 		location_access_arrangement?: string; // Stored as JSON string
 		location_access_url?: string;
+		location_parking_entrance_route_description?: string;
 		location_reference_links?: Array<{
 			link_title: string;
 			link_url: string;
@@ -211,6 +212,12 @@ export interface Trip {
 						lat: number;
 						lng: number;
 					};
+					location_parking_entrance_route_description?: string;
+					location_reference_links?: Array<{
+						link_title: string;
+						link_url: string;
+					}>;
+					location_access_url?: string;
 				};
 			};
 			route_route_description?:

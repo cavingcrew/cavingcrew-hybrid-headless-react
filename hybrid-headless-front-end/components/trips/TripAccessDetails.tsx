@@ -28,7 +28,11 @@ interface TripAccessDetailsProps {
 
 export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
   const locationData = trip.route?.acf.route_entrance_location_id?.acf;
-  const accessNotes = locationData?.location_access_arrangement || [];
+  const accessNotes = locationData?.location_access_arrangement ? 
+    typeof locationData.location_access_arrangement === 'string' ? 
+      JSON.parse(locationData.location_access_arrangement) : 
+      locationData.location_access_arrangement : 
+    [];
   const parkingInstructions = locationData?.location_parking_instructions;
   const entranceCoords = locationData?.location_entrance_latlong;
   const parkingCoords = locationData?.location_parking_latlong;
@@ -109,11 +113,15 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
           </Group>
           
           <List spacing="xs">
-            {accessNotes.map((note, index) => (
+            {Array.isArray(accessNotes) ? accessNotes.map((note, index) => (
               <List.Item key={index} icon={<IconInfoCircle size={16} />}>
                 {note}
               </List.Item>
-            ))}
+            )) : (
+              <List.Item icon={<IconInfoCircle size={16} />}>
+                {String(accessNotes)}
+              </List.Item>
+            )}
           </List>
         </Stack>
       )}
