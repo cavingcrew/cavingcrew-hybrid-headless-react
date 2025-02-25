@@ -391,10 +391,6 @@ export function TripDetails({ trip }: TripDetailsProps) {
 							/>
 						</Box>
 					</Paper>
-
-					{/* Add access details for upcoming trips */}
-
-
 				</>
 			) : (
 				<TripSignupWidget
@@ -407,6 +403,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
 					}
 				/>
 			)}
+			{/* Always show access details */}
 			<TripAccessDetails trip={trip} />
 
 			{/* What does signing up pay for section */}
