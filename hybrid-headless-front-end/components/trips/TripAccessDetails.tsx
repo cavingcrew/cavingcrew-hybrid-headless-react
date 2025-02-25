@@ -26,12 +26,29 @@ interface TripAccessDetailsProps {
 	trip: Trip;
 }
 
+const parseCoords = (coords: any) => {
+  if (!coords) return null;
+  
+  // Handle ACF map object
+  if (typeof coords === 'object' && coords.lat && coords.lng) {
+    return `${coords.lat},${coords.lng}`;
+  }
+  
+  // Handle string format
+  if (typeof coords === 'string') {
+    const [lat, lng] = coords.split(',');
+    if (lat && lng) return `${lat.trim()},${lng.trim()}`;
+  }
+  
+  return null;
+};
+
 export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 	const locationData = trip.route?.acf.route_entrance_location_id?.acf;
 	const accessNotes = locationData?.location_access_arrangement || [];
 	const parkingInstructions = locationData?.location_parking_instructions;
-	const entranceLatLong = locationData?.location_entrance_latlong;
-	const parkingLatLong = locationData?.location_parking_latlong;
+	const parkingLatLong = parseCoords(locationData?.location_parking_latlong);
+	const entranceLatLong = parseCoords(locationData?.location_entrance_latlong);
 
 	console.log("[TripAccessDetails] Rendering with trip data:", {
 		route: trip.route,
@@ -78,7 +95,7 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 
 						<Button
 							component="a"
-							href={`http://maps.apple.com/?address=${parkingLatLong}`}
+							href={`http://maps.apple.com/?q=${parkingLatLong}`}
 							target="_blank"
 							leftSection={<IconMapPin size={16} />}
 							variant="outline"
@@ -100,7 +117,7 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 
 						<Button
 							component="a"
-							href={`http://maps.apple.com/?address=${entranceLatLong}`}
+							href={`http://maps.apple.com/?q=${entranceLatLong}`}
 							target="_blank"
 							leftSection={<IconMapPin size={16} />}
 							variant="outline"
