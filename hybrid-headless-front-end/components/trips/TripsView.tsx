@@ -18,7 +18,8 @@ import {
   IconBabyCarriage,
   IconLayoutGrid,
   IconCalendarEvent,
-  IconSchool
+  IconSchool,
+  IconArrowBarUp
 } from "@tabler/icons-react";
 import Link from "next/link";
 import TripCard from './TripCard';
@@ -242,9 +243,9 @@ export function TripsView({ trips }: TripsViewProps) {
                 const startDate = trip.acf.event_start_date_time 
                   ? new Date(trip.acf.event_start_date_time)
                   : null;
-                const isVertical = trip.acf.event_type === 'overnight' || 
-                  trip.acf.event_gear_required?.toLowerCase().includes('srt');
-                const isOvernight = trip.categories.some(cat => cat.slug === 'overnight-trips');
+                const isVertical = trip.acf.event_skills_required?.includes('SRT') && 
+                  trip.acf.event_type !== 'overnight';
+                const isOvernight = trip.acf.event_type === 'overnight';
 
                 return (
                   <Table.Tr key={trip.id}>
@@ -270,19 +271,25 @@ export function TripsView({ trips }: TripsViewProps) {
                     <Table.Td>
                       <Badge
                         color={
-                          trip.acf.event_type === 'Training' ? 'blue' :
-                          trip.acf.event_type === 'GiggleTrip' ? 'pink' :
-                          trip.acf.event_type === 'Overnight' ? 'red' :
-                          trip.acf.event_type === 'Mystery' ? 'grape' : 'green'
+                          trip.acf.event_type === 'training' ? 'blue' :
+                          trip.acf.event_type === 'giggletrip' ? 'pink' :
+                          trip.acf.event_type === 'overnight' ? 'red' :
+                          trip.acf.event_type === 'mystery' ? 'grape' : 'green'
                         }
                         variant="light"
                         leftSection={
-                          trip.acf.event_type === 'Overnight' ? (
-                            <IconCalendarEvent size={14} style={{ marginRight: 4 }} />
-                          ) : trip.acf.event_type === 'Training' ? (
+                          trip.acf.event_type === 'overnight' ? (
+                            <Group gap={4}>
+                              <IconStairs size={14} />
+                              <IconArrowBarUp size={14} />
+                            </Group>
+                          ) : trip.acf.event_type === 'training' ? (
                             <IconSchool size={14} style={{ marginRight: 4 }} />
-                          ) : trip.acf.event_type === 'GiggleTrip' ? (
+                          ) : trip.acf.event_type === 'giggletrip' ? (
                             <IconSparkles size={14} style={{ marginRight: 4 }} />
+                          ) : (trip.acf.event_skills_required === 'Basic SRT' || 
+                               trip.acf.event_skills_required === 'Advanced SRT') ? (
+                            <IconArrowBarUp size={14} style={{ marginRight: 4 }} />
                           ) : (
                             <IconStairs size={14} style={{ marginRight: 4 }} />
                           )
@@ -290,20 +297,18 @@ export function TripsView({ trips }: TripsViewProps) {
                       >
                         {(() => {
                           switch(trip.acf.event_type) {
-                            case 'Training':
-                              return 'Training Trip';
-                            case 'GiggleTrip':
-                              return 'Giggles Trip';
-                            case 'Overnight':
-                              return 'Overnight Trip'; 
-                            case 'Evening':
-                              return 'Evening Trip';
-                            case 'Day':
-                              return 'Day Trip';
-                            case 'Mystery':
+                            case 'training':
+                              return 'Training Event';
+                            case 'giggletrip':
+                              return 'Giggletrip';
+                            case 'overnight':
+                              return 'Overnight / Weekend Trip';
+                            case 'known':
+                              return 'Known Location Trip';
+                            case 'mystery':
                               return 'Mystery Trip';
                             default:
-                              return trip.acf.event_type || 'Caving Trip';
+                              return trip.acf.event_type?.replace(/-/g, ' ') || 'Caving Trip';
                           }
                         })()}
                       </Badge>
