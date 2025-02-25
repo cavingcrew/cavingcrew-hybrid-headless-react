@@ -406,7 +406,7 @@ class Hybrid_Headless_Products_Controller {
             wp_cache_set($cache_key, $stock_info, '', 30);
         }
 
-        return array(
+        $product_data = array(
             'id' => $product->get_id(),
             'name' => $product->get_name(),
             'slug' => $product->get_slug(),
@@ -425,6 +425,15 @@ class Hybrid_Headless_Products_Controller {
             'is_variable' => $stock_info['is_variable'],
             'purchasable' => $stock_info['purchasable']
         );
+
+        // Add route data if available
+        if (!empty($acf_fields['event_route_id'])) {
+            $product_data['route'] = $this->get_route_data($acf_fields['event_route_id']);
+        } elseif (!empty($acf_fields['event_cave_id'])) {
+            $product_data['route'] = $this->get_cave_as_route($acf_fields['event_cave_id']);
+        }
+
+        return $product_data;
 
         // Add hut data with original ACF field names if hut_id exists
         if (!empty($acf_fields['hut_id'])) {
@@ -537,6 +546,168 @@ class Hybrid_Headless_Products_Controller {
     }
 
     private function get_hut_image_data($image_id) {
+        if (!$image_id) return null;
+        
+        return [
+            'ID' => $image_id,
+            'url' => wp_get_attachment_url($image_id),
+            'alt' => get_post_meta($image_id, '_wp_attachment_image_alt', true),
+            'caption' => wp_get_attachment_caption($image_id)
+        ];
+    }
+
+    private function get_route_data($route_id) {
+        if (!$route_id || !get_post_status($route_id)) {
+            return null;
+        }
+
+        $route_acf = get_fields($route_id);
+        $route_post = get_post($route_id);
+
+        return [
+            'id' => $route_id,
+            'title' => $route_post->post_title,
+            'acf' => [
+                'route_name' => $route_acf['route_name'] ?? '',
+                'route_blurb' => $route_acf['route_blurb'] ?? '',
+                'route_entrance_location_id' => $this->get_location_data($route_acf['route_entrance_location_id'] ?? 0),
+                'route_through_trip' => $route_acf['route_through_trip'] ?? false,
+                'route_exit_location_id' => $this->get_location_data($route_acf['route_exit_location_id'] ?? 0),
+                'route_time_for_eta' => $route_acf['route_time_for_eta'] ?? '',
+                'route_survey_image' => $this->get_image_data($route_acf['route_survey_image'] ?? 0),
+                'route_survey_link' => $route_acf['route_survey_link'] ?? null,
+                'route_route_description' => $route_acf['route_route_description'] ?? [],
+                'route_difficulty' => $this->map_grouped_fields($route_acf['route_difficulty'] ?? [], [
+                    'route_difficulty_psychological_claustrophobia',
+                    'route_difficulty_objective_tightness',
+                    'route_difficulty_wetness',
+                    'route_difficulty_water_near_face',
+                    'route_difficulty_exposure_to_deep_water',
+                    'route_difficulty_muddiness',
+                    'route_difficulty_exposure_to_heights',
+                    'route_difficulty_technical_climbing_difficulty',
+                    'route_difficulty_endurance',
+                    'route_difficulty_objective_hazard'
+                ]),
+                'route_trip_star_rating' => $route_acf['route_trip_star_rating'] ?? null,
+                'route_participants_skills_required' => $this->map_grouped_fields($route_acf['route_participants_skills_required'] ?? [], [
+                    'route_participants_skills_required_srt_level' => ['type' => 'post'],
+                    'route_participants_skills_required_horizontal_level' => ['type' => 'post']
+                ]),
+                'route_group_tackle_required' => $route_acf['route_group_tackle_required'] ?? '',
+                'route_personal_gear_required' => $route_acf['route_personal_gear_required'] ?? [],
+                'route_leading_difficulty' => $this->map_grouped_fields($route_acf['route_leading_difficulty'] ?? [], [
+                    'route_leading_difficulty_srt_leading_level_required' => ['type' => 'post'],
+                    'route_leading_difficulty_srt_leading_skills_required',
+                    'route_leading_difficulty_horizontal_leading_level_required' => ['type' => 'post'],
+                    'route_leading_difficulty_horizontal_leading_skills_required',
+                    'route_leading_difficulty_navigation_difficulty'
+                ]),
+                'route_additional_images' => array_map(function($img) {
+                    return $this->get_image_data($img['image'] ?? 0);
+                }, $route_acf['route_additional_images'] ?? [])
+            ]
+        ];
+    }
+
+    private function get_cave_as_route($cave_id) {
+        $cave_acf = get_fields($cave_id);
+        $cave_post = get_post($cave_id);
+
+        return [
+            'id' => null,
+            'title' => 'Cave Entrance Details',
+            'acf' => [
+                'route_name' => $cave_post->post_title,
+                'route_entrance_location_id' => $this->get_location_data($cave_id),
+                'route_difficulty' => $this->map_grouped_fields([], [
+                    'route_difficulty_psychological_claustrophobia',
+                    'route_difficulty_objective_tightness',
+                    'route_difficulty_wetness',
+                    'route_difficulty_water_near_face',
+                    'route_difficulty_exposure_to_deep_water',
+                    'route_difficulty_muddiness',
+                    'route_difficulty_exposure_to_heights',
+                    'route_difficulty_technical_climbing_difficulty',
+                    'route_difficulty_endurance',
+                    'route_difficulty_objective_hazard'
+                ]),
+                'route_participants_skills_required' => $this->map_grouped_fields([], [
+                    'route_participants_skills_required_srt_level' => ['type' => 'post'],
+                    'route_participants_skills_required_horizontal_level' => ['type' => 'post']
+                ]),
+                'route_leading_difficulty' => $this->map_grouped_fields([], [
+                    'route_leading_difficulty_srt_leading_level_required' => ['type' => 'post'],
+                    'route_leading_difficulty_srt_leading_skills_required',
+                    'route_leading_difficulty_horizontal_leading_level_required' => ['type' => 'post'],
+                    'route_leading_difficulty_horizontal_leading_skills_required',
+                    'route_leading_difficulty_navigation_difficulty'
+                ]),
+                'route_blurb' => '',
+                'route_through_trip' => false,
+                'route_exit_location_id' => null,
+                'route_time_for_eta' => '',
+                'route_survey_image' => null,
+                'route_survey_link' => null,
+                'route_route_description' => [],
+                'route_trip_star_rating' => null,
+                'route_group_tackle_required' => '',
+                'route_personal_gear_required' => [],
+                'route_additional_images' => []
+            ]
+        ];
+    }
+
+    private function map_grouped_fields($group_data, $fields) {
+        $mapped = [];
+        foreach ($fields as $key => $config) {
+            if (is_numeric($key)) {
+                $field_name = $config;
+                $config = [];
+            } else {
+                $field_name = $key;
+            }
+
+            $value = $group_data[$field_name] ?? null;
+            
+            if ($config['type'] ?? null === 'post' && $value) {
+                $mapped[$field_name] = $this->get_post_reference($value);
+            } else {
+                $mapped[$field_name] = $value;
+            }
+        }
+        return $mapped;
+    }
+
+    private function get_post_reference($post_id) {
+        $post = get_post($post_id);
+        return $post ? [
+            'ID' => $post->ID,
+            'post_title' => $post->post_title,
+            'post_name' => $post->post_name,
+            'permalink' => get_permalink($post)
+        ] : null;
+    }
+
+    private function get_location_data($location_id) {
+        if (!$location_id) return null;
+        
+        $location_post = get_post($location_id);
+        $location_acf = get_fields($location_id);
+        
+        return [
+            'id' => $location_id,
+            'name' => $location_post->post_title,
+            'acf' => [
+                'location_name' => $location_acf['location_name'] ?? '',
+                'location_parking_latlong' => $location_acf['location_parking_latlong'] ?? '',
+                'location_entrance_latlong' => $location_acf['location_entrance_latlong'] ?? '',
+                'location_access_arrangement' => $location_acf['location_access_arrangement'] ?? []
+            ]
+        ];
+    }
+
+    private function get_image_data($image_id) {
         if (!$image_id) return null;
         
         return [
