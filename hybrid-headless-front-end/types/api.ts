@@ -128,14 +128,14 @@ export interface Route {
 			id: number;
 			title: string;
 			slug: string;
-			acf: Location['acf'];
+			acf: Location["acf"];
 		};
 		route_through_trip?: boolean;
 		route_exit_location_id?: {
 			id: number;
 			title: string;
 			slug: string;
-			acf: Location['acf'];
+			acf: Location["acf"];
 		};
 		route_time_for_eta?: string;
 		route_survey_image?: string;
