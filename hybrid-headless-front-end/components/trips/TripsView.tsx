@@ -233,13 +233,14 @@ export function TripsView({ trips }: TripsViewProps) {
           <Table verticalSpacing="sm" striped highlightOnHover style={{ tableLayout: 'fixed', width: '100%' }}>
             <Table.Thead>
               <Table.Tr>
-                <Table.Th style={{ width: '120px' }}>Date</Table.Th>
+                <Table.Th style={{ width: '120px', minWidth: '120px' }}>Date</Table.Th>
                 <Table.Th>Trip Name</Table.Th>
                 <Table.Th
                   style={{ 
                     display: 'none',
                     '@media (min-width: 36em)': {
-                      display: 'table-cell'
+                      display: 'table-cell',
+                      width: '160px'
                     }
                   }}
                 >
@@ -249,7 +250,8 @@ export function TripsView({ trips }: TripsViewProps) {
                   style={{ 
                     display: 'none',
                     '@media (min-width: 36em)': {
-                      display: 'table-cell'
+                      display: 'table-cell',
+                      minWidth: '200px'
                     }
                   }}
                 >
@@ -283,7 +285,11 @@ export function TripsView({ trips }: TripsViewProps) {
                     }}
                     aria-label={`View ${trip.name} details`}
                   >
-                    <Table.Td style={{ width: '120px', minWidth: '120px' }}>
+                    <Table.Td style={{ 
+                      width: '120px',
+                      minWidth: '120px',
+                      paddingRight: '8px'
+                    }}>
                       {startDate ? (
                         <Group gap={4} wrap="nowrap">
                           <IconCalendarEvent size={16} />
@@ -297,14 +303,10 @@ export function TripsView({ trips }: TripsViewProps) {
                         </Group>
                       ) : 'TBD'}
                     </Table.Td>
-                    <Table.Td
-                      style={{ 
-                        display: 'none',
-                        '@media (min-width: 36em)': {
-                          display: 'table-cell'
-                        }
-                      }}
-                    >
+                    <Table.Td style={{ 
+                      paddingRight: '8px',
+                      wordBreak: 'break-word'
+                    }}>
                       <Text size="sm" style={{ 
                         whiteSpace: 'normal',
                         lineHeight: 1.3,
@@ -320,7 +322,9 @@ export function TripsView({ trips }: TripsViewProps) {
                       style={{ 
                         display: 'none',
                         '@media (min-width: 36em)': {
-                          display: 'table-cell'
+                          display: 'table-cell',
+                          width: '160px',
+                          paddingRight: '8px'
                         }
                       }}
                     >
@@ -369,7 +373,15 @@ export function TripsView({ trips }: TripsViewProps) {
                         })()}
                       </Badge>
                     </Table.Td>
-                    <Table.Td>
+                    <Table.Td
+                      style={{ 
+                        display: 'none',
+                        '@media (min-width: 36em)': {
+                          display: 'table-cell',
+                          minWidth: '200px'
+                        }
+                      }}
+                    >
                       <Group gap="xs">
                         {trip.acf.event_skills_required && (
                           <Badge variant="outline" color="blue">
