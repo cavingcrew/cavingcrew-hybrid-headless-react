@@ -183,7 +183,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
                       case 'training': return 'Training Event';
                       case 'giggletrip': return 'Giggletrip';
                       case 'overnight': return 'Overnight Trip';
-                      case 'known': 
+                      case 'known':
                         const startHour = startDate?.getHours() || 0;
                         return startHour >= 17 ? 'Evening Caving' : 'Day Caving';
                       case 'mystery': return 'Mystery Trip';
@@ -353,7 +353,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
           )}
 				</Grid.Col>
 
-				<Grid.Col 
+				<Grid.Col
 					span={{ base: 0, md: 4 }}
 					visibleFrom="md"
 				>
@@ -389,10 +389,10 @@ export function TripDetails({ trip }: TripDetailsProps) {
 							trip={trip}
 						/>
 					</Box>
-				</Paper>
+				</Paper>)}
 
         {/* Add access details for upcoming trips */}
-        {trip.acf.event_start_date_time && 
+        {trip.acf.event_start_date_time &&
           isWithinDays(trip.acf.event_start_date_time, 7) && (
             <TripAccessDetails trip={trip} />
           )}
