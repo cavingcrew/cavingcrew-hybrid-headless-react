@@ -27,8 +27,8 @@ interface TripAccessDetailsProps {
 }
 
 interface MapCoords {
-  lat?: number;
-  lng?: number;
+	lat?: number;
+	lng?: number;
 }
 
 const parseCoords = (coords: MapCoords | string | null | false | undefined) => {
@@ -52,8 +52,12 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 	const locationData = trip.route?.acf.route_entrance_location_id?.acf;
 	const accessNotes = locationData?.location_access_arrangement || [];
 	const parkingInstructions = locationData?.location_parking_instructions;
-	const parkingLatLong = parseCoords(locationData?.location_parking_latlong ?? null);
-	const entranceLatLong = parseCoords(locationData?.location_entrance_latlong ?? null);
+	const parkingLatLong = parseCoords(
+		locationData?.location_parking_latlong ?? null,
+	);
+	const entranceLatLong = parseCoords(
+		locationData?.location_entrance_latlong ?? null,
+	);
 
 	console.log("[TripAccessDetails] Rendering with trip data:", {
 		route: trip.route,
@@ -166,7 +170,7 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 						<div
 							// Note: Content is sanitized by WordPress
 							dangerouslySetInnerHTML={{
-								__html: trip.route.acf.route_blurb || '',
+								__html: trip.route.acf.route_blurb || "",
 							}}
 						/>
 					</Alert>
@@ -199,7 +203,7 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 									dangerouslySetInnerHTML={{
 										__html:
 											trip.route.acf.route_route_description
-												.route_description_segment_html || '',
+												.route_description_segment_html || "",
 									}}
 								/>
 							)}
