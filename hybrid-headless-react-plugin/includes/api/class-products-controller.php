@@ -716,16 +716,16 @@ class Hybrid_Headless_Products_Controller {
     }
 
 
-    private function get_product_categories( $product ) {
-        $terms = get_the_terms( $product->get_id(), 'product_cat' );
+    private function get_product_categories($product) {
+        $terms = get_the_terms($product->get_id(), 'product_cat');
         $categories = array();
 
-        if ( $terms && ! is_wp_error( $terms ) ) {
-            foreach ( $terms as $term ) {
+        if ($terms && !is_wp_error($terms)) {
+            foreach ($terms as $term) {
                 $categories[] = array(
-                    'id'          => $term->term_id,
-                    'name'        => $term->name,
-                    'slug'        => $term->slug,
+                    'id' => $term->term_id,
+                    'name' => $term->name,
+                    'slug' => $term->slug,
                     'description' => $term->description
                 );
             }
