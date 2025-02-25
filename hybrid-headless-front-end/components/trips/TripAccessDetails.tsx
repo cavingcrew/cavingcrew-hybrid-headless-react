@@ -195,10 +195,11 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 						: trip.route.acf.route_route_description
 								.route_description_segment_html && (
 								<div
+									// Note: Content is sanitized by WordPress
 									dangerouslySetInnerHTML={{
 										__html:
 											trip.route.acf.route_route_description
-												.route_description_segment_html,
+												.route_description_segment_html || '',
 									}}
 								/>
 							)}
