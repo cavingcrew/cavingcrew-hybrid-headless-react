@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import {
   Stack, Title, Text, SimpleGrid,
   SegmentedControl, Select, Group, Badge,
-  useMantineTheme, Button
+  useMantineTheme, Button, Table, ThemeIcon, Anchor
 } from '@mantine/core';
 import { WelcomeMessage } from '@/components/WelcomeMessage/WelcomeMessage';
 import {
@@ -15,8 +15,11 @@ import {
   IconSparkles,
   IconChecklist,
   IconList,
-  IconBabyCarriage
+  IconBabyCarriage,
+  IconLayoutGrid,
+  IconCalendarEvent
 } from "@tabler/icons-react";
+import Link from "next/link";
 import TripCard from './TripCard';
 import type { Trip } from '@/types/api';
 
@@ -26,7 +29,7 @@ interface TripsViewProps {
 
 export function TripsView({ trips }: TripsViewProps) {
   const theme = useMantineTheme();
-  const [sortMode, setSortMode] = useState<'category' | 'date'>('category');
+  const [sortMode, setSortMode] = useState<'category' | 'date' | 'schedule'>('category');
   const [filterMode, setFilterMode] = useState<
     'all' | 'horizontal' | 'vertical' | 'extra-welcoming' | 'available' | 'u18s'
   >('all');
@@ -140,6 +143,15 @@ export function TripsView({ trips }: TripsViewProps) {
                 </Group>
               ),
             },
+            {
+              value: 'schedule',
+              label: (
+                <Group gap="xs" justify="center" wrap="nowrap">
+                  <IconLayoutGrid size={18} />
+                  <Text size="sm">Schedule</Text>
+                </Group>
+              ),
+            },
           ]}
           fullWidth
           styles={{
@@ -207,12 +219,98 @@ export function TripsView({ trips }: TripsViewProps) {
             </SimpleGrid>
           </Stack>
         ))
-      ) : (
+      ) : sortMode === 'date' ? (
         <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="lg">
           {sortedTrips.map(trip => (
             <TripCard key={trip.id} trip={trip} />
           ))}
         </SimpleGrid>
+      ) : (
+        <Table.ScrollContainer minWidth={800}>
+          <Table verticalSpacing="sm" striped highlightOnHover>
+            <Table.Thead>
+              <Table.Tr>
+                <Table.Th>Date</Table.Th>
+                <Table.Th>Trip Name</Table.Th>
+                <Table.Th>Trip Type</Table.Th>
+                <Table.Th>Details</Table.Th>
+              </Table.Tr>
+            </Table.Thead>
+            <Table.Tbody>
+              {sortedTrips.map((trip) => {
+                const startDate = trip.acf.event_start_date_time 
+                  ? new Date(trip.acf.event_start_date_time)
+                  : null;
+                const isVertical = trip.acf.event_type === 'overnight' || 
+                  trip.acf.event_gear_required?.toLowerCase().includes('srt');
+                const isOvernight = trip.categories.some(cat => cat.slug === 'overnight-trips');
+
+                return (
+                  <Table.Tr key={trip.id}>
+                    <Table.Td>
+                      {startDate ? (
+                        <Group gap="xs">
+                          <IconCalendarEvent size={16} />
+                          <Text>
+                            {startDate.toLocaleDateString('en-GB', {
+                              weekday: 'short',
+                              day: 'numeric',
+                              month: 'short'
+                            })}
+                          </Text>
+                        </Group>
+                      ) : 'TBD'}
+                    </Table.Td>
+                    <Table.Td>
+                      <Anchor component={Link} href={`/trip/${trip.slug}`}>
+                        {trip.name}
+                      </Anchor>
+                    </Table.Td>
+                    <Table.Td>
+                      <Badge
+                        color={isVertical ? 'red' : 'green'}
+                        variant="light"
+                        leftSection={
+                          isVertical ? (
+                            <IconArrowBarUp size={14} style={{ marginRight: 4 }} />
+                          ) : (
+                            <IconStairs size={14} style={{ marginRight: 4 }} />
+                          )
+                        }
+                      >
+                        {isOvernight ? 'Overnight' : isVertical ? 'Vertical' : 'Horizontal'}
+                      </Badge>
+                    </Table.Td>
+                    <Table.Td>
+                      <Group gap="xs">
+                        {trip.acf.event_skills_required && (
+                          <Badge variant="outline" color="blue">
+                            Skills: {trip.acf.event_skills_required}
+                          </Badge>
+                        )}
+                        {trip.acf.event_gear_required && trip.acf.event_gear_required !== 'None' && (
+                          <Badge variant="outline" color="orange">
+                            Gear: {trip.acf.event_gear_required}
+                          </Badge>
+                        )}
+                        {trip.acf.event_u18s_come === 'yes' && (
+                          <Badge variant="outline" color="pink">
+                            U18 Friendly
+                          </Badge>
+                        )}
+                        {trip.acf.event_non_members_welcome === 'no' && (
+                          <Badge variant="outline" color="violet">
+                            Members Only
+                          </Badge>
+                        )}
+                      </Group>
+                    </Table.Td>
+                  </Table.Tr>
+                );
+              })}
+            </Table.Tbody>
+          </Table>
+        </Table.ScrollContainer>
       )}
     </Stack>
   );
