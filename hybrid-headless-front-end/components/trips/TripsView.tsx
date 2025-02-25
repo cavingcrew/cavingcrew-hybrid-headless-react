@@ -19,8 +19,7 @@ import {
   IconBabyCarriage,
   IconLayoutGrid,
   IconCalendarEvent,
-  IconSchool,
-  IconArrowBarUp
+  IconSchool
 } from "@tabler/icons-react";
 import Link from "next/link";
 import TripCard from './TripCard';
