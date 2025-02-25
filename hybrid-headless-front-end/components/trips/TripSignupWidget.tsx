@@ -184,7 +184,9 @@ export function TripSignupWidget({
                   inStock: variation.stock_status === 'instock',
                   stockQuantity: variation.stock_quantity,
                   isBcaMemberBlocked: trip.acf.event_type === 'giggletrip' &&
-                                    variation.sku.includes('GIGGLE--bcamember') &&
+                                    (variation.sku.includes('GIGGLE--bcamember') || 
+                                     variation.attributes['what-describes-you-best']?.value.includes("I'm a BCA")) &&
+                                    isLoggedIn &&
                                     isMember,
                   isPurchased: purchasedProducts.includes(variation.id)
                 });
@@ -194,9 +196,10 @@ export function TripSignupWidget({
                 let isBcaMemberVariation = false;
                 const isPurchased = purchasedProducts.includes(variation.id);
 
-                // TEMPORARY HACK: Hardcoded BCA member giggle trip handling
+                // Updated BCA member handling
                 if (trip.acf.event_type === 'giggletrip' &&
-                    variation.sku.includes('GIGGLE--bcamember') &&
+                    (variation.sku.includes('GIGGLE--bcamember') || 
+                     variation.attributes['what-describes-you-best']?.value.includes("I'm a BCA")) &&
                     isLoggedIn &&
                     isMember) {
                   isBcaMemberVariation = true;
