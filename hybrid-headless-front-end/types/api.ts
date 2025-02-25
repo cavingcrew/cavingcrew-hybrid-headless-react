@@ -172,6 +172,24 @@ export interface Trip {
 	acf: {
 		// Event Type
 		event_type: string;
+		
+		// Route Information
+		route?: {
+			acf: {
+				route_blurb?: string;
+				route_entrance_location_id?: {
+					acf: {
+						location_access_arrangement?: string[];
+						location_parking_instructions?: string;
+						location_entrance_latlong?: string;
+						location_parking_latlong?: string;
+					};
+				};
+				route_route_description?: {
+					route_description_segment_html?: string;
+				};
+			};
+		};
 
 		// Date/Time Fields
 		event_start_date?: string;

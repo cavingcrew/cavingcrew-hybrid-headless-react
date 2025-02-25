@@ -394,7 +394,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
         {trip.acf.event_start_date_time && 
           isWithinDays(trip.acf.event_start_date_time, 7) && (
             <TripAccessDetails trip={trip} />
-        )}
+          )}
 			) : (
 				<TripSignupWidget
 					trip={trip}
