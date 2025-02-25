@@ -124,14 +124,9 @@ export interface Route {
 	acf: {
 		route_name: string;
 		route_blurb?: string;
-		route_entrance_location_id?: {
-			id: number;
-			title: string;
-			slug: string;
-			acf: Location["acf"];
-		};
+		route_entrance_location_id?: //reference the Location Type here // TODO
 		route_through_trip?: boolean;
-		route_exit_location_id?: number; // Post ID
+		route_exit_location_id?: number; //reference the Location Type here // TODO
 		route_time_for_eta?: string;
 		route_survey_image?: string;
 		route_survey_link?: {
@@ -198,37 +193,7 @@ export interface Trip {
 	variations: Variation[];
 	has_variations: boolean;
 	is_variable: boolean;
-	route?: {
-		acf: {
-			route_blurb?: string;
-			route_entrance_location_id?: {
-				acf: {
-					location_access_arrangement?: string;
-					location_parking_instructions?: string;
-					location_entrance_latlong?: string;
-					location_parking_latlong?: {
-						address: string;
-						lat: number;
-						lng: number;
-					};
-					location_parking_entrance_route_description?: string;
-					location_reference_links?: Array<{
-						link_title: string;
-						link_url: string;
-					}>;
-					location_access_url?: string;
-				};
-			};
-			route_route_description?:
-				| {
-						route_description_segment_html?: string;
-				  }
-				| Array<{
-						section_title: string;
-						section_content: string;
-				  }>;
-		};
-	};
+	route?:  //just reference the route Type here // TODO
 	acf: {
 		// Event Type
 		event_type: string;
