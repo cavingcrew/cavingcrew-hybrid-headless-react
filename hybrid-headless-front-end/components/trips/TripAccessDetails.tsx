@@ -139,7 +139,7 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 							<ThemeIcon variant="light" color="violet" size="lg">
 								<IconKey size={18} />
 							</ThemeIcon>
-							<Text fw={500}>Access Requirements</Text>
+							<Text fw={500}>Access Quick Notes</Text>
 						</Group>
 
 						<List spacing="sm">
