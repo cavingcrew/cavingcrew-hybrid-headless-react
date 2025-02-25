@@ -230,7 +230,11 @@ export function TripsView({ trips }: TripsViewProps) {
         </SimpleGrid>
       ) : (
         <Table.ScrollContainer minWidth="100%">
-          <Table verticalSpacing="sm" striped highlightOnHover style={{ tableLayout: 'fixed', width: '100%' }}>
+          <Table verticalSpacing="sm" striped highlightOnHover style={{ 
+            tableLayout: 'fixed',
+            width: '100%',
+            overflowX: 'visible'
+          }}>
             <Table.Thead>
               <Table.Tr>
                 <Table.Th style={{ width: '120px', minWidth: '120px' }}>Date</Table.Th>
