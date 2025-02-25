@@ -715,33 +715,6 @@ class Hybrid_Headless_Products_Controller {
         ];
     }
 
-    private function get_post_reference($post) {
-        // Handle numeric ID
-        if (is_numeric($post)) {
-            $post_id = (int)$post;
-        }
-        // Handle WP_Post object
-        elseif (is_a($post, 'WP_Post')) {
-            $post_id = $post->ID;
-        }
-        // Handle array format (ACF sometimes returns arrays)
-        elseif (is_array($post) && isset($post['ID'])) {
-            $post_id = (int)$post['ID'];
-        }
-        // Handle invalid formats
-        else {
-            return null;
-        }
-
-        $post = get_post($post_id);
-        return $post ? [
-            'ID' => $post->ID,
-            'post_title' => $post->post_title,
-            'post_name' => $post->post_name,
-            'post_type' => $post->post_type,
-            'permalink' => get_permalink($post)
-        ] : null;
-    }
 
     private function get_product_categories( $product ) {
         $terms = get_the_terms( $product->get_id(), 'product_cat' );
