@@ -252,179 +252,102 @@ export function TripExperience({ trip }: TripExperienceProps) {
 						)}
 				</Stack>
 
-			{/* Personal Equipment Suggested */}
-			{personalGear && personalGear.length > 0 && (
-				<Stack gap="md" mb="xl">
-					<Group gap="xs">
-						<ThemeIcon variant="light" color="blue">
-							<IconShirt size={18} />
-						</ThemeIcon>
-						<Text fw={500}>Suggested Personal Equipment</Text>
-					</Group>
+			{/* Equipment Section in its own Paper container */}
+			{(personalGear?.length > 0 || groupTackle) && (
+				<Paper withBorder p="md" radius="md" mt="md">
+					<Title order={2} mb="md">
+						Equipment
+					</Title>
+					
+					{/* Personal Equipment Suggested */}
+					{personalGear && personalGear.length > 0 && (
+						<Stack gap="md" mb="xl">
+							<Group gap="xs">
+								<ThemeIcon variant="light" color="blue">
+									<IconShirt size={18} />
+								</ThemeIcon>
+								<Text fw={500}>Suggested Personal Equipment</Text>
+							</Group>
 
-					<Grid>
-						{Array.isArray(personalGear) &&
-							personalGear.map((item, index) => (
-								<Grid.Col span={{ base: 6, md: 4 }} key={`gear-${index}`}>
-									<Group gap="xs">
-										{(() => {
-											// Choose icon based on gear type
-											switch (item.toLowerCase()) {
-												case "oversuit":
-													return <IconShirt size={16} />;
-												case "undersuit":
-													return <IconShirt size={16} />;
-												case "wellies":
-													return <IconWalk size={16} />;
-												case "kneepads":
-													return <IconArrowsVertical size={16} />;
-												case "helmet and light":
-													return <IconFirstAidKit size={16} />;
-												case "gloves":
-													return <IconTool size={16} />;
-												case "belt":
-													return <IconRuler size={16} />;
-												default:
-													return <IconTool size={16} />;
-											}
-										})()}
-										<Text>{item}</Text>
-									</Group>
-								</Grid.Col>
-							))}
-					</Grid>
+							<Grid>
+								{Array.isArray(personalGear) &&
+									personalGear.map((item, index) => (
+										<Grid.Col span={{ base: 6, md: 4 }} key={`gear-${index}`}>
+											<Group gap="xs">
+												{(() => {
+													// Choose icon based on gear type
+													switch (item.toLowerCase()) {
+														case "oversuit":
+															return <IconShirt size={16} />;
+														case "undersuit":
+															return <IconShirt size={16} />;
+														case "wellies":
+															return <IconWalk size={16} />;
+														case "kneepads":
+															return <IconArrowsVertical size={16} />;
+														case "helmet and light":
+															return <IconFirstAidKit size={16} />;
+														case "gloves":
+															return <IconTool size={16} />;
+														case "belt":
+															return <IconRuler size={16} />;
+														default:
+															return <IconTool size={16} />;
+													}
+												})()}
+												<Text>{item}</Text>
+											</Group>
+										</Grid.Col>
+									))}
+							</Grid>
 
-					<Alert color="blue" icon={<IconInfoCircle size={16} />}>
-						<Text size="sm">
-							Don't have any of the gear? The Crew has all equipment available to
-							borrow - just let us know what you need after you sign up.
-						</Text>
-					</Alert>
-				</Stack>
-			)}
-
-			{/* Group Equipment */}
-			{groupTackle && (
-				<Stack gap="md" mb="xl">
-					<Group gap="xs">
-						<ThemeIcon variant="light" color="grape">
-							<IconTool size={18} />
-						</ThemeIcon>
-						<Text fw={500}>Suggested Group Equipment</Text>
-					</Group>
-
-					{/* If groupTackle is a string with line breaks, convert to list */}
-					{typeof groupTackle === "string" &&
-					groupTackle.indexOf("\r\n") !== -1 ? (
-						<List>
-							{groupTackle
-								.split("\r\n")
-								.filter((line) => line.trim())
-								.map((line, index) => (
-									<List.Item key={`tackle-${index}`}>
-										{line.replace(/^-\s*/, "")}
-									</List.Item>
-								))}
-						</List>
-					) : (
-						<div dangerouslySetInnerHTML={{ __html: groupTackle }} />
+							<Alert color="blue" icon={<IconInfoCircle size={16} />}>
+								<Text size="sm">
+									Don't have any of the gear? The Crew has all equipment available to
+									borrow - just let us know what you need after you sign up.
+								</Text>
+							</Alert>
+						</Stack>
 					)}
 
-					<Alert color="violet" icon={<IconInfoCircle size={16} />}>
-						<Text size="sm">
-							The trip leader will organize this equipment. You don't need to
-							bring these items unless specifically asked.
-						</Text>
-					</Alert>
-				</Stack>
-			)}
+					{/* Group Equipment */}
+					{groupTackle && (
+						<Stack gap="md" mb="xl">
+							<Group gap="xs">
+								<ThemeIcon variant="light" color="grape">
+									<IconTool size={18} />
+								</ThemeIcon>
+								<Text fw={500}>Suggested Group Equipment</Text>
+							</Group>
 
-			{/* Personal Equipment Suggested */}
-			{personalGear && personalGear.length > 0 && (
-				<Stack gap="md" mb="xl">
-					<Group gap="xs">
-						<ThemeIcon variant="light" color="blue">
-							<IconShirt size={18} />
-						</ThemeIcon>
-						<Text fw={500}>Personal Equipment Suggested</Text>
-					</Group>
+							{/* If groupTackle is a string with line breaks, convert to list */}
+							{typeof groupTackle === "string" &&
+							groupTackle.indexOf("\r\n") !== -1 ? (
+								<List>
+									{groupTackle
+										.split("\r\n")
+										.filter((line) => line.trim())
+										.map((line, index) => (
+											<List.Item key={`tackle-${index}`}>
+												{line.replace(/^-\s*/, "")}
+											</List.Item>
+										))}
+								</List>
+							) : (
+								<div dangerouslySetInnerHTML={{ __html: groupTackle }} />
+							)}
 
-					<Grid>
-						{Array.isArray(personalGear) &&
-							personalGear.map((item, index) => (
-								<Grid.Col span={{ base: 6, md: 4 }} key={`gear-${index}`}>
-									<Group gap="xs">
-										{(() => {
-											// Choose icon based on gear type
-											switch (item.toLowerCase()) {
-												case "oversuit":
-													return <IconShirt size={16} />;
-												case "undersuit":
-													return <IconShirt size={16} />;
-												case "wellies":
-													return <IconWalk size={16} />;
-												case "kneepads":
-													return <IconArrowsVertical size={16} />;
-												case "helmet and light":
-													return <IconFirstAidKit size={16} />;
-												case "gloves":
-													return <IconTool size={16} />;
-												case "belt":
-													return <IconRuler size={16} />;
-												default:
-													return <IconTool size={16} />;
-											}
-										})()}
-										<Text>{item}</Text>
-									</Group>
-								</Grid.Col>
-							))}
-					</Grid>
-
-					<Alert color="blue" icon={<IconInfoCircle size={16} />}>
-						<Text size="sm">
-							Don't have any of the gear? The Crew has all equipment available to
-							borrow - just let us know what you need after you sign up.
-						</Text>
-					</Alert>
-				</Stack>
-			)}
-
-			{/* Group Equipment */}
-			{groupTackle && (
-				<Stack gap="md" mb="xl">
-					<Group gap="xs">
-						<ThemeIcon variant="light" color="grape">
-							<IconTool size={18} />
-						</ThemeIcon>
-						<Text fw={500}>Group Equipment Suggested</Text>
-					</Group>
-
-					{/* If groupTackle is a string with line breaks, convert to list */}
-					{typeof groupTackle === "string" &&
-					groupTackle.indexOf("\r\n") !== -1 ? (
-						<List>
-							{groupTackle
-								.split("\r\n")
-								.filter((line) => line.trim())
-								.map((line, index) => (
-									<List.Item key={`tackle-${index}`}>
-										{line.replace(/^-\s*/, "")}
-									</List.Item>
-								))}
-						</List>
-					) : (
-						<div dangerouslySetInnerHTML={{ __html: groupTackle }} />
+							<Alert color="violet" icon={<IconInfoCircle size={16} />}>
+								<Text size="sm">
+									The trip leader will organize this equipment. You don't need to
+									bring these items unless specifically asked.
+								</Text>
+							</Alert>
+						</Stack>
 					)}
-
-					<Alert color="violet" icon={<IconInfoCircle size={16} />}>
-						<Text size="sm">
-							The trip leader will organize this equipment. You don't need to
-							bring these items unless specifically asked.
-						</Text>
-					</Alert>
-				</Stack>
+				</Paper>
 			)}
+
 		</Paper>
 
 		{/* Leading the Trip - Separate Paper Container */}
