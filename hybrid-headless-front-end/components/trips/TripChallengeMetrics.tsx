@@ -89,6 +89,23 @@ export function TripChallengeMetrics({ trip }: TripChallengeMetricsProps) {
         <>
           <Box>
             {/* Grid layout for desktop, stack for mobile */}
+            {/* Add global styles at the component level, not nested */}
+            <style jsx global>{`
+              @media (min-width: 768px) {
+                .grid-container {
+                  display: grid;
+                  grid-template-columns: 1fr 1fr;
+                  gap: 1rem;
+                }
+                .overview-section {
+                  order: 2;
+                }
+                .challenge-section {
+                  order: 1;
+                }
+              }
+            `}</style>
+            
             <Box
               className="grid-container"
               style={{
@@ -97,27 +114,11 @@ export function TripChallengeMetrics({ trip }: TripChallengeMetricsProps) {
                 gap: "1rem",
               }}
             >
-              <style jsx global>{`
-                @media (min-width: 768px) {
-                  .grid-container {
-                    display: grid;
-                    grid-template-columns: 1fr 1fr;
-                    gap: 1rem;
-                  }
-                }
-              `}</style>
               {/* Overview section - first on mobile, second on desktop */}
               <Box
                 className="overview-section"
                 style={{ order: 1 }}
               >
-              <style jsx global>{`
-                @media (min-width: 768px) {
-                  .overview-section {
-                    order: 2;
-                  }
-                }
-              `}</style>
                 <Alert color="blue" icon={<IconMoodSmile size={18} />}>
 
                 </Alert>
@@ -135,13 +136,6 @@ export function TripChallengeMetrics({ trip }: TripChallengeMetricsProps) {
                 className="challenge-section"
                 style={{ order: 2 }}
               >
-              <style jsx global>{`
-                @media (min-width: 768px) {
-                  .challenge-section {
-                    order: 1;
-                  }
-                }
-              `}</style>
                 <TripChallengeIndicator
                   metrics={challengeMetrics}
                   weightedRank={weightedRank}
