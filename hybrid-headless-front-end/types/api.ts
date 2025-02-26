@@ -96,20 +96,22 @@ export interface Location {
 			post_name: string;
 			permalink: string;
 		};
-		location_parking_latlong?: {
-			address?: string;
-			lat?: number;
-			lng?: number;
-			zoom?: number;
-			place_id?: string;
-			street_name?: string;
-			street_name_short?: string;
-			city?: string;
-			state?: string;
-			post_code?: string;
-			country?: string;
-			country_short?: string;
-		} | string;
+		location_parking_latlong?:
+			| {
+					address?: string;
+					lat?: number;
+					lng?: number;
+					zoom?: number;
+					place_id?: string;
+					street_name?: string;
+					street_name_short?: string;
+					city?: string;
+					state?: string;
+					post_code?: string;
+					country?: string;
+					country_short?: string;
+			  }
+			| string;
 		location_parking_description?: string;
 		location_parking_entrance_route_description?: string;
 		location_map_from_parking_to_entrance?: {
