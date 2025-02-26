@@ -11,7 +11,6 @@ import {
   Title,
 } from "@mantine/core";
 import {
-  IconClimbing,
   IconCompass,
   IconFirstAid,
   IconRope,
@@ -92,7 +91,7 @@ export function TripExperience({ trip }: TripExperienceProps) {
         <Stack gap="md" mb="xl">
           <Group gap="xs">
             <ThemeIcon variant="light" color="orange">
-              <IconClimbing size={18} />
+              <IconRope size={18} />
             </ThemeIcon>
             <Text fw={500}>Leading This Trip</Text>
           </Group>
