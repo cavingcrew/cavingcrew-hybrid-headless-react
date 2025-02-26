@@ -70,7 +70,7 @@ export interface DifficultyData {
 	route_difficulty_technical_climbing_difficulty?: string | number;
 	route_difficulty_endurance?: string | number;
 	route_difficulty_objective_hazard?: string | number;
-	[key: string]: any; // For any other properties
+	[key: string]: string | number | null | undefined; // For any other properties
 }
 
 export interface ChallengeMetric {

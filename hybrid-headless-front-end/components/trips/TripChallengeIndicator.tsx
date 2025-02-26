@@ -75,25 +75,30 @@ function ChallengeDetails({ metric }: { metric: ChallengeMetric }) {
 			case "claustrophobia":
 				if (key === "psychological") {
 					return "How tight and psychologically challenging passages feel. Includes creepy crawlies.";
-				} else if (key === "objective") {
+				}
+				if (key === "objective") {
 					return "The actual relative width of the tightest mandatory section you must pass through.";
 				}
 				break;
 			case "water":
 				if (key === "wetness") {
 					return "The general level of how wet you're likely to be at the end of the trip.";
-				} else if (key === "nearFace") {
+				}
+				if (key === "nearFace") {
 					return "How close water will come to your face - affects breathing comfort and psychological challenge.";
-				} else if (key === "deepWater") {
+				}
+				if (key === "deepWater") {
 					return "Exposure to deep water - includes over thigh depth water and shallower very swiftly moving water";
-				} else if (key === "muddiness") {
+				}
+				if (key === "muddiness") {
 					return "The relative amount of standard mud you'll encounter";
 				}
 				break;
 			case "heights":
 				if (key === "exposure") {
 					return "The psychological impact of height exposure - includes both roped and unroped sections with drops.";
-				} else if (key === "climbing") {
+				}
+				if (key === "climbing") {
 					return "The technical difficulty of the most challenging mandatory climbing section.";
 				}
 				break;
