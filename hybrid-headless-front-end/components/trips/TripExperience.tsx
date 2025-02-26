@@ -80,7 +80,7 @@ export function TripExperience({ trip }: TripExperienceProps) {
 						</Text>
 					)}
 
-					{participantSkills.recommended_training?.length > 0 && (
+					{participantSkills.recommended_training && participantSkills.recommended_training.length > 0 && (
 						<div>
 							<Text fw={500}>Recommended Training:</Text>
 							<List>
