@@ -532,7 +532,11 @@ export function TripChallengeIndicator({
 						<Group gap="xs">
 							<ThemeIcon
 								variant="light"
-								color={selectedMetric.rating === "na" ? "gray" : selectedMetric.rating}
+								color={selectedMetric.rating === "na" 
+									? "gray" 
+									: selectedMetric.rating === "amber"
+										? "yellow"
+										: selectedMetric.rating}
 								size="lg"
 							>
 								<DomainIcon domain={selectedMetric.domain} />
