@@ -31,9 +31,10 @@ import {
 	IconMoodSmile,
 	IconArrowsVertical,
 	IconMountainOff,
-	IconMud,
+	IconMug,
 	IconWalk,
 	IconAlertTriangle,
+	IconInfoCircle,
 } from "@tabler/icons-react";
 import React from "react";
 import type { Trip } from "../../types/api";
@@ -60,7 +61,7 @@ export function TripExperience({ trip }: TripExperienceProps) {
 		
 		return (
 			<Box mb="xs">
-				<Group position="apart" mb={5}>
+				<Group justify="space-between" mb={5}>
 					<Text size="sm">{label}</Text>
 					<Text size="sm" fw={500}>{numValue}/5</Text>
 				</Group>
@@ -96,8 +97,8 @@ export function TripExperience({ trip }: TripExperienceProps) {
 						{starRating && (
 							<Box>
 								<Text ta="center" fw={500} mb="xs">Trip Enjoyment Rating</Text>
-								<Group position="center">
-									<Rating value={parseInt(starRating, 10)} readOnly size="xl" />
+								<Group justify="center">
+									<Rating value={parseInt(starRating, 10) as any} readOnly size="xl" />
 									<Text size="xl" fw={700}>{starRating}/5</Text>
 								</Group>
 								<Text size="sm" c="dimmed" ta="center" mt="xs">
@@ -130,20 +131,20 @@ export function TripExperience({ trip }: TripExperienceProps) {
 					<Grid>
 						<Grid.Col span={{ base: 12, md: 6 }}>
 							<Stack>
-								{renderDifficultyBar(difficulty.route_difficulty_psychological_claustrophobia, "Claustrophobia", "orange")}
-								{renderDifficultyBar(difficulty.route_difficulty_objective_tightness, "Tightness", "red")}
-								{renderDifficultyBar(difficulty.route_difficulty_wetness, "Wetness", "blue")}
-								{renderDifficultyBar(difficulty.route_difficulty_water_near_face, "Water Near Face", "cyan")}
-								{renderDifficultyBar(difficulty.route_difficulty_exposure_to_deep_water, "Deep Water Exposure", "indigo")}
+								{renderDifficultyBar((difficulty as any).route_difficulty_psychological_claustrophobia, "Claustrophobia", "orange")}
+								{renderDifficultyBar((difficulty as any).route_difficulty_objective_tightness, "Tightness", "red")}
+								{renderDifficultyBar((difficulty as any).route_difficulty_wetness, "Wetness", "blue")}
+								{renderDifficultyBar((difficulty as any).route_difficulty_water_near_face, "Water Near Face", "cyan")}
+								{renderDifficultyBar((difficulty as any).route_difficulty_exposure_to_deep_water, "Deep Water Exposure", "indigo")}
 							</Stack>
 						</Grid.Col>
 						<Grid.Col span={{ base: 12, md: 6 }}>
 							<Stack>
-								{renderDifficultyBar(difficulty.route_difficulty_muddiness, "Muddiness", "brown")}
-								{renderDifficultyBar(difficulty.route_difficulty_exposure_to_heights, "Height Exposure", "grape")}
-								{renderDifficultyBar(difficulty.route_difficulty_technical_climbing_difficulty, "Technical Climbing", "pink")}
-								{renderDifficultyBar(difficulty.route_difficulty_endurance, "Physical Endurance", "green")}
-								{renderDifficultyBar(difficulty.route_difficulty_objective_hazard, "Objective Hazards", "yellow")}
+								{renderDifficultyBar((difficulty as any).route_difficulty_muddiness, "Muddiness", "brown")}
+								{renderDifficultyBar((difficulty as any).route_difficulty_exposure_to_heights, "Height Exposure", "grape")}
+								{renderDifficultyBar((difficulty as any).route_difficulty_technical_climbing_difficulty, "Technical Climbing", "pink")}
+								{renderDifficultyBar((difficulty as any).route_difficulty_endurance, "Physical Endurance", "green")}
+								{renderDifficultyBar((difficulty as any).route_difficulty_objective_hazard, "Objective Hazards", "yellow")}
 							</Stack>
 						</Grid.Col>
 					</Grid>
@@ -171,7 +172,7 @@ export function TripExperience({ trip }: TripExperienceProps) {
 							<Group align="center" mb="xs">
 								<Badge size="lg" color="teal" variant="filled">
 									Required Skill Level: {typeof participantSkills.route_participants_skills_required_horizontal_level === "object"
-										? (participantSkills.route_participants_skills_required_horizontal_level as { post_title: string })?.post_title
+										? (participantSkills.route_participants_skills_required_horizontal_level as any)?.post_title
 										: participantSkills.route_participants_skills_required_horizontal_level}
 								</Badge>
 								
@@ -280,7 +281,7 @@ export function TripExperience({ trip }: TripExperienceProps) {
 					</Group>
 					
 					{/* If groupTackle is a string with line breaks, convert to list */}
-					{typeof groupTackle === 'string' && groupTackle.includes('\r\n') ? (
+					{typeof groupTackle === 'string' && groupTackle.indexOf('\r\n') !== -1 ? (
 						<List>
 							{groupTackle.split('\r\n').filter(line => line.trim()).map((line, index) => (
 								<List.Item key={`tackle-${index}`}>
