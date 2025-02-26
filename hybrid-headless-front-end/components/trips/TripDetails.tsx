@@ -416,11 +416,6 @@ export function TripDetails({ trip }: TripDetailsProps) {
 
 			{/* Trip Experience Details */}
 			<TripExperience trip={trip} />
-			
-			{/* Objection Handling for GiggleTrips - only shown to non-logged in users */}
-			{trip.acf.event_type === 'giggletrip' && !isLoggedIn && (
-				<TripObjectionHandling />
-			)}
 
 			{/* What does signing up pay for section */}
 			{acf?.event_paying_for && (
