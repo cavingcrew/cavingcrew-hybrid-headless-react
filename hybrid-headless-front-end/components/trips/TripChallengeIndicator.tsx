@@ -161,10 +161,6 @@ function ChallengeDetails({ metric }: { metric: ChallengeMetric }) {
 					radius="xl"
 					mt={5}
 				/>
-				{/* Debug info */}
-				<Text size="xs" c="dimmed" mt={5}>
-					Raw score: {metric.score} (Progress value: {metric.score * 10}%, Rating: {metric.rating})
-				</Text>
 			</Box>
 		</Stack>
 	);
@@ -550,7 +546,11 @@ export function TripChallengeIndicator({
 									<Text
 										span
 										fw={700}
-										c={selectedMetric.rating === "na" ? "gray" : selectedMetric.rating}
+										c={selectedMetric.rating === "na" 
+											? "gray" 
+											: selectedMetric.rating === "amber"
+												? "yellow"
+												: selectedMetric.rating}
 									>
 										{selectedMetric.rating === "na"
 											? "N/A"
