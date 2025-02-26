@@ -36,6 +36,7 @@ import type { Trip } from "../../types/api";
 import { extractChallengeMetrics } from "../../utils/difficulty-utils";
 import { TripChallengeIndicator } from "./TripChallengeIndicator";
 import { TripObjectionHandling } from "./TripObjectionHandling";
+import { AboutCavingCrew } from "./AboutCavingCrew";
 import { useUser } from "@/lib/hooks/useUser";
 
 /**
@@ -271,7 +272,10 @@ export function TripExperience({ trip }: TripExperienceProps) {
 
 			{/* Objection Handling for GiggleTrips - only shown to non-logged in users */}
 			{trip.acf?.event_type === 'giggletrip' && !isLoggedIn && (
-				<TripObjectionHandling />
+				<>
+					<TripObjectionHandling />
+					<AboutCavingCrew />
+				</>
 			)}
 
 			{/* Equipment Section in its own Paper container */}
