@@ -173,7 +173,7 @@ export function TripChallengeIndicator({
 					Challenge Rating
 					{weightedRank !== undefined && (
 						<Text size="sm" c="dimmed" mt={5}>
-							Overall Difficulty: {weightedRank.toFixed(1)}/50
+							Overall Difficulty: {weightedRank.toFixed(1)}
 						</Text>
 					)}
 				</Title>
@@ -214,7 +214,7 @@ export function TripChallengeIndicator({
 						/>
 						<text
 							x="50"
-							y="35"
+							y="30"
 							textAnchor="middle"
 							fill="#fff"
 							fontSize="6"
@@ -273,7 +273,7 @@ export function TripChallengeIndicator({
 						/>
 						<text
 							x="50"
-							y="70"
+							y="73"
 							textAnchor="middle"
 							fill="#fff"
 							fontSize="6"
