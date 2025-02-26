@@ -58,7 +58,7 @@ function TripEnjoymentRating({
   starRating, 
   estimatedTime 
 }: { 
-  starRating?: string; 
+  starRating?: string | number; 
   estimatedTime?: string;
 }) {
   if (!starRating && !estimatedTime) return null;
@@ -71,7 +71,7 @@ function TripEnjoymentRating({
             Trip Enjoyment Rating
           </Text>
           <Group justify="center">
-            <Rating value={parseInt(starRating, 10)} readOnly size="xl" />
+            <Rating value={typeof starRating === 'string' ? parseInt(starRating, 10) : starRating} readOnly size="xl" />
             <Text size="xl" fw={700}>
               {starRating}/5
             </Text>
