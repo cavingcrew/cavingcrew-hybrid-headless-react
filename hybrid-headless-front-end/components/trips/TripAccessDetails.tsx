@@ -14,8 +14,8 @@ import {
 	Text,
 	ThemeIcon,
 	Title,
-	useDisclosure,
 } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 import { Carousel } from "@mantine/carousel";
 import {
 	IconInfoCircle,
