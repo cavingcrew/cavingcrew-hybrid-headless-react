@@ -137,13 +137,14 @@ export function TripExperience({ trip }: TripExperienceProps) {
 
 
 					{participantSkills?.route_participants_skills_required_horizontal_level && (
-						<Group gap="xs">
-							<ThemeIcon variant="light" color="teal">
-								<IconUser size={18} />
-							</ThemeIcon>
-							<Text fw={500}>Suggested Experience</Text>
-						</Group>
-						<Box>
+						<Stack gap="md">
+							<Group gap="xs">
+								<ThemeIcon variant="light" color="teal">
+									<IconUser size={18} />
+								</ThemeIcon>
+								<Text fw={500}>Suggested Experience</Text>
+							</Group>
+							<Box>
 							<Group align="center" mb="xs">
 								<Badge size="lg" color="teal" variant="filled">
 									Suggested Skill Level:{" "}
@@ -200,7 +201,8 @@ export function TripExperience({ trip }: TripExperienceProps) {
 										</Text>
 									</Alert>
 								)}
-						</Box>
+							</Box>
+						</Stack>
 					)}
 
 					{participantSkills.minimum_experience && (
