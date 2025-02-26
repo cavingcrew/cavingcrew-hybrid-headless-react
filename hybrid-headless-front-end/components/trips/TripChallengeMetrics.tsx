@@ -70,7 +70,9 @@ export function TripChallengeMetrics({ trip }: TripChallengeMetricsProps) {
   const starRating = routeData?.route_trip_star_rating;
   const estimatedTime = routeData?.route_time_for_eta;
   
-  const challengeMetrics = extractChallengeMetrics(routeData);
+  const challengeResult = extractChallengeMetrics(routeData);
+  const challengeMetrics = challengeResult?.metrics;
+  const weightedRank = challengeResult?.weightedRank;
   
   if (!challengeMetrics && !starRating && !estimatedTime) {
     return null;
@@ -87,7 +89,10 @@ export function TripChallengeMetrics({ trip }: TripChallengeMetricsProps) {
 
       {challengeMetrics && (
         <>
-          <TripChallengeIndicator metrics={challengeMetrics} />
+          <TripChallengeIndicator 
+            metrics={challengeMetrics} 
+            weightedRank={weightedRank}
+          />
           
           <Alert color="blue" icon={<IconMoodSmile size={18} />}>
             <Text size="sm">

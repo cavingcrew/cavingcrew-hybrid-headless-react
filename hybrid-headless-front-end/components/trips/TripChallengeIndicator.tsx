@@ -93,16 +93,16 @@ function ChallengeDetails({ metric }: { metric: ChallengeMetric }) {
 							</Text>
 						</Text>
 						<Text size="sm" fw={500}>
-							{detail.value !== null ? `${detail.value}/5` : "N/A"}
+							{detail.value !== null ? `${detail.value * 2}/10` : "N/A"}
 						</Text>
 					</Group>
 					{detail.value !== null && (
 						<Progress
-							value={detail.value * 20}
+							value={detail.value * 10}
 							color={
-								detail.value <= 2.5
+								detail.value * 2 <= 2.5
 									? "green"
-									: detail.value <= 3.5
+									: detail.value * 2 <= 6.5
 										? "yellow"
 										: "red"
 							}
@@ -129,8 +129,14 @@ function ChallengeDetails({ metric }: { metric: ChallengeMetric }) {
 	);
 }
 
+interface TripChallengeIndicatorProps {
+	metrics: ChallengeMetric[];
+	weightedRank?: number;
+}
+
 export function TripChallengeIndicator({
 	metrics,
+	weightedRank,
 }: TripChallengeIndicatorProps) {
 	const theme = useMantineTheme();
 	const [selectedMetric, setSelectedMetric] = useState<ChallengeMetric | null>(
@@ -165,6 +171,11 @@ export function TripChallengeIndicator({
 			<Paper withBorder p="md" radius="md">
 				<Title order={4} mb="md" ta="center">
 					Challenge Rating
+					{weightedRank !== undefined && (
+						<Text size="sm" c="dimmed" mt={5}>
+							Overall Difficulty: {weightedRank.toFixed(1)}/50
+						</Text>
+					)}
 				</Title>
 
 				<Box

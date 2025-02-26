@@ -3,9 +3,31 @@ import type { Route } from "../types/api";
 // Challenge rating thresholds and weights
 export const CHALLENGE_CONFIG = {
 	thresholds: {
-		green: 2.5, // 0-2.5 is Green
-		amber: 6.5, // 2.5-6.5 is Amber
-		// > 6.5 is Red
+		claustrophobia: {
+			green: 2.5, // 0-2.5 is Green
+			amber: 6.5, // 2.5-6.5 is Amber
+			// > 6.5 is Red
+		},
+		water: {
+			green: 2.5, // 0-2.5 is Green
+			amber: 6.5, // 2.5-6.5 is Amber
+			// > 6.5 is Red
+		},
+		heights: {
+			green: 2.5, // 0-2.5 is Green
+			amber: 6.5, // 2.5-6.5 is Amber
+			// > 6.5 is Red
+		},
+		hazard: {
+			green: 2.5, // 0-2.5 is Green
+			amber: 6.5, // 2.5-6.5 is Amber
+			// > 6.5 is Red
+		},
+		endurance: {
+			green: 2.5, // 0-2.5 is Green
+			amber: 6.5, // 2.5-6.5 is Amber
+			// > 6.5 is Red
+		},
 	},
 	weights: {
 		claustrophobia: {
@@ -65,6 +87,11 @@ export interface ChallengeMetric {
 	}>;
 }
 
+export interface ChallengeMetricsResult {
+	metrics: ChallengeMetric[];
+	weightedRank: number;
+}
+
 /**
  * Renders a difficulty value as a numeric value
  *
@@ -84,12 +111,14 @@ export function parseDifficultyValue(
  * Determines the challenge rating based on a score
  *
  * @param score - The challenge score (0-10)
+ * @param domain - The challenge domain
  * @returns The challenge rating (green, amber, red, or na)
  */
-export function getChallengeRating(score: number | null): ChallengeRating {
+export function getChallengeRating(score: number | null, domain: ChallengeDomain): ChallengeRating {
 	if (score === null || score === 0) return "na";
-	if (score <= CHALLENGE_CONFIG.thresholds.green) return "green";
-	if (score <= CHALLENGE_CONFIG.thresholds.amber) return "amber";
+	const thresholds = CHALLENGE_CONFIG.thresholds[domain];
+	if (score <= thresholds.green) return "green";
+	if (score <= thresholds.amber) return "amber";
 	return "red";
 }
 
@@ -354,11 +383,11 @@ function calculateEnduranceScore(difficulty: DifficultyData): {
  * Extracts challenge metrics from route data
  *
  * @param routeData - The route data containing difficulty information
- * @returns An object with challenge metrics
+ * @returns An object with challenge metrics and weighted rank
  */
 export function extractChallengeMetrics(
 	routeData?: Route["acf"],
-): ChallengeMetric[] | null {
+): ChallengeMetricsResult | null {
 	if (!routeData?.route_difficulty) return null;
 
 	const difficulty = routeData.route_difficulty as DifficultyData;
@@ -370,43 +399,52 @@ export function extractChallengeMetrics(
 	const hazard = calculateHazardScore(difficulty);
 	const endurance = calculateEnduranceScore(difficulty);
 
-	return [
+	// Create metrics array
+	const metrics = [
 		{
-			domain: "claustrophobia",
+			domain: "claustrophobia" as const,
 			label: "Claustrophobia",
-			rating: getChallengeRating(claustrophobia.score),
+			rating: getChallengeRating(claustrophobia.score, "claustrophobia"),
 			score: claustrophobia.score,
 			details: claustrophobia.details,
 		},
 		{
-			domain: "water",
+			domain: "water" as const,
 			label: "Water",
-			rating: getChallengeRating(water.score),
+			rating: getChallengeRating(water.score, "water"),
 			score: water.score,
 			details: water.details,
 		},
 		{
-			domain: "heights",
+			domain: "heights" as const,
 			label: "Heights",
-			rating: getChallengeRating(heights.score),
+			rating: getChallengeRating(heights.score, "heights"),
 			score: heights.score,
 			details: heights.details,
 		},
 		{
-			domain: "hazard",
+			domain: "hazard" as const,
 			label: "Hazards",
-			rating: getChallengeRating(hazard.score),
+			rating: getChallengeRating(hazard.score, "hazard"),
 			score: hazard.score,
 			details: hazard.details,
 		},
 		{
-			domain: "endurance",
+			domain: "endurance" as const,
 			label: "Endurance",
-			rating: getChallengeRating(endurance.score),
+			rating: getChallengeRating(endurance.score, "endurance"),
 			score: endurance.score,
 			details: endurance.details,
 		},
 	];
+
+	// Calculate weighted rank (sum of all scores)
+	const weightedRank = metrics.reduce((sum, metric) => sum + metric.score, 0);
+
+	return {
+		metrics,
+		weightedRank,
+	};
 }
 
 /**
