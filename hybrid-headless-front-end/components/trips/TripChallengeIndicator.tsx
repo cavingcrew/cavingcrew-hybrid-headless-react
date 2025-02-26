@@ -69,9 +69,9 @@ function ChallengeDetails({ metric }: { metric: ChallengeMetric }) {
 				} else if (key === "nearFace") {
 					return "How close water will come to your face - affects breathing comfort and psychological challenge.";
 				} else if (key === "deepWater") {
-					return "Exposure to deep water";
+					return "Exposure to deep water - includes over thigh depth water and shallower very swiftly moving water";
 				} else if (key === "muddiness") {
-					return "The amount of mud you'll encounter - affects movement and comfort.";
+					return "The relative amount of standard mud you'll encounter";
 				}
 				break;
 			case "heights":
@@ -546,8 +546,8 @@ export function TripChallengeIndicator({
 									<Text
 										span
 										fw={700}
-										c={selectedMetric.rating === "na" 
-											? "gray" 
+										c={selectedMetric.rating === "na"
+											? "gray"
 											: selectedMetric.rating === "amber"
 												? "yellow"
 												: selectedMetric.rating}
