@@ -187,6 +187,14 @@ export function TripChallengeIndicator({
 						aspectRatio: "1/1",
 					}}
 				>
+					<style>
+						{`
+						.challenge-segment:hover {
+							filter: brightness(1.1);
+							transition: filter 0.3s ease;
+						}
+						`}
+					</style>
 					{/* SVG for the circular indicator */}
 					<svg
 						viewBox="0 0 100 100"
@@ -211,7 +219,23 @@ export function TripChallengeIndicator({
 							role="button"
 							aria-label="Claustrophobia rating"
 							style={{ cursor: "pointer" }}
-						/>
+							className="challenge-segment"
+						>
+							<animate
+								attributeName="opacity"
+								values="1;0.8;1"
+								dur="2s"
+								begin="mouseover"
+								repeatCount="indefinite"
+							/>
+							<animate
+								attributeName="stroke-width"
+								values="0.5;1.5;0.5"
+								dur="2s"
+								begin="mouseover"
+								repeatCount="indefinite"
+							/>
+						</path>
 						<text
 							x="50"
 							y="30"
@@ -240,7 +264,23 @@ export function TripChallengeIndicator({
 							role="button"
 							aria-label="Heights rating"
 							style={{ cursor: "pointer" }}
-						/>
+							className="challenge-segment"
+						>
+							<animate
+								attributeName="opacity"
+								values="1;0.8;1"
+								dur="2s"
+								begin="mouseover"
+								repeatCount="indefinite"
+							/>
+							<animate
+								attributeName="stroke-width"
+								values="0.5;1.5;0.5"
+								dur="2s"
+								begin="mouseover"
+								repeatCount="indefinite"
+							/>
+						</path>
 						<text
 							x="70"
 							y="50"
@@ -270,7 +310,23 @@ export function TripChallengeIndicator({
 							role="button"
 							aria-label="Hazards rating"
 							style={{ cursor: "pointer" }}
-						/>
+							className="challenge-segment"
+						>
+							<animate
+								attributeName="opacity"
+								values="1;0.8;1"
+								dur="2s"
+								begin="mouseover"
+								repeatCount="indefinite"
+							/>
+							<animate
+								attributeName="stroke-width"
+								values="0.5;1.5;0.5"
+								dur="2s"
+								begin="mouseover"
+								repeatCount="indefinite"
+							/>
+						</path>
 						<text
 							x="50"
 							y="73"
@@ -299,7 +355,23 @@ export function TripChallengeIndicator({
 							role="button"
 							aria-label="Water rating"
 							style={{ cursor: "pointer" }}
-						/>
+							className="challenge-segment"
+						>
+							<animate
+								attributeName="opacity"
+								values="1;0.8;1"
+								dur="2s"
+								begin="mouseover"
+								repeatCount="indefinite"
+							/>
+							<animate
+								attributeName="stroke-width"
+								values="0.5;1.5;0.5"
+								dur="2s"
+								begin="mouseover"
+								repeatCount="indefinite"
+							/>
+						</path>
 						<text
 							x="30"
 							y="50"
@@ -331,7 +403,23 @@ export function TripChallengeIndicator({
 							role="button"
 							aria-label="Endurance rating"
 							style={{ cursor: "pointer" }}
-						/>
+							className="challenge-segment"
+						>
+							<animate
+								attributeName="opacity"
+								values="1;0.8;1"
+								dur="2s"
+								begin="mouseover"
+								repeatCount="indefinite"
+							/>
+							<animate
+								attributeName="stroke-width"
+								values="0.5;1.5;0.5"
+								dur="2s"
+								begin="mouseover"
+								repeatCount="indefinite"
+							/>
+						</circle>
 						<text
 							x="50"
 							y="52"
