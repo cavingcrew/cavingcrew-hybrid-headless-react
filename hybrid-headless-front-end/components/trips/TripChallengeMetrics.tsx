@@ -3,13 +3,11 @@
 import {
   Alert,
   Box,
-  Grid,
   Group,
-  Progress,
-  Rating,
   Stack,
   Text,
   ThemeIcon,
+  Rating,
 } from "@mantine/core";
 import {
   IconClock,
@@ -18,37 +16,11 @@ import {
 } from "@tabler/icons-react";
 import React from "react";
 import type { Trip } from "../../types/api";
-import { extractDifficultyMetrics } from "../../utils/difficulty-utils";
+import { extractChallengeMetrics } from "../../utils/difficulty-utils";
+import { TripChallengeIndicator } from "./TripChallengeIndicator";
 
 interface TripChallengeMetricsProps {
   trip: Trip;
-}
-
-/**
- * Renders a difficulty bar for a specific metric
- */
-function DifficultyBar({ 
-  value, 
-  label, 
-  color 
-}: { 
-  value: number | null; 
-  label: string; 
-  color: string;
-}) {
-  if (value === null) return null;
-  
-  return (
-    <Box mb="xs">
-      <Group justify="space-between" mb={5}>
-        <Text size="sm">{label}</Text>
-        <Text size="sm" fw={500}>
-          {value}/5
-        </Text>
-      </Group>
-      <Progress value={value * 20} color={color} size="sm" radius="xl" />
-    </Box>
-  );
 }
 
 /**
@@ -98,67 +70,25 @@ export function TripChallengeMetrics({ trip }: TripChallengeMetricsProps) {
   const starRating = routeData?.route_trip_star_rating;
   const estimatedTime = routeData?.route_time_for_eta;
   
-  const difficultyMetrics = extractDifficultyMetrics(routeData);
+  const challengeMetrics = extractChallengeMetrics(routeData);
   
-  if (!difficultyMetrics && !starRating && !estimatedTime) {
+  if (!challengeMetrics && !starRating && !estimatedTime) {
     return null;
   }
 
   return (
     <Stack gap="md" mb="xl">
-      {difficultyMetrics && (
+      <Group gap="xs">
+        <ThemeIcon variant="light" color="red">
+          <IconMountainOff size={18} />
+        </ThemeIcon>
+        <Text fw={500}>Challenge Rating</Text>
+      </Group>
+
+      {challengeMetrics && (
         <>
-          <Group gap="xs">
-            <ThemeIcon variant="light" color="red">
-              <IconMountainOff size={18} />
-            </ThemeIcon>
-            <Text fw={500}>Challenge Metrics</Text>
-          </Group>
-
-          <Grid>
-            <Grid.Col span={{ base: 12, md: 4 }}>
-              <Stack>
-                <Text fw={500} size="sm">Physical Challenges</Text>
-                {difficultyMetrics.physical.map(metric => (
-                  <DifficultyBar 
-                    key={metric.key}
-                    value={metric.value} 
-                    label={metric.label} 
-                    color={metric.color} 
-                  />
-                ))}
-              </Stack>
-            </Grid.Col>
-            
-            <Grid.Col span={{ base: 12, md: 4 }}>
-              <Stack>
-                <Text fw={500} size="sm">Psychological Challenges</Text>
-                {difficultyMetrics.psychological.map(metric => (
-                  <DifficultyBar 
-                    key={metric.key}
-                    value={metric.value} 
-                    label={metric.label} 
-                    color={metric.color} 
-                  />
-                ))}
-              </Stack>
-            </Grid.Col>
-            
-            <Grid.Col span={{ base: 12, md: 4 }}>
-              <Stack>
-                <Text fw={500} size="sm">Environmental Challenges</Text>
-                {difficultyMetrics.environmental.map(metric => (
-                  <DifficultyBar 
-                    key={metric.key}
-                    value={metric.value} 
-                    label={metric.label} 
-                    color={metric.color} 
-                  />
-                ))}
-              </Stack>
-            </Grid.Col>
-          </Grid>
-
+          <TripChallengeIndicator metrics={challengeMetrics} />
+          
           <Alert color="blue" icon={<IconMoodSmile size={18} />}>
             <Text size="sm">
               These ratings help you understand what to expect. If you have
