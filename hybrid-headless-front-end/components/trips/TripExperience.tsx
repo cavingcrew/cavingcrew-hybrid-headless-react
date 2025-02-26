@@ -251,6 +251,19 @@ export function TripExperience({ trip }: TripExperienceProps) {
 									</List>
 								</div>
 							)}
+
+						{/* Conservation Alert */}
+						<Alert
+							color="green"
+							title="Conservation Notice"
+							icon={<IconFirstAidKit size={18} />}
+							mb="md"
+						>
+							<Text size="sm">
+								Please follow all conservation guidelines and avoid touching
+								formations or removing any historical relics. Take nothing but pictures, leave nothing but footprints.
+							</Text>
+						</Alert>
 					</Stack>
 			</Paper>
 
@@ -360,7 +373,32 @@ export function TripExperience({ trip }: TripExperienceProps) {
 							</ThemeIcon>
 							<Text fw={500}>Leading This Trip</Text>
 						</Group>
-
+						{leadingDifficulty.route_leading_difficulty_navigation_difficulty && (
+							<Group mt="md">
+								<Text fw={500}>Navigation Difficulty:</Text>
+								<Badge
+									size="lg"
+									color={
+										Number.parseInt(
+											leadingDifficulty.route_leading_difficulty_navigation_difficulty,
+											10
+										) <= 2.5
+											? "green"
+											: Number.parseInt(
+												leadingDifficulty.route_leading_difficulty_navigation_difficulty,
+												10
+											) <= 6.5
+												? "yellow"
+												: "red"
+									}
+								>
+									{
+										leadingDifficulty.route_leading_difficulty_navigation_difficulty
+									}
+									/10
+								</Badge>
+							</Group>
+						)}
 						{leadingDifficulty.route_leading_difficulty_horizontal_leading_level_required && (
 							<Group align="center" mb="xs">
 								<Badge size="lg" color="orange" variant="filled">
@@ -415,46 +453,9 @@ export function TripExperience({ trip }: TripExperienceProps) {
 								</div>
 							)}
 
-						{leadingDifficulty.route_leading_difficulty_navigation_difficulty && (
-							<Group mt="md">
-								<Text fw={500}>Navigation Difficulty:</Text>
-								<Badge
-									size="lg"
-									color={
-										Number.parseInt(
-											leadingDifficulty.route_leading_difficulty_navigation_difficulty,
-											10
-										) <= 2.5
-											? "green"
-											: Number.parseInt(
-													leadingDifficulty.route_leading_difficulty_navigation_difficulty,
-													10
-												) <= 6.5
-												? "yellow"
-												: "red"
-									}
-								>
-									{
-										leadingDifficulty.route_leading_difficulty_navigation_difficulty
-									}
-									/10
-								</Badge>
-							</Group>
-						)}
+
 					</Stack>
 
-					{/* Conservation Alert */}
-					<Alert
-						color="green"
-						title="Conservation Notice"
-						icon={<IconFirstAidKit size={18} />}
-						mb="md"
-					>
-						<Text size="sm">
-							Please follow all conservation guidelines and avoid touching
-							formations. Take nothing but pictures, leave nothing but footprints.
-						</Text>
-					</Alert>
 				</Paper>
 			)}
 		</>
