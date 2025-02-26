@@ -67,7 +67,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
 			v.attributes && 
 			v.attributes["what-describes-you-best"] && 
 			v.attributes["what-describes-you-best"].value.toLowerCase().includes('keen') && 
-			(v.stock_quantity !== null && v.stock_quantity > 0)
+			v.stock_quantity !== null && v.stock_quantity > 0
 		);
 
 	const requiresLogin = (
