@@ -110,9 +110,10 @@ export function TripObjectionHandling() {
 						<Text>
 							The cave is actually well-lit during our trips! Everyone wears
 							high-quality LED headlamps that cast impressive beams, and leaders
-							carry powerful backup lights too. With our group moving together, there's a wonderful ambient glow that illuminates the
-							fascinating rock formations. Many participants tell us they're
-							amazed by how clearly they can see everything.
+							carry powerful backup lights too. With our group moving together,
+							there's a wonderful ambient glow that illuminates the fascinating
+							rock formations. Many participants tell us they're amazed by how
+							clearly they can see everything.
 						</Text>
 					</Accordion.Panel>
 				</Accordion.Item>
@@ -264,15 +265,17 @@ export function TripObjectionHandling() {
 					</Accordion.Panel>
 				</Accordion.Item>
 			</Accordion>
-			
+
 			<Center mt="xl">
-				<Button 
-					size="lg" 
-					color="blue" 
+				<Button
+					size="lg"
+					color="blue"
 					onClick={() => {
-						const signupSection = document.getElementById('trip-signup-section');
+						const signupSection = document.getElementById(
+							"trip-signup-section",
+						);
 						if (signupSection) {
-							signupSection.scrollIntoView({ behavior: 'smooth' });
+							signupSection.scrollIntoView({ behavior: "smooth" });
 						}
 					}}
 				>
