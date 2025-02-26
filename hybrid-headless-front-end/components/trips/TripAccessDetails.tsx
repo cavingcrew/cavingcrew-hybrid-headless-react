@@ -13,12 +13,14 @@ import {
 	ThemeIcon,
 	Title,
 } from "@mantine/core";
+import { Carousel } from "@mantine/carousel";
 import {
 	IconInfoCircle,
 	IconKey,
 	IconLink,
 	IconMapPin,
 	IconParking,
+	IconPhoto,
 	IconWalk,
 } from "@tabler/icons-react";
 import React from "react";
@@ -155,6 +157,43 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 				</Stack>
 			)}
 
+			{/* Parking Photos Gallery */}
+			{locationData?.location_parking_photos && locationData.location_parking_photos.length > 0 && (
+				<Stack gap="sm" mb="xl">
+					<Group gap="xs">
+						<ThemeIcon variant="light" color="blue">
+							<IconPhoto size={18} />
+						</ThemeIcon>
+						<Text fw={500}>Parking Area Photos</Text>
+					</Group>
+					
+					<Carousel
+						slideSize="70%"
+						height={300}
+						slideGap="md"
+						controlsOffset="xs"
+						dragFree
+						withIndicators
+					>
+						{locationData.location_parking_photos.map((photo, index) => (
+							<Carousel.Slide key={`parking-photo-${index}`}>
+								<Image
+									src={photo.url}
+									alt={photo.alt || `Parking area photo ${index + 1}`}
+									height={300}
+									style={{ objectFit: 'cover' }}
+								/>
+								{photo.caption && (
+									<Text size="sm" c="dimmed" mt="xs">
+										{photo.caption}
+									</Text>
+								)}
+							</Carousel.Slide>
+						))}
+					</Carousel>
+				</Stack>
+			)}
+
 			{/* Entrance Section */}
 			{entranceLatLong && (
 				<Stack gap="sm" mb="xl">
@@ -174,6 +213,43 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 					>
 						View Entrance in Maps
 					</Button>
+				</Stack>
+			)}
+
+			{/* Entrance Photos Gallery */}
+			{locationData?.location_entrance_photos && locationData.location_entrance_photos.length > 0 && (
+				<Stack gap="sm" mb="xl">
+					<Group gap="xs">
+						<ThemeIcon variant="light" color="orange">
+							<IconPhoto size={18} />
+						</ThemeIcon>
+						<Text fw={500}>Entrance Photos</Text>
+					</Group>
+					
+					<div style={{ 
+						display: 'grid', 
+						gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
+						gap: '1rem'
+					}}>
+						{locationData.location_entrance_photos.map((photo, index) => (
+							<div key={`entrance-photo-${index}`}>
+								<Image
+									src={photo.url}
+									alt={photo.alt || `Cave entrance photo ${index + 1}`}
+									radius="md"
+									style={{ 
+										height: 200,
+										objectFit: 'cover'
+									}}
+								/>
+								{photo.caption && (
+									<Text size="sm" c="dimmed" mt="xs">
+										{photo.caption}
+									</Text>
+								)}
+							</div>
+						))}
+					</div>
 				</Stack>
 			)}
 

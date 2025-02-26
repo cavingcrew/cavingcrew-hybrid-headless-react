@@ -113,6 +113,12 @@ export interface Location {
 			  }
 			| string;
 		location_parking_description?: string;
+		location_parking_photos?: Array<{
+			ID: number;
+			url: string;
+			alt: string;
+			caption: string;
+		}>;
 		location_parking_entrance_route_description?: string;
 		location_map_from_parking_to_entrance?: {
 			ID: number;
@@ -121,6 +127,12 @@ export interface Location {
 			caption: string;
 		};
 		location_entrance_latlong?: string;
+		location_entrance_photos?: Array<{
+			ID: number;
+			url: string;
+			alt: string;
+			caption: string;
+		}>;
 		location_info_url?: string;
 		location_access_arrangement?: string[] | string; // Can be array or JSON string
 		location_access_url?: string;

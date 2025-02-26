@@ -692,6 +692,14 @@ class Hybrid_Headless_Products_Controller {
 
         $location_id = $post_ref['ID'];
         $location_acf = get_fields($location_id);
+        
+        // Helper function to process gallery fields
+        $process_gallery = function($gallery) {
+            if (!is_array($gallery)) return [];
+            return array_map(function($img) {
+                return $this->get_image_data($img);
+            }, $gallery);
+        };
 
         return [
             'id' => $location_id,
@@ -703,9 +711,11 @@ class Hybrid_Headless_Products_Controller {
                 'location_caving_region' => $this->get_post_reference($location_acf['location_caving_region'] ?? 0),
                 'location_parking_latlong' => $location_acf['location_parking_latlong'] ?? [],
                 'location_parking_description' => $location_acf['location_parking_description'] ?? '',
+                'location_parking_photos' => $process_gallery($location_acf['location_parking_photos'] ?? []),
                 'location_parking_entrance_route_description' => $location_acf['location_parking_entrance_route_description'] ?? '',
                 'location_map_from_parking_to_entrance' => $this->get_image_data($location_acf['location_map_from_parking_to_entrance'] ?? 0),
                 'location_entrance_latlong' => $location_acf['location_entrance_latlong'] ?? '',
+                'location_entrance_photos' => $process_gallery($location_acf['location_entrance_photos'] ?? []),
                 'location_info_url' => $location_acf['location_info_url'] ?? '',
                 'location_access_arrangement' => $location_acf['location_access_arrangement'] ?? [],
                 'location_access_url' => $location_acf['location_access_url'] ?? '',
