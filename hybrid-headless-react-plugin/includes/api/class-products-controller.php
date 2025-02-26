@@ -693,11 +693,13 @@ class Hybrid_Headless_Products_Controller {
         $location_id = $post_ref['ID'];
         $location_acf = get_fields($location_id);
 
-        // Helper function to process gallery fields
+        // Updated gallery processing
         $process_gallery = function($gallery) {
             if (!is_array($gallery)) return [];
             return array_map(function($img) {
-                return $this->get_image_data($img);
+                // Handle both image ID and image array formats
+                $image_id = is_array($img) ? ($img['ID'] ?? 0) : $img;
+                return $this->get_image_data($image_id);
             }, $gallery);
         };
 
@@ -712,7 +714,11 @@ class Hybrid_Headless_Products_Controller {
                 'location_parking_description' => $location_acf['location_parking_description'] ?? '',
                 'location_parking_photos' => $process_gallery($location_acf['location_parking_photos'] ?? []),
                 'location_parking_entrance_route_description' => $location_acf['location_parking_entrance_route_description'] ?? '',
-                'location_map_from_parking_to_entrance' => $this->get_image_data($location_acf['location_map_from_parking_to_entrance'] ?? 0),
+                'location_map_from_parking_to_entrance' => $this->get_image_data(
+                    is_array($location_acf['location_map_from_parking_to_entrance'] ?? 0) 
+                        ? ($location_acf['location_map_from_parking_to_entrance']['ID'] ?? 0)
+                        : $location_acf['location_map_from_parking_to_entrance'] ?? 0
+                ),
                 'location_entrance_latlong' => $location_acf['location_entrance_latlong'] ?? '',
                 'location_entrance_photos' => $process_gallery($location_acf['location_entrance_photos'] ?? []),
                 'location_info_url' => $location_acf['location_info_url'] ?? '',
@@ -731,12 +737,16 @@ class Hybrid_Headless_Products_Controller {
 
     private function get_image_data($image_id) {
         if (!$image_id) return null;
+        
+        $image_post = get_post($image_id);
+        if (!$image_post) return null;
 
         return [
             'ID' => $image_id,
             'url' => wp_get_attachment_url($image_id),
             'alt' => get_post_meta($image_id, '_wp_attachment_image_alt', true),
-            'caption' => wp_get_attachment_caption($image_id)
+            'caption' => wp_get_attachment_caption($image_id),
+            'sizes' => wp_get_attachment_metadata($image_id)['sizes'] ?? []
         ];
     }
 

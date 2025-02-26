@@ -382,8 +382,21 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 									}}
 									style={{ lineHeight: 1.5 }}
 								/>
+							) : Array.isArray(routeDescription) && routeDescription.length > 0 ? (
+								<Stack gap="xs">
+									{routeDescription.map((section, index) => (
+										<div key={`route-section-${index}`}>
+											{section.section_title && (
+												<Text fw={500} size="sm">{section.section_title}</Text>
+											)}
+											{section.section_content && (
+												<Text size="sm">{section.section_content}</Text>
+											)}
+										</div>
+									))}
+								</Stack>
 							) : (
-								<Text size="sm">{JSON.stringify(routeDescription)}</Text>
+								<Text size="sm" c="dimmed">Route description not available</Text>
 							)}
 						</div>
 
