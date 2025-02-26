@@ -188,8 +188,8 @@ export function TripChallengeIndicator({
 					}}
 				>
 					{/* SVG for the circular indicator */}
-					<svg 
-						viewBox="0 0 100 100" 
+					<svg
+						viewBox="0 0 100 100"
 						style={{ width: "100%", height: "100%" }}
 						role="img"
 						aria-labelledby="challenge-chart-title"
@@ -214,7 +214,7 @@ export function TripChallengeIndicator({
 						/>
 						<text
 							x="50"
-							y="25"
+							y="0"
 							textAnchor="middle"
 							fill="#fff"
 							fontSize="6"
@@ -272,7 +272,7 @@ export function TripChallengeIndicator({
 						/>
 						<text
 							x="50"
-							y="75"
+							y="100"
 							textAnchor="middle"
 							fill="#fff"
 							fontSize="6"
