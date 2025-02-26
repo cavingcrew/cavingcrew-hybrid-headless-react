@@ -74,7 +74,7 @@ export function TripExperience({ trip }: TripExperienceProps) {
 						<ThemeIcon variant="light" color="teal">
 							<IconUser size={18} />
 						</ThemeIcon>
-						<Text fw={500}>Participant Experience</Text>
+						<Text fw={500}>Suggested Experience</Text>
 					</Group>
 
 					{participantSkills?.route_participants_skills_required_horizontal_level && (

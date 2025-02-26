@@ -169,14 +169,9 @@ export function TripChallengeIndicator({
 	return (
 		<>
 			<Paper withBorder p="md" radius="md">
-				<Title order={4} mb="md" ta="center">
-					Challenge Rating
-					{weightedRank !== undefined && (
-						<Text size="sm" c="dimmed" mt={5}>
-							Overall Difficulty: {weightedRank.toFixed(1)}
-						</Text>
-					)}
-				</Title>
+
+
+
 
 				<Box
 					style={{
@@ -478,11 +473,16 @@ export function TripChallengeIndicator({
 							/>
 							<Text size="xs">Challenging</Text>
 						</Group>
+
 					</Box>
 				</Box>
 
 				<Text size="sm" c="dimmed" ta="center" mt={50}>
-					Click on any section for detailed breakdown
+					{weightedRank !== undefined && (
+						<Text size="sm" c="dimmed" mt={5}>
+							Overall Difficulty: {weightedRank.toFixed(1)}
+						</Text>
+					)}
 				</Text>
 			</Paper>
 
