@@ -135,12 +135,13 @@ export function TripExperience({ trip }: TripExperienceProps) {
 			{/* Participant Experience - Enhanced */}
 				<Stack gap="md" mb="xl">
 					{participantSkills && (
-					<Group gap="xs">
-						<ThemeIcon variant="light" color="teal">
-							<IconUser size={18} />
-						</ThemeIcon>
-						<Text fw={500}>Suggested Experience</Text>
-					</Group>
+						<Group gap="xs">
+							<ThemeIcon variant="light" color="teal">
+								<IconUser size={18} />
+							</ThemeIcon>
+							<Text fw={500}>Suggested Experience</Text>
+						</Group>
+					)}
 
 					{participantSkills?.route_participants_skills_required_horizontal_level ? (
 						<Box>
@@ -240,7 +241,6 @@ export function TripExperience({ trip }: TripExperienceProps) {
 							</div>
 						)}
 				</Stack>
-			)}
 
 			{/* Personal Equipment Suggested */}
 			{personalGear && personalGear.length > 0 && (
