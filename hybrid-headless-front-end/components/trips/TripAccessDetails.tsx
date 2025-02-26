@@ -69,32 +69,24 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 			<Title order={2} mb="md">
 				Cave Access Details
 			</Title>
-
-			{/* New Access Info Buttons */}
-			<Group gap="sm" mb="xl">
-				{accessUrl && (
-					<Button
-						component="a"
-						href={accessUrl}
-						target="_blank"
-						variant="outline"
-						leftSection={<IconKey size={16} />}
-					>
-						Full Access Details
-					</Button>
-				)}
-				{infoUrl && (
-					<Button
-						component="a"
-						href={infoUrl}
-						target="_blank"
-						variant="outline"
-						leftSection={<IconInfoCircle size={16} />}
-					>
-						Location Information
-					</Button>
-				)}
-			</Group>
+			{/* Updated Sensitive Access Warning */}
+			{isSensitiveAccess && (
+				<Alert
+					color="red"
+					icon={<IconInfoCircle size={16} />}
+					mb="xl"
+					title="Sensitive Access Location"
+				>
+					<Text size="sm">
+						This location has sensitive access arrangements. Please:
+					</Text>
+					<List size="sm" mt={4}>
+						<List.Item>Follow all access guidelines carefully</List.Item>
+						<List.Item>Do not share exact location details publicly</List.Item>
+						<List.Item>Avoid naming the location on social media</List.Item>
+					</List>
+				</Alert>
+			)}
 
 			{/* Parking Section */}
 			{parkingLatLong && (
@@ -121,6 +113,46 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 					>
 						View Parking in Maps
 					</Button>
+				</Stack>
+			)}
+			{/* Parking to Entrance Route */}
+			{parkingToEntranceRoute && (
+				<Stack gap="md" mb="xl">
+					<Group gap="xs">
+						<ThemeIcon variant="light" color="teal">
+							<IconWalk size={18} />
+						</ThemeIcon>
+						<Text fw={500}>Approach from Parking</Text>
+					</Group>
+					<Text size="sm">{parkingToEntranceRoute}</Text>
+				</Stack>
+			)}
+
+			{/* Map Image Section - updated */}
+			{mapImage?.url && (
+				<Stack gap="sm" mb="xl">
+					<Group gap="xs">
+						<ThemeIcon variant="light" color="blue">
+							<IconMapPin size={18} />
+						</ThemeIcon>
+						<Text fw={500}>Approach Map</Text>
+					</Group>
+
+					<Image
+						src={mapImage.url}
+						alt={mapImage.alt || "Map from parking to cave entrance"}
+						radius="md"
+						style={{
+							maxWidth: "100%",
+							border: "1px solid #dee2e6",
+							borderRadius: 8,
+						}}
+					/>
+					{mapImage.caption && (
+						<Text size="sm" c="dimmed" mt="xs">
+							{mapImage.caption}
+						</Text>
+					)}
 				</Stack>
 			)}
 
@@ -175,6 +207,56 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 				</Stack>
 			)}
 
+			{/* New Access Info Buttons */}
+			<Group gap="sm" mb="xl">
+				{accessUrl && (
+					<Button
+						component="a"
+						href={accessUrl}
+						target="_blank"
+						variant="outline"
+						leftSection={<IconKey size={16} />}
+					>
+						Full Access Details
+					</Button>
+				)}
+				{infoUrl && (
+					<Button
+						component="a"
+						href={infoUrl}
+						target="_blank"
+						variant="outline"
+						leftSection={<IconInfoCircle size={16} />}
+					>
+						Location Information
+					</Button>
+				)}
+			</Group>
+
+
+
+			{/* Conditional Reference Links */}
+			{referenceLinks && referenceLinks.length > 0 && (
+				<Paper withBorder p="md" radius="md" mt="md">
+					<Text fw={500} mb="sm">
+						More Information:
+					</Text>
+					<List spacing="xs">
+						{referenceLinks.map((link) => (
+							<List.Item key={`ref-link-${link.link_url}`}>
+								<a
+									href={link.link_url}
+									target="_blank"
+									rel="noopener noreferrer"
+									style={{ textDecoration: "none" }}
+								>
+									<Text c="blue">{link.link_title}</Text>
+								</a>
+							</List.Item>
+						))}
+					</List>
+				</Paper>
+			)}
 			{/* New Route Description Section */}
 			{hasRouteDescription && (
 				<Stack gap="md" mb="xl">
@@ -202,88 +284,6 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 				</Stack>
 			)}
 
-			{/* Parking to Entrance Route */}
-			{parkingToEntranceRoute && (
-				<Stack gap="md" mb="xl">
-					<Group gap="xs">
-						<ThemeIcon variant="light" color="teal">
-							<IconWalk size={18} />
-						</ThemeIcon>
-						<Text fw={500}>Approach from Parking</Text>
-					</Group>
-					<Text size="sm">{parkingToEntranceRoute}</Text>
-				</Stack>
-			)}
-
-			{/* Map Image Section - updated */}
-			{mapImage?.url && (
-				<Stack gap="sm" mb="xl">
-					<Group gap="xs">
-						<ThemeIcon variant="light" color="blue">
-							<IconMapPin size={18} />
-						</ThemeIcon>
-						<Text fw={500}>Approach Map</Text>
-					</Group>
-
-					<Image
-						src={mapImage.url}
-						alt={mapImage.alt || "Map from parking to cave entrance"}
-						radius="md"
-						style={{
-							maxWidth: "100%",
-							border: "1px solid #dee2e6",
-							borderRadius: 8,
-						}}
-					/>
-					{mapImage.caption && (
-						<Text size="sm" c="dimmed" mt="xs">
-							{mapImage.caption}
-						</Text>
-					)}
-				</Stack>
-			)}
-
-			{/* Updated Sensitive Access Warning */}
-			{isSensitiveAccess && (
-				<Alert
-					color="red"
-					icon={<IconInfoCircle size={16} />}
-					mb="xl"
-					title="Sensitive Access Location"
-				>
-					<Text size="sm">
-						This location has sensitive access arrangements. Please:
-					</Text>
-					<List size="sm" mt={4}>
-						<List.Item>Follow all access guidelines carefully</List.Item>
-						<List.Item>Do not share exact location details publicly</List.Item>
-						<List.Item>Avoid naming the location on social media</List.Item>
-					</List>
-				</Alert>
-			)}
-
-			{/* Conditional Reference Links */}
-			{referenceLinks && referenceLinks.length > 0 && (
-				<Paper withBorder p="md" radius="md" mt="md">
-					<Text fw={500} mb="sm">
-						More Information:
-					</Text>
-					<List spacing="xs">
-						{referenceLinks.map((link) => (
-							<List.Item key={`ref-link-${link.link_url}`}>
-								<a
-									href={link.link_url}
-									target="_blank"
-									rel="noopener noreferrer"
-									style={{ textDecoration: "none" }}
-								>
-									<Text c="blue">{link.link_title}</Text>
-								</a>
-							</List.Item>
-						))}
-					</List>
-				</Paper>
-			)}
 		</Paper>
 	);
 }
