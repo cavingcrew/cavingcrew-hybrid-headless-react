@@ -36,6 +36,21 @@ export type ChallengeDomain =
 	| "hazard"
 	| "endurance";
 
+// Define the structure of the difficulty object
+export interface DifficultyData {
+	route_difficulty_psychological_claustrophobia?: string | number;
+	route_difficulty_objective_tightness?: string | number;
+	route_difficulty_wetness?: string | number;
+	route_difficulty_water_near_face?: string | number;
+	route_difficulty_exposure_to_deep_water?: string | number;
+	route_difficulty_muddiness?: string | number;
+	route_difficulty_exposure_to_heights?: string | number;
+	route_difficulty_technical_climbing_difficulty?: string | number;
+	route_difficulty_endurance?: string | number;
+	route_difficulty_objective_hazard?: string | number;
+	[key: string]: any; // For any other properties
+}
+
 export interface ChallengeMetric {
 	domain: ChallengeDomain;
 	label: string;
@@ -62,7 +77,7 @@ export function parseDifficultyValue(
 	if (value === null || value === undefined) return null;
 	const numValue =
 		typeof value === "string" ? Number.parseInt(value, 10) : value;
-	return isNaN(numValue) ? null : numValue;
+	return Number.isNaN(numValue) ? null : numValue;
 }
 
 /**
@@ -103,7 +118,7 @@ export function getChallengeColor(rating: ChallengeRating): string {
  * @param difficulty - The difficulty data
  * @returns The claustrophobia score and details
  */
-function calculateClaustrophobiaScore(difficulty: any): {
+function calculateClaustrophobiaScore(difficulty: DifficultyData): {
 	score: number;
 	details: ChallengeMetric["details"];
 } {
@@ -157,7 +172,7 @@ function calculateClaustrophobiaScore(difficulty: any): {
  * @param difficulty - The difficulty data
  * @returns The water score and details
  */
-function calculateWaterScore(difficulty: any): {
+function calculateWaterScore(difficulty: DifficultyData): {
 	score: number;
 	details: ChallengeMetric["details"];
 } {
@@ -230,7 +245,7 @@ function calculateWaterScore(difficulty: any): {
  * @param difficulty - The difficulty data
  * @returns The heights score and details
  */
-function calculateHeightsScore(difficulty: any): {
+function calculateHeightsScore(difficulty: DifficultyData): {
 	score: number;
 	details: ChallengeMetric["details"];
 } {
@@ -283,7 +298,7 @@ function calculateHeightsScore(difficulty: any): {
  * @param difficulty - The difficulty data
  * @returns The hazard score and details
  */
-function calculateHazardScore(difficulty: any): {
+function calculateHazardScore(difficulty: DifficultyData): {
 	score: number;
 	details: ChallengeMetric["details"];
 } {
@@ -313,7 +328,7 @@ function calculateHazardScore(difficulty: any): {
  * @param difficulty - The difficulty data
  * @returns The endurance score and details
  */
-function calculateEnduranceScore(difficulty: any): {
+function calculateEnduranceScore(difficulty: DifficultyData): {
 	score: number;
 	details: ChallengeMetric["details"];
 } {
@@ -346,7 +361,7 @@ export function extractChallengeMetrics(
 ): ChallengeMetric[] | null {
 	if (!routeData?.route_difficulty) return null;
 
-	const difficulty = routeData.route_difficulty as any;
+	const difficulty = routeData.route_difficulty as DifficultyData;
 
 	// Calculate scores for each domain
 	const claustrophobia = calculateClaustrophobiaScore(difficulty);
@@ -403,7 +418,7 @@ export function extractChallengeMetrics(
 export function extractDifficultyMetrics(routeData?: Route["acf"]) {
 	if (!routeData?.route_difficulty) return null;
 
-	const difficulty = routeData.route_difficulty as any;
+	const difficulty = routeData.route_difficulty as DifficultyData;
 
 	return {
 		physical: [

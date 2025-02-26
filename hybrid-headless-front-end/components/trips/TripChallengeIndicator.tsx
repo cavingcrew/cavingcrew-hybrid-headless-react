@@ -177,7 +177,13 @@ export function TripChallengeIndicator({
 					}}
 				>
 					{/* SVG for the circular indicator */}
-					<svg viewBox="0 0 100 100" style={{ width: "100%", height: "100%" }}>
+					<svg 
+						viewBox="0 0 100 100" 
+						style={{ width: "100%", height: "100%" }}
+						role="img"
+						aria-labelledby="challenge-chart-title"
+					>
+						<title id="challenge-chart-title">Cave challenge rating chart</title>
 						{/* Claustrophobia (Left) */}
 						<path
 							d="M50,50 L20,50 A30,30 0 0,1 35,25 L50,50 Z"
@@ -185,6 +191,14 @@ export function TripChallengeIndicator({
 							stroke={theme.colors.gray[3]}
 							strokeWidth="0.5"
 							onClick={() => handleSegmentClick("claustrophobia")}
+							onKeyDown={(e) => {
+								if (e.key === 'Enter' || e.key === ' ') {
+									handleSegmentClick("claustrophobia");
+								}
+							}}
+							tabIndex={0}
+							role="button"
+							aria-label="Claustrophobia rating"
 							style={{ cursor: "pointer" }}
 						/>
 						<text
@@ -206,6 +220,14 @@ export function TripChallengeIndicator({
 							stroke={theme.colors.gray[3]}
 							strokeWidth="0.5"
 							onClick={() => handleSegmentClick("heights")}
+							onKeyDown={(e) => {
+								if (e.key === 'Enter' || e.key === ' ') {
+									handleSegmentClick("heights");
+								}
+							}}
+							tabIndex={0}
+							role="button"
+							aria-label="Heights rating"
 							style={{ cursor: "pointer" }}
 						/>
 						<text
@@ -227,6 +249,14 @@ export function TripChallengeIndicator({
 							stroke={theme.colors.gray[3]}
 							strokeWidth="0.5"
 							onClick={() => handleSegmentClick("hazard")}
+							onKeyDown={(e) => {
+								if (e.key === 'Enter' || e.key === ' ') {
+									handleSegmentClick("hazard");
+								}
+							}}
+							tabIndex={0}
+							role="button"
+							aria-label="Hazards rating"
 							style={{ cursor: "pointer" }}
 						/>
 						<text
@@ -248,6 +278,14 @@ export function TripChallengeIndicator({
 							stroke={theme.colors.gray[3]}
 							strokeWidth="0.5"
 							onClick={() => handleSegmentClick("water")}
+							onKeyDown={(e) => {
+								if (e.key === 'Enter' || e.key === ' ') {
+									handleSegmentClick("water");
+								}
+							}}
+							tabIndex={0}
+							role="button"
+							aria-label="Water rating"
 							style={{ cursor: "pointer" }}
 						/>
 						<text
@@ -271,6 +309,14 @@ export function TripChallengeIndicator({
 							stroke={theme.colors.gray[3]}
 							strokeWidth="0.5"
 							onClick={() => handleSegmentClick("endurance")}
+							onKeyDown={(e) => {
+								if (e.key === 'Enter' || e.key === ' ') {
+									handleSegmentClick("endurance");
+								}
+							}}
+							tabIndex={0}
+							role="button"
+							aria-label="Endurance rating"
 							style={{ cursor: "pointer" }}
 						/>
 						<text
