@@ -184,9 +184,9 @@ export function TripChallengeIndicator({
 						aria-labelledby="challenge-chart-title"
 					>
 						<title id="challenge-chart-title">Cave challenge rating chart</title>
-						{/* Claustrophobia (Left) */}
+						{/* Claustrophobia (Left Quarter) */}
 						<path
-							d="M50,50 L20,50 A30,30 0 0,1 35,25 L50,50 Z"
+							d="M50,50 L20,50 A30,30 0 0,1 29.3,29.3 L50,50 Z"
 							fill={getDomainColor("claustrophobia")}
 							stroke={theme.colors.gray[3]}
 							strokeWidth="0.5"
@@ -213,9 +213,9 @@ export function TripChallengeIndicator({
 							Tight
 						</text>
 
-						{/* Heights (Top) */}
+						{/* Heights (Top Quarter) */}
 						<path
-							d="M50,50 L35,25 A30,30 0 0,1 65,25 L50,50 Z"
+							d="M50,50 L29.3,29.3 A30,30 0 0,1 50,20 L50,50 Z"
 							fill={getDomainColor("heights")}
 							stroke={theme.colors.gray[3]}
 							strokeWidth="0.5"
@@ -231,7 +231,7 @@ export function TripChallengeIndicator({
 							style={{ cursor: "pointer" }}
 						/>
 						<text
-							x="50"
+							x="40"
 							y="30"
 							textAnchor="middle"
 							fill="#fff"
@@ -242,9 +242,9 @@ export function TripChallengeIndicator({
 							Heights
 						</text>
 
-						{/* Hazard (Right) */}
+						{/* Hazard (Right Quarter) */}
 						<path
-							d="M50,50 L65,25 A30,30 0 0,1 80,50 L50,50 Z"
+							d="M50,50 L50,20 A30,30 0 0,1 70.7,29.3 L50,50 Z"
 							fill={getDomainColor("hazard")}
 							stroke={theme.colors.gray[3]}
 							strokeWidth="0.5"
@@ -260,8 +260,8 @@ export function TripChallengeIndicator({
 							style={{ cursor: "pointer" }}
 						/>
 						<text
-							x="70"
-							y="40"
+							x="60"
+							y="30"
 							textAnchor="middle"
 							fill="#fff"
 							fontSize="6"
@@ -271,9 +271,9 @@ export function TripChallengeIndicator({
 							Hazards
 						</text>
 
-						{/* Water (Bottom) */}
+						{/* Water (Bottom Right Quarter) */}
 						<path
-							d="M50,50 L80,50 A30,30 0 0,1 50,80 L50,50 Z"
+							d="M50,50 L70.7,29.3 A30,30 0 0,1 80,50 L50,50 Z"
 							fill={getDomainColor("water")}
 							stroke={theme.colors.gray[3]}
 							strokeWidth="0.5"
