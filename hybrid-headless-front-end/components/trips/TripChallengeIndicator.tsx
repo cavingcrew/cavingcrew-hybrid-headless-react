@@ -55,11 +55,15 @@ function DomainIcon({ domain, size = 18 }: DomainIconProps) {
 // Helper function to consistently map rating to color
 function getRatingColor(rating: ChallengeRating): string {
 	switch (rating) {
-		case "green": return "green";
-		case "amber": return "yellow";
-		case "red": return "red";
+		case "green":
+			return "green";
+		case "amber":
+			return "yellow";
+		case "red":
+			return "red";
 		case "na":
-		default: return "gray";
+		default:
+			return "gray";
 	}
 }
 
@@ -212,10 +216,6 @@ export function TripChallengeIndicator({
 	return (
 		<>
 			<Paper withBorder p="md" radius="md">
-
-
-
-
 				<Box
 					style={{
 						position: "relative",
@@ -240,7 +240,9 @@ export function TripChallengeIndicator({
 						role="img"
 						aria-labelledby="challenge-chart-title"
 					>
-						<title id="challenge-chart-title">Cave challenge rating chart</title>
+						<title id="challenge-chart-title">
+							Cave challenge rating chart
+						</title>
 						{/* Heights (Top Quadrant - 315° to 45°) */}
 						<path
 							d="M50,50 L71,29 A30,30 0 0,0 29,29 L50,50 Z"
@@ -249,7 +251,7 @@ export function TripChallengeIndicator({
 							strokeWidth="0.5"
 							onClick={() => handleSegmentClick("heights")}
 							onKeyDown={(e) => {
-								if (e.key === 'Enter' || e.key === ' ') {
+								if (e.key === "Enter" || e.key === " ") {
 									handleSegmentClick("heights");
 								}
 							}}
@@ -294,7 +296,7 @@ export function TripChallengeIndicator({
 							strokeWidth="0.5"
 							onClick={() => handleSegmentClick("hazard")}
 							onKeyDown={(e) => {
-								if (e.key === 'Enter' || e.key === ' ') {
+								if (e.key === "Enter" || e.key === " ") {
 									handleSegmentClick("hazard");
 								}
 							}}
@@ -340,7 +342,7 @@ export function TripChallengeIndicator({
 							strokeWidth="0.5"
 							onClick={() => handleSegmentClick("water")}
 							onKeyDown={(e) => {
-								if (e.key === 'Enter' || e.key === ' ') {
+								if (e.key === "Enter" || e.key === " ") {
 									handleSegmentClick("water");
 								}
 							}}
@@ -385,7 +387,7 @@ export function TripChallengeIndicator({
 							strokeWidth="0.5"
 							onClick={() => handleSegmentClick("claustrophobia")}
 							onKeyDown={(e) => {
-								if (e.key === 'Enter' || e.key === ' ') {
+								if (e.key === "Enter" || e.key === " ") {
 									handleSegmentClick("claustrophobia");
 								}
 							}}
@@ -433,7 +435,7 @@ export function TripChallengeIndicator({
 							strokeWidth="0.5"
 							onClick={() => handleSegmentClick("endurance")}
 							onKeyDown={(e) => {
-								if (e.key === 'Enter' || e.key === ' ') {
+								if (e.key === "Enter" || e.key === " ") {
 									handleSegmentClick("endurance");
 								}
 							}}
@@ -548,11 +550,7 @@ export function TripChallengeIndicator({
 								</Text>
 								<Text size="sm" c="dimmed">
 									Overall Rating:{" "}
-									<Text
-										span
-										fw={700}
-										c={getRatingColor(selectedMetric.rating)}
-									>
+									<Text span fw={700} c={getRatingColor(selectedMetric.rating)}>
 										{selectedMetric.rating === "na"
 											? "N/A"
 											: selectedMetric.rating.charAt(0).toUpperCase() +

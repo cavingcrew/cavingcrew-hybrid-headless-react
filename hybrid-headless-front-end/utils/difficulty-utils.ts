@@ -103,7 +103,7 @@ export function parseDifficultyValue(
 ): number | null {
 	if (value === null || value === undefined) return null;
 	const numValue =
-		typeof value === "string" ? parseInt(value, 10) : value;
+		typeof value === "string" ? Number.parseInt(value, 10) : value;
 	return isNaN(numValue) ? null : numValue;
 }
 
@@ -114,7 +114,10 @@ export function parseDifficultyValue(
  * @param domain - The challenge domain
  * @returns The challenge rating (green, amber, red, or na)
  */
-export function getChallengeRating(score: number | null, domain: ChallengeDomain): ChallengeRating {
+export function getChallengeRating(
+	score: number | null,
+	domain: ChallengeDomain,
+): ChallengeRating {
 	if (score === null || score === 0) return "na";
 	const thresholds = CHALLENGE_CONFIG.thresholds[domain];
 	// Check if score is greater than 0 and less than or equal to green threshold
@@ -188,10 +191,10 @@ function calculateClaustrophobiaScore(difficulty: DifficultyData): {
 
 	// Calculate weighted sum directly
 	const weightedSum = details.reduce((sum, d) => sum + d.contribution, 0);
-	
+
 	// Ensure we have at least one valid value
-	const hasValidValues = details.some(d => d.value !== null);
-	
+	const hasValidValues = details.some((d) => d.value !== null);
+
 	// Only return a score if we have valid values
 	const score = hasValidValues ? weightedSum : 0;
 
@@ -260,10 +263,10 @@ function calculateWaterScore(difficulty: DifficultyData): {
 
 	// Calculate weighted sum directly
 	const weightedSum = details.reduce((sum, d) => sum + d.contribution, 0);
-	
+
 	// Ensure we have at least one valid value
-	const hasValidValues = details.some(d => d.value !== null);
-	
+	const hasValidValues = details.some((d) => d.value !== null);
+
 	// Only return a score if we have valid values
 	const score = hasValidValues ? weightedSum : 0;
 
@@ -313,7 +316,6 @@ function calculateHeightsScore(difficulty: DifficultyData): {
 	// Calculate weighted sum directly
 	const weightedSum = details.reduce((sum, d) => sum + d.contribution, 0);
 
-
 	const score = weightedSum;
 
 	return { score, details };
@@ -343,7 +345,6 @@ function calculateHazardScore(difficulty: DifficultyData): {
 		},
 	];
 
-
 	const score = hazard !== null ? hazard : 0;
 
 	return { score, details };
@@ -351,7 +352,7 @@ function calculateHazardScore(difficulty: DifficultyData): {
 
 /**
  * Calculates the endurance score
- * 
+ *
  * Endurance is rated on the same 0-10 scale as other metrics
  *
  * @param difficulty - The difficulty data
@@ -372,7 +373,6 @@ function calculateEnduranceScore(difficulty: DifficultyData): {
 			contribution: endurance !== null ? endurance : 0,
 		},
 	];
-
 
 	const score = endurance !== null ? endurance : 0;
 
