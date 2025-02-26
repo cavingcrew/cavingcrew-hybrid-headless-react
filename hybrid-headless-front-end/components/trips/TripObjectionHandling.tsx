@@ -53,6 +53,19 @@ export function TripObjectionHandling() {
 			<Title order={2} mb="md">
 				Common Questions About First-Time Caving
 			</Title>
+			
+			<Alert 
+				icon={<IconFriends size={16} />} 
+				title="Never done this before?" 
+				color="blue" 
+				mb="lg"
+			>
+				<Text>
+					That's perfect! These trips are specifically designed for first-timers. 
+					Most people on these trips have never been caving before and don't know anyone else - 
+					you'll be in great company with other beginners just like you!
+				</Text>
+			</Alert>
 
 			<Accordion value={activeItem} onChange={setActiveItem}>
 				<Accordion.Item value="claustrophobia">
