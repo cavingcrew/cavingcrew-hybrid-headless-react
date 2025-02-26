@@ -151,55 +151,6 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 				</Stack>
 			)}
 
-			{/* Map Image Section - updated with click-to-enlarge */}
-			{mapImage?.url && (
-				<Stack gap="sm" mb="xl">
-					<Group gap="xs">
-						<ThemeIcon variant="light" color="blue">
-							<IconMapPin size={18} />
-						</ThemeIcon>
-						<Text fw={500}>Approach Map</Text>
-					</Group>
-
-					<Box style={{ cursor: "pointer" }} onClick={openMapModal}>
-						<Image
-							src={mapImage.url}
-							alt={mapImage.alt || "Map from parking to cave entrance"}
-							radius="md"
-							style={{
-								maxWidth: "100%",
-								border: "1px solid #dee2e6",
-								borderRadius: 8,
-							}}
-						/>
-					</Box>
-					{mapImage.caption && (
-						<Text size="sm" c="dimmed" mt="xs">
-							{mapImage.caption}
-						</Text>
-					)}
-
-					<Modal
-						opened={mapModalOpened}
-						onClose={closeMapModal}
-						size="xl"
-						title="Approach Map"
-						centered
-					>
-						<Image
-							src={mapImage.url}
-							alt={mapImage.alt || "Map from parking to cave entrance"}
-							style={{ width: "100%", height: "auto" }}
-						/>
-						{mapImage.caption && (
-							<Text size="sm" c="dimmed" mt="md">
-								{mapImage.caption}
-							</Text>
-						)}
-					</Modal>
-				</Stack>
-			)}
-
 			{/* Parking Photos Gallery */}
 			{locationData?.location_parking_photos &&
 				locationData.location_parking_photos.length > 0 && (
@@ -257,6 +208,55 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 					>
 						View Entrance in Maps
 					</Button>
+				</Stack>
+			)}
+
+			{/* Map Image Section - updated with click-to-enlarge */}
+			{mapImage?.url && (
+				<Stack gap="sm" mb="xl">
+					<Group gap="xs">
+						<ThemeIcon variant="light" color="blue">
+							<IconMapPin size={18} />
+						</ThemeIcon>
+						<Text fw={500}>Approach Map</Text>
+					</Group>
+
+					<Box style={{ cursor: "pointer" }} onClick={openMapModal}>
+						<Image
+							src={mapImage.url}
+							alt={mapImage.alt || "Map from parking to cave entrance"}
+							radius="md"
+							style={{
+								maxWidth: "100%",
+								border: "1px solid #dee2e6",
+								borderRadius: 8,
+							}}
+						/>
+					</Box>
+					{mapImage.caption && (
+						<Text size="sm" c="dimmed" mt="xs">
+							{mapImage.caption}
+						</Text>
+					)}
+
+					<Modal
+						opened={mapModalOpened}
+						onClose={closeMapModal}
+						size="xl"
+						title="Approach Map"
+						centered
+					>
+						<Image
+							src={mapImage.url}
+							alt={mapImage.alt || "Map from parking to cave entrance"}
+							style={{ width: "100%", height: "auto" }}
+						/>
+						{mapImage.caption && (
+							<Text size="sm" c="dimmed" mt="md">
+								{mapImage.caption}
+							</Text>
+						)}
+					</Modal>
 				</Stack>
 			)}
 

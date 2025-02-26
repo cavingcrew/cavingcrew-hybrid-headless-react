@@ -29,6 +29,7 @@
 		"check:biome": "biome check --apply ."
 	},
 	"dependencies": {
+		"@mantine/carousel": "^7.17.0",
 		"@mantine/core": "^7.15.2",
 		"@mantine/hooks": "^7.14.3",
 		"@next/bundle-analyzer": "^14.2.4",
