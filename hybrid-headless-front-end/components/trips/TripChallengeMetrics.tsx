@@ -71,7 +71,7 @@ function TripEnjoymentRating({
             Trip Enjoyment Rating
           </Text>
           <Group justify="center">
-            <Rating value={starRating} readOnly size="xl" />
+            <Rating value={parseInt(starRating, 10)} readOnly size="xl" />
             <Text size="xl" fw={700}>
               {starRating}/5
             </Text>
