@@ -5,30 +5,21 @@ import {
 	Anchor,
 	Badge,
 	Box,
-	Divider,
-	Grid,
 	Group,
+	Grid,
 	List,
 	Paper,
-	Progress,
-	Rating,
 	Stack,
 	Text,
 	ThemeIcon,
 	Title,
 } from "@mantine/core";
 import {
-	IconAlertTriangle,
 	IconArrowsVertical,
-	IconClock,
 	IconCompass,
-	IconDroplet,
 	IconFirstAidKit,
 	IconInfoCircle,
-	IconMoodSmile,
 	IconMountain,
-	IconMountainOff,
-	IconMug,
 	IconRuler,
 	IconShirt,
 	IconStar,
@@ -38,6 +29,7 @@ import {
 } from "@tabler/icons-react";
 import React from "react";
 import type { Trip } from "../../types/api";
+import { TripChallengeMetrics } from "./TripChallengeMetrics";
 
 interface TripExperienceProps {
 	trip: Trip;
@@ -49,33 +41,6 @@ export function TripExperience({ trip }: TripExperienceProps) {
 	const leadingDifficulty = routeData?.route_leading_difficulty;
 	const groupTackle = routeData?.route_group_tackle_required;
 	const personalGear = routeData?.route_personal_gear_required;
-	const difficulty = routeData?.route_difficulty;
-	const starRating = routeData?.route_trip_star_rating;
-	const estimatedTime = routeData?.route_time_for_eta;
-
-	// Helper function to render difficulty bars
-	const renderDifficultyBar = (
-		value: string | number | null | undefined,
-		label: string,
-		color: string,
-	) => {
-		if (value === null || value === undefined) return null;
-		const numValue =
-			typeof value === "string" ? Number.parseInt(value, 10) : value;
-		if (isNaN(numValue)) return null;
-
-		return (
-			<Box mb="xs">
-				<Group justify="space-between" mb={5}>
-					<Text size="sm">{label}</Text>
-					<Text size="sm" fw={500}>
-						{numValue}/5
-					</Text>
-				</Group>
-				<Progress value={numValue * 20} color={color} size="sm" radius="xl" />
-			</Box>
-		);
-	};
 
 	return (
 		<Paper withBorder p="md" radius="md" mt="md">
@@ -83,135 +48,24 @@ export function TripExperience({ trip }: TripExperienceProps) {
 				What the Trip Will Be Like
 			</Title>
 
-			{/* Trip Overview with Star Rating */}
-			<Grid mb="xl">
-				<Grid.Col span={{ base: 12, md: 8 }}>
-					{routeData?.route_blurb && (
-						<Stack gap="md">
-							<Group gap="xs">
-								<ThemeIcon variant="light" color="blue">
-									<IconCompass size={18} />
-								</ThemeIcon>
-							</Group>
-							{/* Content from WordPress sanitized HTML */}
-							<div
-								dangerouslySetInnerHTML={{ __html: routeData.route_blurb }}
-							/>
-						</Stack>
-					)}
-				</Grid.Col>
-				<Grid.Col span={{ base: 12, md: 4 }}>
-					<Stack gap="md" align="center">
-						{starRating && (
-							<Box>
-								<Text ta="center" fw={500} mb="xs">
-									Trip Enjoyment Rating
-								</Text>
-								<Group justify="center">
-									<Rating value={starRating} readOnly size="xl" />
-									<Text size="xl" fw={700}>
-										{starRating}/5
-									</Text>
-								</Group>
-								<Text size="sm" c="dimmed" ta="center" mt="xs">
-									Based on member feedback
-								</Text>
-							</Box>
-						)}
-						{estimatedTime && (
-							<Box>
-								<Group gap="xs" justify="center">
-									<IconClock size={18} />
-									<Text>Estimated Duration: {estimatedTime} hours</Text>
-								</Group>
-							</Box>
-						)}
-					</Stack>
-				</Grid.Col>
-			</Grid>
-
-			{/* Challenge Metrics */}
-			{difficulty && (
+			{/* Trip Overview */}
+			{routeData?.route_blurb && (
 				<Stack gap="md" mb="xl">
 					<Group gap="xs">
-						<ThemeIcon variant="light" color="red">
-							<IconMountainOff size={18} />
+						<ThemeIcon variant="light" color="blue">
+							<IconCompass size={18} />
 						</ThemeIcon>
-						<Text fw={500}>Challenge Metrics</Text>
+						<Text fw={500}>Cave Overview</Text>
 					</Group>
-
-					<Grid>
-						<Grid.Col span={{ base: 12, md: 6 }}>
-							<Stack>
-								{renderDifficultyBar(
-									(difficulty as any)
-										.route_difficulty_psychological_claustrophobia,
-									"Claustrophobia",
-									"orange",
-								)}
-								{renderDifficultyBar(
-									(difficulty as any).route_difficulty_objective_tightness,
-									"Tightness",
-									"red",
-								)}
-								{renderDifficultyBar(
-									(difficulty as any).route_difficulty_wetness,
-									"Wetness",
-									"blue",
-								)}
-								{renderDifficultyBar(
-									(difficulty as any).route_difficulty_water_near_face,
-									"Water Near Face",
-									"cyan",
-								)}
-								{renderDifficultyBar(
-									(difficulty as any).route_difficulty_exposure_to_deep_water,
-									"Deep Water Exposure",
-									"indigo",
-								)}
-							</Stack>
-						</Grid.Col>
-						<Grid.Col span={{ base: 12, md: 6 }}>
-							<Stack>
-								{renderDifficultyBar(
-									(difficulty as any).route_difficulty_muddiness,
-									"Muddiness",
-									"brown",
-								)}
-								{renderDifficultyBar(
-									(difficulty as any).route_difficulty_exposure_to_heights,
-									"Height Exposure",
-									"grape",
-								)}
-								{renderDifficultyBar(
-									(difficulty as any)
-										.route_difficulty_technical_climbing_difficulty,
-									"Technical Climbing",
-									"pink",
-								)}
-								{renderDifficultyBar(
-									(difficulty as any).route_difficulty_endurance,
-									"Physical Endurance",
-									"green",
-								)}
-								{renderDifficultyBar(
-									(difficulty as any).route_difficulty_objective_hazard,
-									"Objective Hazards",
-									"yellow",
-								)}
-							</Stack>
-						</Grid.Col>
-					</Grid>
-
-					<Alert color="blue" icon={<IconMoodSmile size={18} />}>
-						<Text size="sm">
-							These ratings help you understand what to expect. If you have
-							specific concerns about any aspect, please ask the trip leader
-							before signing up.
-						</Text>
-					</Alert>
+					{/* Content from WordPress sanitized HTML */}
+					<div
+						dangerouslySetInnerHTML={{ __html: routeData.route_blurb }}
+					/>
 				</Stack>
 			)}
+
+			{/* Challenge and Enjoyment Metrics */}
+			<TripChallengeMetrics trip={trip} />
 
 			{/* Participant Experience - Enhanced */}
 			{participantSkills && (
