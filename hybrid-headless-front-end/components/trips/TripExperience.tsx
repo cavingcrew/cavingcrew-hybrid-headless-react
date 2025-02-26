@@ -90,7 +90,6 @@ export function TripExperience({ trip }: TripExperienceProps) {
 	const leadingDifficulty = routeData?.route_leading_difficulty;
 	const groupTackle = routeData?.route_group_tackle_required;
 	const personalGear = routeData?.route_personal_gear_required;
-	const routeData = trip.route?.acf;
 	const starRating = routeData?.route_trip_star_rating;
 	const estimatedTime = routeData?.route_time_for_eta;
 
@@ -103,13 +102,6 @@ export function TripExperience({ trip }: TripExperienceProps) {
 			<Title order={2} mb="md">
 				What the Trip Will Be Like
 			</Title>
-
-			{(starRating || estimatedTime) && (
-				<TripEnjoymentRating
-					starRating={starRating}
-					estimatedTime={estimatedTime}
-				/>
-			)}
 
 			{/* Trip Overview */}
 			{routeData?.route_blurb && (
@@ -126,10 +118,26 @@ export function TripExperience({ trip }: TripExperienceProps) {
 				</Stack>
 			)}
 
-			<TripChallengeIndicator
-				metrics={challengeMetrics}
-				weightedRank={weightedRank}
-			/>
+			<Grid gutter="md" mb="xl">
+				<Grid.Col span={{ base: 12, md: 6 }}>
+					{challengeMetrics && (
+						<TripChallengeIndicator
+							metrics={challengeMetrics}
+							weightedRank={weightedRank}
+						/>
+					)}
+				</Grid.Col>
+				<Grid.Col span={{ base: 12, md: 6 }}>
+					{(starRating || estimatedTime) && (
+						<Paper withBorder p="md" radius="md" h="100%">
+							<TripEnjoymentRating
+								starRating={starRating}
+								estimatedTime={estimatedTime}
+							/>
+						</Paper>
+					)}
+				</Grid.Col>
+			</Grid>
 
 			{/* Challenge and Enjoyment Metrics */}
 
