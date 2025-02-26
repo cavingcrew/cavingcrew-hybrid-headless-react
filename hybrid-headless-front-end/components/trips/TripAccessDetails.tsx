@@ -2,16 +2,19 @@
 
 import {
 	Alert,
+	Box,
 	Button,
 	Divider,
 	Group,
 	Image,
 	List,
+	Modal,
 	Paper,
 	Stack,
 	Text,
 	ThemeIcon,
 	Title,
+	useDisclosure,
 } from "@mantine/core";
 import { Carousel } from "@mantine/carousel";
 import {
@@ -55,6 +58,9 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 	const accessUrl = locationData?.location_access_url;
 	const infoUrl = locationData?.location_info_url;
 	const isSensitiveAccess = locationData?.location_sensitive_access;
+	
+	// Modal state for map enlargement
+	const [mapModalOpened, { open: openMapModal, close: closeMapModal }] = useDisclosure(false);
 
 	// Coordinate parsing logic
 	const parseCoords = (
@@ -129,7 +135,7 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 				</Stack>
 			)}
 
-			{/* Map Image Section - updated */}
+			{/* Map Image Section - updated with click-to-enlarge */}
 			{mapImage?.url && (
 				<Stack gap="sm" mb="xl">
 					<Group gap="xs">
@@ -139,21 +145,42 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 						<Text fw={500}>Approach Map</Text>
 					</Group>
 
-					<Image
-						src={mapImage.url}
-						alt={mapImage.alt || "Map from parking to cave entrance"}
-						radius="md"
-						style={{
-							maxWidth: "100%",
-							border: "1px solid #dee2e6",
-							borderRadius: 8,
-						}}
-					/>
+					<Box style={{ cursor: 'pointer' }} onClick={openMapModal}>
+						<Image
+							src={mapImage.url}
+							alt={mapImage.alt || "Map from parking to cave entrance"}
+							radius="md"
+							style={{
+								maxWidth: "100%",
+								border: "1px solid #dee2e6",
+								borderRadius: 8,
+							}}
+						/>
+					</Box>
 					{mapImage.caption && (
 						<Text size="sm" c="dimmed" mt="xs">
 							{mapImage.caption}
 						</Text>
 					)}
+
+					<Modal 
+						opened={mapModalOpened} 
+						onClose={closeMapModal}
+						size="xl"
+						title="Approach Map"
+						centered
+					>
+						<Image
+							src={mapImage.url}
+							alt={mapImage.alt || "Map from parking to cave entrance"}
+							style={{ width: '100%', height: 'auto' }}
+						/>
+						{mapImage.caption && (
+							<Text size="sm" c="dimmed" mt="md">
+								{mapImage.caption}
+							</Text>
+						)}
+					</Modal>
 				</Stack>
 			)}
 
