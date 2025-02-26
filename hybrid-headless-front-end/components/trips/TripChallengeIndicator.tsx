@@ -220,7 +220,6 @@ export function TripChallengeIndicator({
 
 	return (
 		<>
-			<Paper withBorder p="md" radius="md">
 				<Box
 					style={{
 						position: "relative",
@@ -533,7 +532,6 @@ export function TripChallengeIndicator({
 						</Text>
 					)}
 				</Text>
-			</Paper>
 
 			{/* Modal for detailed breakdown */}
 			<Modal

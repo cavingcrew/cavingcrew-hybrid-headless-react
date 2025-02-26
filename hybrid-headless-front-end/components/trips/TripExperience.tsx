@@ -56,7 +56,7 @@ function TripEnjoymentRating({
             Wowfactor
           </Text>
           <Group>
-            <Rating value={typeof starRating === 'string' ? parseInt(starRating) : starRating} readOnly size="xl" />
+            <Rating value={typeof starRating === 'string' ? Number.parseInt(starRating, 10) : starRating} readOnly size="xl" />
           </Group>
         </Box>
       )}
@@ -67,7 +67,7 @@ function TripEnjoymentRating({
             <div>
               <Text>Estimated Duration: {parseFloat(estimatedTime) + (parseFloat(estimatedTime) * 0.25)} hours</Text>
               <Text size="sm" c="dimmed" mt={5} style={{ maxWidth: '500px' }}>
-                Note: Cave trip durations vary widely based on group experience, preparation time, navigation, photo stops, and rest breaks. Always plan for longer than estimated.
+                It's really hard to guess how long caving trips will take.
               </Text>
             </div>
           </Group>
@@ -109,7 +109,7 @@ export function TripExperience({ trip }: TripExperienceProps) {
 							estimatedTime={estimatedTime}
 						/>
 					)}
-					
+
 					{/* Trip Overview */}
 					{routeData?.route_blurb && (
 						<Stack gap="md" mt="xl">
@@ -134,14 +134,15 @@ export function TripExperience({ trip }: TripExperienceProps) {
 			{/* Participant Experience - Enhanced */}
 			{participantSkills && (
 				<Stack gap="md" mb="xl">
-					<Group gap="xs">
-						<ThemeIcon variant="light" color="teal">
-							<IconUser size={18} />
-						</ThemeIcon>
-						<Text fw={500}>Suggested Experience</Text>
-					</Group>
+
 
 					{participantSkills?.route_participants_skills_required_horizontal_level && (
+						<Group gap="xs">
+							<ThemeIcon variant="light" color="teal">
+								<IconUser size={18} />
+							</ThemeIcon>
+							<Text fw={500}>Suggested Experience</Text>
+						</Group>
 						<Box>
 							<Group align="center" mb="xs">
 								<Badge size="lg" color="teal" variant="filled">
