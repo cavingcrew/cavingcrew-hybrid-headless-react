@@ -53,14 +53,11 @@ function TripEnjoymentRating({
       {starRating && (
         <Box>
           <Text ta="center" fw={500} mb="xs">
-            Trip Wowfactor
+            Wowfactor
           </Text>
           <Group justify="center">
             <Rating value={typeof starRating === 'string' ? parseInt(starRating) : starRating} readOnly size="xl" />
           </Group>
-          <Text size="sm" c="dimmed" ta="center" mt="xs">
-            Based on member feedback
-          </Text>
         </Box>
       )}
       {estimatedTime && (
