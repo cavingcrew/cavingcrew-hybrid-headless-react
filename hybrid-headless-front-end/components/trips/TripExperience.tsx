@@ -99,39 +99,33 @@ export function TripExperience({ trip }: TripExperienceProps) {
 			<Title order={2} mb="md">
 				What the Trip Will Be Like
 			</Title>
-
-			{/* Trip Overview */}
-			{routeData?.route_blurb && (
-				<Stack gap="md" mb="xl">
-					<Group gap="xs">
-						<ThemeIcon variant="light" color="blue">
-							<IconCompass size={18} />
-						</ThemeIcon>
-					</Group>
-					{/* Content from WordPress sanitized HTML */}
-					<div
-						dangerouslySetInnerHTML={{ __html: routeData.route_blurb }}
+			{(starRating || estimatedTime) && (
+					<TripEnjoymentRating
+						starRating={starRating}
+						estimatedTime={estimatedTime}
 					/>
-				</Stack>
 			)}
 
+
 			<Grid gutter="md" mb="xl">
+				<Grid.Col span={{ base: 12, md: 6 }}>
+					{/* Trip Overview */}
+					{routeData?.route_blurb && (
+						<Stack gap="md" mb="xl">
+
+							{/* Content from WordPress sanitized HTML */}
+							<div
+								dangerouslySetInnerHTML={{ __html: routeData.route_blurb }}
+							/>
+						</Stack>
+					)}
+				</Grid.Col>
 				<Grid.Col span={{ base: 12, md: 6 }}>
 					{challengeMetrics && (
 						<TripChallengeIndicator
 							metrics={challengeMetrics}
 							weightedRank={weightedRank}
 						/>
-					)}
-				</Grid.Col>
-				<Grid.Col span={{ base: 12, md: 6 }}>
-					{(starRating || estimatedTime) && (
-						<Paper withBorder p="md" radius="md" h="100%">
-							<TripEnjoymentRating
-								starRating={starRating}
-								estimatedTime={estimatedTime}
-							/>
-						</Paper>
 					)}
 				</Grid.Col>
 			</Grid>
