@@ -12,8 +12,8 @@ import {
 } from "@mantine/core";
 import {
   IconCompass,
-  IconFirstAid,
-  IconRope,
+  IconFirstAidKit,
+  IconMountain,
   IconTool,
   IconUser,
 } from "@tabler/icons-react";
@@ -62,7 +62,9 @@ export function TripExperience({ trip }: TripExperienceProps) {
           {participantSkills.route_participants_skills_required_horizontal_level && (
             <Text>
               <strong>Horizontal Skills:</strong>{" "}
-              {participantSkills.route_participants_skills_required_horizontal_level.post_title}
+              {typeof participantSkills.route_participants_skills_required_horizontal_level === 'object' 
+                ? participantSkills.route_participants_skills_required_horizontal_level.post_title 
+                : participantSkills.route_participants_skills_required_horizontal_level}
             </Text>
           )}
           
@@ -91,7 +93,7 @@ export function TripExperience({ trip }: TripExperienceProps) {
         <Stack gap="md" mb="xl">
           <Group gap="xs">
             <ThemeIcon variant="light" color="orange">
-              <IconRope size={18} />
+              <IconMountain size={18} />
             </ThemeIcon>
             <Text fw={500}>Leading This Trip</Text>
           </Group>
@@ -142,7 +144,7 @@ export function TripExperience({ trip }: TripExperienceProps) {
       <Alert
         color="green"
         title="Conservation Notice"
-        icon={<IconFirstAid size={18} />}
+        icon={<IconFirstAidKit size={18} />}
         mb="md"
       >
         <Text size="sm">
@@ -155,7 +157,7 @@ export function TripExperience({ trip }: TripExperienceProps) {
       <Alert
         color="red"
         title="Parking Advisory"
-        icon={<IconRope size={18} />}
+        icon={<IconMountain size={18} />}
         mb="md"
       >
         <Text size="sm">
