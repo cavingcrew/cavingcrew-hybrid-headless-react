@@ -28,12 +28,12 @@ interface TripAccessDetailsProps {
 
 export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
   const locationData = trip.route?.acf.route_entrance_location_id?.acf;
-  const accessNotes = locationData?.location_access_arrangement ? 
-    typeof locationData.location_access_arrangement === 'string' ? 
-      JSON.parse(locationData.location_access_arrangement) : 
-      locationData.location_access_arrangement : 
+  const accessNotes = locationData?.location_access_arrangement ?
+    typeof locationData.location_access_arrangement === 'string' ?
+      JSON.parse(locationData.location_access_arrangement) :
+      locationData.location_access_arrangement :
     [];
-  const parkingInstructions = locationData?.location_parking_instructions;
+  const parkingInstructions = locationData?.location_parking_description;
   const entranceCoords = locationData?.location_entrance_latlong;
   const parkingCoords = locationData?.location_parking_latlong;
   const routeDescription = locationData?.location_parking_entrance_route_description;
@@ -63,12 +63,12 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
             </ThemeIcon>
             <Text fw={500}>Parking Location</Text>
           </Group>
-          
+
           {parkingInstructions && (
             <Text size="sm" c="dimmed">{parkingInstructions}</Text>
           )}
 
-          <Button 
+          <Button
             component="a"
             href={`http://maps.apple.com/?q=${parkingLatLong}`}
             target="_blank"
@@ -90,7 +90,7 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
             <Text fw={500}>Cave Entrance</Text>
           </Group>
 
-          <Button 
+          <Button
             component="a"
             href={`http://maps.apple.com/?q=${entranceLatLong}`}
             target="_blank"
@@ -111,7 +111,7 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
             </ThemeIcon>
             <Text fw={500}>Access Requirements</Text>
           </Group>
-          
+
           <List spacing="xs">
             {Array.isArray(accessNotes) ? accessNotes.map((note, index) => (
               <List.Item key={index} icon={<IconInfoCircle size={16} />}>
@@ -128,7 +128,7 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 
       {/* Route Description with Fade-out */}
       {routeDescription && (
-        <div style={{ 
+        <div style={{
           position: 'relative',
           maxHeight: 200,
           overflow: 'hidden',
@@ -137,7 +137,7 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
           <Text size="sm" mb="md">
             {routeDescription}
           </Text>
-          
+
           <div style={{
             position: 'absolute',
             bottom: 0,
@@ -147,9 +147,9 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
             padding: '20px 0',
             background: 'linear-gradient(to bottom, transparent, white 70%)'
           }}>
-            <Button 
-              variant="light" 
-              component="a" 
+            <Button
+              variant="light"
+              component="a"
               href={locationData?.location_access_url || '#'}
               target="_blank"
               rel="noopener noreferrer"
@@ -167,9 +167,9 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
           <List spacing="xs">
             {referenceLinks.map((link, index) => (
               <List.Item key={index}>
-                <a 
-                  href={link.link_url} 
-                  target="_blank" 
+                <a
+                  href={link.link_url}
+                  target="_blank"
                   rel="noopener noreferrer"
                   style={{ textDecoration: 'none' }}
                 >
