@@ -35,6 +35,7 @@ import React from "react";
 import type { Trip } from "../../types/api";
 import { extractChallengeMetrics } from "../../utils/difficulty-utils";
 import { TripChallengeIndicator } from "./TripChallengeIndicator";
+import { useUser } from "@/lib/hooks/useUser";
 
 /**
  * Component to display trip enjoyment rating and duration
@@ -93,6 +94,7 @@ interface TripExperienceProps {
 }
 
 export function TripExperience({ trip }: TripExperienceProps) {
+	const { isLoggedIn } = useUser();
 	const routeData = trip.route?.acf;
 	const participantSkills = routeData?.route_participants_skills_required;
 	const leadingDifficulty = routeData?.route_leading_difficulty;
@@ -363,8 +365,8 @@ export function TripExperience({ trip }: TripExperienceProps) {
 				</Paper>
 			)}
 
-			{/* Leading the Trip - Separate Paper Container */}
-			{leadingDifficulty && (
+			{/* Leading the Trip - Separate Paper Container - Only visible to logged in users */}
+			{leadingDifficulty && typeof window !== 'undefined' && localStorage.getItem('isLoggedIn') === 'true' && (
 				<Paper withBorder p="md" radius="md" mt="md">
 					<Stack gap="md" mb="xl">
 						<Group gap="xs">
