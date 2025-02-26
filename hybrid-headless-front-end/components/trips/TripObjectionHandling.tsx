@@ -262,6 +262,21 @@ export function TripObjectionHandling() {
 					</Accordion.Panel>
 				</Accordion.Item>
 			</Accordion>
+			
+			<Center mt="xl">
+				<Button 
+					size="lg" 
+					color="blue" 
+					onClick={() => {
+						const signupSection = document.getElementById('trip-signup-section');
+						if (signupSection) {
+							signupSection.scrollIntoView({ behavior: 'smooth' });
+						}
+					}}
+				>
+					Ready For An Adventure? Sign Up Now
+				</Button>
+			</Center>
 		</Paper>
 	);
 }

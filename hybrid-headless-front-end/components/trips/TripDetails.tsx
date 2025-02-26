@@ -6,6 +6,7 @@ import {
 	Anchor,
 	Badge,
 	Box,
+	Button,
 	Divider,
 	Grid,
 	Group,
@@ -14,6 +15,7 @@ import {
 	Stack,
 	Text,
 	Title,
+	Center,
 } from "@mantine/core";
 import { TripOvernightHut } from './TripOvernightHut';
 import { TripAccessDetails } from './TripAccessDetails';
@@ -50,6 +52,18 @@ export function TripDetails({ trip }: TripDetailsProps) {
 	const startDate = acf?.event_start_date_time ? new Date(acf.event_start_date_time) : null;
 	const endDate = acf?.event_finish_date_time ? new Date(acf.event_finish_date_time) : null;
 	const isOvernightTrip = trip.categories.some(cat => cat.slug === 'overnight-trips');
+	
+	// Function to scroll to signup section
+	const scrollToSignup = () => {
+		const signupSection = document.getElementById('trip-signup-section');
+		if (signupSection) {
+			signupSection.scrollIntoView({ behavior: 'smooth' });
+		}
+	};
+	
+	// Check if this is a giggletrip and user is not logged in
+	const showSignupCTAs = !isLoggedIn && acf?.event_type === 'giggletrip' && 
+		acf?.event_total_places_available && !acf?.event_total_places_available.toLowerCase().includes('lead');
 
 	const requiresLogin = (
 		(acf.event_non_members_welcome === 'no' ||
@@ -375,7 +389,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
 
 			{hasPurchased ? (
 				<>
-					<Paper withBorder p="md" radius="md">
+					<Paper withBorder p="md" radius="md" id="trip-signup-section">
 						<Alert
 							color="green"
 							title={
@@ -399,15 +413,17 @@ export function TripDetails({ trip }: TripDetailsProps) {
 					</Paper>
 				</>
 			) : (
-				<TripSignupWidget
-					trip={trip}
-					requiresLogin={requiresLogin}
-					loginReason={
-						acf.event_non_members_welcome === 'no'
-							? "This trip requires membership signup"
-							: "This trip requires previous experience caving with us"
-					}
-				/>
+				<Box id="trip-signup-section">
+					<TripSignupWidget
+						trip={trip}
+						requiresLogin={requiresLogin}
+						loginReason={
+							acf.event_non_members_welcome === 'no'
+								? "This trip requires membership signup"
+								: "This trip requires previous experience caving with us"
+						}
+					/>
+				</Box>
 			)}
 			{/* Conditional Access Details */}
 			{hasPurchased && !isOvernightTrip ? (
@@ -416,6 +432,19 @@ export function TripDetails({ trip }: TripDetailsProps) {
 
 			{/* Trip Experience Details */}
 			<TripExperience trip={trip} />
+			
+			{/* Signup CTA after Trip Experience */}
+			{showSignupCTAs && (
+				<Center mt="xl">
+					<Button 
+						size="lg" 
+						color="blue" 
+						onClick={scrollToSignup}
+					>
+						Sign Up For This Trip
+					</Button>
+				</Center>
+			)}
 
 			{/* What does signing up pay for section */}
 			{acf?.event_paying_for && (
@@ -429,6 +458,19 @@ export function TripDetails({ trip }: TripDetailsProps) {
 							__html: trip.acf.event_paying_for ?? "",
 						}}
 					/>
+					
+					{/* Signup CTA after payment info */}
+					{showSignupCTAs && (
+						<Center mt="xl">
+							<Button 
+								size="lg" 
+								color="blue" 
+								onClick={scrollToSignup}
+							>
+								Ready to Join? Sign Up Now
+							</Button>
+						</Center>
+					)}
 				</Paper>
 			)}
 
@@ -469,6 +511,19 @@ export function TripDetails({ trip }: TripDetailsProps) {
 								</Accordion.Item>
 							))}
 					</Accordion>
+					
+					{/* Signup CTA after FAQ */}
+					{showSignupCTAs && (
+						<Center mt="xl">
+							<Button 
+								size="lg" 
+								color="blue" 
+								onClick={scrollToSignup}
+							>
+								Got Questions? Sign Up and Ask Us!
+							</Button>
+						</Center>
+					)}
 				</Paper>
 			)}
 
@@ -502,6 +557,19 @@ export function TripDetails({ trip }: TripDetailsProps) {
 								</Accordion.Item>
 							))}
 					</Accordion>
+					
+					{/* Signup CTA after Kit List */}
+					{showSignupCTAs && (
+						<Center mt="xl">
+							<Button 
+								size="lg" 
+								color="blue" 
+								onClick={scrollToSignup}
+							>
+								We'll Provide All The Gear - Sign Up Now
+							</Button>
+						</Center>
+					)}
 				</Paper>
 			)}
 
@@ -539,6 +607,19 @@ export function TripDetails({ trip }: TripDetailsProps) {
 								</Accordion.Item>
 							))}
 					</Accordion>
+					
+					{/* Signup CTA after Plans */}
+					{showSignupCTAs && (
+						<Center mt="xl">
+							<Button 
+								size="lg" 
+								color="blue" 
+								onClick={scrollToSignup}
+							>
+								Join Us On This Adventure - Sign Up Now
+							</Button>
+						</Center>
+					)}
 				</Paper>
 			)}
 		</Stack>
