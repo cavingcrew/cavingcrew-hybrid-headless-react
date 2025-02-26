@@ -52,7 +52,7 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 	const isSensitiveAccess = locationData?.location_sensitive_access;
 
 	// Coordinate parsing logic
-	const parseCoords = (coords: any) => {
+	const parseCoords = (coords: string | { lat?: number; lng?: number } | null | undefined) => {
 		if (!coords) return null;
 		if (typeof coords === "string") return coords;
 		if (coords.lat && coords.lng) return `${coords.lat},${coords.lng}`;
@@ -156,8 +156,8 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 
 					<List spacing="xs">
 						{Array.isArray(accessNotes) ? (
-							accessNotes.map((note, index) => (
-								<List.Item key={index} icon={<IconInfoCircle size={16} />}>
+							accessNotes.map((note, i) => (
+								<List.Item key={`access-note-${i}-${note.substring(0, 10)}`} icon={<IconInfoCircle size={16} />}>
 									{note}
 								</List.Item>
 							))
@@ -181,12 +181,11 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 					</Group>
 
 					{typeof routeDescription === "object" &&
-					!Array.isArray(routeDescription) ? (
-						<div
-							dangerouslySetInnerHTML={{
-								__html: routeDescription.route_description_segment_html || "",
-							}}
-						/>
+					!Array.isArray(routeDescription) && routeDescription.route_description_segment_html ? (
+						<Text component="div">
+							{/* Sanitize HTML content */}
+							{routeDescription.route_description_segment_html.replace(/<\/?[^>]+(>|$)/g, "")}
+						</Text>
 					) : (
 						// Handle array format if needed
 						<Text size="sm">{JSON.stringify(routeDescription)}</Text>
@@ -208,7 +207,7 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 			)}
 
 			{/* Map Image Section - updated */}
-			{mapImage && mapImage.url && (
+			{mapImage?.url && (
 				<Stack gap="sm" mb="xl">
 					<Group gap="xs">
 						<ThemeIcon variant="light" color="blue">
@@ -261,8 +260,8 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 						More Information:
 					</Text>
 					<List spacing="xs">
-						{referenceLinks.map((link, index) => (
-							<List.Item key={index}>
+						{referenceLinks.map((link) => (
+							<List.Item key={`ref-link-${link.link_url}`}>
 								<a
 									href={link.link_url}
 									target="_blank"
