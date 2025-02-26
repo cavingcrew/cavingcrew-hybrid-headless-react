@@ -405,7 +405,9 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 								routeDescription.length > 0 ? (
 								<Stack gap="xs">
 									{routeDescription.map((section) => (
-										<div key={`route-section-${section.section_title || section.section_content?.substring(0, 20)}`}>
+										<div
+											key={`route-section-${section.section_title || section.section_content?.substring(0, 20)}`}
+										>
 											{section.section_title && (
 												<Text fw={500} size="sm">
 													{section.section_title}
