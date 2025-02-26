@@ -406,20 +406,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
 			{/* Conditional Access Details */}
 			{hasPurchased ? (
 				<TripAccessDetails trip={trip} />
-			) : (
-				<Paper withBorder p="md" radius="md" mt="md">
-					<Alert 
-						color="blue" 
-						title="Access Details Locked" 
-						icon={<IconInfoCircle size={18} />}
-					>
-						<Text size="sm">
-							Full access details including maps, parking instructions, and route descriptions 
-							will be available after you sign up for this trip.
-						</Text>
-					</Alert>
-				</Paper>
-			)}
+			) : "" }
 
 			{/* What does signing up pay for section */}
 			{acf?.event_paying_for && (

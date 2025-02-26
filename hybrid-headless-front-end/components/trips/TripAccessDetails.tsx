@@ -175,6 +175,22 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 				)}
 
 			{/* Entrance Section */}
+
+			{/* Parking to Entrance Route */}
+			{parkingToEntranceRoute && (
+				<Stack gap="md" mb="xl">
+					<Group gap="xs">
+						<ThemeIcon variant="light" color="teal">
+							<IconWalk size={18} />
+						</ThemeIcon>
+						<Text fw={500}>Approach from Parking</Text>
+					</Group>
+					<div
+						dangerouslySetInnerHTML={{ __html: parkingToEntranceRoute }}
+						style={{ lineHeight: 1.5 }}
+					/>
+				</Stack>
+			)}
 			{entranceLatLong && (
 				<Stack gap="sm" mb="xl">
 					<Group gap="xs">
@@ -193,21 +209,6 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 					>
 						View Entrance in Maps
 					</Button>
-				</Stack>
-			)}
-			{/* Parking to Entrance Route */}
-			{parkingToEntranceRoute && (
-				<Stack gap="md" mb="xl">
-					<Group gap="xs">
-						<ThemeIcon variant="light" color="teal">
-							<IconWalk size={18} />
-						</ThemeIcon>
-						<Text fw={500}>Approach from Parking</Text>
-					</Group>
-					<div
-						dangerouslySetInnerHTML={{ __html: parkingToEntranceRoute }}
-						style={{ lineHeight: 1.5 }}
-					/>
 				</Stack>
 			)}
 
