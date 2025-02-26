@@ -45,7 +45,7 @@ function TripEnjoymentRating({
           <Group justify="center">
             <Rating value={typeof starRating === 'string' ? parseInt(starRating, 10) : starRating} readOnly size="xl" />
             <Text size="xl" fw={700}>
-              {starRating}/5
+              {starRating}/10
             </Text>
           </Group>
           <Text size="sm" c="dimmed" ta="center" mt="xs">
