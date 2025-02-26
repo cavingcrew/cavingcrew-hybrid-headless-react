@@ -103,8 +103,8 @@ export function parseDifficultyValue(
 ): number | null {
 	if (value === null || value === undefined) return null;
 	const numValue =
-		typeof value === "string" ? Number.parseInt(value, 10) : value;
-	return Number.isNaN(numValue) ? null : numValue;
+		typeof value === "string" ? parseInt(value, 10) : value;
+	return isNaN(numValue) ? null : numValue;
 }
 
 /**

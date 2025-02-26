@@ -23,6 +23,7 @@ import React, { useState } from "react";
 import {
 	type ChallengeDomain,
 	type ChallengeMetric,
+	type ChallengeRating,
 	getChallengeColor,
 } from "../../utils/difficulty-utils";
 
@@ -48,6 +49,17 @@ function DomainIcon({ domain, size = 18 }: DomainIconProps) {
 			return <IconAlertTriangle size={size} />;
 		case "endurance":
 			return <IconHeartRateMonitor size={size} />;
+	}
+}
+
+// Helper function to consistently map rating to color
+function getRatingColor(rating: ChallengeRating): string {
+	switch (rating) {
+		case "green": return "green";
+		case "amber": return "yellow";
+		case "red": return "red";
+		case "na":
+		default: return "gray";
 	}
 }
 
@@ -187,17 +199,6 @@ export function TripChallengeIndicator({
 	const getDomainColor = (domain: ChallengeDomain) => {
 		const metric = metrics.filter((m) => m.domain === domain)[0];
 		return metric ? getChallengeColor(metric.rating) : "#9e9e9e";
-	};
-	
-	// Helper function to consistently map rating to color
-	const getRatingColor = (rating: ChallengeRating): string => {
-		switch (rating) {
-			case "green": return "green";
-			case "amber": return "yellow";
-			case "red": return "red";
-			case "na":
-			default: return "gray";
-		}
 	};
 
 	// Helper function to handle segment click
