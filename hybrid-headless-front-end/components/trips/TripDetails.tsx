@@ -411,9 +411,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
 			) : "" }
 
 			{/* Trip Experience Details */}
-			{hasPurchased && trip.route && (
 				<TripExperience trip={trip} />
-			)}
 
 			{/* What does signing up pay for section */}
 			{acf?.event_paying_for && (
