@@ -101,11 +101,7 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 						<Text fw={500}>Parking Location</Text>
 					</Group>
 
-					{parkingInstructions && (
-						<Text size="sm" >
-							{parkingInstructions}
-						</Text>
-					)}
+					{parkingInstructions && <Text size="sm">{parkingInstructions}</Text>}
 
 					<Button
 						component="a"
