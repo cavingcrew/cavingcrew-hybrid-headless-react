@@ -224,9 +224,10 @@ export function TripChallengeIndicator({
 					style={{
 						position: "relative",
 						width: "100%",
-						maxWidth: 400,
+						maxWidth: 350,
 						margin: "0 auto",
 						aspectRatio: "1/1",
+						marginTop: "-10px",
 					}}
 				>
 					<style>
@@ -481,7 +482,7 @@ export function TripChallengeIndicator({
 					<Box
 						style={{
 							position: "absolute",
-							bottom: -40,
+							bottom: -30,
 							left: 0,
 							right: 0,
 							display: "flex",
@@ -525,7 +526,7 @@ export function TripChallengeIndicator({
 					</Box>
 				</Box>
 
-				<Text size="sm" c="dimmed" ta="center" mt={50}>
+				<Text size="sm" c="dimmed" ta="center" mt={30}>
 					{weightedRank !== undefined && (
 						<Text size="sm" c="dimmed" mt={5}>
 							Overall Difficulty: {weightedRank.toFixed(1)}
