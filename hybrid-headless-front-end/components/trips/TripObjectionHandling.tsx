@@ -33,6 +33,15 @@ export function TripObjectionHandling() {
 			const hash = window.location.hash.replace("#", "");
 			if (hash) {
 				setActiveItem(hash);
+				
+				// Add a slight delay to ensure the accordion has time to open
+				setTimeout(() => {
+					// Find the accordion item and scroll to it
+					const element = document.getElementById(`accordion-${hash}`);
+					if (element) {
+						element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+					}
+				}, 100);
 			}
 		};
 
@@ -69,7 +78,7 @@ export function TripObjectionHandling() {
 			</Alert>
 
 			<Accordion value={activeItem} onChange={setActiveItem}>
-				<Accordion.Item value="claustrophobia">
+				<Accordion.Item value="claustrophobia" id="accordion-claustrophobia">
 					<Accordion.Control icon={<IconCompass size={16} />}>
 						<Text fw={500}>What about claustrophobia?</Text>
 					</Accordion.Control>
@@ -91,7 +100,7 @@ export function TripObjectionHandling() {
 					</Accordion.Panel>
 				</Accordion.Item>
 
-				<Accordion.Item value="dark">
+				<Accordion.Item value="dark" id="accordion-dark">
 					<Accordion.Control icon={<IconBulb size={16} />}>
 						<Text fw={500}>Fear of the dark?</Text>
 					</Accordion.Control>
@@ -107,7 +116,7 @@ export function TripObjectionHandling() {
 					</Accordion.Panel>
 				</Accordion.Item>
 
-				<Accordion.Item value="stuck">
+				<Accordion.Item value="stuck" id="accordion-stuck">
 					<Accordion.Control icon={<IconMoodSmile size={16} />}>
 						<Text fw={500}>Worried about getting stuck?</Text>
 					</Accordion.Control>
@@ -124,7 +133,7 @@ export function TripObjectionHandling() {
 					</Accordion.Panel>
 				</Accordion.Item>
 
-				<Accordion.Item value="falling">
+				<Accordion.Item value="falling" id="accordion-falling">
 					<Accordion.Control icon={<IconShield size={16} />}>
 						<Text fw={500}>Concerned about falling or injury?</Text>
 					</Accordion.Control>
@@ -140,7 +149,7 @@ export function TripObjectionHandling() {
 					</Accordion.Panel>
 				</Accordion.Item>
 
-				<Accordion.Item value="creatures">
+				<Accordion.Item value="creatures" id="accordion-creatures">
 					<Accordion.Control icon={<IconFriends size={16} />}>
 						<Text fw={500}>What about creatures in the cave?</Text>
 					</Accordion.Control>
@@ -157,7 +166,7 @@ export function TripObjectionHandling() {
 					</Accordion.Panel>
 				</Accordion.Item>
 
-				<Accordion.Item value="lost">
+				<Accordion.Item value="lost" id="accordion-lost">
 					<Accordion.Control icon={<IconMap size={16} />}>
 						<Text fw={500}>Afraid of getting lost?</Text>
 					</Accordion.Control>
@@ -173,7 +182,7 @@ export function TripObjectionHandling() {
 					</Accordion.Panel>
 				</Accordion.Item>
 
-				<Accordion.Item value="firsttimer">
+				<Accordion.Item value="firsttimer" id="accordion-firsttimer">
 					<Accordion.Control icon={<IconCompass size={16} />}>
 						<Text fw={500}>Never done this before and don't know anyone?</Text>
 					</Accordion.Control>
@@ -187,7 +196,7 @@ export function TripObjectionHandling() {
 					</Accordion.Panel>
 				</Accordion.Item>
 
-				<Accordion.Item value="fitness">
+				<Accordion.Item value="fitness" id="accordion-fitness">
 					<Accordion.Control icon={<IconRun size={16} />}>
 						<Text fw={500}>What about the physical demands?</Text>
 					</Accordion.Control>
@@ -204,7 +213,7 @@ export function TripObjectionHandling() {
 					</Accordion.Panel>
 				</Accordion.Item>
 
-				<Accordion.Item value="dirty">
+				<Accordion.Item value="dirty" id="accordion-dirty">
 					<Accordion.Control icon={<IconWash size={16} />}>
 						<Text fw={500}>Will I get dirty or wet?</Text>
 					</Accordion.Control>
@@ -221,7 +230,7 @@ export function TripObjectionHandling() {
 					</Accordion.Panel>
 				</Accordion.Item>
 
-				<Accordion.Item value="equipment">
+				<Accordion.Item value="equipment" id="accordion-equipment">
 					<Accordion.Control icon={<IconTools size={16} />}>
 						<Text fw={500}>What about equipment?</Text>
 					</Accordion.Control>
@@ -239,7 +248,7 @@ export function TripObjectionHandling() {
 					</Accordion.Panel>
 				</Accordion.Item>
 
-				<Accordion.Item value="danger">
+				<Accordion.Item value="danger" id="accordion-danger">
 					<Accordion.Control icon={<IconHeartHandshake size={16} />}>
 						<Text fw={500}>Isn't caving dangerous?</Text>
 					</Accordion.Control>
