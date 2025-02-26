@@ -249,6 +249,7 @@ export function TripChallengeIndicator({
 							fontSize="6"
 							fontWeight="bold"
 							pointerEvents="none"
+							transform="rotate(90, 75, 50)"
 						>
 							Heights
 						</text>
@@ -307,6 +308,7 @@ export function TripChallengeIndicator({
 							fontSize="6"
 							fontWeight="bold"
 							pointerEvents="none"
+							transform="rotate(270, 25, 50)"
 						>
 							Water
 						</text>
