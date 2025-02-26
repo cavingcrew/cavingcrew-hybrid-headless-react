@@ -46,7 +46,7 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 	const parkingToEntranceRoute =
 		locationData?.location_parking_entrance_route_description;
 	const referenceLinks = locationData?.location_reference_links?.filter(
-		link => link.link_title?.trim() && link.link_url?.trim()
+		(link) => link.link_title?.trim() && link.link_url?.trim(),
 	);
 	const mapImage = locationData?.location_map_from_parking_to_entrance;
 	const accessUrl = locationData?.location_access_url;
@@ -235,8 +235,6 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 				)}
 			</Group>
 
-
-
 			{/* Conditional Reference Links */}
 			{referenceLinks && referenceLinks.length > 0 && (
 				<Paper withBorder p="md" radius="md" mt="md">
@@ -285,7 +283,6 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 					)}
 				</Stack>
 			)}
-
 		</Paper>
 	);
 }
