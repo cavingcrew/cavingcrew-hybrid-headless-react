@@ -34,6 +34,11 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
       JSON.parse(locationData.location_access_arrangement) :
       locationData.location_access_arrangement :
     [];
+  
+  // New route description data
+  const routeDescription = trip.route?.acf.route_route_description;
+  const hasRouteDescription = routeDescription && 
+    (typeof routeDescription === 'object' || Array.isArray(routeDescription));
   const parkingInstructions = locationData?.location_parking_description;
   const entranceCoords = locationData?.location_entrance_latlong;
   const parkingCoords = locationData?.location_parking_latlong;
@@ -58,6 +63,32 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
   return (
     <Paper withBorder p="md" radius="md" mt="md">
       <Title order={2} mb="md">Cave Access Details</Title>
+
+      {/* New Access Info Buttons */}
+      <Group gap="sm" mb="xl">
+        {accessUrl && (
+          <Button
+            component="a"
+            href={accessUrl}
+            target="_blank"
+            variant="outline"
+            leftSection={<IconKey size={16} />}
+          >
+            Full Access Details
+          </Button>
+        )}
+        {infoUrl && (
+          <Button
+            component="a"
+            href={infoUrl}
+            target="_blank"
+            variant="outline"
+            leftSection={<IconInfoCircle size={16} />}
+          >
+            Location Information
+          </Button>
+        )}
+      </Group>
 
       {/* Parking Section */}
       {parkingLatLong && (
@@ -131,14 +162,35 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
         </Stack>
       )}
 
-      {/* Map Image */}
-      {mapImage && mapImage.url && (
-        <Stack gap="sm" mb="xl">
+      {/* New Route Description Section */}
+      {hasRouteDescription && (
+        <Stack gap="md" mb="xl">
           <Group gap="xs">
             <ThemeIcon variant="light" color="green">
               <IconMapPin size={18} />
             </ThemeIcon>
-            <Text fw={500}>Route Map</Text>
+            <Text fw={500}>Route Description</Text>
+          </Group>
+
+          {typeof routeDescription === 'object' && !Array.isArray(routeDescription) ? (
+            <div dangerouslySetInnerHTML={{ 
+              __html: routeDescription.route_description_segment_html || '' 
+            }} />
+          ) : (
+            // Handle array format if needed
+            <Text size="sm">{JSON.stringify(routeDescription)}</Text>
+          )}
+        </Stack>
+      )}
+
+      {/* Map Image Section - updated */}
+      {mapImage && mapImage.url && (
+        <Stack gap="sm" mb="xl">
+          <Group gap="xs">
+            <ThemeIcon variant="light" color="blue">
+              <IconMapPin size={18} />
+            </ThemeIcon>
+            <Text fw={500}>Approach Map</Text>
           </Group>
           
           <Image
@@ -146,65 +198,35 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
             alt={mapImage.alt || "Map from parking to cave entrance"}
             radius="md"
             caption={mapImage.caption}
-            style={{ maxWidth: '100%' }}
+            style={{ 
+              maxWidth: '100%',
+              border: '1px solid #dee2e6',
+              borderRadius: 8
+            }}
           />
         </Stack>
       )}
 
-      {/* Route Description with Fade-out */}
-      {routeDescription && (
-        <div style={{
-          position: 'relative',
-          maxHeight: 200,
-          overflow: 'hidden',
-          maskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)'
-        }}>
-          <Text size="sm" mb="md">
-            {routeDescription}
-          </Text>
-
-          <div style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            textAlign: 'center',
-            padding: '20px 0',
-            background: 'linear-gradient(to bottom, transparent, white 70%)'
-          }}>
-            {accessUrl ? (
-              <Button
-                variant="light"
-                component="a"
-                href={accessUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                View Full Access Details
-              </Button>
-            ) : infoUrl ? (
-              <Button
-                variant="light"
-                component="a"
-                href={infoUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                View More Information
-              </Button>
-            ) : null}
-          </div>
-        </div>
-      )}
-
-      {/* Sensitive Access Warning */}
+      {/* Updated Sensitive Access Warning */}
       {isSensitiveAccess && (
-        <Alert color="red" icon={<IconInfoCircle size={16} />} mb="xl">
-          This location has sensitive access arrangements. Please follow all guidelines carefully.
+        <Alert 
+          color="red" 
+          icon={<IconInfoCircle size={16} />} 
+          mb="xl"
+          title="Sensitive Access Location"
+        >
+          <Text size="sm">
+            This location has sensitive access arrangements. Please:
+          </Text>
+          <List size="sm" mt={4}>
+            <List.Item>Follow all access guidelines carefully</List.Item>
+            <List.Item>Do not share exact location details publicly</List.Item>
+            <List.Item>Avoid naming the location on social media</List.Item>
+          </List>
         </Alert>
       )}
 
-      {/* Reference Links */}
+      {/* Conditional Reference Links */}
       {referenceLinks && referenceLinks.length > 0 && (
         <Paper withBorder p="md" radius="md" mt="md">
           <Text fw={500} mb="sm">More Information:</Text>
