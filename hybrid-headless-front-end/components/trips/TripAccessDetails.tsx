@@ -156,11 +156,11 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 							dragFree
 							withIndicators
 						>
-							{locationData.location_parking_photos.map((photo) => (
+							{locationData.location_parking_photos.map((photo, i) => (
 								<Carousel.Slide key={`parking-photo-${photo.ID || photo.url}`}>
 									<Image
 										src={photo.url}
-										alt={photo.alt || `Parking area photo ${index + 1}`}
+										alt={photo.alt || `Parking area photo ${i + 1}`}
 										height={300}
 										style={{ objectFit: "cover" }}
 									/>
@@ -281,11 +281,11 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 								gap: "1rem",
 							}}
 						>
-							{locationData.location_entrance_photos.map((photo) => (
+							{locationData.location_entrance_photos.map((photo, i) => (
 								<div key={`entrance-photo-${photo.ID || photo.url}`}>
 									<Image
 										src={photo.url}
-										alt={photo.alt || `Cave entrance photo ${index + 1}`}
+										alt={photo.alt || `Cave entrance photo ${i + 1}`}
 										radius="md"
 										style={{
 											height: 200,
