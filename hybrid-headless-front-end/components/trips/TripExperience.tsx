@@ -80,16 +80,17 @@ export function TripExperience({ trip }: TripExperienceProps) {
 						</Text>
 					)}
 
-					{participantSkills.recommended_training && participantSkills.recommended_training.length > 0 && (
-						<div>
-							<Text fw={500}>Recommended Training:</Text>
-							<List>
-								{participantSkills.recommended_training.map((training, i) => (
-									<List.Item key={i}>{training}</List.Item>
-								))}
-							</List>
-						</div>
-					)}
+					{participantSkills.recommended_training &&
+						participantSkills.recommended_training.length > 0 && (
+							<div>
+								<Text fw={500}>Recommended Training:</Text>
+								<List>
+									{participantSkills.recommended_training.map((training, i) => (
+										<List.Item key={i}>{training}</List.Item>
+									))}
+								</List>
+							</div>
+						)}
 				</Stack>
 			)}
 
