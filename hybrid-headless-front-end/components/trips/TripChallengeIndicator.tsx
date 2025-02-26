@@ -65,13 +65,13 @@ function ChallengeDetails({ metric }: { metric: ChallengeMetric }) {
 				break;
 			case "water":
 				if (key === "wetness") {
-					return "The general level of water you'll encounter - from damp passages to fully submerged sections.";
+					return "The general level of how wet you're likely to be at the end of the trip.";
 				} else if (key === "nearFace") {
 					return "How close water will come to your face - affects breathing comfort and psychological challenge.";
 				} else if (key === "deepWater") {
 					return "Exposure to deep water where you can't touch the bottom - may require swimming or flotation.";
 				} else if (key === "muddiness") {
-					return "The amount and consistency of mud you'll encounter - affects movement and comfort.";
+					return "The amount of mud you'll encounter - affects movement and comfort.";
 				}
 				break;
 			case "heights":
