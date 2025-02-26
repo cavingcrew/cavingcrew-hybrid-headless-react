@@ -442,26 +442,22 @@ export function TripExperience({ trip }: TripExperienceProps) {
 							.length > 0 && (
 							<div>
 								<Text fw={500}>Essential Leadership Skills:</Text>
-								<Grid>
+								<List>
 									{leadingDifficulty.route_leading_difficulty_horizontal_leading_skills_required.map(
 										(skill, i) => (
-											<Grid.Col
-												span={{ base: 12, md: 6 }}
+											<List.Item
 												key={`skill-${skill.substring(0, 10)}-${i}`}
+												icon={
+													<ThemeIcon color="orange" size={24} radius="xl">
+														<IconStar size={16} />
+													</ThemeIcon>
+												}
 											>
-												<List.Item
-													icon={
-														<ThemeIcon color="orange" size={24} radius="xl">
-															<IconStar size={16} />
-														</ThemeIcon>
-													}
-												>
-													{skill}
-												</List.Item>
-											</Grid.Col>
+												{skill}
+											</List.Item>
 										),
 									)}
-								</Grid>
+								</List>
 							</div>
 						)}
 
