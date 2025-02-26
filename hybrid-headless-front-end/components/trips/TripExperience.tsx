@@ -78,8 +78,7 @@ function TripEnjoymentRating({
             <div>
               <Text>Estimated Duration: {parseFloat(estimatedTime) + (parseFloat(estimatedTime) * 0.25)} hours</Text>
               <Text size="sm" c="dimmed" mt={5} style={{ maxWidth: '500px' }}>
-                It's really hard to guess how long caving trips will take.
-
+                Note: Cave trip durations vary widely based on group experience, preparation time, navigation, and rest breaks.
               </Text>
             </div>
           </Group>
