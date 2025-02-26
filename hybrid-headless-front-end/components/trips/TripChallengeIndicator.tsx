@@ -60,7 +60,7 @@ function ChallengeDetails({ metric }: { metric: ChallengeMetric }) {
 				if (key === "psychological") {
 					return "How tight and psychologically challenging passages feel - the mental impact of confined spaces.";
 				} else if (key === "objective") {
-					return "The actual width/narrowness of the tightest mandatory section you must pass through.";
+					return "The actual relative width of the tightest mandatory section you must pass through.";
 				}
 				break;
 			case "water":
@@ -69,7 +69,7 @@ function ChallengeDetails({ metric }: { metric: ChallengeMetric }) {
 				} else if (key === "nearFace") {
 					return "How close water will come to your face - affects breathing comfort and psychological challenge.";
 				} else if (key === "deepWater") {
-					return "Exposure to deep water where you can't touch the bottom - may require swimming or flotation.";
+					return "Exposure to deep water";
 				} else if (key === "muddiness") {
 					return "The amount of mud you'll encounter - affects movement and comfort.";
 				}
@@ -82,7 +82,7 @@ function ChallengeDetails({ metric }: { metric: ChallengeMetric }) {
 				}
 				break;
 			case "hazard":
-				return "The objective level of hazard including rockfall risk, flooding potential, and difficulty of rescue from the most isolated point.";
+				return "The objective level of hazard including from the most isolated point.";
 			case "endurance":
 				return "How physically demanding the trip is - considers length, difficulty of movement, and overall exertion required.";
 		}
