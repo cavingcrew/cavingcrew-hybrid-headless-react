@@ -40,7 +40,7 @@ function TripEnjoymentRating({
       {starRating && (
         <Box>
           <Text ta="center" fw={500} mb="xs">
-            Trip Enjoyment Rating
+            Trip Wowfactor
           </Text>
           <Group justify="center">
             <Rating value={typeof starRating === 'string' ? parseInt(starRating) : starRating} readOnly size="xl" />
@@ -117,7 +117,7 @@ export function TripChallengeMetrics({ trip }: TripChallengeMetricsProps) {
                 <Alert color="blue" icon={<IconMoodSmile size={18} />}>
 
                 </Alert>
-                
+
                 {(starRating || estimatedTime) && (
                   <TripEnjoymentRating
                     starRating={starRating}
