@@ -214,7 +214,7 @@ export function TripChallengeIndicator({
 						/>
 						<text
 							x="50"
-							y="15"
+							y="25"
 							textAnchor="middle"
 							fill="#fff"
 							fontSize="6"
@@ -242,14 +242,14 @@ export function TripChallengeIndicator({
 							style={{ cursor: "pointer" }}
 						/>
 						<text
-							x="75"
+							x="65"
 							y="50"
 							textAnchor="middle"
 							fill="#fff"
 							fontSize="6"
 							fontWeight="bold"
 							pointerEvents="none"
-							transform="rotate(90, 75, 50)"
+							transform="rotate(90, 65, 50)"
 						>
 							Heights
 						</text>
@@ -273,7 +273,7 @@ export function TripChallengeIndicator({
 						/>
 						<text
 							x="50"
-							y="85"
+							y="75"
 							textAnchor="middle"
 							fill="#fff"
 							fontSize="6"
@@ -301,14 +301,14 @@ export function TripChallengeIndicator({
 							style={{ cursor: "pointer" }}
 						/>
 						<text
-							x="25"
+							x="35"
 							y="50"
 							textAnchor="middle"
 							fill="#fff"
 							fontSize="6"
 							fontWeight="bold"
 							pointerEvents="none"
-							transform="rotate(270, 25, 50)"
+							transform="rotate(270, 35, 50)"
 						>
 							Water
 						</text>
