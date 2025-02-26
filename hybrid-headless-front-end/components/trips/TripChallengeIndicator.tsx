@@ -220,319 +220,317 @@ export function TripChallengeIndicator({
 
 	return (
 		<>
-				<Box
-					style={{
-						position: "relative",
-						width: "100%",
-						maxWidth: 350,
-						margin: "0 auto",
-						aspectRatio: "1/1",
-						marginTop: "-10px",
-					}}
-				>
-					<style>
-						{`
+			<Box
+				style={{
+					position: "relative",
+					width: "100%",
+					maxWidth: 350,
+					margin: "0 auto",
+					aspectRatio: "1/1",
+					marginTop: "-10px",
+				}}
+			>
+				<style>
+					{`
 						.challenge-segment:hover {
 							filter: brightness(1.1);
 							transition: filter 0.3s ease;
 						}
 						`}
-					</style>
-					{/* SVG for the circular indicator */}
-					<svg
-						viewBox="0 0 100 100"
-						style={{ width: "100%", height: "100%" }}
-						role="img"
-						aria-labelledby="challenge-chart-title"
-					>
-						<title id="challenge-chart-title">
-							Cave challenge rating chart
-						</title>
-						{/* Heights (Top Quadrant - 315° to 45°) */}
-						<path
-							d="M50,50 L71,29 A30,30 0 0,0 29,29 L50,50 Z"
-							fill={getDomainColor("heights")}
-							stroke={theme.colors.gray[3]}
-							strokeWidth="0.5"
-							onClick={() => handleSegmentClick("heights")}
-							onKeyDown={(e) => {
-								if (e.key === "Enter" || e.key === " ") {
-									handleSegmentClick("heights");
-								}
-							}}
-							tabIndex={0}
-							role="button"
-							aria-label="Heights rating"
-							style={{ cursor: "pointer" }}
-							className="challenge-segment"
-						>
-							<animate
-								attributeName="opacity"
-								values="1;0.8;1"
-								dur="2s"
-								begin="mouseover"
-								repeatCount="indefinite"
-							/>
-							<animate
-								attributeName="stroke-width"
-								values="0.5;1.5;0.5"
-								dur="2s"
-								begin="mouseover"
-								repeatCount="indefinite"
-							/>
-						</path>
-						<text
-							x="50"
-							y="30"
-							textAnchor="middle"
-							fill="#fff"
-							fontSize="6"
-							fontWeight="bold"
-							pointerEvents="none"
-						>
-							Heights
-						</text>
-
-						{/* Hazards (Right Quadrant - 45° to 135°) */}
-						<path
-							d="M50,50 L71,71 A30,30 0 0,0 71,29 L50,50 Z"
-							fill={getDomainColor("hazard")}
-							stroke={theme.colors.gray[3]}
-							strokeWidth="0.5"
-							onClick={() => handleSegmentClick("hazard")}
-							onKeyDown={(e) => {
-								if (e.key === "Enter" || e.key === " ") {
-									handleSegmentClick("hazard");
-								}
-							}}
-							tabIndex={0}
-							role="button"
-							aria-label="Hazards rating"
-							style={{ cursor: "pointer" }}
-							className="challenge-segment"
-						>
-							<animate
-								attributeName="opacity"
-								values="1;0.8;1"
-								dur="2s"
-								begin="mouseover"
-								repeatCount="indefinite"
-							/>
-							<animate
-								attributeName="stroke-width"
-								values="0.5;1.5;0.5"
-								dur="2s"
-								begin="mouseover"
-								repeatCount="indefinite"
-							/>
-						</path>
-						<text
-							x="70"
-							y="50"
-							textAnchor="middle"
-							fill="#fff"
-							fontSize="6"
-							fontWeight="bold"
-							pointerEvents="none"
-							transform="rotate(90, 70, 50)"
-						>
-							Hazards
-						</text>
-
-						{/* Water (Bottom Quadrant - 135° to 225°) */}
-						<path
-							d="M50,50 L29,71 A30,30 0 0,0 71,71 L50,50 Z"
-							fill={getDomainColor("water")}
-							stroke={theme.colors.gray[3]}
-							strokeWidth="0.5"
-							onClick={() => handleSegmentClick("water")}
-							onKeyDown={(e) => {
-								if (e.key === "Enter" || e.key === " ") {
-									handleSegmentClick("water");
-								}
-							}}
-							tabIndex={0}
-							role="button"
-							aria-label="Water rating"
-							style={{ cursor: "pointer" }}
-							className="challenge-segment"
-						>
-							<animate
-								attributeName="opacity"
-								values="1;0.8;1"
-								dur="2s"
-								begin="mouseover"
-								repeatCount="indefinite"
-							/>
-							<animate
-								attributeName="stroke-width"
-								values="0.5;1.5;0.5"
-								dur="2s"
-								begin="mouseover"
-								repeatCount="indefinite"
-							/>
-						</path>
-						<text
-							x="50"
-							y="73"
-							textAnchor="middle"
-							fill="#fff"
-							fontSize="6"
-							fontWeight="bold"
-							pointerEvents="none"
-						>
-							Water
-						</text>
-
-						{/* Claustrophobia (Left Quadrant - 225° to 315°) */}
-						<path
-							d="M50,50 L29,29 A30,30 0 0,0 29,71 L50,50 Z"
-							fill={getDomainColor("claustrophobia")}
-							stroke={theme.colors.gray[3]}
-							strokeWidth="0.5"
-							onClick={() => handleSegmentClick("claustrophobia")}
-							onKeyDown={(e) => {
-								if (e.key === "Enter" || e.key === " ") {
-									handleSegmentClick("claustrophobia");
-								}
-							}}
-							tabIndex={0}
-							role="button"
-							aria-label="Claustrophobia rating"
-							style={{ cursor: "pointer" }}
-							className="challenge-segment"
-						>
-							<animate
-								attributeName="opacity"
-								values="1;0.8;1"
-								dur="2s"
-								begin="mouseover"
-								repeatCount="indefinite"
-							/>
-							<animate
-								attributeName="stroke-width"
-								values="0.5;1.5;0.5"
-								dur="2s"
-								begin="mouseover"
-								repeatCount="indefinite"
-							/>
-						</path>
-						<text
-							x="30"
-							y="50"
-							textAnchor="middle"
-							fill="#fff"
-							fontSize="6"
-							fontWeight="bold"
-							pointerEvents="none"
-							transform="rotate(270, 30, 50)"
-						>
-							Tight
-						</text>
-
-						{/* Endurance (Center) */}
-						<circle
-							cx="50"
-							cy="50"
-							r="15"
-							fill={getDomainColor("endurance")}
-							stroke={theme.colors.gray[3]}
-							strokeWidth="0.5"
-							onClick={() => handleSegmentClick("endurance")}
-							onKeyDown={(e) => {
-								if (e.key === "Enter" || e.key === " ") {
-									handleSegmentClick("endurance");
-								}
-							}}
-							tabIndex={0}
-							role="button"
-							aria-label="Endurance rating"
-							style={{ cursor: "pointer" }}
-							className="challenge-segment"
-						>
-							<animate
-								attributeName="opacity"
-								values="1;0.8;1"
-								dur="2s"
-								begin="mouseover"
-								repeatCount="indefinite"
-							/>
-							<animate
-								attributeName="stroke-width"
-								values="0.5;1.5;0.5"
-								dur="2s"
-								begin="mouseover"
-								repeatCount="indefinite"
-							/>
-						</circle>
-						<text
-							x="50"
-							y="52"
-							textAnchor="middle"
-							fill="#fff"
-							fontSize="5"
-							fontWeight="bold"
-							pointerEvents="none"
-						>
-							Endurance
-						</text>
-					</svg>
-
-					{/* Legend */}
-					<Box
-						style={{
-							position: "absolute",
-							bottom: -30,
-							left: 0,
-							right: 0,
-							display: "flex",
-							justifyContent: "center",
-							gap: 10,
+				</style>
+				{/* SVG for the circular indicator */}
+				<svg
+					viewBox="0 0 100 100"
+					style={{ width: "100%", height: "100%" }}
+					role="img"
+					aria-labelledby="challenge-chart-title"
+				>
+					<title id="challenge-chart-title">Cave challenge rating chart</title>
+					{/* Heights (Top Quadrant - 315° to 45°) */}
+					<path
+						d="M50,50 L71,29 A30,30 0 0,0 29,29 L50,50 Z"
+						fill={getDomainColor("heights")}
+						stroke={theme.colors.gray[3]}
+						strokeWidth="0.5"
+						onClick={() => handleSegmentClick("heights")}
+						onKeyDown={(e) => {
+							if (e.key === "Enter" || e.key === " ") {
+								handleSegmentClick("heights");
+							}
 						}}
+						tabIndex={0}
+						role="button"
+						aria-label="Heights rating"
+						style={{ cursor: "pointer" }}
+						className="challenge-segment"
 					>
-						<Group gap={5}>
-							<Box
-								style={{
-									width: 12,
-									height: 12,
-									backgroundColor: getChallengeColor("green"),
-									borderRadius: "50%",
-								}}
-							/>
-							<Text size="xs">Easy</Text>
-						</Group>
-						<Group gap={5}>
-							<Box
-								style={{
-									width: 12,
-									height: 12,
-									backgroundColor: getChallengeColor("amber"),
-									borderRadius: "50%",
-								}}
-							/>
-							<Text size="xs">Moderate</Text>
-						</Group>
-						<Group gap={5}>
-							<Box
-								style={{
-									width: 12,
-									height: 12,
-									backgroundColor: getChallengeColor("red"),
-									borderRadius: "50%",
-								}}
-							/>
-							<Text size="xs">Hard</Text>
-						</Group>
-					</Box>
-				</Box>
+						<animate
+							attributeName="opacity"
+							values="1;0.8;1"
+							dur="2s"
+							begin="mouseover"
+							repeatCount="indefinite"
+						/>
+						<animate
+							attributeName="stroke-width"
+							values="0.5;1.5;0.5"
+							dur="2s"
+							begin="mouseover"
+							repeatCount="indefinite"
+						/>
+					</path>
+					<text
+						x="50"
+						y="30"
+						textAnchor="middle"
+						fill="#fff"
+						fontSize="6"
+						fontWeight="bold"
+						pointerEvents="none"
+					>
+						Heights
+					</text>
 
-				<Text size="sm" c="dimmed" ta="center" mt={30}>
-					{weightedRank !== undefined && (
-						<Text size="sm" c="dimmed" mt={5}>
-							Overall Difficulty: {weightedRank.toFixed(1)}
-						</Text>
-					)}
-				</Text>
+					{/* Hazards (Right Quadrant - 45° to 135°) */}
+					<path
+						d="M50,50 L71,71 A30,30 0 0,0 71,29 L50,50 Z"
+						fill={getDomainColor("hazard")}
+						stroke={theme.colors.gray[3]}
+						strokeWidth="0.5"
+						onClick={() => handleSegmentClick("hazard")}
+						onKeyDown={(e) => {
+							if (e.key === "Enter" || e.key === " ") {
+								handleSegmentClick("hazard");
+							}
+						}}
+						tabIndex={0}
+						role="button"
+						aria-label="Hazards rating"
+						style={{ cursor: "pointer" }}
+						className="challenge-segment"
+					>
+						<animate
+							attributeName="opacity"
+							values="1;0.8;1"
+							dur="2s"
+							begin="mouseover"
+							repeatCount="indefinite"
+						/>
+						<animate
+							attributeName="stroke-width"
+							values="0.5;1.5;0.5"
+							dur="2s"
+							begin="mouseover"
+							repeatCount="indefinite"
+						/>
+					</path>
+					<text
+						x="70"
+						y="50"
+						textAnchor="middle"
+						fill="#fff"
+						fontSize="6"
+						fontWeight="bold"
+						pointerEvents="none"
+						transform="rotate(90, 70, 50)"
+					>
+						Hazards
+					</text>
+
+					{/* Water (Bottom Quadrant - 135° to 225°) */}
+					<path
+						d="M50,50 L29,71 A30,30 0 0,0 71,71 L50,50 Z"
+						fill={getDomainColor("water")}
+						stroke={theme.colors.gray[3]}
+						strokeWidth="0.5"
+						onClick={() => handleSegmentClick("water")}
+						onKeyDown={(e) => {
+							if (e.key === "Enter" || e.key === " ") {
+								handleSegmentClick("water");
+							}
+						}}
+						tabIndex={0}
+						role="button"
+						aria-label="Water rating"
+						style={{ cursor: "pointer" }}
+						className="challenge-segment"
+					>
+						<animate
+							attributeName="opacity"
+							values="1;0.8;1"
+							dur="2s"
+							begin="mouseover"
+							repeatCount="indefinite"
+						/>
+						<animate
+							attributeName="stroke-width"
+							values="0.5;1.5;0.5"
+							dur="2s"
+							begin="mouseover"
+							repeatCount="indefinite"
+						/>
+					</path>
+					<text
+						x="50"
+						y="73"
+						textAnchor="middle"
+						fill="#fff"
+						fontSize="6"
+						fontWeight="bold"
+						pointerEvents="none"
+					>
+						Water
+					</text>
+
+					{/* Claustrophobia (Left Quadrant - 225° to 315°) */}
+					<path
+						d="M50,50 L29,29 A30,30 0 0,0 29,71 L50,50 Z"
+						fill={getDomainColor("claustrophobia")}
+						stroke={theme.colors.gray[3]}
+						strokeWidth="0.5"
+						onClick={() => handleSegmentClick("claustrophobia")}
+						onKeyDown={(e) => {
+							if (e.key === "Enter" || e.key === " ") {
+								handleSegmentClick("claustrophobia");
+							}
+						}}
+						tabIndex={0}
+						role="button"
+						aria-label="Claustrophobia rating"
+						style={{ cursor: "pointer" }}
+						className="challenge-segment"
+					>
+						<animate
+							attributeName="opacity"
+							values="1;0.8;1"
+							dur="2s"
+							begin="mouseover"
+							repeatCount="indefinite"
+						/>
+						<animate
+							attributeName="stroke-width"
+							values="0.5;1.5;0.5"
+							dur="2s"
+							begin="mouseover"
+							repeatCount="indefinite"
+						/>
+					</path>
+					<text
+						x="30"
+						y="50"
+						textAnchor="middle"
+						fill="#fff"
+						fontSize="6"
+						fontWeight="bold"
+						pointerEvents="none"
+						transform="rotate(270, 30, 50)"
+					>
+						Tight
+					</text>
+
+					{/* Endurance (Center) */}
+					<circle
+						cx="50"
+						cy="50"
+						r="15"
+						fill={getDomainColor("endurance")}
+						stroke={theme.colors.gray[3]}
+						strokeWidth="0.5"
+						onClick={() => handleSegmentClick("endurance")}
+						onKeyDown={(e) => {
+							if (e.key === "Enter" || e.key === " ") {
+								handleSegmentClick("endurance");
+							}
+						}}
+						tabIndex={0}
+						role="button"
+						aria-label="Endurance rating"
+						style={{ cursor: "pointer" }}
+						className="challenge-segment"
+					>
+						<animate
+							attributeName="opacity"
+							values="1;0.8;1"
+							dur="2s"
+							begin="mouseover"
+							repeatCount="indefinite"
+						/>
+						<animate
+							attributeName="stroke-width"
+							values="0.5;1.5;0.5"
+							dur="2s"
+							begin="mouseover"
+							repeatCount="indefinite"
+						/>
+					</circle>
+					<text
+						x="50"
+						y="52"
+						textAnchor="middle"
+						fill="#fff"
+						fontSize="5"
+						fontWeight="bold"
+						pointerEvents="none"
+					>
+						Endurance
+					</text>
+				</svg>
+
+				{/* Legend */}
+				<Box
+					style={{
+						position: "absolute",
+						bottom: -30,
+						left: 0,
+						right: 0,
+						display: "flex",
+						justifyContent: "center",
+						gap: 10,
+					}}
+				>
+					<Group gap={5}>
+						<Box
+							style={{
+								width: 12,
+								height: 12,
+								backgroundColor: getChallengeColor("green"),
+								borderRadius: "50%",
+							}}
+						/>
+						<Text size="xs">Easy</Text>
+					</Group>
+					<Group gap={5}>
+						<Box
+							style={{
+								width: 12,
+								height: 12,
+								backgroundColor: getChallengeColor("amber"),
+								borderRadius: "50%",
+							}}
+						/>
+						<Text size="xs">Moderate</Text>
+					</Group>
+					<Group gap={5}>
+						<Box
+							style={{
+								width: 12,
+								height: 12,
+								backgroundColor: getChallengeColor("red"),
+								borderRadius: "50%",
+							}}
+						/>
+						<Text size="xs">Hard</Text>
+					</Group>
+				</Box>
+			</Box>
+
+			<Text size="sm" c="dimmed" ta="center" mt={30}>
+				{weightedRank !== undefined && (
+					<Text size="sm" c="dimmed" mt={5}>
+						Overall Difficulty: {weightedRank.toFixed(1)}
+					</Text>
+				)}
+			</Text>
 
 			{/* Modal for detailed breakdown */}
 			<Modal
