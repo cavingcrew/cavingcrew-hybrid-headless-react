@@ -93,25 +93,26 @@ export function TripChallengeMetrics({ trip }: TripChallengeMetricsProps) {
                 display: "grid",
                 gridTemplateColumns: "1fr",
                 gap: "1rem",
-                "@media (min-width: 768px)": {
-                  gridTemplateColumns: "1fr 1fr",
-                },
               }}
-              sx={(theme) => ({
-                [theme.fn.largerThan("sm")]: {
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gap: "1rem",
-                },
+              styles={(theme) => ({
+                root: {
+                  [theme.fn.largerThan("sm")]: {
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    gap: "1rem",
+                  }
+                }
               })}
             >
               {/* Overview section - first on mobile, second on desktop */}
               <Box
-                order={1}
-                sx={(theme) => ({
-                  [theme.fn.largerThan("sm")]: {
-                    order: 2,
-                  },
+                style={{ order: 1 }}
+                styles={(theme) => ({
+                  root: {
+                    [theme.fn.largerThan("sm")]: {
+                      order: 2,
+                    }
+                  }
                 })}
               >
                 <Alert color="blue" icon={<IconMoodSmile size={18} />}>
@@ -128,11 +129,13 @@ export function TripChallengeMetrics({ trip }: TripChallengeMetricsProps) {
 
               {/* Challenge indicator - second on mobile, first on desktop */}
               <Box
-                order={2}
-                sx={(theme) => ({
-                  [theme.fn.largerThan("sm")]: {
-                    order: 1,
-                  },
+                style={{ order: 2 }}
+                styles={(theme) => ({
+                  root: {
+                    [theme.fn.largerThan("sm")]: {
+                      order: 1,
+                    }
+                  }
                 })}
               >
                 <TripChallengeIndicator
