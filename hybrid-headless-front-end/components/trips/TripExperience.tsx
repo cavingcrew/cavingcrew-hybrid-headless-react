@@ -120,21 +120,23 @@ export function TripExperience({ trip }: TripExperienceProps) {
 						</Text>
 					)}
 
-					{leadingDifficulty.route_leading_difficulty_horizontal_leading_skills_required && 
-						leadingDifficulty.route_leading_difficulty_horizontal_leading_skills_required.length > 0 && (
-						<div>
-							<Text fw={500}>Essential Leadership Skills:</Text>
-							<List>
-								{leadingDifficulty.route_leading_difficulty_horizontal_leading_skills_required.map(
-									(skill, i) => (
-										<List.Item key={`skill-${skill.substring(0, 10)}-${i}`}>
-											{skill}
-										</List.Item>
-									),
-								)}
-							</List>
-						</div>
-					)}
+					{leadingDifficulty.route_leading_difficulty_horizontal_leading_skills_required &&
+						leadingDifficulty
+							.route_leading_difficulty_horizontal_leading_skills_required
+							.length > 0 && (
+							<div>
+								<Text fw={500}>Essential Leadership Skills:</Text>
+								<List>
+									{leadingDifficulty.route_leading_difficulty_horizontal_leading_skills_required.map(
+										(skill, i) => (
+											<List.Item key={`skill-${skill.substring(0, 10)}-${i}`}>
+												{skill}
+											</List.Item>
+										),
+									)}
+								</List>
+							</div>
+						)}
 
 					{leadingDifficulty.route_leading_difficulty_navigation_difficulty && (
 						<Text>
