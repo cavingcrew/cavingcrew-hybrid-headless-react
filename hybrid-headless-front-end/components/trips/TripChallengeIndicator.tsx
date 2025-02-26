@@ -85,7 +85,7 @@ function ChallengeDetails({ metric }: { metric: ChallengeMetric }) {
 
       {metric.details.map((detail) => (
         <Box key={detail.key} mb="xs">
-          <Group position="apart" mb={5}>
+          <Group justify="space-between" mb={5}>
             <Text size="sm">
               {detail.label}{" "}
               <Text span size="xs" c="dimmed">
@@ -138,21 +138,21 @@ export function TripChallengeIndicator({
   );
 
   // Find the metric for each domain
-  const claustrophobia = metrics.find((m) => m.domain === "claustrophobia");
-  const water = metrics.find((m) => m.domain === "water");
-  const heights = metrics.find((m) => m.domain === "heights");
-  const hazard = metrics.find((m) => m.domain === "hazard");
-  const endurance = metrics.find((m) => m.domain === "endurance");
+  const claustrophobia = metrics.filter((m) => m.domain === "claustrophobia")[0];
+  const water = metrics.filter((m) => m.domain === "water")[0];
+  const heights = metrics.filter((m) => m.domain === "heights")[0];
+  const hazard = metrics.filter((m) => m.domain === "hazard")[0];
+  const endurance = metrics.filter((m) => m.domain === "endurance")[0];
 
   // Helper function to get color for a domain
   const getDomainColor = (domain: ChallengeDomain) => {
-    const metric = metrics.find((m) => m.domain === domain);
+    const metric = metrics.filter((m) => m.domain === domain)[0];
     return metric ? getChallengeColor(metric.rating) : "#9e9e9e";
   };
 
   // Helper function to handle segment click
   const handleSegmentClick = (domain: ChallengeDomain) => {
-    const metric = metrics.find((m) => m.domain === domain);
+    const metric = metrics.filter((m) => m.domain === domain)[0];
     if (metric) {
       setSelectedMetric(metric);
     }
@@ -299,7 +299,7 @@ export function TripChallengeIndicator({
               gap: 10,
             }}
           >
-            <Group spacing={5}>
+            <Group gap={5}>
               <Box
                 style={{
                   width: 12,
@@ -310,7 +310,7 @@ export function TripChallengeIndicator({
               />
               <Text size="xs">Easy</Text>
             </Group>
-            <Group spacing={5}>
+            <Group gap={5}>
               <Box
                 style={{
                   width: 12,
@@ -321,7 +321,7 @@ export function TripChallengeIndicator({
               />
               <Text size="xs">Moderate</Text>
             </Group>
-            <Group spacing={5}>
+            <Group gap={5}>
               <Box
                 style={{
                   width: 12,

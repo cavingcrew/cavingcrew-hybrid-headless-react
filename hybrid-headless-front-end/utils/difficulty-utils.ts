@@ -55,7 +55,7 @@ export function parseDifficultyValue(
   value: string | number | null | undefined
 ): number | null {
   if (value === null || value === undefined) return null;
-  const numValue = typeof value === "string" ? Number.parseInt(value, 10) : value;
+  const numValue = typeof value === "string" ? parseInt(value, 10) : value;
   return isNaN(numValue) ? null : numValue;
 }
 
