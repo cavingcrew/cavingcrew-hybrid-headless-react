@@ -175,19 +175,6 @@ export function TripExperience({ trip }: TripExperienceProps) {
 				</Text>
 			</Alert>
 
-			{/* Parking Warning */}
-			<Alert
-				color="red"
-				title="Parking Advisory"
-				icon={<IconMountain size={18} />}
-				mb="md"
-			>
-				<Text size="sm">
-					Parking is extremely limited - carpooling strongly recommended. Never
-					block farm access tracks. Recent reports of vehicle damage - park
-					considerately!
-				</Text>
-			</Alert>
 		</Paper>
 	);
 }
