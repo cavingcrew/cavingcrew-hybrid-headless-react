@@ -101,7 +101,7 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 					</Group>
 
 					{parkingInstructions && (
-						<Text size="sm" c="dimmed">
+						<Text size="sm" >
 							{parkingInstructions}
 						</Text>
 					)}
@@ -187,7 +187,7 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 						<ThemeIcon variant="light" color="violet">
 							<IconKey size={18} />
 						</ThemeIcon>
-						<Text fw={500}>Access Requirements</Text>
+						<Text fw={500}>Access in Short</Text>
 					</Group>
 
 					<List spacing="xs">
