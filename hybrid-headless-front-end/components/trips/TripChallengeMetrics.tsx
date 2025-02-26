@@ -54,7 +54,7 @@ function TripEnjoymentRating({
         <Box>
           <Group gap="xs" justify="center">
             <IconClock size={18} />
-            <Text>Estimated Approx Duration: {estimatedTime+(estimatedTime*0.25)} hours</Text>
+            <Text>Estimated Approx Duration: {parseFloat(estimatedTime) + (parseFloat(estimatedTime) * 0.25)} hours</Text>
           </Group>
         </Box>
       )}
