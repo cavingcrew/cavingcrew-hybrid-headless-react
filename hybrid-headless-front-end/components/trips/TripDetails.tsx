@@ -404,7 +404,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
 				/>
 			)}
 			{/* Conditional Access Details */}
-			{hasPurchased ? (
+			{hasPurchased && !isOvernightTrip ? (
 				<TripAccessDetails trip={trip} />
 			) : "" }
 
