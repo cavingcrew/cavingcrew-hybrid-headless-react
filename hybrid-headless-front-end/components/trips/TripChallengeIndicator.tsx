@@ -61,7 +61,6 @@ function getRatingColor(rating: ChallengeRating): string {
 			return "yellow";
 		case "red":
 			return "red";
-		case "na":
 		default:
 			return "gray";
 	}
