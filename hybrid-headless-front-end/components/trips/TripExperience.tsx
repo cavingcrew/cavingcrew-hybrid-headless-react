@@ -401,13 +401,13 @@ export function TripExperience({ trip }: TripExperienceProps) {
 								color={
 									Number.parseInt(
 										leadingDifficulty.route_leading_difficulty_navigation_difficulty,
-										10,
-									) <= 2
+										10
+									) <= 2.5
 										? "green"
 										: Number.parseInt(
-													leadingDifficulty.route_leading_difficulty_navigation_difficulty,
-													10,
-												) <= 3
+												leadingDifficulty.route_leading_difficulty_navigation_difficulty,
+												10
+											) <= 6.5
 											? "yellow"
 											: "red"
 								}
@@ -415,7 +415,7 @@ export function TripExperience({ trip }: TripExperienceProps) {
 								{
 									leadingDifficulty.route_leading_difficulty_navigation_difficulty
 								}
-								/5
+								/10
 							</Badge>
 						</Group>
 					)}
