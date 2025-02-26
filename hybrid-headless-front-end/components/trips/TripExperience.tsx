@@ -18,23 +18,23 @@ import {
 	Title,
 } from "@mantine/core";
 import {
-	IconCompass,
-	IconFirstAidKit,
-	IconMountain,
-	IconTool,
-	IconUser,
-	IconClock,
-	IconStar,
-	IconShirt,
-	IconRuler,
-	IconDroplet,
-	IconMoodSmile,
+	IconAlertTriangle,
 	IconArrowsVertical,
+	IconClock,
+	IconCompass,
+	IconDroplet,
+	IconFirstAidKit,
+	IconInfoCircle,
+	IconMoodSmile,
+	IconMountain,
 	IconMountainOff,
 	IconMug,
+	IconRuler,
+	IconShirt,
+	IconStar,
+	IconTool,
+	IconUser,
 	IconWalk,
-	IconAlertTriangle,
-	IconInfoCircle,
 } from "@tabler/icons-react";
 import React from "react";
 import type { Trip } from "../../types/api";
@@ -54,16 +54,23 @@ export function TripExperience({ trip }: TripExperienceProps) {
 	const estimatedTime = routeData?.route_time_for_eta;
 
 	// Helper function to render difficulty bars
-	const renderDifficultyBar = (value: string | number | null | undefined, label: string, color: string) => {
+	const renderDifficultyBar = (
+		value: string | number | null | undefined,
+		label: string,
+		color: string,
+	) => {
 		if (value === null || value === undefined) return null;
-		const numValue = typeof value === 'string' ? parseInt(value, 10) : value;
+		const numValue =
+			typeof value === "string" ? Number.parseInt(value, 10) : value;
 		if (isNaN(numValue)) return null;
-		
+
 		return (
 			<Box mb="xs">
 				<Group justify="space-between" mb={5}>
 					<Text size="sm">{label}</Text>
-					<Text size="sm" fw={500}>{numValue}/5</Text>
+					<Text size="sm" fw={500}>
+						{numValue}/5
+					</Text>
 				</Group>
 				<Progress value={numValue * 20} color={color} size="sm" radius="xl" />
 			</Box>
@@ -88,7 +95,9 @@ export function TripExperience({ trip }: TripExperienceProps) {
 								<Text fw={500}>Cave Overview</Text>
 							</Group>
 							{/* Content from WordPress sanitized HTML */}
-							<div dangerouslySetInnerHTML={{ __html: routeData.route_blurb }} />
+							<div
+								dangerouslySetInnerHTML={{ __html: routeData.route_blurb }}
+							/>
 						</Stack>
 					)}
 				</Grid.Col>
@@ -96,10 +105,14 @@ export function TripExperience({ trip }: TripExperienceProps) {
 					<Stack gap="md" align="center">
 						{starRating && (
 							<Box>
-								<Text ta="center" fw={500} mb="xs">Trip Enjoyment Rating</Text>
+								<Text ta="center" fw={500} mb="xs">
+									Trip Enjoyment Rating
+								</Text>
 								<Group justify="center">
 									<Rating value={starRating} readOnly size="xl" />
-									<Text size="xl" fw={700}>{starRating}/5</Text>
+									<Text size="xl" fw={700}>
+										{starRating}/5
+									</Text>
 								</Group>
 								<Text size="sm" c="dimmed" ta="center" mt="xs">
 									Based on member feedback
@@ -131,27 +144,71 @@ export function TripExperience({ trip }: TripExperienceProps) {
 					<Grid>
 						<Grid.Col span={{ base: 12, md: 6 }}>
 							<Stack>
-								{renderDifficultyBar((difficulty as any).route_difficulty_psychological_claustrophobia, "Claustrophobia", "orange")}
-								{renderDifficultyBar((difficulty as any).route_difficulty_objective_tightness, "Tightness", "red")}
-								{renderDifficultyBar((difficulty as any).route_difficulty_wetness, "Wetness", "blue")}
-								{renderDifficultyBar((difficulty as any).route_difficulty_water_near_face, "Water Near Face", "cyan")}
-								{renderDifficultyBar((difficulty as any).route_difficulty_exposure_to_deep_water, "Deep Water Exposure", "indigo")}
+								{renderDifficultyBar(
+									(difficulty as any)
+										.route_difficulty_psychological_claustrophobia,
+									"Claustrophobia",
+									"orange",
+								)}
+								{renderDifficultyBar(
+									(difficulty as any).route_difficulty_objective_tightness,
+									"Tightness",
+									"red",
+								)}
+								{renderDifficultyBar(
+									(difficulty as any).route_difficulty_wetness,
+									"Wetness",
+									"blue",
+								)}
+								{renderDifficultyBar(
+									(difficulty as any).route_difficulty_water_near_face,
+									"Water Near Face",
+									"cyan",
+								)}
+								{renderDifficultyBar(
+									(difficulty as any).route_difficulty_exposure_to_deep_water,
+									"Deep Water Exposure",
+									"indigo",
+								)}
 							</Stack>
 						</Grid.Col>
 						<Grid.Col span={{ base: 12, md: 6 }}>
 							<Stack>
-								{renderDifficultyBar((difficulty as any).route_difficulty_muddiness, "Muddiness", "brown")}
-								{renderDifficultyBar((difficulty as any).route_difficulty_exposure_to_heights, "Height Exposure", "grape")}
-								{renderDifficultyBar((difficulty as any).route_difficulty_technical_climbing_difficulty, "Technical Climbing", "pink")}
-								{renderDifficultyBar((difficulty as any).route_difficulty_endurance, "Physical Endurance", "green")}
-								{renderDifficultyBar((difficulty as any).route_difficulty_objective_hazard, "Objective Hazards", "yellow")}
+								{renderDifficultyBar(
+									(difficulty as any).route_difficulty_muddiness,
+									"Muddiness",
+									"brown",
+								)}
+								{renderDifficultyBar(
+									(difficulty as any).route_difficulty_exposure_to_heights,
+									"Height Exposure",
+									"grape",
+								)}
+								{renderDifficultyBar(
+									(difficulty as any)
+										.route_difficulty_technical_climbing_difficulty,
+									"Technical Climbing",
+									"pink",
+								)}
+								{renderDifficultyBar(
+									(difficulty as any).route_difficulty_endurance,
+									"Physical Endurance",
+									"green",
+								)}
+								{renderDifficultyBar(
+									(difficulty as any).route_difficulty_objective_hazard,
+									"Objective Hazards",
+									"yellow",
+								)}
 							</Stack>
 						</Grid.Col>
 					</Grid>
 
 					<Alert color="blue" icon={<IconMoodSmile size={18} />}>
 						<Text size="sm">
-							These ratings help you understand what to expect. If you have specific concerns about any aspect, please ask the trip leader before signing up.
+							These ratings help you understand what to expect. If you have
+							specific concerns about any aspect, please ask the trip leader
+							before signing up.
 						</Text>
 					</Alert>
 				</Stack>
@@ -171,37 +228,60 @@ export function TripExperience({ trip }: TripExperienceProps) {
 						<Box>
 							<Group align="center" mb="xs">
 								<Badge size="lg" color="teal" variant="filled">
-									Required Skill Level: {typeof participantSkills.route_participants_skills_required_horizontal_level === "object"
-										? (participantSkills.route_participants_skills_required_horizontal_level as any)?.post_title
+									Required Skill Level:{" "}
+									{typeof participantSkills.route_participants_skills_required_horizontal_level ===
+									"object"
+										? (
+												participantSkills.route_participants_skills_required_horizontal_level as any
+											)?.post_title
 										: participantSkills.route_participants_skills_required_horizontal_level}
 								</Badge>
-								
-								{typeof participantSkills.route_participants_skills_required_horizontal_level === "object" && 
-								 (participantSkills.route_participants_skills_required_horizontal_level as { permalink: string })?.permalink && (
-									<Anchor 
-										href={(participantSkills.route_participants_skills_required_horizontal_level as { permalink: string }).permalink} 
-										target="_blank"
-										size="sm"
-									>
-										View Syllabus
-									</Anchor>
-								)}
+
+								{typeof participantSkills.route_participants_skills_required_horizontal_level ===
+									"object" &&
+									(
+										participantSkills.route_participants_skills_required_horizontal_level as {
+											permalink: string;
+										}
+									)?.permalink && (
+										<Anchor
+											href={
+												(
+													participantSkills.route_participants_skills_required_horizontal_level as {
+														permalink: string;
+													}
+												).permalink
+											}
+											target="_blank"
+											size="sm"
+										>
+											View Syllabus
+										</Anchor>
+									)}
 							</Group>
-							
-							{typeof participantSkills.route_participants_skills_required_horizontal_level === "object" && 
-							 (participantSkills.route_participants_skills_required_horizontal_level as any)?.post_title === "Horizontal Basic" && (
-								<Alert color="teal" icon={<IconCompass size={18} />} mb="md">
-									<Text size="sm">
-										<strong>Horizontal Basic</strong> means you should be comfortable with:
-										<List size="sm" mt="xs">
-											<List.Item>Moving through basic cave passages</List.Item>
-											<List.Item>Climbing short, simple climbs</List.Item>
-											<List.Item>Basic crawling and stooping</List.Item>
-											<List.Item>Following instructions from leaders</List.Item>
-										</List>
-									</Text>
-								</Alert>
-							)}
+
+							{typeof participantSkills.route_participants_skills_required_horizontal_level ===
+								"object" &&
+								(
+									participantSkills.route_participants_skills_required_horizontal_level as any
+								)?.post_title === "Horizontal Basic" && (
+									<Alert color="teal" icon={<IconCompass size={18} />} mb="md">
+										<Text size="sm">
+											<strong>Horizontal Basic</strong> means you should be
+											comfortable with:
+											<List size="sm" mt="xs">
+												<List.Item>
+													Moving through basic cave passages
+												</List.Item>
+												<List.Item>Climbing short, simple climbs</List.Item>
+												<List.Item>Basic crawling and stooping</List.Item>
+												<List.Item>
+													Following instructions from leaders
+												</List.Item>
+											</List>
+										</Text>
+									</Alert>
+								)}
 						</Box>
 					)}
 
@@ -241,31 +321,41 @@ export function TripExperience({ trip }: TripExperienceProps) {
 					</Group>
 
 					<Grid>
-						{Array.isArray(personalGear) && personalGear.map((item, index) => (
-							<Grid.Col span={{ base: 6, md: 4 }} key={`gear-${index}`}>
-								<Group gap="xs">
-									{(() => {
-										// Choose icon based on gear type
-										switch(item.toLowerCase()) {
-											case 'oversuit': return <IconShirt size={16} />;
-											case 'undersuit': return <IconShirt size={16} />;
-											case 'wellies': return <IconWalk size={16} />;
-											case 'kneepads': return <IconArrowsVertical size={16} />;
-											case 'helmet and light': return <IconFirstAidKit size={16} />;
-											case 'gloves': return <IconTool size={16} />;
-											case 'belt': return <IconRuler size={16} />;
-											default: return <IconTool size={16} />;
-										}
-									})()}
-									<Text>{item}</Text>
-								</Group>
-							</Grid.Col>
-						))}
+						{Array.isArray(personalGear) &&
+							personalGear.map((item, index) => (
+								<Grid.Col span={{ base: 6, md: 4 }} key={`gear-${index}`}>
+									<Group gap="xs">
+										{(() => {
+											// Choose icon based on gear type
+											switch (item.toLowerCase()) {
+												case "oversuit":
+													return <IconShirt size={16} />;
+												case "undersuit":
+													return <IconShirt size={16} />;
+												case "wellies":
+													return <IconWalk size={16} />;
+												case "kneepads":
+													return <IconArrowsVertical size={16} />;
+												case "helmet and light":
+													return <IconFirstAidKit size={16} />;
+												case "gloves":
+													return <IconTool size={16} />;
+												case "belt":
+													return <IconRuler size={16} />;
+												default:
+													return <IconTool size={16} />;
+											}
+										})()}
+										<Text>{item}</Text>
+									</Group>
+								</Grid.Col>
+							))}
 					</Grid>
 
 					<Alert color="blue" icon={<IconInfoCircle size={16} />}>
 						<Text size="sm">
-							Don't have all the gear? The club has equipment available to borrow - just let us know what you need when you sign up.
+							Don't have all the gear? The club has equipment available to
+							borrow - just let us know what you need when you sign up.
 						</Text>
 					</Alert>
 				</Stack>
@@ -280,23 +370,28 @@ export function TripExperience({ trip }: TripExperienceProps) {
 						</ThemeIcon>
 						<Text fw={500}>Group Equipment Required</Text>
 					</Group>
-					
+
 					{/* If groupTackle is a string with line breaks, convert to list */}
-					{typeof groupTackle === 'string' && groupTackle.indexOf('\r\n') !== -1 ? (
+					{typeof groupTackle === "string" &&
+					groupTackle.indexOf("\r\n") !== -1 ? (
 						<List>
-							{groupTackle.split('\r\n').filter(line => line.trim()).map((line, index) => (
-								<List.Item key={`tackle-${index}`}>
-									{line.replace(/^-\s*/, '')}
-								</List.Item>
-							))}
+							{groupTackle
+								.split("\r\n")
+								.filter((line) => line.trim())
+								.map((line, index) => (
+									<List.Item key={`tackle-${index}`}>
+										{line.replace(/^-\s*/, "")}
+									</List.Item>
+								))}
 						</List>
 					) : (
 						<div dangerouslySetInnerHTML={{ __html: groupTackle }} />
 					)}
-					
+
 					<Alert color="violet" icon={<IconInfoCircle size={16} />}>
 						<Text size="sm">
-							The trip leader will organize this equipment. You don't need to bring these items unless specifically asked.
+							The trip leader will organize this equipment. You don't need to
+							bring these items unless specifically asked.
 						</Text>
 					</Alert>
 				</Stack>
@@ -315,16 +410,23 @@ export function TripExperience({ trip }: TripExperienceProps) {
 					{leadingDifficulty.route_leading_difficulty_horizontal_leading_level_required && (
 						<Group align="center" mb="xs">
 							<Badge size="lg" color="orange" variant="filled">
-								Required Leadership Level: {
+								Required Leadership Level:{" "}
+								{
 									leadingDifficulty
 										.route_leading_difficulty_horizontal_leading_level_required
 										.post_title
 								}
 							</Badge>
-							
-							{leadingDifficulty.route_leading_difficulty_horizontal_leading_level_required.permalink && (
-								<Anchor 
-									href={leadingDifficulty.route_leading_difficulty_horizontal_leading_level_required.permalink} 
+
+							{leadingDifficulty
+								.route_leading_difficulty_horizontal_leading_level_required
+								.permalink && (
+								<Anchor
+									href={
+										leadingDifficulty
+											.route_leading_difficulty_horizontal_leading_level_required
+											.permalink
+									}
 									target="_blank"
 									size="sm"
 								>
@@ -343,12 +445,17 @@ export function TripExperience({ trip }: TripExperienceProps) {
 								<Grid>
 									{leadingDifficulty.route_leading_difficulty_horizontal_leading_skills_required.map(
 										(skill, i) => (
-											<Grid.Col span={{ base: 12, md: 6 }} key={`skill-${skill.substring(0, 10)}-${i}`}>
-												<List.Item icon={
-													<ThemeIcon color="orange" size={24} radius="xl">
-														<IconStar size={16} />
-													</ThemeIcon>
-												}>
+											<Grid.Col
+												span={{ base: 12, md: 6 }}
+												key={`skill-${skill.substring(0, 10)}-${i}`}
+											>
+												<List.Item
+													icon={
+														<ThemeIcon color="orange" size={24} radius="xl">
+															<IconStar size={16} />
+														</ThemeIcon>
+													}
+												>
 													{skill}
 												</List.Item>
 											</Grid.Col>
@@ -361,14 +468,26 @@ export function TripExperience({ trip }: TripExperienceProps) {
 					{leadingDifficulty.route_leading_difficulty_navigation_difficulty && (
 						<Group mt="md">
 							<Text fw={500}>Navigation Difficulty:</Text>
-							<Badge size="lg" color={
-								parseInt(leadingDifficulty.route_leading_difficulty_navigation_difficulty, 10) <= 2 
-									? "green" 
-									: parseInt(leadingDifficulty.route_leading_difficulty_navigation_difficulty, 10) <= 3 
-										? "yellow" 
-										: "red"
-							}>
-								{leadingDifficulty.route_leading_difficulty_navigation_difficulty}/5
+							<Badge
+								size="lg"
+								color={
+									Number.parseInt(
+										leadingDifficulty.route_leading_difficulty_navigation_difficulty,
+										10,
+									) <= 2
+										? "green"
+										: Number.parseInt(
+													leadingDifficulty.route_leading_difficulty_navigation_difficulty,
+													10,
+												) <= 3
+											? "yellow"
+											: "red"
+								}
+							>
+								{
+									leadingDifficulty.route_leading_difficulty_navigation_difficulty
+								}
+								/5
 							</Badge>
 						</Group>
 					)}
@@ -383,10 +502,10 @@ export function TripExperience({ trip }: TripExperienceProps) {
 				mb="md"
 			>
 				<Text size="sm">
-					Please follow all conservation guidelines and avoid touching formations. Take nothing but pictures, leave nothing but footprints.
+					Please follow all conservation guidelines and avoid touching
+					formations. Take nothing but pictures, leave nothing but footprints.
 				</Text>
 			</Alert>
-
 		</Paper>
 	);
 }
