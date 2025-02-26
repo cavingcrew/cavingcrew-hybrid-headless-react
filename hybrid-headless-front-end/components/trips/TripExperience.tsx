@@ -68,6 +68,7 @@ function TripEnjoymentRating({
               <Text>Estimated Duration: {parseFloat(estimatedTime) + (parseFloat(estimatedTime) * 0.25)} hours</Text>
               <Text size="sm" c="dimmed" mt={5} style={{ maxWidth: '500px' }}>
                 It's really hard to guess how long caving trips will take.
+
               </Text>
             </div>
           </Group>
@@ -132,19 +133,17 @@ export function TripExperience({ trip }: TripExperienceProps) {
 
 
 			{/* Participant Experience - Enhanced */}
-			{participantSkills && (
 				<Stack gap="md" mb="xl">
-
+					{participantSkills?.route_participants_skills_required_horizontal_level && (
+					<Group gap="xs">
+						<ThemeIcon variant="light" color="teal">
+							<IconUser size={18} />
+						</ThemeIcon>
+						<Text fw={500}>Suggested Experience</Text>
+					</Group>
 
 					{participantSkills?.route_participants_skills_required_horizontal_level && (
-						<Stack gap="md">
-							<Group gap="xs">
-								<ThemeIcon variant="light" color="teal">
-									<IconUser size={18} />
-								</ThemeIcon>
-								<Text fw={500}>Suggested Experience</Text>
-							</Group>
-							<Box>
+						<Box>
 							<Group align="center" mb="xs">
 								<Badge size="lg" color="teal" variant="filled">
 									Suggested Skill Level:{" "}
@@ -201,8 +200,7 @@ export function TripExperience({ trip }: TripExperienceProps) {
 										</Text>
 									</Alert>
 								)}
-							</Box>
-						</Stack>
+						</Box>
 					)}
 
 					{participantSkills.minimum_experience && (
@@ -274,8 +272,8 @@ export function TripExperience({ trip }: TripExperienceProps) {
 
 					<Alert color="blue" icon={<IconInfoCircle size={16} />}>
 						<Text size="sm">
-							Don't have all the gear? The club has equipment available to
-							borrow - just let us know what you need when you sign up.
+							Don't have any of the gear? The Crew has all equipment available to
+							borrow - just let us know what you need after you sign up.
 						</Text>
 					</Alert>
 				</Stack>
