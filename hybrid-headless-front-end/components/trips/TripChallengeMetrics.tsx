@@ -89,7 +89,7 @@ export function TripChallengeMetrics({ trip }: TripChallengeMetricsProps) {
           <Box>
             {/* Grid layout for desktop, stack for mobile */}
             {/* Add global styles at the component level, not nested */}
-            <style jsx global>{`
+            <style dangerouslySetInnerHTML={{ __html: `
               @media (min-width: 768px) {
                 .grid-container {
                   display: grid;
@@ -103,7 +103,7 @@ export function TripChallengeMetrics({ trip }: TripChallengeMetricsProps) {
                   order: 1;
                 }
               }
-            `}</style>
+            `}} />
 
             <Box
               className="grid-container"
