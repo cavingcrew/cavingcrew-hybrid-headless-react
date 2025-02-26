@@ -155,6 +155,10 @@ function ChallengeDetails({ metric }: { metric: ChallengeMetric }) {
 					radius="xl"
 					mt={5}
 				/>
+				{/* Debug info */}
+				<Text size="xs" c="dimmed" mt={5}>
+					Raw score: {metric.score} (Progress value: {metric.score * 10}%)
+				</Text>
 			</Box>
 		</Stack>
 	);

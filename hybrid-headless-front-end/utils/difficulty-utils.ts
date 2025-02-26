@@ -188,9 +188,12 @@ function calculateClaustrophobiaScore(difficulty: DifficultyData): {
 
 	// Calculate weighted sum directly
 	const weightedSum = details.reduce((sum, d) => sum + d.contribution, 0);
-
-
-	const score = weightedSum ;
+	
+	// Ensure we have at least one valid value
+	const hasValidValues = details.some(d => d.value !== null);
+	
+	// Only return a score if we have valid values
+	const score = hasValidValues ? weightedSum : 0;
 
 	return { score, details };
 }
