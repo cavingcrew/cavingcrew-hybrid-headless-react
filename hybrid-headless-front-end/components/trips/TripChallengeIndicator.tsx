@@ -195,9 +195,9 @@ export function TripChallengeIndicator({
 						aria-labelledby="challenge-chart-title"
 					>
 						<title id="challenge-chart-title">Cave challenge rating chart</title>
-						{/* Claustrophobia (Left Quarter) */}
+						{/* Claustrophobia (Top Left Quarter) */}
 						<path
-							d="M50,50 L20,50 A30,30 0 0,1 29.3,29.3 L50,50 Z"
+							d="M50,50 L50,20 A30,30 0 0,0 20,50 L50,50 Z"
 							fill={getDomainColor("claustrophobia")}
 							stroke={theme.colors.gray[3]}
 							strokeWidth="0.5"
@@ -213,8 +213,8 @@ export function TripChallengeIndicator({
 							style={{ cursor: "pointer" }}
 						/>
 						<text
-							x="30"
-							y="40"
+							x="35"
+							y="35"
 							textAnchor="middle"
 							fill="#fff"
 							fontSize="6"
@@ -224,9 +224,9 @@ export function TripChallengeIndicator({
 							Tight
 						</text>
 
-						{/* Heights (Top Quarter) */}
+						{/* Heights (Top Right Quarter) */}
 						<path
-							d="M50,50 L29.3,29.3 A30,30 0 0,1 50,20 L50,50 Z"
+							d="M50,50 L80,50 A30,30 0 0,0 50,20 L50,50 Z"
 							fill={getDomainColor("heights")}
 							stroke={theme.colors.gray[3]}
 							strokeWidth="0.5"
@@ -242,8 +242,8 @@ export function TripChallengeIndicator({
 							style={{ cursor: "pointer" }}
 						/>
 						<text
-							x="40"
-							y="30"
+							x="65"
+							y="35"
 							textAnchor="middle"
 							fill="#fff"
 							fontSize="6"
@@ -253,9 +253,9 @@ export function TripChallengeIndicator({
 							Heights
 						</text>
 
-						{/* Hazard (Right Quarter) */}
+						{/* Hazard (Bottom Right Quarter) */}
 						<path
-							d="M50,50 L50,20 A30,30 0 0,1 70.7,29.3 L50,50 Z"
+							d="M50,50 L50,80 A30,30 0 0,0 80,50 L50,50 Z"
 							fill={getDomainColor("hazard")}
 							stroke={theme.colors.gray[3]}
 							strokeWidth="0.5"
@@ -271,8 +271,8 @@ export function TripChallengeIndicator({
 							style={{ cursor: "pointer" }}
 						/>
 						<text
-							x="60"
-							y="30"
+							x="65"
+							y="65"
 							textAnchor="middle"
 							fill="#fff"
 							fontSize="6"
@@ -282,9 +282,9 @@ export function TripChallengeIndicator({
 							Hazards
 						</text>
 
-						{/* Water (Bottom Right Quarter) */}
+						{/* Water (Bottom Left Quarter) */}
 						<path
-							d="M50,50 L70.7,29.3 A30,30 0 0,1 80,50 L50,50 Z"
+							d="M50,50 L20,50 A30,30 0 0,0 50,80 L50,50 Z"
 							fill={getDomainColor("water")}
 							stroke={theme.colors.gray[3]}
 							strokeWidth="0.5"
@@ -300,7 +300,7 @@ export function TripChallengeIndicator({
 							style={{ cursor: "pointer" }}
 						/>
 						<text
-							x="65"
+							x="35"
 							y="65"
 							textAnchor="middle"
 							fill="#fff"
