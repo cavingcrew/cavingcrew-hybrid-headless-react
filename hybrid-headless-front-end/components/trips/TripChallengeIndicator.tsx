@@ -150,14 +150,20 @@ function ChallengeDetails({ metric }: { metric: ChallengeMetric }) {
 				</Text>
 				<Progress
 					value={metric.score * 10}
-					color={metric.rating === "na" ? "gray" : metric.rating}
+					color={
+						metric.rating === "na" 
+							? "gray" 
+							: metric.rating === "amber" 
+								? "yellow" 
+								: metric.rating
+					}
 					size="md"
 					radius="xl"
 					mt={5}
 				/>
 				{/* Debug info */}
 				<Text size="xs" c="dimmed" mt={5}>
-					Raw score: {metric.score} (Progress value: {metric.score * 10}%)
+					Raw score: {metric.score} (Progress value: {metric.score * 10}%, Rating: {metric.rating})
 				</Text>
 			</Box>
 		</Stack>
