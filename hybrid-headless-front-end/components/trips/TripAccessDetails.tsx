@@ -1,5 +1,6 @@
 "use client";
 
+import { Carousel } from "@mantine/carousel";
 import {
 	Alert,
 	Box,
@@ -16,7 +17,6 @@ import {
 	Title,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { Carousel } from "@mantine/carousel";
 import {
 	IconInfoCircle,
 	IconKey,
@@ -58,9 +58,10 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 	const accessUrl = locationData?.location_access_url;
 	const infoUrl = locationData?.location_info_url;
 	const isSensitiveAccess = locationData?.location_sensitive_access;
-	
+
 	// Modal state for map enlargement
-	const [mapModalOpened, { open: openMapModal, close: closeMapModal }] = useDisclosure(false);
+	const [mapModalOpened, { open: openMapModal, close: closeMapModal }] =
+		useDisclosure(false);
 
 	// Coordinate parsing logic
 	const parseCoords = (
@@ -145,7 +146,7 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 						<Text fw={500}>Approach Map</Text>
 					</Group>
 
-					<Box style={{ cursor: 'pointer' }} onClick={openMapModal}>
+					<Box style={{ cursor: "pointer" }} onClick={openMapModal}>
 						<Image
 							src={mapImage.url}
 							alt={mapImage.alt || "Map from parking to cave entrance"}
@@ -163,8 +164,8 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 						</Text>
 					)}
 
-					<Modal 
-						opened={mapModalOpened} 
+					<Modal
+						opened={mapModalOpened}
 						onClose={closeMapModal}
 						size="xl"
 						title="Approach Map"
@@ -173,7 +174,7 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 						<Image
 							src={mapImage.url}
 							alt={mapImage.alt || "Map from parking to cave entrance"}
-							style={{ width: '100%', height: 'auto' }}
+							style={{ width: "100%", height: "auto" }}
 						/>
 						{mapImage.caption && (
 							<Text size="sm" c="dimmed" mt="md">
@@ -185,41 +186,42 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 			)}
 
 			{/* Parking Photos Gallery */}
-			{locationData?.location_parking_photos && locationData.location_parking_photos.length > 0 && (
-				<Stack gap="sm" mb="xl">
-					<Group gap="xs">
-						<ThemeIcon variant="light" color="blue">
-							<IconPhoto size={18} />
-						</ThemeIcon>
-						<Text fw={500}>Parking Area Photos</Text>
-					</Group>
-					
-					<Carousel
-						slideSize="70%"
-						height={300}
-						slideGap="md"
-						controlsOffset="xs"
-						dragFree
-						withIndicators
-					>
-						{locationData.location_parking_photos.map((photo, index) => (
-							<Carousel.Slide key={`parking-photo-${index}`}>
-								<Image
-									src={photo.url}
-									alt={photo.alt || `Parking area photo ${index + 1}`}
-									height={300}
-									style={{ objectFit: 'cover' }}
-								/>
-								{photo.caption && (
-									<Text size="sm" c="dimmed" mt="xs">
-										{photo.caption}
-									</Text>
-								)}
-							</Carousel.Slide>
-						))}
-					</Carousel>
-				</Stack>
-			)}
+			{locationData?.location_parking_photos &&
+				locationData.location_parking_photos.length > 0 && (
+					<Stack gap="sm" mb="xl">
+						<Group gap="xs">
+							<ThemeIcon variant="light" color="blue">
+								<IconPhoto size={18} />
+							</ThemeIcon>
+							<Text fw={500}>Parking Area Photos</Text>
+						</Group>
+
+						<Carousel
+							slideSize="70%"
+							height={300}
+							slideGap="md"
+							controlsOffset="xs"
+							dragFree
+							withIndicators
+						>
+							{locationData.location_parking_photos.map((photo, index) => (
+								<Carousel.Slide key={`parking-photo-${index}`}>
+									<Image
+										src={photo.url}
+										alt={photo.alt || `Parking area photo ${index + 1}`}
+										height={300}
+										style={{ objectFit: "cover" }}
+									/>
+									{photo.caption && (
+										<Text size="sm" c="dimmed" mt="xs">
+											{photo.caption}
+										</Text>
+									)}
+								</Carousel.Slide>
+							))}
+						</Carousel>
+					</Stack>
+				)}
 
 			{/* Entrance Section */}
 			{entranceLatLong && (
@@ -244,41 +246,44 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 			)}
 
 			{/* Entrance Photos Gallery */}
-			{locationData?.location_entrance_photos && locationData.location_entrance_photos.length > 0 && (
-				<Stack gap="sm" mb="xl">
-					<Group gap="xs">
-						<ThemeIcon variant="light" color="orange">
-							<IconPhoto size={18} />
-						</ThemeIcon>
-						<Text fw={500}>Entrance Photos</Text>
-					</Group>
-					
-					<div style={{ 
-						display: 'grid', 
-						gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
-						gap: '1rem'
-					}}>
-						{locationData.location_entrance_photos.map((photo, index) => (
-							<div key={`entrance-photo-${index}`}>
-								<Image
-									src={photo.url}
-									alt={photo.alt || `Cave entrance photo ${index + 1}`}
-									radius="md"
-									style={{ 
-										height: 200,
-										objectFit: 'cover'
-									}}
-								/>
-								{photo.caption && (
-									<Text size="sm" c="dimmed" mt="xs">
-										{photo.caption}
-									</Text>
-								)}
-							</div>
-						))}
-					</div>
-				</Stack>
-			)}
+			{locationData?.location_entrance_photos &&
+				locationData.location_entrance_photos.length > 0 && (
+					<Stack gap="sm" mb="xl">
+						<Group gap="xs">
+							<ThemeIcon variant="light" color="orange">
+								<IconPhoto size={18} />
+							</ThemeIcon>
+							<Text fw={500}>Entrance Photos</Text>
+						</Group>
+
+						<div
+							style={{
+								display: "grid",
+								gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
+								gap: "1rem",
+							}}
+						>
+							{locationData.location_entrance_photos.map((photo, index) => (
+								<div key={`entrance-photo-${index}`}>
+									<Image
+										src={photo.url}
+										alt={photo.alt || `Cave entrance photo ${index + 1}`}
+										radius="md"
+										style={{
+											height: 200,
+											objectFit: "cover",
+										}}
+									/>
+									{photo.caption && (
+										<Text size="sm" c="dimmed" mt="xs">
+											{photo.caption}
+										</Text>
+									)}
+								</div>
+							))}
+						</div>
+					</Stack>
+				)}
 
 			{/* Access Requirements */}
 			{accessNotes.length > 0 && (
@@ -356,14 +361,16 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 						<Text fw={500}>Route Description</Text>
 					</Group>
 
-					<div style={{ position: 'relative' }}>
+					<div style={{ position: "relative" }}>
 						<div
 							style={{
 								maxHeight: 200,
-								overflow: 'hidden',
-								position: 'relative',
-								maskImage: 'linear-gradient(to bottom, black 50%, transparent 100%)',
-								WebkitMaskImage: 'linear-gradient(to bottom, black 50%, transparent 100%)'
+								overflow: "hidden",
+								position: "relative",
+								maskImage:
+									"linear-gradient(to bottom, black 50%, transparent 100%)",
+								WebkitMaskImage:
+									"linear-gradient(to bottom, black 50%, transparent 100%)",
 							}}
 						>
 							{typeof routeDescription === "object" &&
@@ -371,7 +378,7 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 							routeDescription.route_description_segment_html ? (
 								<div
 									dangerouslySetInnerHTML={{
-										__html: routeDescription.route_description_segment_html
+										__html: routeDescription.route_description_segment_html,
 									}}
 									style={{ lineHeight: 1.5 }}
 								/>
@@ -380,27 +387,30 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 							)}
 						</div>
 
-						<div style={{
-							position: 'absolute',
-							bottom: 0,
-							left: 0,
-							right: 0,
-							height: '100%',
-							background: 'linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,1) 100%)',
-							display: 'flex',
-							alignItems: 'flex-end',
-							justifyContent: 'center',
-							pointerEvents: 'none'
-						}}>
+						<div
+							style={{
+								position: "absolute",
+								bottom: 0,
+								left: 0,
+								right: 0,
+								height: "100%",
+								background:
+									"linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,1) 100%)",
+								display: "flex",
+								alignItems: "flex-end",
+								justifyContent: "center",
+								pointerEvents: "none",
+							}}
+						>
 							<Text
 								size="sm"
 								c="dimmed"
 								ta="center"
 								p="md"
 								style={{
-									backgroundColor: 'rgba(255,255,255,0.9)',
+									backgroundColor: "rgba(255,255,255,0.9)",
 									borderRadius: 8,
-									width: '100%'
+									width: "100%",
 								}}
 							>
 								Route descriptions available soon for Leaders
