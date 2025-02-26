@@ -87,7 +87,11 @@ export function TripExperience({ trip }: TripExperienceProps) {
 								<Text fw={500}>Recommended Training:</Text>
 								<List>
 									{participantSkills.recommended_training.map((training, i) => (
-										<List.Item key={`training-${training.substring(0, 10)}-${i}`}>{training}</List.Item>
+										<List.Item
+											key={`training-${training.substring(0, 10)}-${i}`}
+										>
+											{training}
+										</List.Item>
 									))}
 								</List>
 							</div>
@@ -124,7 +128,9 @@ export function TripExperience({ trip }: TripExperienceProps) {
 							<List>
 								{leadingDifficulty.route_leading_difficulty_horizontal_leading_skills_required.map(
 									(skill, i) => (
-										<List.Item key={`skill-${skill.substring(0, 10)}-${i}`}>{skill}</List.Item>
+										<List.Item key={`skill-${skill.substring(0, 10)}-${i}`}>
+											{skill}
+										</List.Item>
 									),
 								)}
 							</List>
