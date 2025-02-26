@@ -117,9 +117,13 @@ export function parseDifficultyValue(
 export function getChallengeRating(score: number | null, domain: ChallengeDomain): ChallengeRating {
 	if (score === null || score === 0) return "na";
 	const thresholds = CHALLENGE_CONFIG.thresholds[domain];
-	if (score <= thresholds.green) return "green";
-	if (score <= thresholds.amber) return "amber";
-	return "red";
+	// Check if score is greater than 0 and less than or equal to green threshold
+	if (score > 0 && score <= thresholds.green) return "green";
+	// Check if score is greater than green threshold and less than or equal to amber threshold
+	if (score > thresholds.green && score <= thresholds.amber) return "amber";
+	// If score is greater than amber threshold
+	if (score > thresholds.amber) return "red";
+	return "na"; // Fallback
 }
 
 /**
@@ -182,15 +186,12 @@ function calculateClaustrophobiaScore(difficulty: DifficultyData): {
 		},
 	];
 
-	// Calculate total score (out of 10)
-	const validDetails = details.filter((d) => d.value !== null);
-	if (validDetails.length === 0) return { score: 0, details };
-
-	const totalWeight = validDetails.reduce((sum, d) => sum + d.weight, 0);
-	const weightedSum = validDetails.reduce((sum, d) => sum + d.contribution, 0);
-
-	// Normalize to a 0-10 scale
-	const score = totalWeight > 0 ? (weightedSum / totalWeight) * 2 : 0;
+	// Calculate weighted sum directly
+	const weightedSum = details.reduce((sum, d) => sum + d.contribution, 0);
+	
+	// Score is the weighted sum directly (already on a 0-10 scale)
+	// We multiply by 2 because input values are on a 0-5 scale
+	const score = weightedSum * 2;
 
 	return { score, details };
 }
@@ -255,15 +256,12 @@ function calculateWaterScore(difficulty: DifficultyData): {
 		},
 	];
 
-	// Calculate total score (out of 10)
-	const validDetails = details.filter((d) => d.value !== null);
-	if (validDetails.length === 0) return { score: 0, details };
-
-	const totalWeight = validDetails.reduce((sum, d) => sum + d.weight, 0);
-	const weightedSum = validDetails.reduce((sum, d) => sum + d.contribution, 0);
-
-	// Normalize to a 0-10 scale
-	const score = totalWeight > 0 ? (weightedSum / totalWeight) * 2 : 0;
+	// Calculate weighted sum directly
+	const weightedSum = details.reduce((sum, d) => sum + d.contribution, 0);
+	
+	// Score is the weighted sum directly (already on a 0-10 scale)
+	// We multiply by 2 because input values are on a 0-5 scale
+	const score = weightedSum * 2;
 
 	return { score, details };
 }
@@ -308,15 +306,12 @@ function calculateHeightsScore(difficulty: DifficultyData): {
 		},
 	];
 
-	// Calculate total score (out of 10)
-	const validDetails = details.filter((d) => d.value !== null);
-	if (validDetails.length === 0) return { score: 0, details };
-
-	const totalWeight = validDetails.reduce((sum, d) => sum + d.weight, 0);
-	const weightedSum = validDetails.reduce((sum, d) => sum + d.contribution, 0);
-
-	// Normalize to a 0-10 scale
-	const score = totalWeight > 0 ? (weightedSum / totalWeight) * 2 : 0;
+	// Calculate weighted sum directly
+	const weightedSum = details.reduce((sum, d) => sum + d.contribution, 0);
+	
+	// Score is the weighted sum directly (already on a 0-10 scale)
+	// We multiply by 2 because input values are on a 0-5 scale
+	const score = weightedSum * 2;
 
 	return { score, details };
 }

@@ -93,16 +93,16 @@ function ChallengeDetails({ metric }: { metric: ChallengeMetric }) {
 							</Text>
 						</Text>
 						<Text size="sm" fw={500}>
-							{detail.value !== null ? `${detail.value * 2}/10` : "N/A"}
+							{detail.value !== null ? `${detail.value}/5` : "N/A"}
 						</Text>
 					</Group>
 					{detail.value !== null && (
 						<Progress
-							value={detail.value * 10}
+							value={detail.value * 20}
 							color={
-								detail.value * 2 <= 2.5
+								detail.value <= 2.5 / 2
 									? "green"
-									: detail.value * 2 <= 6.5
+									: detail.value <= 6.5 / 2
 										? "yellow"
 										: "red"
 							}
