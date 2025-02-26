@@ -106,7 +106,7 @@ export function TripExperience({ trip }: TripExperienceProps) {
 	const weightedRank = challengeResult?.weightedRank;
 
 	return (
-		<Stack withBorder p="md" radius="md" mt="md">
+		<Paper withBorder p="md" radius="md" mt="md">
 			<Title order={2} mb="md">
 				What the Trip Will Be Like
 			</Title>
@@ -338,11 +338,207 @@ export function TripExperience({ trip }: TripExperienceProps) {
 					</Alert>
 				</Stack>
 			)}
+			{/* Participant Experience - Enhanced */}
+			<Stack gap="md" mb="xl">
+				{participantSkills && (
+					<Group gap="xs">
+						<ThemeIcon variant="light" color="teal">
+							<IconUser size={18} />
+						</ThemeIcon>
+						<Text fw={500}>Suggested Experience</Text>
+					</Group>
+				)}
+
+				{participantSkills?.route_participants_skills_required_horizontal_level ? (
+					<Box>
+						<Group align="center" mb="xs">
+							<Badge size="lg" color="teal" variant="filled">
+								Suggested Skill Level:{" "}
+								{typeof participantSkills.route_participants_skills_required_horizontal_level ===
+								"object"
+									? (
+											participantSkills.route_participants_skills_required_horizontal_level as any
+										)?.post_title
+									: participantSkills.route_participants_skills_required_horizontal_level}
+							</Badge>
+
+							{typeof participantSkills.route_participants_skills_required_horizontal_level ===
+								"object" &&
+								(
+									participantSkills.route_participants_skills_required_horizontal_level as {
+										permalink: string;
+									}
+								)?.permalink && (
+									<Anchor
+										href={
+											(
+												participantSkills.route_participants_skills_required_horizontal_level as {
+													permalink: string;
+												}
+											).permalink
+										}
+										target="_blank"
+										size="sm"
+									>
+										View Syllabus
+									</Anchor>
+								)}
+						</Group>
+
+						{typeof participantSkills.route_participants_skills_required_horizontal_level ===
+							"object" &&
+							(
+								participantSkills.route_participants_skills_required_horizontal_level as any
+							)?.post_title === "Horizontal Basic" && (
+								<Alert color="teal" icon={<IconCompass size={18} />} mb="md">
+									<Text size="sm">
+										<strong>Horizontal Basic</strong> means you should be
+										comfortable with:
+										<List size="sm" mt="xs">
+											<List.Item>
+												Moving through basic cave passages
+											</List.Item>
+											<List.Item>Climbing short, simple climbs</List.Item>
+											<List.Item>Basic crawling and stooping</List.Item>
+											<List.Item>
+												Following instructions from leaders and being supportive around other cavers
+											</List.Item>
+										</List>
+									</Text>
+								</Alert>
+							)}
+					</Box>
+				) : participantSkills && (
+					<Box>
+						<Alert color="teal" icon={<IconCompass size={18} />} mb="md">
+							<Text size="sm">
+								<strong>We hope you might:</strong>
+								<List size="sm" mt="xs">
+									<List.Item>Be able to walk up two flights of stairs unaided</List.Item>
+									<List.Item>Be able to bend down and kneel up</List.Item>
+									<List.Item>Be able to laugh</List.Item>
+									<List.Item>Be willing to support other people in the group</List.Item>
+								</List>
+							</Text>
+						</Alert>
+					</Box>
+				)}
+
+				{participantSkills?.minimum_experience && (
+					<Text>
+						<strong>Minimum Experience:</strong>{" "}
+						{participantSkills.minimum_experience}
+					</Text>
+				)}
+
+				{participantSkills?.recommended_training &&
+					participantSkills.recommended_training.length > 0 && (
+						<div>
+							<Text fw={500}>Recommended Training:</Text>
+							<List>
+								{participantSkills.recommended_training.map((training, i) => (
+									<List.Item
+										key={`training-${training.substring(0, 10)}-${i}`}
+									>
+										{training}
+									</List.Item>
+								))}
+							</List>
+						</div>
+					)}
+			</Stack>
+
+			{/* Personal Equipment Suggested */}
+			{personalGear && personalGear.length > 0 && (
+				<Stack gap="md" mb="xl">
+					<Group gap="xs">
+						<ThemeIcon variant="light" color="blue">
+							<IconShirt size={18} />
+						</ThemeIcon>
+						<Text fw={500}>Personal Equipment Suggested</Text>
+					</Group>
+
+					<Grid>
+						{Array.isArray(personalGear) &&
+							personalGear.map((item, index) => (
+								<Grid.Col span={{ base: 6, md: 4 }} key={`gear-${index}`}>
+									<Group gap="xs">
+										{(() => {
+											// Choose icon based on gear type
+											switch (item.toLowerCase()) {
+												case "oversuit":
+													return <IconShirt size={16} />;
+												case "undersuit":
+													return <IconShirt size={16} />;
+												case "wellies":
+													return <IconWalk size={16} />;
+												case "kneepads":
+													return <IconArrowsVertical size={16} />;
+												case "helmet and light":
+													return <IconFirstAidKit size={16} />;
+												case "gloves":
+													return <IconTool size={16} />;
+												case "belt":
+													return <IconRuler size={16} />;
+												default:
+													return <IconTool size={16} />;
+											}
+										})()}
+										<Text>{item}</Text>
+									</Group>
+								</Grid.Col>
+							))}
+					</Grid>
+
+					<Alert color="blue" icon={<IconInfoCircle size={16} />}>
+						<Text size="sm">
+							Don't have any of the gear? The Crew has all equipment available to
+							borrow - just let us know what you need after you sign up.
+						</Text>
+					</Alert>
+				</Stack>
+			)}
+
+			{/* Group Equipment */}
+			{groupTackle && (
+				<Stack gap="md" mb="xl">
+					<Group gap="xs">
+						<ThemeIcon variant="light" color="grape">
+							<IconTool size={18} />
+						</ThemeIcon>
+						<Text fw={500}>Group Equipment Suggested</Text>
+					</Group>
+
+					{/* If groupTackle is a string with line breaks, convert to list */}
+					{typeof groupTackle === "string" &&
+					groupTackle.indexOf("\r\n") !== -1 ? (
+						<List>
+							{groupTackle
+								.split("\r\n")
+								.filter((line) => line.trim())
+								.map((line, index) => (
+									<List.Item key={`tackle-${index}`}>
+										{line.replace(/^-\s*/, "")}
+									</List.Item>
+								))}
+						</List>
+					) : (
+						<div dangerouslySetInnerHTML={{ __html: groupTackle }} />
+					)}
+
+					<Alert color="violet" icon={<IconInfoCircle size={16} />}>
+						<Text size="sm">
+							The trip leader will organize this equipment. You don't need to
+							bring these items unless specifically asked.
+						</Text>
+					</Alert>
+				</Stack>
+			)}
 		</Paper>
 
-	<Paper withBorder p="md" radius="md" mt="md">
-	{/* Leading the Trip */}
-			{leadingDifficulty && (
+		{/* Leading the Trip - Separate Paper Container */}
+		{leadingDifficulty && (
+			<Paper withBorder p="md" radius="md" mt="md">
 				<Stack gap="md" mb="xl">
 					<Group gap="xs">
 						<ThemeIcon variant="light" color="orange">
@@ -354,7 +550,7 @@ export function TripExperience({ trip }: TripExperienceProps) {
 					{leadingDifficulty.route_leading_difficulty_horizontal_leading_level_required && (
 						<Group align="center" mb="xs">
 							<Badge size="lg" color="orange" variant="filled">
-								Suggested Laading Level:{" "}
+								Suggested Leading Level:{" "}
 								{
 									leadingDifficulty
 										.route_leading_difficulty_horizontal_leading_level_required
@@ -432,20 +628,20 @@ export function TripExperience({ trip }: TripExperienceProps) {
 						</Group>
 					)}
 				</Stack>
-			)}
 
-			{/* Conservation Alert */}
-			<Alert
-				color="green"
-				title="Conservation Notice"
-				icon={<IconFirstAidKit size={18} />}
-				mb="md"
-			>
-				<Text size="sm">
-					Please follow all conservation guidelines and avoid touching
-					formations. Take nothing but pictures, leave nothing but footprints.
-				</Text>
-			</Alert>
-		</Paper>
+				{/* Conservation Alert */}
+				<Alert
+					color="green"
+					title="Conservation Notice"
+					icon={<IconFirstAidKit size={18} />}
+					mb="md"
+				>
+					<Text size="sm">
+						Please follow all conservation guidelines and avoid touching
+						formations. Take nothing but pictures, leave nothing but footprints.
+					</Text>
+				</Alert>
+			</Paper>
+		)}
 	);
 }
