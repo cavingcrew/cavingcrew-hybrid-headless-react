@@ -83,14 +83,14 @@ export function AboutCavingCrew() {
 					</Text>
 				</Group>
 			</Stack>
-			
+
 			<Center mt="xl">
 				<Button
 					size="lg"
 					color="blue"
 					onClick={() => {
 						const signupSection = document.getElementById(
-							"trip-signup-section"
+							"trip-signup-section",
 						);
 						if (signupSection) {
 							signupSection.scrollIntoView({ behavior: "smooth" });
