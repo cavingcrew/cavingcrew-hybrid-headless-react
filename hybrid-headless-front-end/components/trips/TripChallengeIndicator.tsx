@@ -203,54 +203,9 @@ export function TripChallengeIndicator({
 						aria-labelledby="challenge-chart-title"
 					>
 						<title id="challenge-chart-title">Cave challenge rating chart</title>
-						{/* Claustrophobia (Top Quadrant - 315° to 45°) */}
+						{/* Heights (Top Quadrant - 315° to 45°) */}
 						<path
 							d="M50,50 L71,29 A30,30 0 0,0 29,29 L50,50 Z"
-							fill={getDomainColor("claustrophobia")}
-							stroke={theme.colors.gray[3]}
-							strokeWidth="0.5"
-							onClick={() => handleSegmentClick("claustrophobia")}
-							onKeyDown={(e) => {
-								if (e.key === 'Enter' || e.key === ' ') {
-									handleSegmentClick("claustrophobia");
-								}
-							}}
-							tabIndex={0}
-							role="button"
-							aria-label="Claustrophobia rating"
-							style={{ cursor: "pointer" }}
-							className="challenge-segment"
-						>
-							<animate
-								attributeName="opacity"
-								values="1;0.8;1"
-								dur="2s"
-								begin="mouseover"
-								repeatCount="indefinite"
-							/>
-							<animate
-								attributeName="stroke-width"
-								values="0.5;1.5;0.5"
-								dur="2s"
-								begin="mouseover"
-								repeatCount="indefinite"
-							/>
-						</path>
-						<text
-							x="50"
-							y="30"
-							textAnchor="middle"
-							fill="#fff"
-							fontSize="6"
-							fontWeight="bold"
-							pointerEvents="none"
-						>
-							Tight
-						</text>
-
-						{/* Heights (Right Quadrant - 45° to 135°) */}
-						<path
-							d="M50,50 L71,71 A30,30 0 0,0 71,29 L50,50 Z"
 							fill={getDomainColor("heights")}
 							stroke={theme.colors.gray[3]}
 							strokeWidth="0.5"
@@ -282,21 +237,20 @@ export function TripChallengeIndicator({
 							/>
 						</path>
 						<text
-							x="70"
-							y="50"
+							x="50"
+							y="30"
 							textAnchor="middle"
 							fill="#fff"
 							fontSize="6"
 							fontWeight="bold"
 							pointerEvents="none"
-							transform="rotate(90, 70, 50)"
 						>
 							Heights
 						</text>
 
-						{/* Hazard (Bottom Quadrant - 135° to 225°) */}
+						{/* Hazards (Right Quadrant - 45° to 135°) */}
 						<path
-							d="M50,50 L29,71 A30,30 0 0,0 71,71 L50,50 Z"
+							d="M50,50 L71,71 A30,30 0 0,0 71,29 L50,50 Z"
 							fill={getDomainColor("hazard")}
 							stroke={theme.colors.gray[3]}
 							strokeWidth="0.5"
@@ -328,20 +282,21 @@ export function TripChallengeIndicator({
 							/>
 						</path>
 						<text
-							x="50"
-							y="73"
+							x="70"
+							y="50"
 							textAnchor="middle"
 							fill="#fff"
 							fontSize="6"
 							fontWeight="bold"
 							pointerEvents="none"
+							transform="rotate(90, 70, 50)"
 						>
 							Hazards
 						</text>
 
-						{/* Water (Left Quadrant - 225° to 315°) */}
+						{/* Water (Bottom Quadrant - 135° to 225°) */}
 						<path
-							d="M50,50 L29,29 A30,30 0 0,0 29,71 L50,50 Z"
+							d="M50,50 L29,71 A30,30 0 0,0 71,71 L50,50 Z"
 							fill={getDomainColor("water")}
 							stroke={theme.colors.gray[3]}
 							strokeWidth="0.5"
@@ -373,6 +328,51 @@ export function TripChallengeIndicator({
 							/>
 						</path>
 						<text
+							x="50"
+							y="73"
+							textAnchor="middle"
+							fill="#fff"
+							fontSize="6"
+							fontWeight="bold"
+							pointerEvents="none"
+						>
+							Water
+						</text>
+
+						{/* Claustrophobia (Left Quadrant - 225° to 315°) */}
+						<path
+							d="M50,50 L29,29 A30,30 0 0,0 29,71 L50,50 Z"
+							fill={getDomainColor("claustrophobia")}
+							stroke={theme.colors.gray[3]}
+							strokeWidth="0.5"
+							onClick={() => handleSegmentClick("claustrophobia")}
+							onKeyDown={(e) => {
+								if (e.key === 'Enter' || e.key === ' ') {
+									handleSegmentClick("claustrophobia");
+								}
+							}}
+							tabIndex={0}
+							role="button"
+							aria-label="Claustrophobia rating"
+							style={{ cursor: "pointer" }}
+							className="challenge-segment"
+						>
+							<animate
+								attributeName="opacity"
+								values="1;0.8;1"
+								dur="2s"
+								begin="mouseover"
+								repeatCount="indefinite"
+							/>
+							<animate
+								attributeName="stroke-width"
+								values="0.5;1.5;0.5"
+								dur="2s"
+								begin="mouseover"
+								repeatCount="indefinite"
+							/>
+						</path>
+						<text
 							x="30"
 							y="50"
 							textAnchor="middle"
@@ -382,7 +382,7 @@ export function TripChallengeIndicator({
 							pointerEvents="none"
 							transform="rotate(270, 30, 50)"
 						>
-							Water
+							Tight
 						</text>
 
 						{/* Endurance (Center) */}
