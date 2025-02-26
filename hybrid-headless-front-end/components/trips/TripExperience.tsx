@@ -46,6 +46,7 @@ export function TripExperience({ trip }: TripExperienceProps) {
 						<Text fw={500}>Cave Overview</Text>
 					</Group>
 					{/* Content from WordPress sanitized HTML */}
+					{/* Content from WordPress sanitized HTML */}
 					<div dangerouslySetInnerHTML={{ __html: routeData.route_blurb }} />
 				</Stack>
 			)}
@@ -156,7 +157,7 @@ export function TripExperience({ trip }: TripExperienceProps) {
 						</ThemeIcon>
 						<Text fw={500}>Group Equipment Required</Text>
 					</Group>
-					{/* Content from WordPress sanitized HTML */}
+					{/* Content from WordPress sanitized HTML - Group Equipment */}
 					<div dangerouslySetInnerHTML={{ __html: groupTackle }} />
 				</Stack>
 			)}

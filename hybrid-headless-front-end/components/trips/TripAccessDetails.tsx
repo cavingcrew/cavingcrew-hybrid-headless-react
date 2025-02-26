@@ -119,6 +119,7 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 
 					{parkingInstructions && (
 						<div
+							// Content from WordPress sanitized HTML
 							dangerouslySetInnerHTML={{ __html: parkingInstructions }}
 							style={{ lineHeight: 1.5 }}
 						/>
@@ -155,8 +156,8 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 							dragFree
 							withIndicators
 						>
-							{locationData.location_parking_photos.map((photo, index) => (
-								<Carousel.Slide key={`parking-photo-${index}`}>
+							{locationData.location_parking_photos.map((photo) => (
+								<Carousel.Slide key={`parking-photo-${photo.ID || photo.url}`}>
 									<Image
 										src={photo.url}
 										alt={photo.alt || `Parking area photo ${index + 1}`}
@@ -186,6 +187,7 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 						<Text fw={500}>Approach from Parking</Text>
 					</Group>
 					<div
+						// Content from WordPress sanitized HTML
 						dangerouslySetInnerHTML={{ __html: parkingToEntranceRoute }}
 						style={{ lineHeight: 1.5 }}
 					/>
@@ -279,8 +281,8 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 								gap: "1rem",
 							}}
 						>
-							{locationData.location_entrance_photos.map((photo, index) => (
-								<div key={`entrance-photo-${index}`}>
+							{locationData.location_entrance_photos.map((photo) => (
+								<div key={`entrance-photo-${photo.ID || photo.url}`}>
 									<Image
 										src={photo.url}
 										alt={photo.alt || `Cave entrance photo ${index + 1}`}
@@ -393,6 +395,7 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 							!Array.isArray(routeDescription) &&
 							routeDescription.route_description_segment_html ? (
 								<div
+									// Content from WordPress sanitized HTML
 									dangerouslySetInnerHTML={{
 										__html: routeDescription.route_description_segment_html,
 									}}
@@ -401,8 +404,8 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 							) : Array.isArray(routeDescription) &&
 								routeDescription.length > 0 ? (
 								<Stack gap="xs">
-									{routeDescription.map((section, index) => (
-										<div key={`route-section-${index}`}>
+									{routeDescription.map((section) => (
+										<div key={`route-section-${section.section_title || section.section_content?.substring(0, 20)}`}>
 											{section.section_title && (
 												<Text fw={500} size="sm">
 													{section.section_title}

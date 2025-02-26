@@ -72,6 +72,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
 			<Stack gap="md">
 				{acf?.event_description && (
 					<div
+						// Content from WordPress sanitized HTML
 						dangerouslySetInnerHTML={{ __html: acf.event_description ?? "" }}
 					/>
 				)}
@@ -421,6 +422,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
 						What does signing up pay for?
 					</Title>
 					<div
+						// Content from WordPress sanitized HTML
 						dangerouslySetInnerHTML={{
 							__html: trip.acf.event_paying_for ?? "",
 						}}
@@ -455,6 +457,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
 									<Accordion.Panel>
 										{faq.trip_faq_answer && (
 											<div
+												// Content from WordPress sanitized HTML
 												dangerouslySetInnerHTML={{
 													__html: faq.trip_faq_answer ?? "",
 												}}
@@ -487,6 +490,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
 									<Accordion.Panel>
 										{kit.overnight_kit_list && (
 											<div
+												// Content from WordPress sanitized HTML
 												dangerouslySetInnerHTML={{
 													__html: kit.overnight_kit_list ?? "",
 												}}
@@ -523,6 +527,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
 									<Accordion.Panel>
 										{plan.overnight_plans_description && (
 											<div
+												// Content from WordPress sanitized HTML
 												dangerouslySetInnerHTML={{
 													__html: plan.overnight_plans_description ?? "",
 												}}
