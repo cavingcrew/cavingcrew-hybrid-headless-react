@@ -214,7 +214,7 @@ export function TripChallengeIndicator({
 						/>
 						<text
 							x="50"
-							y="0"
+							y="15"
 							textAnchor="middle"
 							fill="#fff"
 							fontSize="6"
@@ -273,7 +273,7 @@ export function TripChallengeIndicator({
 						/>
 						<text
 							x="50"
-							y="100"
+							y="85"
 							textAnchor="middle"
 							fill="#fff"
 							fontSize="6"
