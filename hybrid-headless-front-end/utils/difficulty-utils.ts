@@ -45,7 +45,7 @@ export const CHALLENGE_CONFIG = {
 			climbing: 0.5,
 		},
 		// Hazard is already out of 10, no weights needed
-		// Endurance is a direct value
+		// Endurance is a direct value (0-10 scale like others)
 	},
 };
 
@@ -345,6 +345,8 @@ function calculateHazardScore(difficulty: DifficultyData): {
 
 /**
  * Calculates the endurance score
+ * 
+ * Endurance is rated on the same 0-10 scale as other metrics
  *
  * @param difficulty - The difficulty data
  * @returns The endurance score and details
