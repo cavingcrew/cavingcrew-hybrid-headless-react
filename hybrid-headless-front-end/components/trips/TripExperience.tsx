@@ -218,14 +218,14 @@ export function TripExperience({ trip }: TripExperienceProps) {
 						</Box>
 					)}
 
-					{participantSkills.minimum_experience && (
+					{participantSkills?.minimum_experience && (
 						<Text>
 							<strong>Minimum Experience:</strong>{" "}
 							{participantSkills.minimum_experience}
 						</Text>
 					)}
 
-					{participantSkills.recommended_training &&
+					{participantSkills?.recommended_training &&
 						participantSkills.recommended_training.length > 0 && (
 							<div>
 								<Text fw={500}>Recommended Training:</Text>
