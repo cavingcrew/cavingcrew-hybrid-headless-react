@@ -53,8 +53,64 @@ function DomainIcon({ domain, size = 18 }: DomainIconProps) {
 
 // Component to render the details of a challenge metric
 function ChallengeDetails({ metric }: { metric: ChallengeMetric }) {
+	// Get description based on the metric domain and detail key
+	const getMetricDescription = (domain: ChallengeDomain, key: string) => {
+		switch (domain) {
+			case "claustrophobia":
+				if (key === "psychological") {
+					return "How tight and psychologically challenging passages feel - the mental impact of confined spaces.";
+				} else if (key === "objective") {
+					return "The actual width/narrowness of the tightest mandatory section you must pass through.";
+				}
+				break;
+			case "water":
+				if (key === "wetness") {
+					return "The general level of water you'll encounter - from damp passages to fully submerged sections.";
+				} else if (key === "nearFace") {
+					return "How close water will come to your face - affects breathing comfort and psychological challenge.";
+				} else if (key === "deepWater") {
+					return "Exposure to deep water where you can't touch the bottom - may require swimming or flotation.";
+				} else if (key === "muddiness") {
+					return "The amount and consistency of mud you'll encounter - affects movement and comfort.";
+				}
+				break;
+			case "heights":
+				if (key === "exposure") {
+					return "The psychological impact of height exposure - includes both roped and unroped sections with drops.";
+				} else if (key === "climbing") {
+					return "The technical difficulty of the most challenging climbing sections you'll encounter.";
+				}
+				break;
+			case "hazard":
+				return "The objective level of hazard including rockfall risk, flooding potential, and difficulty of rescue from the most isolated point.";
+			case "endurance":
+				return "How physically demanding the trip is - considers length, difficulty of movement, and overall exertion required.";
+		}
+		return "";
+	};
+
+	// Get overall domain description
+	const getDomainDescription = (domain: ChallengeDomain) => {
+		switch (domain) {
+			case "claustrophobia":
+				return "How confined and tight the cave passages are, both physically and psychologically.";
+			case "water":
+				return "The presence and challenge of water throughout the cave system.";
+			case "heights":
+				return "Exposure to drops, climbs, and vertical sections within the cave.";
+			case "hazard":
+				return "Objective dangers present in the cave environment that require awareness and management.";
+			case "endurance":
+				return "The physical stamina and energy required to complete the trip.";
+		}
+	};
+
 	return (
 		<Stack gap="md">
+			<Text size="sm" c="dimmed" mb="md">
+				{getDomainDescription(metric.domain)}
+			</Text>
+
 			{metric.details.map((detail) => (
 				<Box key={detail.key} mb="xs">
 					<Group justify="space-between" mb={5}>
@@ -82,6 +138,9 @@ function ChallengeDetails({ metric }: { metric: ChallengeMetric }) {
 							radius="xl"
 						/>
 					)}
+					<Text size="xs" c="dimmed" mt={5}>
+						{getMetricDescription(metric.domain, detail.key)}
+					</Text>
 				</Box>
 			))}
 
