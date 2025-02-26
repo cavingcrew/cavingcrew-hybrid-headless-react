@@ -90,12 +90,26 @@ export function TripExperience({ trip }: TripExperienceProps) {
 	const leadingDifficulty = routeData?.route_leading_difficulty;
 	const groupTackle = routeData?.route_group_tackle_required;
 	const personalGear = routeData?.route_personal_gear_required;
+	const routeData = trip.route?.acf;
+	const starRating = routeData?.route_trip_star_rating;
+	const estimatedTime = routeData?.route_time_for_eta;
+
+	const challengeResult = extractChallengeMetrics(routeData);
+	const challengeMetrics = challengeResult?.metrics;
+	const weightedRank = challengeResult?.weightedRank;
 
 	return (
 		<Paper withBorder p="md" radius="md" mt="md">
 			<Title order={2} mb="md">
 				What the Trip Will Be Like
 			</Title>
+
+			{(starRating || estimatedTime) && (
+				<TripEnjoymentRating
+					starRating={starRating}
+					estimatedTime={estimatedTime}
+				/>
+			)}
 
 			{/* Trip Overview */}
 			{routeData?.route_blurb && (
@@ -113,101 +127,13 @@ export function TripExperience({ trip }: TripExperienceProps) {
 				</Stack>
 			)}
 
+			<TripChallengeIndicator
+				metrics={challengeMetrics}
+				weightedRank={weightedRank}
+			/>
+
 			{/* Challenge and Enjoyment Metrics */}
-			<Stack gap="md" mb="xl">
-				<Group gap="xs">
-					<ThemeIcon variant="light" color="red">
-						<IconMountainOff size={18} />
-					</ThemeIcon>
-					<Text fw={500}>Challenge Rating</Text>
-				</Group>
 
-				{(() => {
-					const routeData = trip.route?.acf;
-					const starRating = routeData?.route_trip_star_rating;
-					const estimatedTime = routeData?.route_time_for_eta;
-
-					const challengeResult = extractChallengeMetrics(routeData);
-					const challengeMetrics = challengeResult?.metrics;
-					const weightedRank = challengeResult?.weightedRank;
-
-					if (!challengeMetrics && !starRating && !estimatedTime) {
-						return null;
-					}
-
-					return (
-						<>
-							{challengeMetrics && (
-								<>
-									<Box>
-										{/* Grid layout for desktop, stack for mobile */}
-										{/* Add global styles at the component level, not nested */}
-										<style dangerouslySetInnerHTML={{ __html: `
-											@media (min-width: 768px) {
-												.grid-container {
-													display: grid;
-													grid-template-columns: 1fr 1fr;
-													gap: 1rem;
-												}
-												.overview-section {
-													order: 2;
-												}
-												.challenge-section {
-													order: 1;
-												}
-											}
-										`}} />
-
-										<Box
-											className="grid-container"
-											style={{
-												display: "grid",
-												gridTemplateColumns: "1fr",
-												gap: "1rem",
-											}}
-										>
-											{/* Overview section - first on mobile, second on desktop */}
-											<Box
-												className="overview-section"
-												style={{ order: 1 }}
-											>
-												<Alert color="blue" icon={<IconMoodSmile size={18} />}>
-
-												</Alert>
-
-												{(starRating || estimatedTime) && (
-													<TripEnjoymentRating
-														starRating={starRating}
-														estimatedTime={estimatedTime}
-													/>
-												)}
-											</Box>
-
-											{/* Challenge indicator - second on mobile, first on desktop */}
-											<Box
-												className="challenge-section"
-												style={{ order: 2 }}
-											>
-												<TripChallengeIndicator
-													metrics={challengeMetrics}
-													weightedRank={weightedRank}
-												/>
-											</Box>
-										</Box>
-									</Box>
-								</>
-							)}
-
-							{!challengeMetrics && (starRating || estimatedTime) && (
-								<TripEnjoymentRating
-									starRating={starRating}
-									estimatedTime={estimatedTime}
-								/>
-							)}
-						</>
-					);
-				})()}
-			</Stack>
 
 			{/* Participant Experience - Enhanced */}
 			{participantSkills && (
