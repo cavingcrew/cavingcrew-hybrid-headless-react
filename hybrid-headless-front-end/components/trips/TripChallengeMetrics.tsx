@@ -86,18 +86,66 @@ export function TripChallengeMetrics({ trip }: TripChallengeMetricsProps) {
 
       {challengeMetrics && (
         <>
-          <TripChallengeIndicator
-            metrics={challengeMetrics}
-            weightedRank={weightedRank}
-          />
+          <Box>
+            {/* Grid layout for desktop, stack for mobile */}
+            <Box
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr",
+                gap: "1rem",
+                "@media (min-width: 768px)": {
+                  gridTemplateColumns: "1fr 1fr",
+                },
+              }}
+              sx={(theme) => ({
+                [theme.fn.largerThan("sm")]: {
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: "1rem",
+                },
+              })}
+            >
+              {/* Overview section - first on mobile, second on desktop */}
+              <Box
+                order={1}
+                sx={(theme) => ({
+                  [theme.fn.largerThan("sm")]: {
+                    order: 2,
+                  },
+                })}
+              >
+                <Alert color="blue" icon={<IconMoodSmile size={18} />}>
 
-          <Alert color="blue" icon={<IconMoodSmile size={18} />}>
+                </Alert>
+                
+                {(starRating || estimatedTime) && (
+                  <TripEnjoymentRating
+                    starRating={starRating}
+                    estimatedTime={estimatedTime}
+                  />
+                )}
+              </Box>
 
-          </Alert>
+              {/* Challenge indicator - second on mobile, first on desktop */}
+              <Box
+                order={2}
+                sx={(theme) => ({
+                  [theme.fn.largerThan("sm")]: {
+                    order: 1,
+                  },
+                })}
+              >
+                <TripChallengeIndicator
+                  metrics={challengeMetrics}
+                  weightedRank={weightedRank}
+                />
+              </Box>
+            </Box>
+          </Box>
         </>
       )}
 
-      {(starRating || estimatedTime) && (
+      {!challengeMetrics && (starRating || estimatedTime) && (
         <TripEnjoymentRating
           starRating={starRating}
           estimatedTime={estimatedTime}
