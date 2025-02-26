@@ -43,9 +43,15 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 
 	// New route description data
 	const routeDescription = trip.route?.acf.route_route_description;
-	const hasRouteDescription =
-		routeDescription &&
-		(typeof routeDescription === "object" || Array.isArray(routeDescription));
+	const hasRouteDescription = routeDescription && (
+		(typeof routeDescription === "object" && 
+		!Array.isArray(routeDescription) && 
+		routeDescription.route_description_segment_html?.trim()) ||
+		(Array.isArray(routeDescription) && 
+		routeDescription.some(section => 
+			section.section_title?.trim() || section.section_content?.trim()
+		))
+	);
 	const parkingInstructions = locationData?.location_parking_description;
 	const entranceCoords = locationData?.location_entrance_latlong;
 	const parkingCoords = locationData?.location_parking_latlong;
@@ -110,7 +116,12 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 						<Text fw={500}>Parking Location</Text>
 					</Group>
 
-					{parkingInstructions && <Text size="sm">{parkingInstructions}</Text>}
+					{parkingInstructions && (
+						<div 
+							dangerouslySetInnerHTML={{ __html: parkingInstructions }} 
+							style={{ lineHeight: 1.5 }}
+						/>
+					)}
 
 					<Button
 						component="a"
@@ -132,7 +143,10 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 						</ThemeIcon>
 						<Text fw={500}>Approach from Parking</Text>
 					</Group>
-					<Text size="sm">{parkingToEntranceRoute}</Text>
+					<div 
+						dangerouslySetInnerHTML={{ __html: parkingToEntranceRoute }} 
+						style={{ lineHeight: 1.5 }}
+					/>
 				</Stack>
 			)}
 
