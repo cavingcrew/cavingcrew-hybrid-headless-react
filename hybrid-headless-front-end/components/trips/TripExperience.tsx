@@ -259,7 +259,7 @@ export function TripExperience({ trip }: TripExperienceProps) {
 						<ThemeIcon variant="light" color="blue">
 							<IconShirt size={18} />
 						</ThemeIcon>
-						<Text fw={500}>Personal Equipment Suggested</Text>
+						<Text fw={500}>Suggested Personal Equipment</Text>
 					</Group>
 
 					<Grid>
@@ -310,7 +310,7 @@ export function TripExperience({ trip }: TripExperienceProps) {
 						<ThemeIcon variant="light" color="grape">
 							<IconTool size={18} />
 						</ThemeIcon>
-						<Text fw={500}>Group Equipment Suggested</Text>
+						<Text fw={500}>Suggested Group Equipment</Text>
 					</Group>
 
 					{/* If groupTackle is a string with line breaks, convert to list */}
