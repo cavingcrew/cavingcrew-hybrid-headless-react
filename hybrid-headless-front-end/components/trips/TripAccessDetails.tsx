@@ -210,13 +210,17 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
             src={mapImage.url}
             alt={mapImage.alt || "Map from parking to cave entrance"}
             radius="md"
-            caption={mapImage.caption}
             style={{ 
               maxWidth: '100%',
               border: '1px solid #dee2e6',
               borderRadius: 8
             }}
           />
+          {mapImage.caption && (
+            <Text size="sm" c="dimmed" mt="xs">
+              {mapImage.caption}
+            </Text>
+          )}
         </Stack>
       )}
 
