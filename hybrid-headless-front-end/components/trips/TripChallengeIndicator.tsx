@@ -55,34 +55,6 @@ function DomainIcon({ domain, size = 18 }: DomainIconProps) {
 function ChallengeDetails({ metric }: { metric: ChallengeMetric }) {
 	return (
 		<Stack gap="md">
-			<Group gap="xs">
-				<ThemeIcon
-					variant="light"
-					color={metric.rating === "na" ? "gray" : metric.rating}
-					size="lg"
-				>
-					<DomainIcon domain={metric.domain} />
-				</ThemeIcon>
-				<div>
-					<Text fw={700} size="lg">
-						{metric.label}
-					</Text>
-					<Text size="sm" c="dimmed">
-						Overall Rating:{" "}
-						<Text
-							span
-							fw={700}
-							c={metric.rating === "na" ? "gray" : metric.rating}
-						>
-							{metric.rating === "na"
-								? "N/A"
-								: metric.rating.charAt(0).toUpperCase() +
-									metric.rating.slice(1)}
-						</Text>
-					</Text>
-				</div>
-			</Group>
-
 			{metric.details.map((detail) => (
 				<Box key={detail.key} mb="xs">
 					<Group justify="space-between" mb={5}>
@@ -491,20 +463,35 @@ export function TripChallengeIndicator({
 				opened={selectedMetric !== null}
 				onClose={() => setSelectedMetric(null)}
 				title={
-					<Group>
-						<ThemeIcon
-							variant="light"
-							color={
-								selectedMetric?.rating === "na"
-									? "gray"
-									: selectedMetric?.rating
-							}
-							size="lg"
-						>
-							{selectedMetric && <DomainIcon domain={selectedMetric.domain} />}
-						</ThemeIcon>
-						<Text>{selectedMetric?.label} Challenge Details</Text>
-					</Group>
+					selectedMetric && (
+						<Group gap="xs">
+							<ThemeIcon
+								variant="light"
+								color={selectedMetric.rating === "na" ? "gray" : selectedMetric.rating}
+								size="lg"
+							>
+								<DomainIcon domain={selectedMetric.domain} />
+							</ThemeIcon>
+							<div>
+								<Text fw={700} size="lg">
+									{selectedMetric.label}
+								</Text>
+								<Text size="sm" c="dimmed">
+									Overall Rating:{" "}
+									<Text
+										span
+										fw={700}
+										c={selectedMetric.rating === "na" ? "gray" : selectedMetric.rating}
+									>
+										{selectedMetric.rating === "na"
+											? "N/A"
+											: selectedMetric.rating.charAt(0).toUpperCase() +
+												selectedMetric.rating.slice(1)}
+									</Text>
+								</Text>
+							</div>
+						</Group>
+					)
 				}
 				size="lg"
 			>
