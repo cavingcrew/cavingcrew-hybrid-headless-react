@@ -18,6 +18,7 @@ import {
 import { TripOvernightHut } from './TripOvernightHut';
 import { TripAccessDetails } from './TripAccessDetails';
 import { TripExperience } from './TripExperience';
+import { TripObjectionHandling } from './TripObjectionHandling';
 import { isWithinDays } from '../../utils/event-timing';
 import { useUser } from '@/lib/hooks/useUser';
 import { TripSignupWidget } from "./TripSignupWidget";
@@ -414,7 +415,12 @@ export function TripDetails({ trip }: TripDetailsProps) {
 			) : "" }
 
 			{/* Trip Experience Details */}
-				<TripExperience trip={trip} />
+			<TripExperience trip={trip} />
+			
+			{/* Objection Handling for GiggleTrips - only shown to non-logged in users */}
+			{trip.acf.event_type === 'giggletrip' && !isLoggedIn && (
+				<TripObjectionHandling />
+			)}
 
 			{/* What does signing up pay for section */}
 			{acf?.event_paying_for && (
