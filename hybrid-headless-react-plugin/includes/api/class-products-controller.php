@@ -512,7 +512,7 @@ class Hybrid_Headless_Products_Controller {
         }
 
         $hut_acf = get_fields($hut_id);
-        
+
         return [
             'hut_id' => $hut_id,
             'hut_name' => $hut_acf['hut_name'] ?? '',
@@ -531,9 +531,9 @@ class Hybrid_Headless_Products_Controller {
 
     private function get_hut_location_data($location_post_id) {
         if (!$location_post_id) return null;
-        
+
         $location_post = get_post($location_post_id);
-        
+
         return $location_post ? [
             'ID' => $location_post->ID,
             'post_title' => $location_post->post_title,
@@ -544,7 +544,7 @@ class Hybrid_Headless_Products_Controller {
 
     private function get_hut_image_data($image_id) {
         if (!$image_id) return null;
-        
+
         return [
             'ID' => $image_id,
             'url' => wp_get_attachment_url($image_id),
@@ -558,7 +558,7 @@ class Hybrid_Headless_Products_Controller {
         if (!$post_ref) return null;
 
         $route_acf = get_fields($post_ref['ID']);
-        
+
         return [
             'id' => $post_ref['ID'],
             'title' => $post_ref['post_title'],
@@ -571,8 +571,8 @@ class Hybrid_Headless_Products_Controller {
                 'route_time_for_eta' => $route_acf['route_time_for_eta'] ?? '',
                 'route_survey_image' => $this->get_image_data($route_acf['route_survey_image'] ?? 0),
                 'route_survey_link' => $route_acf['route_survey_link'] ?? null,
-                'route_route_description' => !empty($route_acf['route_route_description']) ? 
-                    array_shift($route_acf['route_route_description']) : 
+                'route_route_description' => !empty($route_acf['route_route_description']) ?
+                    array_shift($route_acf['route_route_description']) :
                     null,
                 'route_difficulty' => $this->map_grouped_fields($route_acf['route_difficulty'] ?? [], [
                     'route_difficulty_psychological_claustrophobia',
@@ -666,7 +666,7 @@ class Hybrid_Headless_Products_Controller {
             }
 
             $value = $group_data[$field_name] ?? null;
-            
+
             if ($config['type'] ?? null === 'post' && $value) {
                 $mapped[$field_name] = $this->get_post_reference($value);
             } else {
@@ -689,10 +689,10 @@ class Hybrid_Headless_Products_Controller {
     private function get_location_data($location) {
         $post_ref = $this->get_post_reference($location);
         if (!$post_ref) return null;
-        
+
         $location_id = $post_ref['ID'];
         $location_acf = get_fields($location_id);
-        
+
         return [
             'id' => $location_id,
             'title' => $post_ref['post_title'],
@@ -711,8 +711,8 @@ class Hybrid_Headless_Products_Controller {
                 'location_access_url' => $location_acf['location_access_url'] ?? '',
                 'location_reference_links' => array_map(function($link) {
                     return [
-                        'link_title' => $link['link_title'] ?? '',
-                        'link_url' => $link['link_url'] ?? ''
+                        'link_title' => $link['location_reference_link_text'] ?? '',
+                        'link_url' => $link['location_reference_link_url'] ?? ''
                     ];
                 }, $location_acf['location_reference_links'] ?? []),
                 'location_sensitive_access' => (bool)($location_acf['location_sensitive_access'] ?? false)
@@ -722,7 +722,7 @@ class Hybrid_Headless_Products_Controller {
 
     private function get_image_data($image_id) {
         if (!$image_id) return null;
-        
+
         return [
             'ID' => $image_id,
             'url' => wp_get_attachment_url($image_id),
