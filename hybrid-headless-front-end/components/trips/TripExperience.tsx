@@ -56,7 +56,7 @@ function TripEnjoymentRating({
             Wowfactor
           </Text>
           <Group>
-            <Rating value={typeof starRating === 'string' ? Number.parseInt(starRating, 10) : starRating} readOnly size="xl" />
+            <Rating value={typeof starRating === 'string' ? Number.parseInt(starRating, 10) : starRating} readOnly size="xl" count={10} />
           </Group>
         </Box>
       )}
