@@ -255,14 +255,14 @@ export function TripExperience({ trip }: TripExperienceProps) {
 			</Paper>
 
 			{/* Equipment Section in its own Paper container */}
-			{(personalGear?.length > 0 || groupTackle) && (
+			{((Array.isArray(personalGear) && personalGear.length > 0) || groupTackle) && (
 				<Paper withBorder p="md" radius="md" mt="md">
 					<Title order={2} mb="md">
 						Equipment
 					</Title>
 					
 					{/* Personal Equipment Suggested */}
-					{personalGear && personalGear.length > 0 && (
+					{Array.isArray(personalGear) && personalGear.length > 0 && (
 						<Stack gap="md" mb="xl">
 							<Group gap="xs">
 								<ThemeIcon variant="light" color="blue">
