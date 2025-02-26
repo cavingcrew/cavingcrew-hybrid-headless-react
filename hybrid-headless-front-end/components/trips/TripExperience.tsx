@@ -260,7 +260,7 @@ export function TripExperience({ trip }: TripExperienceProps) {
 					<Title order={2} mb="md">
 						Equipment
 					</Title>
-					
+
 					{/* Personal Equipment Suggested */}
 					{Array.isArray(personalGear) && personalGear.length > 0 && (
 						<Stack gap="md" mb="xl">
@@ -384,7 +384,7 @@ export function TripExperience({ trip }: TripExperienceProps) {
 										target="_blank"
 										size="sm"
 									>
-										View Leading Requirements
+										View Leading Level
 									</Anchor>
 								)}
 							</Group>
