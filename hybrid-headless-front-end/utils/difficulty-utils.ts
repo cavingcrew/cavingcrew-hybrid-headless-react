@@ -35,10 +35,10 @@ export const CHALLENGE_CONFIG = {
 			objective: 0.67,
 		},
 		water: {
-			wetness: 0.33,
+			wetness: 0.3,
 			nearFace: 0.4,
 			deepWater: 0.2,
-			muddiness: 0.07,
+			muddiness: 0.1,
 		},
 		heights: {
 			exposure: 0.5,
