@@ -92,7 +92,6 @@ export function TripExperience({ trip }: TripExperienceProps) {
 								<ThemeIcon variant="light" color="blue">
 									<IconCompass size={18} />
 								</ThemeIcon>
-								<Text fw={500}>Cave Overview</Text>
 							</Group>
 							{/* Content from WordPress sanitized HTML */}
 							<div
