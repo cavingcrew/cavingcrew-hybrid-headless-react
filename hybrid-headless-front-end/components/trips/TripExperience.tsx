@@ -90,6 +90,7 @@ export function TripExperience({ trip }: TripExperienceProps) {
 	const leadingDifficulty = routeData?.route_leading_difficulty;
 	const groupTackle = routeData?.route_group_tackle_required;
 	const personalGear = routeData?.route_personal_gear_required;
+	const routeData = trip.route?.acf;
 	const starRating = routeData?.route_trip_star_rating;
 	const estimatedTime = routeData?.route_time_for_eta;
 
@@ -103,92 +104,12 @@ export function TripExperience({ trip }: TripExperienceProps) {
 				What the Trip Will Be Like
 			</Title>
 
-			{/* Challenge and Enjoyment Metrics */}
-			<Stack gap="md" mb="xl">
-				<Group gap="xs">
-					<ThemeIcon variant="light" color="red">
-						<IconMountainOff size={18} />
-					</ThemeIcon>
-					<Text fw={500}>Challenge Rating</Text>
-				</Group>
-
-				{(() => {
-					if (!challengeMetrics && !starRating && !estimatedTime) {
-						return null;
-					}
-
-					return (
-						<>
-							{challengeMetrics && (
-								<>
-									<Box>
-										{/* Add global styles at the component level, not nested */}
-										<style dangerouslySetInnerHTML={{ __html: `
-											@media (min-width: 768px) {
-												.grid-container {
-													display: grid;
-													grid-template-columns: 1fr 1fr;
-													gap: 1rem;
-												}
-												.overview-section {
-													order: 2;
-												}
-												.challenge-section {
-													order: 1;
-												}
-											}
-										`}} />
-										
-										<Box
-											className="grid-container"
-											style={{
-												display: "grid",
-												gridTemplateColumns: "1fr",
-												gap: "1rem",
-											}}
-										>
-											{/* Overview section - first on mobile, second on desktop */}
-											<Box
-												className="overview-section"
-												style={{ order: 1 }}
-											>
-												<Alert color="blue" icon={<IconMoodSmile size={18} />}>
-
-												</Alert>
-												
-												{(starRating || estimatedTime) && (
-													<TripEnjoymentRating
-														starRating={starRating}
-														estimatedTime={estimatedTime}
-													/>
-												)}
-											</Box>
-
-											{/* Challenge indicator - second on mobile, first on desktop */}
-											<Box
-												className="challenge-section"
-												style={{ order: 2 }}
-											>
-												<TripChallengeIndicator
-													metrics={challengeMetrics}
-													weightedRank={weightedRank}
-												/>
-											</Box>
-										</Box>
-									</Box>
-								</>
-							)}
-
-							{!challengeMetrics && (starRating || estimatedTime) && (
-								<TripEnjoymentRating
-									starRating={starRating}
-									estimatedTime={estimatedTime}
-								/>
-							)}
-						</>
-					);
-				})()}
-			</Stack>
+			{(starRating || estimatedTime) && (
+				<TripEnjoymentRating
+					starRating={starRating}
+					estimatedTime={estimatedTime}
+				/>
+			)}
 
 			{/* Trip Overview */}
 			{routeData?.route_blurb && (
@@ -197,7 +118,6 @@ export function TripExperience({ trip }: TripExperienceProps) {
 						<ThemeIcon variant="light" color="blue">
 							<IconCompass size={18} />
 						</ThemeIcon>
-						<Text fw={500}>Cave Overview</Text>
 					</Group>
 					{/* Content from WordPress sanitized HTML */}
 					<div
@@ -205,6 +125,13 @@ export function TripExperience({ trip }: TripExperienceProps) {
 					/>
 				</Stack>
 			)}
+
+			<TripChallengeIndicator
+				metrics={challengeMetrics}
+				weightedRank={weightedRank}
+			/>
+
+			{/* Challenge and Enjoyment Metrics */}
 
 
 			{/* Participant Experience - Enhanced */}
