@@ -81,7 +81,7 @@ export function TripExperience({ trip }: TripExperienceProps) {
 						<Box>
 							<Group align="center" mb="xs">
 								<Badge size="lg" color="teal" variant="filled">
-									Required Skill Level:{" "}
+									Suggested Skill Level:{" "}
 									{typeof participantSkills.route_participants_skills_required_horizontal_level ===
 									"object"
 										? (
@@ -163,14 +163,14 @@ export function TripExperience({ trip }: TripExperienceProps) {
 				</Stack>
 			)}
 
-			{/* Personal Equipment Required */}
+			{/* Personal Equipment Suggested */}
 			{personalGear && personalGear.length > 0 && (
 				<Stack gap="md" mb="xl">
 					<Group gap="xs">
 						<ThemeIcon variant="light" color="blue">
 							<IconShirt size={18} />
 						</ThemeIcon>
-						<Text fw={500}>Personal Equipment Required</Text>
+						<Text fw={500}>Personal Equipment Suggested</Text>
 					</Group>
 
 					<Grid>
@@ -221,7 +221,7 @@ export function TripExperience({ trip }: TripExperienceProps) {
 						<ThemeIcon variant="light" color="grape">
 							<IconTool size={18} />
 						</ThemeIcon>
-						<Text fw={500}>Group Equipment Required</Text>
+						<Text fw={500}>Group Equipment Suggested</Text>
 					</Group>
 
 					{/* If groupTackle is a string with line breaks, convert to list */}
@@ -263,7 +263,7 @@ export function TripExperience({ trip }: TripExperienceProps) {
 					{leadingDifficulty.route_leading_difficulty_horizontal_leading_level_required && (
 						<Group align="center" mb="xs">
 							<Badge size="lg" color="orange" variant="filled">
-								Required Leadership Level:{" "}
+								Suggested Leadership Level:{" "}
 								{
 									leadingDifficulty
 										.route_leading_difficulty_horizontal_leading_level_required

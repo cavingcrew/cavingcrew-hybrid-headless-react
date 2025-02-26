@@ -188,12 +188,10 @@ function calculateClaustrophobiaScore(difficulty: DifficultyData): {
 
 	// Calculate weighted sum directly
 	const weightedSum = details.reduce((sum, d) => sum + d.contribution, 0);
-	
-	// Score is the weighted sum directly (already on a 0-10 scale)
-	// We multiply by 2 because input values are on a 0-5 scale
-	const score = weightedSum * 2;
 
-	return { score, details };
+
+
+	return { weightedSum, details };
 }
 
 /**
@@ -258,12 +256,10 @@ function calculateWaterScore(difficulty: DifficultyData): {
 
 	// Calculate weighted sum directly
 	const weightedSum = details.reduce((sum, d) => sum + d.contribution, 0);
-	
-	// Score is the weighted sum directly (already on a 0-10 scale)
-	// We multiply by 2 because input values are on a 0-5 scale
-	const score = weightedSum * 2;
 
-	return { score, details };
+
+
+	return { weightedSum, details };
 }
 
 /**
@@ -308,12 +304,9 @@ function calculateHeightsScore(difficulty: DifficultyData): {
 
 	// Calculate weighted sum directly
 	const weightedSum = details.reduce((sum, d) => sum + d.contribution, 0);
-	
-	// Score is the weighted sum directly (already on a 0-10 scale)
-	// We multiply by 2 because input values are on a 0-5 scale
-	const score = weightedSum * 2;
 
-	return { score, details };
+
+	return { weightedSum, details };
 }
 
 /**
@@ -340,10 +333,8 @@ function calculateHazardScore(difficulty: DifficultyData): {
 		},
 	];
 
-	// Hazard is already on a 0-5 scale, multiply by 2 to get 0-10
-	const score = hazard !== null ? hazard * 2 : 0;
 
-	return { score, details };
+	return { hazard, details };
 }
 
 /**
@@ -368,10 +359,8 @@ function calculateEnduranceScore(difficulty: DifficultyData): {
 		},
 	];
 
-	// Endurance is already on a 0-5 scale, multiply by 2 to get 0-10
-	const score = endurance !== null ? endurance * 2 : 0;
 
-	return { score, details };
+	return { endurance, details };
 }
 
 /**
