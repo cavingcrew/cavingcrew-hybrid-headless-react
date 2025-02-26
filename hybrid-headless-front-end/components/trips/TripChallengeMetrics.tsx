@@ -90,32 +90,34 @@ export function TripChallengeMetrics({ trip }: TripChallengeMetricsProps) {
           <Box>
             {/* Grid layout for desktop, stack for mobile */}
             <Box
+              className="grid-container"
               style={{
                 display: "grid",
                 gridTemplateColumns: "1fr",
                 gap: "1rem",
               }}
-              styles={(theme) => ({
-                root: {
-                  [theme.fn.largerThan("sm")]: {
-                    display: "grid",
-                    gridTemplateColumns: "1fr 1fr",
-                    gap: "1rem",
+            >
+              <style jsx global>{`
+                @media (min-width: 768px) {
+                  .grid-container {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 1rem;
                   }
                 }
-              })}
-            >
+              `}</style>
               {/* Overview section - first on mobile, second on desktop */}
               <Box
+                className="overview-section"
                 style={{ order: 1 }}
-                styles={(theme) => ({
-                  root: {
-                    [theme.fn.largerThan("sm")]: {
-                      order: 2,
-                    }
-                  }
-                })}
               >
+              <style jsx global>{`
+                @media (min-width: 768px) {
+                  .overview-section {
+                    order: 2;
+                  }
+                }
+              `}</style>
                 <Alert color="blue" icon={<IconMoodSmile size={18} />}>
 
                 </Alert>
@@ -130,15 +132,16 @@ export function TripChallengeMetrics({ trip }: TripChallengeMetricsProps) {
 
               {/* Challenge indicator - second on mobile, first on desktop */}
               <Box
+                className="challenge-section"
                 style={{ order: 2 }}
-                styles={(theme) => ({
-                  root: {
-                    [theme.fn.largerThan("sm")]: {
-                      order: 1,
-                    }
-                  }
-                })}
               >
+              <style jsx global>{`
+                @media (min-width: 768px) {
+                  .challenge-section {
+                    order: 1;
+                  }
+                }
+              `}</style>
                 <TripChallengeIndicator
                   metrics={challengeMetrics}
                   weightedRank={weightedRank}
