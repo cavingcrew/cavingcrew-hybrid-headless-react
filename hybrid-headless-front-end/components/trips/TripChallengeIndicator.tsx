@@ -150,13 +150,7 @@ function ChallengeDetails({ metric }: { metric: ChallengeMetric }) {
 				</Text>
 				<Progress
 					value={metric.score * 10}
-					color={
-						metric.rating === "na"
-							? "gray"
-							: metric.rating === "amber"
-								? "yellow"
-								: metric.rating
-					}
+					color={getRatingColor(metric.rating)}
 					size="md"
 					radius="xl"
 					mt={5}
@@ -531,11 +525,7 @@ export function TripChallengeIndicator({
 						<Group gap="xs">
 							<ThemeIcon
 								variant="light"
-								color={selectedMetric.rating === "na" 
-									? "gray" 
-									: selectedMetric.rating === "amber"
-										? "yellow"
-										: selectedMetric.rating}
+								color={getRatingColor(selectedMetric.rating)}
 								size="lg"
 							>
 								<DomainIcon domain={selectedMetric.domain} />
@@ -549,11 +539,7 @@ export function TripChallengeIndicator({
 									<Text
 										span
 										fw={700}
-										c={selectedMetric.rating === "na"
-											? "gray"
-											: selectedMetric.rating === "amber"
-												? "yellow"
-												: selectedMetric.rating}
+										c={getRatingColor(selectedMetric.rating)}
 									>
 										{selectedMetric.rating === "na"
 											? "N/A"
