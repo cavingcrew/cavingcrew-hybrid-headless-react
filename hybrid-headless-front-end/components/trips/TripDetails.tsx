@@ -563,18 +563,6 @@ export function TripDetails({ trip }: TripDetailsProps) {
 							))}
 					</Accordion>
 					
-					{/* Signup CTA after Kit List */}
-					{showSignupCTAs && (
-						<Center mt="xl">
-							<Button 
-								size="lg" 
-								color="blue" 
-								onClick={scrollToSignup}
-							>
-								We'll Provide All The Gear - Sign Up Now
-							</Button>
-						</Center>
-					)}
 				</Paper>
 			)}
 
@@ -613,18 +601,6 @@ export function TripDetails({ trip }: TripDetailsProps) {
 							))}
 					</Accordion>
 					
-					{/* Signup CTA after Plans */}
-					{showSignupCTAs && (
-						<Center mt="xl">
-							<Button 
-								size="lg" 
-								color="blue" 
-								onClick={scrollToSignup}
-							>
-								Join Us On This Adventure - Sign Up Now
-							</Button>
-						</Center>
-					)}
 				</Paper>
 			)}
 		</Stack>
