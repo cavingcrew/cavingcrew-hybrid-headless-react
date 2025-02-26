@@ -106,151 +106,153 @@ export function TripExperience({ trip }: TripExperienceProps) {
 	const weightedRank = challengeResult?.weightedRank;
 
 	return (
-		<Paper withBorder p="md" radius="md" mt="md">
-			<Title order={2} mb="md">
-				What the Trip Will Be Like
-			</Title>
+		<>
+			<Paper withBorder p="md" radius="md" mt="md">
+				<Title order={2} mb="md">
+					What the Trip Will Be Like
+				</Title>
 
-			<Grid gutter="md" mb="xl">
-				<Grid.Col span={{ base: 12, md: 6 }}>
-					{/* Trip Enjoyment Rating */}
-					{(starRating || estimatedTime) && (
-						<TripEnjoymentRating
-							starRating={starRating}
-							estimatedTime={estimatedTime}
-						/>
-					)}
-
-					{/* Trip Overview */}
-					{routeData?.route_blurb && (
-						<Stack gap="md" mt="xl">
-							{/* Content from WordPress sanitized HTML */}
-							<div
-								dangerouslySetInnerHTML={{ __html: routeData.route_blurb }}
+				<Grid gutter="md" mb="xl">
+					<Grid.Col span={{ base: 12, md: 6 }}>
+						{/* Trip Enjoyment Rating */}
+						{(starRating || estimatedTime) && (
+							<TripEnjoymentRating
+								starRating={starRating}
+								estimatedTime={estimatedTime}
 							/>
-						</Stack>
-					)}
-				</Grid.Col>
-				<Grid.Col span={{ base: 12, md: 6 }}>
-					{challengeMetrics && (
-						<TripChallengeIndicator
-							metrics={challengeMetrics}
-							weightedRank={weightedRank}
-						/>
-					)}
-				</Grid.Col>
-			</Grid>
+						)}
+
+						{/* Trip Overview */}
+						{routeData?.route_blurb && (
+							<Stack gap="md" mt="xl">
+								{/* Content from WordPress sanitized HTML */}
+								<div
+									dangerouslySetInnerHTML={{ __html: routeData.route_blurb }}
+								/>
+							</Stack>
+						)}
+					</Grid.Col>
+					<Grid.Col span={{ base: 12, md: 6 }}>
+						{challengeMetrics && (
+							<TripChallengeIndicator
+								metrics={challengeMetrics}
+								weightedRank={weightedRank}
+							/>
+						)}
+					</Grid.Col>
+				</Grid>
 
 
-			{/* Participant Experience - Enhanced */}
-				<Stack gap="md" mb="xl">
-					{participantSkills && (
-						<Group gap="xs">
-							<ThemeIcon variant="light" color="teal">
-								<IconUser size={18} />
-							</ThemeIcon>
-							<Text fw={500}>Suggested Experience</Text>
-						</Group>
-					)}
+				{/* Participant Experience - Enhanced */}
+					<Stack gap="md" mb="xl">
+						{participantSkills && (
+							<Group gap="xs">
+								<ThemeIcon variant="light" color="teal">
+									<IconUser size={18} />
+								</ThemeIcon>
+								<Text fw={500}>Suggested Experience</Text>
+							</Group>
+						)}
 
-					{participantSkills?.route_participants_skills_required_horizontal_level ? (
-						<Box>
-							<Group align="center" mb="xs">
-								<Badge size="lg" color="teal" variant="filled">
-									Suggested Skill Level:{" "}
+						{participantSkills?.route_participants_skills_required_horizontal_level ? (
+							<Box>
+								<Group align="center" mb="xs">
+									<Badge size="lg" color="teal" variant="filled">
+										Suggested Skill Level:{" "}
+										{typeof participantSkills.route_participants_skills_required_horizontal_level ===
+										"object"
+											? (
+													participantSkills.route_participants_skills_required_horizontal_level as any
+												)?.post_title
+											: participantSkills.route_participants_skills_required_horizontal_level}
+									</Badge>
+
 									{typeof participantSkills.route_participants_skills_required_horizontal_level ===
-									"object"
-										? (
-												participantSkills.route_participants_skills_required_horizontal_level as any
-											)?.post_title
-										: participantSkills.route_participants_skills_required_horizontal_level}
-								</Badge>
+										"object" &&
+										(
+											participantSkills.route_participants_skills_required_horizontal_level as {
+												permalink: string;
+											}
+										)?.permalink && (
+											<Anchor
+												href={
+													(
+														participantSkills.route_participants_skills_required_horizontal_level as {
+															permalink: string;
+														}
+													).permalink
+												}
+												target="_blank"
+												size="sm"
+											>
+												View Syllabus
+											</Anchor>
+										)}
+								</Group>
 
 								{typeof participantSkills.route_participants_skills_required_horizontal_level ===
 									"object" &&
 									(
-										participantSkills.route_participants_skills_required_horizontal_level as {
-											permalink: string;
-										}
-									)?.permalink && (
-										<Anchor
-											href={
-												(
-													participantSkills.route_participants_skills_required_horizontal_level as {
-														permalink: string;
-													}
-												).permalink
-											}
-											target="_blank"
-											size="sm"
-										>
-											View Syllabus
-										</Anchor>
+										participantSkills.route_participants_skills_required_horizontal_level as any
+									)?.post_title === "Horizontal Basic" && (
+										<Alert color="teal" icon={<IconCompass size={18} />} mb="md">
+											<Text size="sm">
+												<strong>Horizontal Basic</strong> means you should be
+												comfortable with:
+												<List size="sm" mt="xs">
+													<List.Item>
+														Moving through basic cave passages
+													</List.Item>
+													<List.Item>Climbing short, simple climbs</List.Item>
+													<List.Item>Basic crawling and stooping</List.Item>
+													<List.Item>
+														Following instructions from leaders and being supportive around other cavers
+													</List.Item>
+												</List>
+											</Text>
+										</Alert>
 									)}
-							</Group>
-
-							{typeof participantSkills.route_participants_skills_required_horizontal_level ===
-								"object" &&
-								(
-									participantSkills.route_participants_skills_required_horizontal_level as any
-								)?.post_title === "Horizontal Basic" && (
-									<Alert color="teal" icon={<IconCompass size={18} />} mb="md">
-										<Text size="sm">
-											<strong>Horizontal Basic</strong> means you should be
-											comfortable with:
-											<List size="sm" mt="xs">
-												<List.Item>
-													Moving through basic cave passages
-												</List.Item>
-												<List.Item>Climbing short, simple climbs</List.Item>
-												<List.Item>Basic crawling and stooping</List.Item>
-												<List.Item>
-													Following instructions from leaders and being supportive around other cavers
-												</List.Item>
-											</List>
-										</Text>
-									</Alert>
-								)}
-						</Box>
-					) : participantSkills && (
-						<Box>
-							<Alert color="teal" icon={<IconCompass size={18} />} mb="md">
-								<Text size="sm">
-									<strong>We hope you might:</strong>
-									<List size="sm" mt="xs">
-										<List.Item>Be able to walk up two flights of stairs unaided</List.Item>
-										<List.Item>Be able to bend down and kneel up</List.Item>
-										<List.Item>Be able to laugh</List.Item>
-										<List.Item>Be willing to support other people in the group</List.Item>
-									</List>
-								</Text>
-							</Alert>
-						</Box>
-					)}
-
-					{participantSkills?.minimum_experience && (
-						<Text>
-							<strong>Minimum Experience:</strong>{" "}
-							{participantSkills.minimum_experience}
-						</Text>
-					)}
-
-					{participantSkills?.recommended_training &&
-						participantSkills.recommended_training.length > 0 && (
-							<div>
-								<Text fw={500}>Recommended Training:</Text>
-								<List>
-									{participantSkills.recommended_training.map((training, i) => (
-										<List.Item
-											key={`training-${training.substring(0, 10)}-${i}`}
-										>
-											{training}
-										</List.Item>
-									))}
-								</List>
-							</div>
+							</Box>
+						) : participantSkills && (
+							<Box>
+								<Alert color="teal" icon={<IconCompass size={18} />} mb="md">
+									<Text size="sm">
+										<strong>We hope you might:</strong>
+										<List size="sm" mt="xs">
+											<List.Item>Be able to walk up two flights of stairs unaided</List.Item>
+											<List.Item>Be able to bend down and kneel up</List.Item>
+											<List.Item>Be able to laugh</List.Item>
+											<List.Item>Be willing to support other people in the group</List.Item>
+										</List>
+									</Text>
+								</Alert>
+							</Box>
 						)}
-				</Stack>
+
+						{participantSkills?.minimum_experience && (
+							<Text>
+								<strong>Minimum Experience:</strong>{" "}
+								{participantSkills.minimum_experience}
+							</Text>
+						)}
+
+						{participantSkills?.recommended_training &&
+							participantSkills.recommended_training.length > 0 && (
+								<div>
+									<Text fw={500}>Recommended Training:</Text>
+									<List>
+										{participantSkills.recommended_training.map((training, i) => (
+											<List.Item
+												key={`training-${training.substring(0, 10)}-${i}`}
+											>
+												{training}
+											</List.Item>
+										))}
+									</List>
+								</div>
+							)}
+					</Stack>
+			</Paper>
 
 			{/* Equipment Section in its own Paper container */}
 			{(personalGear?.length > 0 || groupTackle) && (
@@ -348,114 +350,113 @@ export function TripExperience({ trip }: TripExperienceProps) {
 				</Paper>
 			)}
 
-		</Paper>
+			{/* Leading the Trip - Separate Paper Container */}
+			{leadingDifficulty && (
+				<Paper withBorder p="md" radius="md" mt="md">
+					<Stack gap="md" mb="xl">
+						<Group gap="xs">
+							<ThemeIcon variant="light" color="orange">
+								<IconMountain size={18} />
+							</ThemeIcon>
+							<Text fw={500}>Leading This Trip</Text>
+						</Group>
 
-		{/* Leading the Trip - Separate Paper Container */}
-		{leadingDifficulty && (
-			<Paper withBorder p="md" radius="md" mt="md">
-				<Stack gap="md" mb="xl">
-					<Group gap="xs">
-						<ThemeIcon variant="light" color="orange">
-							<IconMountain size={18} />
-						</ThemeIcon>
-						<Text fw={500}>Leading This Trip</Text>
-					</Group>
-
-					{leadingDifficulty.route_leading_difficulty_horizontal_leading_level_required && (
-						<Group align="center" mb="xs">
-							<Badge size="lg" color="orange" variant="filled">
-								Suggested Leading Level:{" "}
-								{
-									leadingDifficulty
-										.route_leading_difficulty_horizontal_leading_level_required
-										.post_title
-								}
-							</Badge>
-
-							{leadingDifficulty
-								.route_leading_difficulty_horizontal_leading_level_required
-								.permalink && (
-								<Anchor
-									href={
+						{leadingDifficulty.route_leading_difficulty_horizontal_leading_level_required && (
+							<Group align="center" mb="xs">
+								<Badge size="lg" color="orange" variant="filled">
+									Suggested Leading Level:{" "}
+									{
 										leadingDifficulty
 											.route_leading_difficulty_horizontal_leading_level_required
-											.permalink
+											.post_title
 									}
-									target="_blank"
-									size="sm"
-								>
-									View Leading Requirements
-								</Anchor>
-							)}
-						</Group>
-					)}
+								</Badge>
 
-					{leadingDifficulty.route_leading_difficulty_horizontal_leading_skills_required &&
-						leadingDifficulty
-							.route_leading_difficulty_horizontal_leading_skills_required
-							.length > 0 && (
-							<div>
-								<Text fw={500}>Suggested Leading Skills:</Text>
-								<List>
-									{leadingDifficulty.route_leading_difficulty_horizontal_leading_skills_required.map(
-										(skill, i) => (
-											<List.Item
-												key={`skill-${skill.substring(0, 10)}-${i}`}
-												icon={
-													<ThemeIcon color="orange" size={24} radius="xl">
-														<IconStar size={16} />
-													</ThemeIcon>
-												}
-											>
-												{skill}
-											</List.Item>
-										),
-									)}
-								</List>
-							</div>
+								{leadingDifficulty
+									.route_leading_difficulty_horizontal_leading_level_required
+									.permalink && (
+									<Anchor
+										href={
+											leadingDifficulty
+												.route_leading_difficulty_horizontal_leading_level_required
+												.permalink
+										}
+										target="_blank"
+										size="sm"
+									>
+										View Leading Requirements
+									</Anchor>
+								)}
+							</Group>
 						)}
 
-					{leadingDifficulty.route_leading_difficulty_navigation_difficulty && (
-						<Group mt="md">
-							<Text fw={500}>Navigation Difficulty:</Text>
-							<Badge
-								size="lg"
-								color={
-									Number.parseInt(
-										leadingDifficulty.route_leading_difficulty_navigation_difficulty,
-										10
-									) <= 2.5
-										? "green"
-										: Number.parseInt(
-												leadingDifficulty.route_leading_difficulty_navigation_difficulty,
-												10
-											) <= 6.5
-											? "yellow"
-											: "red"
-								}
-							>
-								{
-									leadingDifficulty.route_leading_difficulty_navigation_difficulty
-								}
-								/10
-							</Badge>
-						</Group>
-					)}
-				</Stack>
+						{leadingDifficulty.route_leading_difficulty_horizontal_leading_skills_required &&
+							leadingDifficulty
+								.route_leading_difficulty_horizontal_leading_skills_required
+								.length > 0 && (
+								<div>
+									<Text fw={500}>Suggested Leading Skills:</Text>
+									<List>
+										{leadingDifficulty.route_leading_difficulty_horizontal_leading_skills_required.map(
+											(skill, i) => (
+												<List.Item
+													key={`skill-${skill.substring(0, 10)}-${i}`}
+													icon={
+														<ThemeIcon color="orange" size={24} radius="xl">
+															<IconStar size={16} />
+														</ThemeIcon>
+													}
+												>
+													{skill}
+												</List.Item>
+											),
+										)}
+									</List>
+								</div>
+							)}
 
-				{/* Conservation Alert */}
-				<Alert
-					color="green"
-					title="Conservation Notice"
-					icon={<IconFirstAidKit size={18} />}
-					mb="md"
-				>
-					<Text size="sm">
-						Please follow all conservation guidelines and avoid touching
-						formations. Take nothing but pictures, leave nothing but footprints.
-					</Text>
-				</Alert>
-			</Paper>
-		)}
+						{leadingDifficulty.route_leading_difficulty_navigation_difficulty && (
+							<Group mt="md">
+								<Text fw={500}>Navigation Difficulty:</Text>
+								<Badge
+									size="lg"
+									color={
+										Number.parseInt(
+											leadingDifficulty.route_leading_difficulty_navigation_difficulty,
+											10
+										) <= 2.5
+											? "green"
+											: Number.parseInt(
+													leadingDifficulty.route_leading_difficulty_navigation_difficulty,
+													10
+												) <= 6.5
+												? "yellow"
+												: "red"
+									}
+								>
+									{
+										leadingDifficulty.route_leading_difficulty_navigation_difficulty
+									}
+									/10
+								</Badge>
+							</Group>
+						)}
+					</Stack>
+
+					{/* Conservation Alert */}
+					<Alert
+						color="green"
+						title="Conservation Notice"
+						icon={<IconFirstAidKit size={18} />}
+						mb="md"
+					>
+						<Text size="sm">
+							Please follow all conservation guidelines and avoid touching
+							formations. Take nothing but pictures, leave nothing but footprints.
+						</Text>
+					</Alert>
+				</Paper>
+			)}
+		</>
 	);
 }
