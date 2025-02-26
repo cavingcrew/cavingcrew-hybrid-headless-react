@@ -16,18 +16,45 @@ import {
 	IconHeartHandshake,
 	IconMoodSmile,
 	IconShield,
+	IconMap,
+	IconRun,
+	IconWash,
+	IconTools,
 } from "@tabler/icons-react";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 export function TripObjectionHandling() {
+	const [activeItem, setActiveItem] = useState<string | null>(null);
+
+	// Handle hash changes for direct linking
+	useEffect(() => {
+		// Function to open accordion item based on hash
+		const handleHashChange = () => {
+			const hash = window.location.hash.replace('#', '');
+			if (hash) {
+				setActiveItem(hash);
+			}
+		};
+
+		// Initial check on mount
+		handleHashChange();
+
+		// Listen for hash changes
+		window.addEventListener('hashchange', handleHashChange);
+		
+		// Cleanup
+		return () => {
+			window.removeEventListener('hashchange', handleHashChange);
+		};
+	}, []);
+
 	return (
 		<Paper withBorder p="md" radius="md" mt="md">
 			<Title order={2} mb="md">
 				Common Questions About First-Time Caving
 			</Title>
 
-
-			<Accordion>
+			<Accordion value={activeItem} onChange={setActiveItem}>
 				<Accordion.Item value="claustrophobia">
 					<Accordion.Control icon={<IconCompass size={16} />}>
 						<Text fw={500}>What about claustrophobia?</Text>
@@ -92,7 +119,7 @@ export function TripObjectionHandling() {
 				</Accordion.Item>
 
 				<Accordion.Item value="creatures">
-					<Accordion.Control>
+					<Accordion.Control icon={<IconFriends size={16} />}>
 						<Text fw={500}>What about creatures in the cave?</Text>
 					</Accordion.Control>
 					<Accordion.Panel>
@@ -109,7 +136,7 @@ export function TripObjectionHandling() {
 				</Accordion.Item>
 
 				<Accordion.Item value="lost">
-					<Accordion.Control>
+					<Accordion.Control icon={<IconMap size={16} />}>
 						<Text fw={500}>Afraid of getting lost?</Text>
 					</Accordion.Control>
 					<Accordion.Panel>
@@ -140,7 +167,7 @@ export function TripObjectionHandling() {
 				</Accordion.Item>
 
 				<Accordion.Item value="fitness">
-					<Accordion.Control>
+					<Accordion.Control icon={<IconRun size={16} />}>
 						<Text fw={500}>What about the physical demands?</Text>
 					</Accordion.Control>
 					<Accordion.Panel>
@@ -157,7 +184,7 @@ export function TripObjectionHandling() {
 				</Accordion.Item>
 
 				<Accordion.Item value="dirty">
-					<Accordion.Control>
+					<Accordion.Control icon={<IconWash size={16} />}>
 						<Text fw={500}>Will I get dirty or wet?</Text>
 					</Accordion.Control>
 					<Accordion.Panel>
@@ -174,7 +201,7 @@ export function TripObjectionHandling() {
 				</Accordion.Item>
 
 				<Accordion.Item value="equipment">
-					<Accordion.Control>
+					<Accordion.Control icon={<IconTools size={16} />}>
 						<Text fw={500}>What about equipment?</Text>
 					</Accordion.Control>
 					<Accordion.Panel>
