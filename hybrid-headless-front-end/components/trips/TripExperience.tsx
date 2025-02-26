@@ -57,14 +57,14 @@ function TripEnjoymentRating({
           </Text>
           <Group>
             {/* Custom star rendering to show only the exact number of stars */}
-            {Array.from({ length: typeof starRating === 'string' ? 
-              Number.parseInt(starRating, 10) : 
-              (typeof starRating === 'number' ? starRating : 0) 
+            {Array.from({ length: typeof starRating === 'string' ?
+              Number.parseInt(starRating, 10) :
+              (typeof starRating === 'number' ? starRating : 0)
             }).map((_, index) => (
-              <IconStar 
-                key={index} 
-                size={28} 
-                style={{ color: '#FFD700', fill: '#FFD700' }} 
+              <IconStar
+                key={index}
+                size={28}
+                style={{ color: '#FFD700', fill: '#FFD700' }}
               />
             ))}
           </Group>
@@ -106,7 +106,7 @@ export function TripExperience({ trip }: TripExperienceProps) {
 	const weightedRank = challengeResult?.weightedRank;
 
 	return (
-		<Paper withBorder p="md" radius="md" mt="md">
+		<Stack withBorder p="md" radius="md" mt="md">
 			<Title order={2} mb="md">
 				What the Trip Will Be Like
 			</Title>
@@ -205,7 +205,7 @@ export function TripExperience({ trip }: TripExperienceProps) {
 												<List.Item>Climbing short, simple climbs</List.Item>
 												<List.Item>Basic crawling and stooping</List.Item>
 												<List.Item>
-													Following instructions from leaders
+													Following instructions from leaders and being supportive around other cavers
 												</List.Item>
 											</List>
 										</Text>
@@ -216,7 +216,7 @@ export function TripExperience({ trip }: TripExperienceProps) {
 						<Box>
 							<Alert color="teal" icon={<IconCompass size={18} />} mb="md">
 								<Text size="sm">
-									<strong>Basic Fitness Requirements:</strong>
+									<strong>We hope you might:</strong>
 									<List size="sm" mt="xs">
 										<List.Item>Be able to walk up two flights of stairs unaided</List.Item>
 										<List.Item>Be able to bend down and kneel up</List.Item>
@@ -338,8 +338,10 @@ export function TripExperience({ trip }: TripExperienceProps) {
 					</Alert>
 				</Stack>
 			)}
+		</Paper>
 
-			{/* Leading the Trip */}
+	<Paper withBorder p="md" radius="md" mt="md">
+	{/* Leading the Trip */}
 			{leadingDifficulty && (
 				<Stack gap="md" mb="xl">
 					<Group gap="xs">
@@ -352,7 +354,7 @@ export function TripExperience({ trip }: TripExperienceProps) {
 					{leadingDifficulty.route_leading_difficulty_horizontal_leading_level_required && (
 						<Group align="center" mb="xs">
 							<Badge size="lg" color="orange" variant="filled">
-								Suggested Leadership Level:{" "}
+								Suggested Laading Level:{" "}
 								{
 									leadingDifficulty
 										.route_leading_difficulty_horizontal_leading_level_required
@@ -372,7 +374,7 @@ export function TripExperience({ trip }: TripExperienceProps) {
 									target="_blank"
 									size="sm"
 								>
-									View Leadership Requirements
+									View Leading Requirements
 								</Anchor>
 							)}
 						</Group>
@@ -383,7 +385,7 @@ export function TripExperience({ trip }: TripExperienceProps) {
 							.route_leading_difficulty_horizontal_leading_skills_required
 							.length > 0 && (
 							<div>
-								<Text fw={500}>Essential Leadership Skills:</Text>
+								<Text fw={500}>Suggested Leading Skills:</Text>
 								<List>
 									{leadingDifficulty.route_leading_difficulty_horizontal_leading_skills_required.map(
 										(skill, i) => (
