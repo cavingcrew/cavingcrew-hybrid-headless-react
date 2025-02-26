@@ -5,6 +5,7 @@ import {
   Button,
   Divider,
   Group,
+  Image,
   List,
   Paper,
   Stack,
@@ -38,6 +39,10 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
   const parkingCoords = locationData?.location_parking_latlong;
   const routeDescription = locationData?.location_parking_entrance_route_description;
   const referenceLinks = locationData?.location_reference_links;
+  const mapImage = locationData?.location_map_from_parking_to_entrance;
+  const accessUrl = locationData?.location_access_url;
+  const infoUrl = locationData?.location_info_url;
+  const isSensitiveAccess = locationData?.location_sensitive_access;
 
   // Coordinate parsing logic
   const parseCoords = (coords: any) => {
@@ -126,6 +131,26 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
         </Stack>
       )}
 
+      {/* Map Image */}
+      {mapImage && mapImage.url && (
+        <Stack gap="sm" mb="xl">
+          <Group gap="xs">
+            <ThemeIcon variant="light" color="green">
+              <IconMapPin size={18} />
+            </ThemeIcon>
+            <Text fw={500}>Route Map</Text>
+          </Group>
+          
+          <Image
+            src={mapImage.url}
+            alt={mapImage.alt || "Map from parking to cave entrance"}
+            radius="md"
+            caption={mapImage.caption}
+            style={{ maxWidth: '100%' }}
+          />
+        </Stack>
+      )}
+
       {/* Route Description with Fade-out */}
       {routeDescription && (
         <div style={{
@@ -147,17 +172,36 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
             padding: '20px 0',
             background: 'linear-gradient(to bottom, transparent, white 70%)'
           }}>
-            <Button
-              variant="light"
-              component="a"
-              href={locationData?.location_access_url || '#'}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              View Full Access Details
-            </Button>
+            {accessUrl ? (
+              <Button
+                variant="light"
+                component="a"
+                href={accessUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                View Full Access Details
+              </Button>
+            ) : infoUrl ? (
+              <Button
+                variant="light"
+                component="a"
+                href={infoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                View More Information
+              </Button>
+            ) : null}
           </div>
         </div>
+      )}
+
+      {/* Sensitive Access Warning */}
+      {isSensitiveAccess && (
+        <Alert color="red" icon={<IconInfoCircle size={16} />} mb="xl">
+          This location has sensitive access arrangements. Please follow all guidelines carefully.
+        </Alert>
       )}
 
       {/* Reference Links */}

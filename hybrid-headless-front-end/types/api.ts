@@ -85,14 +85,21 @@ export interface Hut {
 // Location Type
 export interface Location {
 	id: number;
+	title?: string;
+	slug?: string;
 	acf: {
 		location_name: string;
 		location_poi_nearby?: string;
-		location_caving_region?: number; // Post ID
+		location_caving_region?: {
+			ID: number;
+			post_title: string;
+			post_name: string;
+			permalink: string;
+		};
 		location_parking_latlong?: {
-			address: string;
-			lat: number;
-			lng: number;
+			address?: string;
+			lat?: number;
+			lng?: number;
 			zoom?: number;
 			place_id?: string;
 			street_name?: string;
@@ -102,13 +109,18 @@ export interface Location {
 			post_code?: string;
 			country?: string;
 			country_short?: string;
-		};
+		} | string;
 		location_parking_description?: string;
 		location_parking_entrance_route_description?: string;
-		location_map_from_parking_to_entrance?: string;
+		location_map_from_parking_to_entrance?: {
+			ID: number;
+			url: string;
+			alt: string;
+			caption: string;
+		};
 		location_entrance_latlong?: string;
 		location_info_url?: string;
-		location_access_arrangement?: string; // Stored as JSON string
+		location_access_arrangement?: string[] | string; // Can be array or JSON string
 		location_access_url?: string;
 		location_reference_links?: Array<{
 			link_title: string;

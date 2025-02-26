@@ -699,9 +699,23 @@ class Hybrid_Headless_Products_Controller {
             'slug' => $post_ref['post_name'],
             'acf' => [
                 'location_name' => $location_acf['location_name'] ?? '',
-                'location_parking_latlong' => $location_acf['location_parking_latlong'] ?? '',
+                'location_poi_nearby' => $location_acf['location_poi_nearby'] ?? '',
+                'location_caving_region' => $this->get_post_reference($location_acf['location_caving_region'] ?? 0),
+                'location_parking_latlong' => $location_acf['location_parking_latlong'] ?? [],
+                'location_parking_description' => $location_acf['location_parking_description'] ?? '',
+                'location_parking_entrance_route_description' => $location_acf['location_parking_entrance_route_description'] ?? '',
+                'location_map_from_parking_to_entrance' => $this->get_image_data($location_acf['location_map_from_parking_to_entrance'] ?? 0),
                 'location_entrance_latlong' => $location_acf['location_entrance_latlong'] ?? '',
-                'location_access_arrangement' => $location_acf['location_access_arrangement'] ?? []
+                'location_info_url' => $location_acf['location_info_url'] ?? '',
+                'location_access_arrangement' => $location_acf['location_access_arrangement'] ?? [],
+                'location_access_url' => $location_acf['location_access_url'] ?? '',
+                'location_reference_links' => array_map(function($link) {
+                    return [
+                        'link_title' => $link['link_title'] ?? '',
+                        'link_url' => $link['link_url'] ?? ''
+                    ];
+                }, $location_acf['location_reference_links'] ?? []),
+                'location_sensitive_access' => (bool)($location_acf['location_sensitive_access'] ?? false)
             ]
         ];
     }
