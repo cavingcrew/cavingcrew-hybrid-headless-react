@@ -16,6 +16,7 @@ import {
 import {
 	IconInfoCircle,
 	IconKey,
+	IconLink,
 	IconMapPin,
 	IconParking,
 	IconWalk,
@@ -209,8 +210,8 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 				</Stack>
 			)}
 
-			{/* New Access Info Buttons */}
-			<Group gap="sm" mb="xl">
+			{/* Combined Button Group */}
+			<Group gap="sm" mb="xl" wrap="wrap">
 				{accessUrl && (
 					<Button
 						component="a"
@@ -233,30 +234,19 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 						Location Information
 					</Button>
 				)}
+				{referenceLinks?.map((link) => (
+					<Button
+						key={`ref-btn-${link.link_url}`}
+						component="a"
+						href={link.link_url}
+						target="_blank"
+						variant="outline"
+						leftSection={<IconLink size={16} />}
+					>
+						{link.link_title}
+					</Button>
+				))}
 			</Group>
-
-			{/* Conditional Reference Links */}
-			{referenceLinks && referenceLinks.length > 0 && (
-				<Paper withBorder p="md" radius="md" mt="md">
-					<Text fw={500} mb="sm">
-						More Information:
-					</Text>
-					<List spacing="xs">
-						{referenceLinks.map((link) => (
-							<List.Item key={`ref-link-${link.link_url}`}>
-								<a
-									href={link.link_url}
-									target="_blank"
-									rel="noopener noreferrer"
-									style={{ textDecoration: "none" }}
-								>
-									<Text c="blue">{link.link_title}</Text>
-								</a>
-							</List.Item>
-						))}
-					</List>
-				</Paper>
-			)}
 			{/* New Route Description Section */}
 			{hasRouteDescription && (
 				<Stack gap="md" mb="xl">
