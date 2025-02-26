@@ -188,6 +188,17 @@ export function TripChallengeIndicator({
 		const metric = metrics.filter((m) => m.domain === domain)[0];
 		return metric ? getChallengeColor(metric.rating) : "#9e9e9e";
 	};
+	
+	// Helper function to consistently map rating to color
+	const getRatingColor = (rating: ChallengeRating): string => {
+		switch (rating) {
+			case "green": return "green";
+			case "amber": return "yellow";
+			case "red": return "red";
+			case "na":
+			default: return "gray";
+		}
+	};
 
 	// Helper function to handle segment click
 	const handleSegmentClick = (domain: ChallengeDomain) => {
