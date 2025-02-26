@@ -63,7 +63,7 @@ export function TripExperience({ trip }: TripExperienceProps) {
             <Text>
               <strong>Horizontal Skills:</strong>{" "}
               {typeof participantSkills.route_participants_skills_required_horizontal_level === 'object' 
-                ? participantSkills.route_participants_skills_required_horizontal_level.post_title 
+                ? participantSkills.route_participants_skills_required_horizontal_level?.post_title 
                 : participantSkills.route_participants_skills_required_horizontal_level}
             </Text>
           )}
