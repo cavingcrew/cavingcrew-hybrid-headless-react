@@ -49,20 +49,20 @@ function TripEnjoymentRating({
   if (!starRating && !estimatedTime) return null;
 
   return (
-    <Stack gap="md" align="center">
+    <Stack gap="md" align="flex-start">
       {starRating && (
         <Box>
-          <Text ta="center" fw={500} mb="xs">
+          <Text fw={500} mb="xs">
             Wowfactor
           </Text>
-          <Group justify="center">
+          <Group>
             <Rating value={typeof starRating === 'string' ? parseInt(starRating) : starRating} readOnly size="xl" />
           </Group>
         </Box>
       )}
       {estimatedTime && (
         <Box>
-          <Group gap="xs" justify="center" align="flex-start">
+          <Group gap="xs" align="flex-start">
             <IconClock size={18} style={{ marginTop: 4 }} />
             <div>
               <Text>Estimated Duration: {parseFloat(estimatedTime) + (parseFloat(estimatedTime) * 0.25)} hours</Text>
@@ -99,20 +99,20 @@ export function TripExperience({ trip }: TripExperienceProps) {
 			<Title order={2} mb="md">
 				What the Trip Will Be Like
 			</Title>
-			{(starRating || estimatedTime) && (
-					<TripEnjoymentRating
-						starRating={starRating}
-						estimatedTime={estimatedTime}
-					/>
-			)}
-
 
 			<Grid gutter="md" mb="xl">
 				<Grid.Col span={{ base: 12, md: 6 }}>
+					{/* Trip Enjoyment Rating */}
+					{(starRating || estimatedTime) && (
+						<TripEnjoymentRating
+							starRating={starRating}
+							estimatedTime={estimatedTime}
+						/>
+					)}
+					
 					{/* Trip Overview */}
 					{routeData?.route_blurb && (
-						<Stack gap="md" mb="xl">
-
+						<Stack gap="md" mt="xl">
 							{/* Content from WordPress sanitized HTML */}
 							<div
 								dangerouslySetInnerHTML={{ __html: routeData.route_blurb }}
@@ -129,8 +129,6 @@ export function TripExperience({ trip }: TripExperienceProps) {
 					)}
 				</Grid.Col>
 			</Grid>
-
-			{/* Challenge and Enjoyment Metrics */}
 
 
 			{/* Participant Experience - Enhanced */}
