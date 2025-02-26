@@ -366,7 +366,7 @@ export function TripExperience({ trip }: TripExperienceProps) {
 			)}
 
 			{/* Leading the Trip - Separate Paper Container - Only visible to logged in users */}
-			{leadingDifficulty && typeof window !== 'undefined' && localStorage.getItem('isLoggedIn') === 'true' && (
+			{leadingDifficulty && isLoggedIn && (
 				<Paper withBorder p="md" radius="md" mt="md">
 					<Stack gap="md" mb="xl">
 						<Group gap="xs">
