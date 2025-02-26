@@ -134,7 +134,7 @@ export function TripExperience({ trip }: TripExperienceProps) {
 
 			{/* Participant Experience - Enhanced */}
 				<Stack gap="md" mb="xl">
-					{participantSkills?.route_participants_skills_required_horizontal_level && (
+					{participantSkills && (
 					<Group gap="xs">
 						<ThemeIcon variant="light" color="teal">
 							<IconUser size={18} />
@@ -142,7 +142,7 @@ export function TripExperience({ trip }: TripExperienceProps) {
 						<Text fw={500}>Suggested Experience</Text>
 					</Group>
 
-					{participantSkills?.route_participants_skills_required_horizontal_level && (
+					{participantSkills?.route_participants_skills_required_horizontal_level ? (
 						<Box>
 							<Group align="center" mb="xs">
 								<Badge size="lg" color="teal" variant="filled">
@@ -200,6 +200,20 @@ export function TripExperience({ trip }: TripExperienceProps) {
 										</Text>
 									</Alert>
 								)}
+						</Box>
+					) : participantSkills && (
+						<Box>
+							<Alert color="teal" icon={<IconCompass size={18} />} mb="md">
+								<Text size="sm">
+									<strong>Basic Fitness Requirements:</strong>
+									<List size="sm" mt="xs">
+										<List.Item>Be able to walk up two flights of stairs unaided</List.Item>
+										<List.Item>Be able to bend down and kneel up</List.Item>
+										<List.Item>Be able to laugh</List.Item>
+										<List.Item>Be willing to support other people in the group</List.Item>
+									</List>
+								</Text>
+							</Alert>
 						</Box>
 					)}
 
