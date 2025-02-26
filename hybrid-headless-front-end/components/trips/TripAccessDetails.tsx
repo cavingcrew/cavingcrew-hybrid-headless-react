@@ -253,51 +253,56 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 						<Text fw={500}>Route Description</Text>
 					</Group>
 
-					<div style={{ position: 'relative' }}>
-						<div 
-							style={{ 
+					<div style={{ position: "relative" }}>
+						<div
+							style={{
 								maxHeight: 200,
-								overflow: 'hidden',
-								position: 'relative',
-								maskImage: 'linear-gradient(to bottom, black 50%, transparent 100%)',
-								WebkitMaskImage: 'linear-gradient(to bottom, black 50%, transparent 100%)'
+								overflow: "hidden",
+								position: "relative",
+								maskImage:
+									"linear-gradient(to bottom, black 50%, transparent 100%)",
+								WebkitMaskImage:
+									"linear-gradient(to bottom, black 50%, transparent 100%)",
 							}}
 						>
 							{typeof routeDescription === "object" &&
 							!Array.isArray(routeDescription) &&
 							routeDescription.route_description_segment_html ? (
-								<div 
-									dangerouslySetInnerHTML={{ 
-										__html: routeDescription.route_description_segment_html 
-									}} 
+								<div
+									dangerouslySetInnerHTML={{
+										__html: routeDescription.route_description_segment_html,
+									}}
 									style={{ lineHeight: 1.5 }}
 								/>
 							) : (
 								<Text size="sm">{JSON.stringify(routeDescription)}</Text>
 							)}
 						</div>
-						
-						<div style={{
-							position: 'absolute',
-							bottom: 0,
-							left: 0,
-							right: 0,
-							height: '100%',
-							background: 'linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,1) 100%)',
-							display: 'flex',
-							alignItems: 'flex-end',
-							justifyContent: 'center',
-							pointerEvents: 'none'
-						}}>
-							<Text 
-								size="sm" 
-								c="dimmed" 
-								ta="center" 
-								p="md" 
-								style={{ 
-									backgroundColor: 'rgba(255,255,255,0.9)',
+
+						<div
+							style={{
+								position: "absolute",
+								bottom: 0,
+								left: 0,
+								right: 0,
+								height: "100%",
+								background:
+									"linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,1) 100%)",
+								display: "flex",
+								alignItems: "flex-end",
+								justifyContent: "center",
+								pointerEvents: "none",
+							}}
+						>
+							<Text
+								size="sm"
+								c="dimmed"
+								ta="center"
+								p="md"
+								style={{
+									backgroundColor: "rgba(255,255,255,0.9)",
 									borderRadius: 8,
-									width: '100%'
+									width: "100%",
 								}}
 							>
 								Full route descriptions available to Trip Leaders
