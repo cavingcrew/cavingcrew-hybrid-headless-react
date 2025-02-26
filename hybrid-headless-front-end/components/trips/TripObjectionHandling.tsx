@@ -33,13 +33,13 @@ export function TripObjectionHandling() {
 			const hash = window.location.hash.replace("#", "");
 			if (hash) {
 				setActiveItem(hash);
-				
+
 				// Add a slight delay to ensure the accordion has time to open
 				setTimeout(() => {
 					// Find the accordion item and scroll to it
 					const element = document.getElementById(`accordion-${hash}`);
 					if (element) {
-						element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+						element.scrollIntoView({ behavior: "smooth", block: "start" });
 					}
 				}, 100);
 			}
