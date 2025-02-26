@@ -155,8 +155,8 @@ export function TripSignupWidget({
   if ((trip.has_variations && !hasAvailableVariations) || (!trip.has_variations && !trip.purchasable)) {
     return (
       <Paper withBorder p="md" radius="md" mb="xl">
-        <Alert color="yellow" title={trip.has_variations ? "Sold Out" : "Not Available"}>
-          {trip.has_variations ? "All options are currently sold out" : "This trip is currently not available for signups"}
+        <Alert color="yellow" title={trip.has_variations ? "Full Up" : "Not Available"}>
+          {trip.has_variations ? "All places are currently filled" : "This trip is currently not available for signups"}
         </Alert>
       </Paper>
     );
@@ -184,7 +184,7 @@ export function TripSignupWidget({
                   inStock: variation.stock_status === 'instock',
                   stockQuantity: variation.stock_quantity,
                   isBcaMemberBlocked: trip.acf.event_type === 'giggletrip' &&
-                                    (variation.sku.includes('GIGGLE--bcamember') || 
+                                    (variation.sku.includes('GIGGLE--bcamember') ||
                                      variation.attributes['what-describes-you-best']?.value.includes("I'm a BCA")) &&
                                     isLoggedIn &&
                                     isMember,
@@ -198,7 +198,7 @@ export function TripSignupWidget({
 
                 // Updated BCA member handling
                 if (trip.acf.event_type === 'giggletrip' &&
-                    (variation.sku.includes('GIGGLE--bcamember') || 
+                    (variation.sku.includes('GIGGLE--bcamember') ||
                      variation.attributes['what-describes-you-best']?.value.includes("I'm a BCA")) &&
                     isLoggedIn &&
                     isMember) {
@@ -244,7 +244,7 @@ export function TripSignupWidget({
                             >
                               {isPurchased ? 'Purchased' :
                                inStock ? `${variation.stock_quantity ?? 'N/A'} places left` :
-                               'Sold out'}
+                               'Full Up'}
                             </Badge>
                           </Group>
                           {isBcaMemberVariation && (
