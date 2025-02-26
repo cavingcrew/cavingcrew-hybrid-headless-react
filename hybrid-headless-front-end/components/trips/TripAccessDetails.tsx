@@ -52,7 +52,9 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 	const isSensitiveAccess = locationData?.location_sensitive_access;
 
 	// Coordinate parsing logic
-	const parseCoords = (coords: string | { lat?: number; lng?: number } | null | undefined) => {
+	const parseCoords = (
+		coords: string | { lat?: number; lng?: number } | null | undefined,
+	) => {
 		if (!coords) return null;
 		if (typeof coords === "string") return coords;
 		if (coords.lat && coords.lng) return `${coords.lat},${coords.lng}`;
@@ -157,7 +159,10 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 					<List spacing="xs">
 						{Array.isArray(accessNotes) ? (
 							accessNotes.map((note, i) => (
-								<List.Item key={`access-note-${i}-${note.substring(0, 10)}`} icon={<IconInfoCircle size={16} />}>
+								<List.Item
+									key={`access-note-${i}-${note.substring(0, 10)}`}
+									icon={<IconInfoCircle size={16} />}
+								>
 									{note}
 								</List.Item>
 							))
@@ -181,10 +186,14 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 					</Group>
 
 					{typeof routeDescription === "object" &&
-					!Array.isArray(routeDescription) && routeDescription.route_description_segment_html ? (
+					!Array.isArray(routeDescription) &&
+					routeDescription.route_description_segment_html ? (
 						<Text component="div">
 							{/* Sanitize HTML content */}
-							{routeDescription.route_description_segment_html.replace(/<\/?[^>]+(>|$)/g, "")}
+							{routeDescription.route_description_segment_html.replace(
+								/<\/?[^>]+(>|$)/g,
+								"",
+							)}
 						</Text>
 					) : (
 						// Handle array format if needed
