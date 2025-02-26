@@ -14,12 +14,12 @@ import {
 	IconCompass,
 	IconFriends,
 	IconHeartHandshake,
-	IconMoodSmile,
-	IconShield,
 	IconMap,
+	IconMoodSmile,
 	IconRun,
-	IconWash,
+	IconShield,
 	IconTools,
+	IconWash,
 } from "@tabler/icons-react";
 import React, { useEffect, useState } from "react";
 
@@ -30,7 +30,7 @@ export function TripObjectionHandling() {
 	useEffect(() => {
 		// Function to open accordion item based on hash
 		const handleHashChange = () => {
-			const hash = window.location.hash.replace('#', '');
+			const hash = window.location.hash.replace("#", "");
 			if (hash) {
 				setActiveItem(hash);
 			}
@@ -40,11 +40,11 @@ export function TripObjectionHandling() {
 		handleHashChange();
 
 		// Listen for hash changes
-		window.addEventListener('hashchange', handleHashChange);
-		
+		window.addEventListener("hashchange", handleHashChange);
+
 		// Cleanup
 		return () => {
-			window.removeEventListener('hashchange', handleHashChange);
+			window.removeEventListener("hashchange", handleHashChange);
 		};
 	}, []);
 
@@ -61,10 +61,10 @@ export function TripObjectionHandling() {
 					</Accordion.Control>
 					<Accordion.Panel>
 						<Text>
-							Good news! Our beginner trips only visit caves with large and spacious
-							passages. Many of the main chambers are so large you could park
-							several cars inside them! Think of it like exploring an interesting
-							building than anything confining.
+							Good news! Our beginner trips only visit caves with large and
+							spacious passages. Many of the main chambers are so large you
+							could park several cars inside them! Think of it like exploring an
+							interesting building than anything confining.
 						</Text>
 					</Accordion.Panel>
 				</Accordion.Item>
@@ -111,9 +111,9 @@ export function TripObjectionHandling() {
 							Safety is our absolute priority! That's why everyone wears proper
 							helmets and sturdy footwear with excellent grip. Interestingly,
 							caves often provide more secure footing than outdoor trails -
-							there's no loose scree or slippery grass. Our leaders always point out the
-							best places to step and offer a helping hand on any slightly
-							challenging sections.
+							there's no loose scree or slippery grass. Our leaders always point
+							out the best places to step and offer a helping hand on any
+							slightly challenging sections.
 						</Text>
 					</Accordion.Panel>
 				</Accordion.Item>
@@ -144,10 +144,9 @@ export function TripObjectionHandling() {
 							Our beginner trips follow well-established routes that our guides
 							have traversed countless times. We use a leader and seconder
 							system and maintain constant communication throughout the group.
-							Our leaders are trained in cave navigation and carry
-							multiple backup light sources and emergency equipment. You can
-							relax and enjoy the experience while we handle all the
-							navigation!
+							Our leaders are trained in cave navigation and carry multiple
+							backup light sources and emergency equipment. You can relax and
+							enjoy the experience while we handle all the navigation!
 						</Text>
 					</Accordion.Panel>
 				</Accordion.Item>
@@ -159,9 +158,9 @@ export function TripObjectionHandling() {
 					<Accordion.Panel>
 						<Text>
 							That's perfect! These trips are specifically designed for
-							first-timers. Most people on these trips have never been caving before
-							and don't know anyone else - you'll be in great company with other
-							beginners just like you!
+							first-timers. Most people on these trips have never been caving
+							before and don't know anyone else - you'll be in great company
+							with other beginners just like you!
 						</Text>
 					</Accordion.Panel>
 				</Accordion.Item>
@@ -173,12 +172,12 @@ export function TripObjectionHandling() {
 					<Accordion.Panel>
 						<Text>
 							These beginner trips are designed to be accessible to people with
-							below-average fitness levels. If you can climb a flight of stairs and
-							walk slowly for about 30 minutes, you'll do great! We take a gentle pace
-							with regular rest stops to admire the cave features. Many
-							participants tell us it's less physically demanding than they
-							expected - more like a leisurely geology walk with a few moments of
-							gentle adventure!
+							below-average fitness levels. If you can climb a flight of stairs
+							and walk slowly for about 30 minutes, you'll do great! We take a
+							gentle pace with regular rest stops to admire the cave features.
+							Many participants tell us it's less physically demanding than they
+							expected - more like a leisurely geology walk with a few moments
+							of gentle adventure!
 						</Text>
 					</Accordion.Panel>
 				</Accordion.Item>
@@ -190,12 +189,12 @@ export function TripObjectionHandling() {
 					<Accordion.Panel>
 						<Text>
 							Getting a bit muddy is part of the fun! We provide full protective
-							oversuits to protect you and your clothes. Many
-							participants discover an unexpected joy in this temporary freedom
-							from keeping spotless - it's surprisingly liberating! The caves
-							maintain a constant, mild temperature year-round, so you'll
-							actually be more comfortable than in many outdoor activities
-							regardless of the weather.
+							oversuits to protect you and your clothes. Many participants
+							discover an unexpected joy in this temporary freedom from keeping
+							spotless - it's surprisingly liberating! The caves maintain a
+							constant, mild temperature year-round, so you'll actually be more
+							comfortable than in many outdoor activities regardless of the
+							weather.
 						</Text>
 					</Accordion.Panel>
 				</Accordion.Item>
@@ -206,13 +205,14 @@ export function TripObjectionHandling() {
 					</Accordion.Control>
 					<Accordion.Panel>
 						<Text>
-							We provide absolutely everything you need - properly certified helmets,
-							reliable lighting systems, protective clothing, and appropriate
-							footwear if needed. Our equipment is well maintained,
+							We provide absolutely everything you need - properly certified
+							helmets, reliable lighting systems, protective clothing, and
+							appropriate footwear if needed. Our equipment is well maintained,
 							regularly inspected, and adheres to British Caving Association
-							best practice. Before entering the cave, our leaders ensure everyone's
-							gear is properly fitted and working perfectly. Many beginners tell
-							us they feel like proper adventurers once they're kitted up!
+							best practice. Before entering the cave, our leaders ensure
+							everyone's gear is properly fitted and working perfectly. Many
+							beginners tell us they feel like proper adventurers once they're
+							kitted up!
 						</Text>
 					</Accordion.Panel>
 				</Accordion.Item>
@@ -229,7 +229,6 @@ export function TripObjectionHandling() {
 							bouldering, mountain biking, and many other widely enjoyed
 							adventure sports.
 						</Text>
-
 					</Accordion.Panel>
 				</Accordion.Item>
 			</Accordion>
