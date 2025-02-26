@@ -98,7 +98,7 @@ export function TripExperience({ trip }: TripExperienceProps) {
 							<Box>
 								<Text ta="center" fw={500} mb="xs">Trip Enjoyment Rating</Text>
 								<Group justify="center">
-									<Rating value={parseInt(starRating, 10).toString()} readOnly size="xl" />
+									<Rating value={starRating} readOnly size="xl" />
 									<Text size="xl" fw={700}>{starRating}/5</Text>
 								</Group>
 								<Text size="sm" c="dimmed" ta="center" mt="xs">
