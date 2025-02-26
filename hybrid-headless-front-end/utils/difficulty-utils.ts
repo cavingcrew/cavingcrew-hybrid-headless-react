@@ -338,7 +338,7 @@ function calculateHazardScore(difficulty: DifficultyData): {
 	];
 
 
-	const score = hazard  ;
+	const score = hazard !== null ? hazard : 0;
 
 	return { score, details };
 }
@@ -366,7 +366,7 @@ function calculateEnduranceScore(difficulty: DifficultyData): {
 	];
 
 
-	const score = endurance  ;
+	const score = endurance !== null ? endurance : 0;
 
 	return { score, details };
 }
