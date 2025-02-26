@@ -55,7 +55,7 @@ function TripEnjoymentRating({
           <Group gap="xs" justify="center">
             <IconClock size={18} />
             <Text>Estimated Approx Duration: {parseFloat(estimatedTime) + (parseFloat(estimatedTime) * 0.25)} hours</Text>
-            <Text>It's really hard to estimate how long a trip will take. It can depend on how fast or slow people are, how people find variou          </Group>
+            <Text>It's really hard to estimate how long a trip will take. It can depend on how fast or slow people are, how long it takes to get ready, to find the entrance, to find the route, to negotiate the challenges. This is far from a perfect estimate.</Text>  </Group>
         </Box>
       )}
     </Stack>
