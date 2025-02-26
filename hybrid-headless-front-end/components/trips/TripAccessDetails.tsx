@@ -210,7 +210,7 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
             src={mapImage.url}
             alt={mapImage.alt || "Map from parking to cave entrance"}
             radius="md"
-            caption={{ text: mapImage.caption }}
+            caption={mapImage.caption}
             style={{ 
               maxWidth: '100%',
               border: '1px solid #dee2e6',
