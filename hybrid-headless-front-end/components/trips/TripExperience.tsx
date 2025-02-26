@@ -120,9 +120,8 @@ export function TripExperience({ trip }: TripExperienceProps) {
 						</Text>
 					)}
 
-					{leadingDifficulty
-						.route_leading_difficulty_horizontal_leading_skills_required
-						?.length > 0 && (
+					{leadingDifficulty.route_leading_difficulty_horizontal_leading_skills_required && 
+						leadingDifficulty.route_leading_difficulty_horizontal_leading_skills_required.length > 0 && (
 						<div>
 							<Text fw={500}>Essential Leadership Skills:</Text>
 							<List>
