@@ -53,17 +53,18 @@ export function TripObjectionHandling() {
 			<Title order={2} mb="md">
 				Common Questions About First-Time Caving
 			</Title>
-			
-			<Alert 
-				icon={<IconFriends size={16} />} 
-				title="Never done this before?" 
-				color="blue" 
+
+			<Alert
+				icon={<IconFriends size={16} />}
+				title="Never done this before?"
+				color="blue"
 				mb="lg"
 			>
 				<Text>
-					That's perfect! These trips are specifically designed for first-timers. 
-					Most people on these trips have never been caving before and don't know anyone else - 
-					you'll be in great company with other beginners just like you!
+					That's perfect! These trips are specifically designed for
+					first-timers. Most people on these trips have never been caving before
+					and don't know anyone else - you'll be in great company with other
+					beginners just like you!
 				</Text>
 			</Alert>
 
@@ -74,17 +75,18 @@ export function TripObjectionHandling() {
 					</Accordion.Control>
 					<Accordion.Panel>
 						<Text>
-
 							Good news! Our beginner trips only visit caves with large and
 							spacious passages. Many of the main chambers are so large you
-							could park several cars inside them!
-
-							You don't often get claustrophobic in everyday situations like the inside of your car or your bedroom closet, right? The passages we explore are comparable to these familiar spaces - often much larger!
-
-							Think of it like exploring an
-							interesting building than anything confining.
-
-							Our leaders are always nearby to offer reassurance and support. Many people who initially worried, tell us afterward that they felt completely at ease throughout the entire experience - and were amazed by the sense of peaceful spaciousness they found underground!
+							could park several cars inside them! You don't often get
+							claustrophobic in everyday situations like the inside of your car
+							or your bedroom closet, right? The passages we explore are
+							comparable to these familiar spaces - often much larger! Think of
+							it like exploring an interesting building than anything confining.
+							Our leaders are always nearby to offer reassurance and support.
+							Many people who initially worried, tell us afterward that they
+							felt completely at ease throughout the entire experience - and
+							were amazed by the sense of peaceful spaciousness they found
+							underground!
 						</Text>
 					</Accordion.Panel>
 				</Accordion.Item>
