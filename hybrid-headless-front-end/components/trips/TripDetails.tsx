@@ -61,9 +61,14 @@ export function TripDetails({ trip }: TripDetailsProps) {
 		}
 	};
 	
-	// Check if this is a giggletrip and user is not logged in
+	// Check if this is a giggletrip and user is not logged in and there are beginner spots available
 	const showSignupCTAs = !isLoggedIn && acf?.event_type === 'giggletrip' && 
-		acf?.event_total_places_available && !acf?.event_total_places_available.toLowerCase().includes('lead');
+		trip.variations.some(v => 
+			v.attributes && 
+			v.attributes["what-describes-you-best"] && 
+			v.attributes["what-describes-you-best"].value.toLowerCase().includes('keen') && 
+			v.stock_quantity > 0
+		);
 
 	const requiresLogin = (
 		(acf.event_non_members_welcome === 'no' ||
