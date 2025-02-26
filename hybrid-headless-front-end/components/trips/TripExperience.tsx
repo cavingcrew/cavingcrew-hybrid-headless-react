@@ -13,6 +13,7 @@ import {
 	Text,
 	ThemeIcon,
 	Title,
+	Rating,
 } from "@mantine/core";
 import {
 	IconArrowsVertical,
@@ -26,10 +27,58 @@ import {
 	IconTool,
 	IconUser,
 	IconWalk,
+	IconClock,
+	IconMoodSmile,
+	IconMountainOff,
 } from "@tabler/icons-react";
 import React from "react";
 import type { Trip } from "../../types/api";
-import { TripChallengeMetrics } from "./TripChallengeMetrics";
+import { extractChallengeMetrics } from "../../utils/difficulty-utils";
+import { TripChallengeIndicator } from "./TripChallengeIndicator";
+
+/**
+ * Component to display trip enjoyment rating and duration
+ */
+function TripEnjoymentRating({
+  starRating,
+  estimatedTime
+}: {
+  starRating?: string | number;
+  estimatedTime?: string;
+}) {
+  if (!starRating && !estimatedTime) return null;
+
+  return (
+    <Stack gap="md" align="center">
+      {starRating && (
+        <Box>
+          <Text ta="center" fw={500} mb="xs">
+            Trip Wowfactor
+          </Text>
+          <Group justify="center">
+            <Rating value={typeof starRating === 'string' ? parseInt(starRating) : starRating} readOnly size="xl" />
+          </Group>
+          <Text size="sm" c="dimmed" ta="center" mt="xs">
+            Based on member feedback
+          </Text>
+        </Box>
+      )}
+      {estimatedTime && (
+        <Box>
+          <Group gap="xs" justify="center" align="flex-start">
+            <IconClock size={18} style={{ marginTop: 4 }} />
+            <div>
+              <Text>Estimated Duration: {parseFloat(estimatedTime) + (parseFloat(estimatedTime) * 0.25)} hours</Text>
+              <Text size="sm" c="dimmed" mt={5} style={{ maxWidth: '500px' }}>
+                Note: Cave trip durations vary widely based on group experience, preparation time, navigation, photo stops, and rest breaks. Always plan for longer than estimated.
+              </Text>
+            </div>
+          </Group>
+        </Box>
+      )}
+    </Stack>
+  );
+}
 
 interface TripExperienceProps {
 	trip: Trip;
@@ -65,7 +114,100 @@ export function TripExperience({ trip }: TripExperienceProps) {
 			)}
 
 			{/* Challenge and Enjoyment Metrics */}
-			<TripChallengeMetrics trip={trip} />
+			<Stack gap="md" mb="xl">
+				<Group gap="xs">
+					<ThemeIcon variant="light" color="red">
+						<IconMountainOff size={18} />
+					</ThemeIcon>
+					<Text fw={500}>Challenge Rating</Text>
+				</Group>
+
+				{(() => {
+					const routeData = trip.route?.acf;
+					const starRating = routeData?.route_trip_star_rating;
+					const estimatedTime = routeData?.route_time_for_eta;
+
+					const challengeResult = extractChallengeMetrics(routeData);
+					const challengeMetrics = challengeResult?.metrics;
+					const weightedRank = challengeResult?.weightedRank;
+
+					if (!challengeMetrics && !starRating && !estimatedTime) {
+						return null;
+					}
+
+					return (
+						<>
+							{challengeMetrics && (
+								<>
+									<Box>
+										{/* Grid layout for desktop, stack for mobile */}
+										{/* Add global styles at the component level, not nested */}
+										<style dangerouslySetInnerHTML={{ __html: `
+											@media (min-width: 768px) {
+												.grid-container {
+													display: grid;
+													grid-template-columns: 1fr 1fr;
+													gap: 1rem;
+												}
+												.overview-section {
+													order: 2;
+												}
+												.challenge-section {
+													order: 1;
+												}
+											}
+										`}} />
+
+										<Box
+											className="grid-container"
+											style={{
+												display: "grid",
+												gridTemplateColumns: "1fr",
+												gap: "1rem",
+											}}
+										>
+											{/* Overview section - first on mobile, second on desktop */}
+											<Box
+												className="overview-section"
+												style={{ order: 1 }}
+											>
+												<Alert color="blue" icon={<IconMoodSmile size={18} />}>
+
+												</Alert>
+
+												{(starRating || estimatedTime) && (
+													<TripEnjoymentRating
+														starRating={starRating}
+														estimatedTime={estimatedTime}
+													/>
+												)}
+											</Box>
+
+											{/* Challenge indicator - second on mobile, first on desktop */}
+											<Box
+												className="challenge-section"
+												style={{ order: 2 }}
+											>
+												<TripChallengeIndicator
+													metrics={challengeMetrics}
+													weightedRank={weightedRank}
+												/>
+											</Box>
+										</Box>
+									</Box>
+								</>
+							)}
+
+							{!challengeMetrics && (starRating || estimatedTime) && (
+								<TripEnjoymentRating
+									starRating={starRating}
+									estimatedTime={estimatedTime}
+								/>
+							)}
+						</>
+					);
+				})()}
+			</Stack>
 
 			{/* Participant Experience - Enhanced */}
 			{participantSkills && (
