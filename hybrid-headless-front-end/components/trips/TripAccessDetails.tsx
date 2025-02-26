@@ -45,7 +45,9 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 	const parkingCoords = locationData?.location_parking_latlong;
 	const parkingToEntranceRoute =
 		locationData?.location_parking_entrance_route_description;
-	const referenceLinks = locationData?.location_reference_links;
+	const referenceLinks = locationData?.location_reference_links?.filter(
+		link => link.link_title?.trim() && link.link_url?.trim()
+	);
 	const mapImage = locationData?.location_map_from_parking_to_entrance;
 	const accessUrl = locationData?.location_access_url;
 	const infoUrl = locationData?.location_info_url;
