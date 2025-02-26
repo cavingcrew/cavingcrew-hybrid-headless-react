@@ -17,6 +17,7 @@ import {
 } from "@mantine/core";
 import { TripOvernightHut } from './TripOvernightHut';
 import { TripAccessDetails } from './TripAccessDetails';
+import { TripExperience } from './TripExperience';
 import { isWithinDays } from '../../utils/event-timing';
 import { useUser } from '@/lib/hooks/useUser';
 import { TripSignupWidget } from "./TripSignupWidget";
@@ -407,6 +408,11 @@ export function TripDetails({ trip }: TripDetailsProps) {
 			{hasPurchased && !isOvernightTrip ? (
 				<TripAccessDetails trip={trip} />
 			) : "" }
+
+			{/* Trip Experience Details */}
+			{hasPurchased && trip.route && (
+				<TripExperience trip={trip} />
+			)}
 
 			{/* What does signing up pay for section */}
 			{acf?.event_paying_for && (
