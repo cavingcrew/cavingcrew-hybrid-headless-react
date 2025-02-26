@@ -26,15 +26,15 @@ interface TripChallengeMetricsProps {
 /**
  * Component to display trip enjoyment rating and duration
  */
-function TripEnjoymentRating({ 
-  starRating, 
-  estimatedTime 
-}: { 
-  starRating?: string | number; 
+function TripEnjoymentRating({
+  starRating,
+  estimatedTime
+}: {
+  starRating?: string | number;
   estimatedTime?: string;
 }) {
   if (!starRating && !estimatedTime) return null;
-  
+
   return (
     <Stack gap="md" align="center">
       {starRating && (
@@ -43,10 +43,7 @@ function TripEnjoymentRating({
             Trip Enjoyment Rating
           </Text>
           <Group justify="center">
-            <Rating value={typeof starRating === 'string' ? parseInt(starRating, 10) : starRating} readOnly size="xl" />
-            <Text size="xl" fw={700}>
-              {starRating}/10
-            </Text>
+            <Rating value={typeof starRating === 'string' ? parseInt(starRating) : starRating} readOnly size="xl" />
           </Group>
           <Text size="sm" c="dimmed" ta="center" mt="xs">
             Based on member feedback
@@ -57,7 +54,7 @@ function TripEnjoymentRating({
         <Box>
           <Group gap="xs" justify="center">
             <IconClock size={18} />
-            <Text>Estimated Duration: {estimatedTime} hours</Text>
+            <Text>Estimated Approx Duration: {estimatedTime+(estimatedTime*0.25)} hours</Text>
           </Group>
         </Box>
       )}
@@ -69,11 +66,11 @@ export function TripChallengeMetrics({ trip }: TripChallengeMetricsProps) {
   const routeData = trip.route?.acf;
   const starRating = routeData?.route_trip_star_rating;
   const estimatedTime = routeData?.route_time_for_eta;
-  
+
   const challengeResult = extractChallengeMetrics(routeData);
   const challengeMetrics = challengeResult?.metrics;
   const weightedRank = challengeResult?.weightedRank;
-  
+
   if (!challengeMetrics && !starRating && !estimatedTime) {
     return null;
   }
@@ -89,25 +86,21 @@ export function TripChallengeMetrics({ trip }: TripChallengeMetricsProps) {
 
       {challengeMetrics && (
         <>
-          <TripChallengeIndicator 
-            metrics={challengeMetrics} 
+          <TripChallengeIndicator
+            metrics={challengeMetrics}
             weightedRank={weightedRank}
           />
-          
+
           <Alert color="blue" icon={<IconMoodSmile size={18} />}>
-            <Text size="sm">
-              These ratings help you understand what to expect. If you have
-              specific concerns about any aspect, please ask the trip leader
-              before signing up.
-            </Text>
+
           </Alert>
         </>
       )}
-      
+
       {(starRating || estimatedTime) && (
-        <TripEnjoymentRating 
-          starRating={starRating} 
-          estimatedTime={estimatedTime} 
+        <TripEnjoymentRating
+          starRating={starRating}
+          estimatedTime={estimatedTime}
         />
       )}
     </Stack>
