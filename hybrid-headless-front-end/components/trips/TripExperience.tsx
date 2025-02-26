@@ -98,7 +98,7 @@ export function TripExperience({ trip }: TripExperienceProps) {
 							<Box>
 								<Text ta="center" fw={500} mb="xs">Trip Enjoyment Rating</Text>
 								<Group justify="center">
-									<Rating value={parseInt(starRating, 10) as any} readOnly size="xl" />
+									<Rating value={parseInt(starRating, 10).toString()} readOnly size="xl" />
 									<Text size="xl" fw={700}>{starRating}/5</Text>
 								</Group>
 								<Text size="sm" c="dimmed" ta="center" mt="xs">
@@ -188,7 +188,8 @@ export function TripExperience({ trip }: TripExperienceProps) {
 								)}
 							</Group>
 							
-							{participantSkills.route_participants_skills_required_horizontal_level.post_title === "Horizontal Basic" && (
+							{typeof participantSkills.route_participants_skills_required_horizontal_level === "object" && 
+							 (participantSkills.route_participants_skills_required_horizontal_level as any)?.post_title === "Horizontal Basic" && (
 								<Alert color="teal" icon={<IconCompass size={18} />} mb="md">
 									<Text size="sm">
 										<strong>Horizontal Basic</strong> means you should be comfortable with:
