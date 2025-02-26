@@ -58,7 +58,7 @@ function ChallengeDetails({ metric }: { metric: ChallengeMetric }) {
 		switch (domain) {
 			case "claustrophobia":
 				if (key === "psychological") {
-					return "How tight and psychologically challenging passages feel - the mental impact of confined spaces.";
+					return "How tight and psychologically challenging passages feel. Includes creepy crawlies.";
 				} else if (key === "objective") {
 					return "The actual relative width of the tightest mandatory section you must pass through.";
 				}
@@ -78,7 +78,7 @@ function ChallengeDetails({ metric }: { metric: ChallengeMetric }) {
 				if (key === "exposure") {
 					return "The psychological impact of height exposure - includes both roped and unroped sections with drops.";
 				} else if (key === "climbing") {
-					return "The technical difficulty of the most challenging climbing sections you'll encounter.";
+					return "The technical difficulty of the most challenging mandatory climbing section.";
 				}
 				break;
 			case "hazard":
@@ -151,10 +151,10 @@ function ChallengeDetails({ metric }: { metric: ChallengeMetric }) {
 				<Progress
 					value={metric.score * 10}
 					color={
-						metric.rating === "na" 
-							? "gray" 
-							: metric.rating === "amber" 
-								? "yellow" 
+						metric.rating === "na"
+							? "gray"
+							: metric.rating === "amber"
+								? "yellow"
 								: metric.rating
 					}
 					size="md"
