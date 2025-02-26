@@ -204,7 +204,10 @@ export function TripDetails({ trip }: TripDetailsProps) {
 									</Text>
 								</Group>
 							)}
-							{acf?.event_non_members_welcome !== 'no' && trip.price && (
+							{acf?.event_non_members_welcome !== 'no' && trip.price && 
+							  // Only show non-member price if it's different from member price
+							  // Handle cases where member price might be a range like "3-6" or "3 - 6"
+							  String(acf?.event_cost || "").replace(/\s+/g, "") !== String(trip.price).replace(/\s+/g, "") && (
 								<Group gap="xs">
 									<IconCoin size={20} />
 									<Text>Non-Member Price: £{trip.price}</Text>
