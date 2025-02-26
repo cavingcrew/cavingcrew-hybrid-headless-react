@@ -59,7 +59,7 @@ export function TripExperience({ trip }: TripExperienceProps) {
             <Text fw={500}>Participant Experience</Text>
           </Group>
           
-          {participantSkills.route_participants_skills_required_horizontal_level && (
+          {participantSkills?.route_participants_skills_required_horizontal_level && (
             <Text>
               <strong>Horizontal Skills:</strong>{" "}
               {typeof participantSkills.route_participants_skills_required_horizontal_level === 'object' 
