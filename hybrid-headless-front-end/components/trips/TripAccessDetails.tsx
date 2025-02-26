@@ -42,7 +42,7 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
   const parkingInstructions = locationData?.location_parking_description;
   const entranceCoords = locationData?.location_entrance_latlong;
   const parkingCoords = locationData?.location_parking_latlong;
-  const routeDescription = locationData?.location_parking_entrance_route_description;
+  const parkingToEntranceRoute = locationData?.location_parking_entrance_route_description;
   const referenceLinks = locationData?.location_reference_links;
   const mapImage = locationData?.location_map_from_parking_to_entrance;
   const accessUrl = locationData?.location_access_url;
@@ -180,6 +180,19 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
             // Handle array format if needed
             <Text size="sm">{JSON.stringify(routeDescription)}</Text>
           )}
+        </Stack>
+      )}
+
+      {/* Parking to Entrance Route */}
+      {parkingToEntranceRoute && (
+        <Stack gap="md" mb="xl">
+          <Group gap="xs">
+            <ThemeIcon variant="light" color="teal">
+              <IconWalk size={18} />
+            </ThemeIcon>
+            <Text fw={500}>Approach from Parking</Text>
+          </Group>
+          <Text size="sm">{parkingToEntranceRoute}</Text>
         </Stack>
       )}
 
