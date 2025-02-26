@@ -56,7 +56,17 @@ function TripEnjoymentRating({
             Wowfactor
           </Text>
           <Group>
-            <Rating value={typeof starRating === 'string' ? Number.parseInt(starRating, 10) : starRating} readOnly size="xl" count={10} />
+            {/* Custom star rendering to show only the exact number of stars */}
+            {Array.from({ length: typeof starRating === 'string' ? 
+              Number.parseInt(starRating, 10) : 
+              (typeof starRating === 'number' ? starRating : 0) 
+            }).map((_, index) => (
+              <IconStar 
+                key={index} 
+                size={28} 
+                style={{ color: '#FFD700', fill: '#FFD700' }} 
+              />
+            ))}
           </Group>
         </Box>
       )}
