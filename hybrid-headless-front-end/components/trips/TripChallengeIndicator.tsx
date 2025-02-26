@@ -508,9 +508,8 @@ export function TripChallengeIndicator({
 									borderRadius: "50%",
 								}}
 							/>
-							<Text size="xs">Challenging</Text>
+							<Text size="xs">Hard</Text>
 						</Group>
-
 					</Box>
 				</Box>
 
