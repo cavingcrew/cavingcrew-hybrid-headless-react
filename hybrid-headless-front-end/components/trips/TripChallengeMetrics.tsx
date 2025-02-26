@@ -55,8 +55,7 @@ function TripEnjoymentRating({
           <Group gap="xs" justify="center">
             <IconClock size={18} />
             <Text>Estimated Approx Duration: {parseFloat(estimatedTime) + (parseFloat(estimatedTime) * 0.25)} hours</Text>
-            <Text>It's really hard to estimate how long a trip will take </Text>
-          </Group>
+            <Text>It's really hard to estimate how long a trip will take. It can depend on how fast or slow people are, how people find variou          </Group>
         </Box>
       )}
     </Stack>
@@ -105,7 +104,7 @@ export function TripChallengeMetrics({ trip }: TripChallengeMetricsProps) {
                 }
               }
             `}</style>
-            
+
             <Box
               className="grid-container"
               style={{
