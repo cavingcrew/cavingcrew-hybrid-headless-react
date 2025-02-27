@@ -107,43 +107,47 @@ export function TripExperience({ trip }: TripExperienceProps) {
 	const challengeResult = extractChallengeMetrics(routeData);
 	const challengeMetrics = challengeResult?.metrics;
 	const weightedRank = challengeResult?.weightedRank;
+	
+	// Check if we have enough data to show the trip experience section
+	const hasExperienceData = starRating || estimatedTime || routeData?.route_blurb || challengeMetrics;
 
 	return (
 		<>
-			<Paper withBorder p="md" radius="md" mt="md">
-				<Title order={2} mb="md">
-					What the Trip Will Be Like
-				</Title>
+			{hasExperienceData && (
+				<Paper withBorder p="md" radius="md" mt="md">
+					<Title order={2} mb="md">
+						What the Trip Will Be Like
+					</Title>
 
-				<Grid gutter="md" mb="xl">
-					<Grid.Col span={{ base: 12, md: 6 }}>
-						{/* Trip Enjoyment Rating */}
-						{(starRating || estimatedTime) && (
-							<TripEnjoymentRating
-								starRating={starRating}
-								estimatedTime={estimatedTime}
-							/>
-						)}
-
-						{/* Trip Overview */}
-						{routeData?.route_blurb && (
-							<Stack gap="md" mt="xl">
-								{/* Content from WordPress sanitized HTML */}
-								<div
-									dangerouslySetInnerHTML={{ __html: routeData.route_blurb }}
+					<Grid gutter="md" mb="xl">
+						<Grid.Col span={{ base: 12, md: 6 }}>
+							{/* Trip Enjoyment Rating */}
+							{(starRating || estimatedTime) && (
+								<TripEnjoymentRating
+									starRating={starRating}
+									estimatedTime={estimatedTime}
 								/>
-							</Stack>
-						)}
-					</Grid.Col>
-					<Grid.Col span={{ base: 12, md: 6 }}>
-						{challengeMetrics && (
-							<TripChallengeIndicator
-								metrics={challengeMetrics}
-								weightedRank={weightedRank}
-							/>
-						)}
-					</Grid.Col>
-				</Grid>
+							)}
+
+							{/* Trip Overview */}
+							{routeData?.route_blurb && (
+								<Stack gap="md" mt="xl">
+									{/* Content from WordPress sanitized HTML */}
+									<div
+										dangerouslySetInnerHTML={{ __html: routeData.route_blurb }}
+									/>
+								</Stack>
+							)}
+						</Grid.Col>
+						<Grid.Col span={{ base: 12, md: 6 }}>
+							{challengeMetrics && (
+								<TripChallengeIndicator
+									metrics={challengeMetrics}
+									weightedRank={weightedRank}
+								/>
+							)}
+						</Grid.Col>
+					</Grid>
 
 
 				{/* Participant Experience - Enhanced */}
@@ -256,19 +260,22 @@ export function TripExperience({ trip }: TripExperienceProps) {
 							)}
 
 						{/* Conservation Alert */}
-						<Alert
-							color="green"
-							title="Conservation Notice"
-							icon={<IconFirstAidKit size={18} />}
-							mb="md"
-						>
-							<Text size="sm">
-								Please follow all conservation guidelines and avoid touching
-								formations or removing any historical relics. Take nothing but pictures, leave nothing but footprints.
-							</Text>
-						</Alert>
+						{hasExperienceData && (
+							<Alert
+								color="green"
+								title="Conservation Notice"
+								icon={<IconFirstAidKit size={18} />}
+								mb="md"
+							>
+								<Text size="sm">
+									Please follow all conservation guidelines and avoid touching
+									formations or removing any historical relics. Take nothing but pictures, leave nothing but footprints.
+								</Text>
+							</Alert>
+						)}
 					</Stack>
-			</Paper>
+				</Paper>
+			)}
 
 			{/* Objection Handling for GiggleTrips - only shown to non-logged in users */}
 			{trip.acf?.event_type === 'giggletrip' && !isLoggedIn && (
