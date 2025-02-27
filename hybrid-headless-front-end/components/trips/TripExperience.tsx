@@ -150,16 +150,16 @@ export function TripExperience({ trip }: TripExperienceProps) {
 					</Grid>
 
 
-				{/* Participant Experience - Enhanced */}
-					<Stack gap="md" mb="xl">
-						{participantSkills && (
-							<Group gap="xs">
-								<ThemeIcon variant="light" color="teal">
-									<IconUser size={18} />
-								</ThemeIcon>
-								<Text fw={500}>Suggested Experience</Text>
-							</Group>
-						)}
+				{/* Participant Experience - Enhanced - Always show this section */}
+				<Stack gap="md" mb="xl">
+					{participantSkills && (
+						<Group gap="xs">
+							<ThemeIcon variant="light" color="teal">
+								<IconUser size={18} />
+							</ThemeIcon>
+							<Text fw={500}>Suggested Experience</Text>
+						</Group>
+					)}
 
 						{participantSkills?.route_participants_skills_required_horizontal_level ? (
 							<Box>
