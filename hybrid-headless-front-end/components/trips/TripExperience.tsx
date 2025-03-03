@@ -109,7 +109,12 @@ export function TripExperience({ trip }: TripExperienceProps) {
 	const weightedRank = challengeResult?.weightedRank;
 	
 	// Check if we have enough data to show the trip experience section
-	const hasExperienceData = starRating || estimatedTime || routeData?.route_blurb || challengeMetrics;
+	const hasExperienceData = (starRating || estimatedTime || routeData?.route_blurb || challengeMetrics) && 
+		// Make sure we have actual route data with meaningful content
+		(routeData?.route_trip_star_rating !== null || 
+		 routeData?.route_time_for_eta || 
+		 routeData?.route_blurb || 
+		 challengeMetrics);
 
 	return (
 		<>
