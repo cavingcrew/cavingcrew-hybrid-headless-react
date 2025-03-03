@@ -109,12 +109,16 @@ export function TripExperience({ trip }: TripExperienceProps) {
 	const weightedRank = challengeResult?.weightedRank;
 	
 	// Check if we have enough data to show the trip experience section
-	const hasExperienceData = (starRating || estimatedTime || routeData?.route_blurb || challengeMetrics) && 
-		// Make sure we have actual route data with meaningful content
-		(routeData?.route_trip_star_rating !== null || 
-		 routeData?.route_time_for_eta || 
-		 routeData?.route_blurb || 
-		 challengeMetrics);
+	const hasExperienceData = 
+		// First check if we have any meaningful route data
+		routeData && 
+		// Then check if any of these specific fields have actual content
+		(
+			(starRating && starRating > 0) || 
+			(estimatedTime && estimatedTime.trim() !== '') || 
+			(routeData.route_blurb && routeData.route_blurb.trim() !== '') || 
+			(challengeMetrics && challengeMetrics.length > 0)
+		);
 
 	return (
 		<>
@@ -387,7 +391,13 @@ export function TripExperience({ trip }: TripExperienceProps) {
 			)}
 
 			{/* Leading the Trip - Separate Paper Container - Only visible to logged in users */}
-			{leadingDifficulty && isLoggedIn && (
+			{leadingDifficulty && 
+			  isLoggedIn && 
+			  // Make sure we have actual leading difficulty data with meaningful content
+			  (leadingDifficulty.route_leading_difficulty_navigation_difficulty || 
+			   leadingDifficulty.route_leading_difficulty_horizontal_leading_level_required || 
+			   (leadingDifficulty.route_leading_difficulty_horizontal_leading_skills_required && 
+				leadingDifficulty.route_leading_difficulty_horizontal_leading_skills_required.length > 0)) && (
 				<Paper withBorder p="md" radius="md" mt="md">
 					<Stack gap="md" mb="xl">
 						<Group gap="xs">
