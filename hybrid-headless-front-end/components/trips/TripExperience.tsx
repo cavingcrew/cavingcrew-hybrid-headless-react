@@ -37,7 +37,7 @@ import { extractChallengeMetrics } from "../../utils/difficulty-utils";
 import { TripChallengeIndicator } from "./TripChallengeIndicator";
 import { TripObjectionHandling } from "./TripObjectionHandling";
 import { AboutCavingCrew } from "./AboutCavingCrew";
-import { useUser } from "@/lib/hooks/useUser";
+import { useUser } from "../../lib/hooks/useUser";
 
 /**
  * Component to display trip enjoyment rating and duration
@@ -60,10 +60,10 @@ function TripEnjoymentRating({
           </Text>
           <Group>
             {/* Custom star rendering to show only the exact number of stars */}
-            {Array.from({ length: typeof starRating === 'string' ?
-              Number.parseInt(starRating, 10) :
+            {[...Array(typeof starRating === 'string' ?
+              parseInt(starRating, 10) :
               (typeof starRating === 'number' ? starRating : 0)
-            }).map((_, index) => (
+            )].map((_, index) => (
               <IconStar
                 key={index}
                 size={28}
@@ -113,7 +113,7 @@ export function TripExperience({ trip }: TripExperienceProps) {
 		// First check if we have a valid route with meaningful data
 		routeData && 
 		trip.route?.id !== null && 
-		trip.route?.title !== "Cave Entrance Details" &&
+		trip.route?.acf?.route_name !== "Cave Entrance Details" &&
 		// Then check if any of these specific fields have actual content
 		(
 			(starRating && starRating > 0) || 
