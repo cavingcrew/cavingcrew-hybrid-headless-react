@@ -175,8 +175,10 @@ export function TripDetails({ trip }: TripDetailsProps) {
                   <Text>
                     Location:
 					  {isOvernightTrip
-						  ? `${acf.event_accomodation_description} ${acf.event_location}`
-						  : acf.event_possible_location && ` ${acf.event_possible_location}`
+						  ? `${acf.event_accomodation_description || ''} ${acf.event_location || ''}`
+						  : acf.event_cave_name 
+                      ? ` ${acf.event_cave_name}`
+                      : acf.event_possible_location && ` ${acf.event_possible_location}`
 					  }
                   </Text>
                 </Group>
