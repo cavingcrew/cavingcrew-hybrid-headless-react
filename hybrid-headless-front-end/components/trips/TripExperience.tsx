@@ -332,9 +332,9 @@ export function TripExperience({ trip }: TripExperienceProps) {
 														case "helmet and light":
 															return <IconFirstAidKit size={16} />;
 														case "gloves":
-															return <IconTool size={16} />;
+															return <IconUser size={16} />; // Hand icon
 														case "belt":
-															return <IconRuler size={16} />;
+															return <IconMountain size={16} />; // Harness-like icon
 														default:
 															return <IconTool size={16} />;
 													}
