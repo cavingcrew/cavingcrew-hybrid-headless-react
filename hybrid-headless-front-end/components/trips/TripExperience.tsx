@@ -30,6 +30,8 @@ import {
 	IconClock,
 	IconMoodSmile,
 	IconMountainOff,
+	IconBoot,
+	IconHeadset,
 } from "@tabler/icons-react";
 import React from "react";
 import type { Trip } from "../../types/api";
@@ -326,11 +328,11 @@ export function TripExperience({ trip }: TripExperienceProps) {
 														case "undersuit":
 															return <IconShirt size={16} />;
 														case "wellies":
-															return <IconWalk size={16} />;
+															return <IconBoot size={16} />; // Boot icon
 														case "kneepads":
-															return <IconArrowsVertical size={16} />;
+															return <IconFirstAidKit size={16} />; // Medical icon for protection
 														case "helmet and light":
-															return <IconFirstAidKit size={16} />;
+															return <IconHeadset size={16} />; // Head with equipment
 														case "gloves":
 															return <IconUser size={16} />; // Hand icon
 														case "belt":
