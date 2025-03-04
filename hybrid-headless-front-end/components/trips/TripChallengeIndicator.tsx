@@ -141,7 +141,12 @@ function ChallengeDetails({ metric }: { metric: ChallengeMetric }) {
 							</Text>
 						</Text>
 						<Text size="sm" fw={500}>
-							{detail.value !== null ? `${detail.value}/10` : "N/A"}
+							{detail.value !== null 
+								? (metric.domain === "endurance" && detail.key === "endurance"
+									? `${detail.value} (open scale)` 
+									: `${detail.value}/10`)
+								: "N/A"
+							}
 						</Text>
 					</Group>
 					{detail.value !== null && (
