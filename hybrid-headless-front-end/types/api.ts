@@ -147,6 +147,7 @@ export interface Location {
 // Route Type
 export interface Route {
 	id: number;
+	title?: string;
 	acf: {
 		route_name: string;
 		route_blurb?: string;
