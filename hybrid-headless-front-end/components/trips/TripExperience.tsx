@@ -414,13 +414,13 @@ export function TripExperience({ trip }: TripExperienceProps) {
 								<Badge
 									size="lg"
 									color={
-										Number.parseInt(
-											leadingDifficulty.route_leading_difficulty_navigation_difficulty,
+										parseInt(
+											leadingDifficulty.route_leading_difficulty_navigation_difficulty as string,
 											10
 										) <= 2.5
 											? "green"
-											: Number.parseInt(
-												leadingDifficulty.route_leading_difficulty_navigation_difficulty,
+											: parseInt(
+												leadingDifficulty.route_leading_difficulty_navigation_difficulty as string,
 												10
 											) <= 6.5
 												? "yellow"
