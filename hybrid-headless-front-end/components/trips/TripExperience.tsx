@@ -32,6 +32,8 @@ import {
 	IconMountainOff,
 	IconShoe, // Using IconShoe instead of IconBoot which doesn't exist
 	IconHeadset,
+	IconBolt,
+	IconThumbUp,
 } from "@tabler/icons-react";
 import React from "react";
 import type { Trip } from "../../types/api";
@@ -332,9 +334,9 @@ export function TripExperience({ trip }: TripExperienceProps) {
 														case "kneepads":
 															return <IconFirstAidKit size={16} />; // Medical icon for protection
 														case "helmet and light":
-															return <IconHeadset size={16} />; // Head with equipment
+															return <IconBolt size={16} />; // Light/helmet icon
 														case "gloves":
-															return <IconUser size={16} />; // Hand icon
+															return <IconThumbUp size={16} />; // Hand/glove icon
 														case "belt":
 															return <IconMountain size={16} />; // Harness-like icon
 														default:
