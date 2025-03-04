@@ -110,8 +110,10 @@ export function TripExperience({ trip }: TripExperienceProps) {
 	
 	// Check if we have enough data to show the trip experience section
 	const hasExperienceData = 
-		// First check if we have any meaningful route data
+		// First check if we have a valid route with meaningful data
 		routeData && 
+		trip.route?.id !== null && 
+		trip.route?.title !== "Cave Entrance Details" &&
 		// Then check if any of these specific fields have actual content
 		(
 			(starRating && starRating > 0) || 
