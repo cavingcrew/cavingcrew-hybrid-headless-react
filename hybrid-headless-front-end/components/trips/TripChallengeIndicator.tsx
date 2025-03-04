@@ -146,7 +146,10 @@ function ChallengeDetails({ metric }: { metric: ChallengeMetric }) {
 					</Group>
 					{detail.value !== null && (
 						<Progress
-							value={detail.value * 10}
+							value={metric.domain === "endurance" && detail.key === "endurance"
+								? Math.min(detail.value * 10, 100) // Cap at 100% for endurance
+								: detail.value * 10
+							}
 							color={
 								detail.value <= 2.5
 									? "green"
@@ -166,10 +169,17 @@ function ChallengeDetails({ metric }: { metric: ChallengeMetric }) {
 
 			<Box>
 				<Text size="sm" fw={500}>
-					Weighted Score: {metric.score.toFixed(1)}/10
+					Weighted Score: {
+						metric.domain === "endurance" 
+							? `${metric.score.toFixed(1)} (open scale)` 
+							: `${metric.score.toFixed(1)}/10`
+					}
 				</Text>
 				<Progress
-					value={metric.score * 10}
+					value={metric.domain === "endurance" 
+						? Math.min(metric.score * 10, 100) // Cap at 100% for display
+						: metric.score * 10
+					}
 					color={getRatingColor(metric.rating)}
 					size="md"
 					radius="xl"
