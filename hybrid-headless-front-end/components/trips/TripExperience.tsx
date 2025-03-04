@@ -115,7 +115,7 @@ export function TripExperience({ trip }: TripExperienceProps) {
 		// First check if we have a valid route with meaningful data
 		routeData && 
 		trip.route?.id !== null && 
-		trip.route?.acf?.route_name !== "Cave Entrance Details" &&
+		trip.route?.title !== "Cave Entrance Details" &&
 		// Then check if any of these specific fields have actual content
 		(
 			(starRating && starRating > 0) || 
