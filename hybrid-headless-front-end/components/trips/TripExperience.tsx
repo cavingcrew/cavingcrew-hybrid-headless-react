@@ -30,7 +30,7 @@ import {
 	IconClock,
 	IconMoodSmile,
 	IconMountainOff,
-	IconBoot,
+	IconShoe, // Using IconShoe instead of IconBoot which doesn't exist
 	IconHeadset,
 } from "@tabler/icons-react";
 import React from "react";
@@ -115,7 +115,7 @@ export function TripExperience({ trip }: TripExperienceProps) {
 		// First check if we have a valid route with meaningful data
 		routeData && 
 		trip.route?.id !== null && 
-		trip.route?.title !== "Cave Entrance Details" &&
+		trip.route?.acf?.route_name !== "Cave Entrance Details" &&
 		// Then check if any of these specific fields have actual content
 		(
 			(starRating && starRating > 0) || 
@@ -328,7 +328,7 @@ export function TripExperience({ trip }: TripExperienceProps) {
 														case "undersuit":
 															return <IconShirt size={16} />;
 														case "wellies":
-															return <IconBoot size={16} />; // Boot icon
+															return <IconShoe size={16} />; // Boot icon
 														case "kneepads":
 															return <IconFirstAidKit size={16} />; // Medical icon for protection
 														case "helmet and light":
