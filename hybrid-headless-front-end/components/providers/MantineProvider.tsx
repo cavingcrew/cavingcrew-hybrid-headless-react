@@ -20,8 +20,6 @@ export function MantineProvider({ children }: MantineProviderProps) {
       defaultColorScheme="light"
       forceColorScheme="light"
       withCssVariables
-      withGlobalStyles
-      withNormalizeCSS
     >
       {children}
     </BaseMantineProvider>
