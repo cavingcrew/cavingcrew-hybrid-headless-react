@@ -1,7 +1,12 @@
 'use client';
 
-import { MantineProvider as BaseMantineProvider } from '@mantine/core';
+import { MantineProvider as BaseMantineProvider, createTheme } from '@mantine/core';
 import { useState, useEffect, type ReactNode } from 'react';
+
+// Create a consistent theme
+const theme = createTheme({
+  // Your theme configuration
+});
 
 interface MantineProviderProps {
   children: ReactNode;
@@ -17,11 +22,11 @@ export function MantineProvider({ children }: MantineProviderProps) {
   // Use a consistent rendering approach for both server and client
   return (
     <BaseMantineProvider
+      theme={theme}
       defaultColorScheme="light"
       forceColorScheme="light"
-      withCssVariables
     >
-      {children}
+      {mounted ? children : children}
     </BaseMantineProvider>
   );
 }

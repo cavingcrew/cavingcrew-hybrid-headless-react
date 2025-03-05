@@ -7,7 +7,7 @@ import { MainFooter } from '@/components/layout/MainFooter';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" data-mantine-color-scheme="light">
       <head>
         <ColorSchemeScript defaultColorScheme="light" />
         <title>The Caving Crew - Community Caving Trips and Adventures</title>
