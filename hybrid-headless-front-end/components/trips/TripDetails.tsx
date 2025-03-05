@@ -49,6 +49,21 @@ interface TripDetailsProps {
 export function TripDetails({ trip }: TripDetailsProps) {
 	const acf = trip.acf;
 	const { purchasedProducts, isLoggedIn, user } = useUser();
+
+	const getLocationName = (trip: Trip) => {
+		// Skip if route title is "Cave Entrance Details"
+		if (trip.route?.title && trip.route.title !== "Cave Entrance Details") {
+			return trip.route.title;
+		}
+		
+		// Check entrance location title
+		if (trip.route?.acf?.route_entrance_location_id?.title) {
+			return trip.route.acf.route_entrance_location_id.title;
+		}
+		
+		// Fall back to event_cave_name
+		return trip.acf.event_cave_name;
+	};
 	const startDate = acf?.event_start_date_time ? new Date(acf.event_start_date_time) : null;
 	const endDate = acf?.event_finish_date_time ? new Date(acf.event_finish_date_time) : null;
 	const isOvernightTrip = trip.categories.some(cat => cat.slug === 'overnight-trips');
@@ -174,12 +189,10 @@ export function TripDetails({ trip }: TripDetailsProps) {
                   <IconMapPin size={20} style={{ marginTop: 3 }} />
                   <Text>
                     Location:
-					  {isOvernightTrip
-						  ? `${acf.event_accomodation_description || ''} ${acf.event_location || ''}`
-						  : acf.event_cave_name 
-                      ? ` ${acf.event_cave_name}`
-                      : acf.event_possible_location && ` ${acf.event_possible_location}`
-					  }
+                    {isOvernightTrip
+                      ? `${acf.event_accomodation_description || ''} ${acf.event_location || ''}`
+                      : ` ${getLocationName(trip)}`
+                    }
                   </Text>
                 </Group>
               )}
