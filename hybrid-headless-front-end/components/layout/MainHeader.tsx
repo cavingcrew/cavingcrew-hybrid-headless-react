@@ -10,7 +10,6 @@ import {
 	Stack,
 	Text,
 	UnstyledButton,
-	rem,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconChevronDown } from "@tabler/icons-react";
@@ -90,7 +89,7 @@ export function MainHeader() {
 					<UnstyledButton>
 						<Group gap={3}>
 							<span>About Us</span>
-							<IconChevronDown size={rem(16)} />
+							<IconChevronDown size={16} />
 						</Group>
 					</UnstyledButton>
 				</Menu.Target>
