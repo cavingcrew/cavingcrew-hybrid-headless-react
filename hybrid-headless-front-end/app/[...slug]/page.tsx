@@ -13,5 +13,5 @@ const CatchAllContent = dynamic(
 );
 
 export default function CatchAllPage() {
-	return <><p>ALERT ALERT</p><CatchAllContent /></>;
+	return <CatchAllContent />;
 }
