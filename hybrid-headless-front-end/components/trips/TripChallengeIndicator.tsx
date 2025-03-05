@@ -241,7 +241,7 @@ export function TripChallengeIndicator({
 					maxWidth: 350,
 					margin: "0 auto",
 					aspectRatio: "1/1",
-					marginTop: "-10px",
+					marginTop: -10,
 				}}
 			>
 				<style>
