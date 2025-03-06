@@ -52,7 +52,7 @@ export function TripsView({ trips }: TripsViewProps) {
         cat => cat.slug === 'extra-welcoming-trips'
       );
       const isVertical = trip.acf.event_type === 'overnight' ||
-        trip.acf.event_gear_required?.toLowerCase().includes('srt');
+        trip.acf.event_skills_required?.toLowerCase().includes('srt');
       const isU18Friendly = trip.acf.event_u18s_come === 'yes';
 
       return (
@@ -230,7 +230,7 @@ export function TripsView({ trips }: TripsViewProps) {
         </SimpleGrid>
       ) : (
         <Table.ScrollContainer minWidth="100%">
-          <Table verticalSpacing="sm" striped highlightOnHover style={{ 
+          <Table verticalSpacing="sm" striped highlightOnHover style={{
             tableLayout: 'fixed',
             width: '100%',
             overflowX: 'visible'
@@ -255,10 +255,10 @@ export function TripsView({ trips }: TripsViewProps) {
             </Table.Thead>
             <Table.Tbody>
               {sortedTrips.map((trip) => {
-                const startDate = trip.acf.event_start_date_time 
+                const startDate = trip.acf.event_start_date_time
                   ? new Date(trip.acf.event_start_date_time)
                   : null;
-                const isVertical = trip.acf.event_skills_required?.includes('SRT') && 
+                const isVertical = trip.acf.event_skills_required?.includes('SRT') &&
                   trip.acf.event_type !== 'overnight';
                 const isOvernight = trip.acf.event_type === 'overnight';
 
@@ -279,7 +279,7 @@ export function TripsView({ trips }: TripsViewProps) {
                     }}
                     aria-label={`View ${trip.name} details`}
                   >
-                    <Table.Td style={{ 
+                    <Table.Td style={{
                       width: '120px',
                       minWidth: '120px',
                       paddingRight: '8px'
@@ -297,11 +297,11 @@ export function TripsView({ trips }: TripsViewProps) {
                         </Group>
                       ) : 'TBD'}
                     </Table.Td>
-                    <Table.Td style={{ 
+                    <Table.Td style={{
                       paddingRight: '8px',
                       wordBreak: 'break-word'
                     }}>
-                      <Text size="sm" style={{ 
+                      <Text size="sm" style={{
                         whiteSpace: 'normal',
                         lineHeight: 1.3,
                         display: '-webkit-box',
@@ -334,7 +334,7 @@ export function TripsView({ trips }: TripsViewProps) {
                             <IconSchool size={14} style={{ marginRight: 4 }} />
                           ) : trip.acf.event_type === 'giggletrip' ? (
                             <IconSparkles size={14} style={{ marginRight: 4 }} />
-                          ) : (trip.acf.event_skills_required === 'Basic SRT' || 
+                          ) : (trip.acf.event_skills_required === 'Basic SRT' ||
                                trip.acf.event_skills_required === 'Advanced SRT') ? (
                             <IconArrowBarUp size={14} style={{ marginRight: 4 }} />
                           ) : (

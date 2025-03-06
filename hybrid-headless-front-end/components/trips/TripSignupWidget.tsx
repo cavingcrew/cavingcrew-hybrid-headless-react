@@ -339,7 +339,7 @@ export function TripSignupWidget({
                 {nonMembersWelcome && !mustCavedBefore ? (
                   <>
                     <Alert color="blue" icon={<IconInfoCircle />}>
-                      New to caving? You can sign up as a guest. Existing members should log in.
+                      New to caving? You can sign up as a guest. If you've caved with us before, you should log in.
                     </Alert>
                     <Group justify="space-between">
                       <Stack gap={0}>

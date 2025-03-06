@@ -124,7 +124,7 @@ export function MainHeader() {
 					<UnstyledButton>
 						<Group gap={3}>
 							<span>My Account</span>
-							<IconChevronDown size={rem(16)} />
+							<IconChevronDown size={16} />
 						</Group>
 					</UnstyledButton>
 				</Menu.Target>
