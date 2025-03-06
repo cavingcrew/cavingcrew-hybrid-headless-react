@@ -51,24 +51,55 @@ export function TripDetails({ trip }: TripDetailsProps) {
 	const { purchasedProducts, isLoggedIn, user } = useUser();
 
 	const getLocationName = (trip: Trip) => {
-		// For overnight trips, use the event_location field directly
+		// For overnight trips, use the hut location
 		if (isOvernightTrip) {
+			if (trip.hut?.hut_location?.post_title) {
+				return trip.hut.hut_location.post_title;
+			}
 			return trip.acf.event_location || trip.acf.event_cave_name || '';
 		}
 
-		// For regular trips, use the prioritization logic
-		// Skip if route title is "Cave Entrance Details"
-		if (trip.route?.title && trip.route.title !== "Cave Entrance Details") {
-			return trip.route.title;
+		// For training, known location, or giggletrips
+		if (['training', 'known', 'giggletrip'].includes(trip.acf.event_type)) {
+			// Use entrance location with city if available
+			if (trip.route?.acf?.route_entrance_location_id?.title) {
+				const locationTitle = trip.route.acf.route_entrance_location_id.title;
+				const city = trip.route?.acf?.route_entrance_location_id?.acf?.location_parking_latlong?.city;
+				
+				if (city) {
+					return `${locationTitle} near ${city}`;
+				}
+				return locationTitle;
+			}
+			
+			// Fall back to cave name with possible location
+			if (trip.acf.event_cave_name) {
+				if (trip.acf.event_possible_location) {
+					return `${trip.acf.event_cave_name} near ${trip.acf.event_possible_location}`;
+				}
+				return trip.acf.event_cave_name;
+			}
+			
+			// Skip if route title is "Cave Entrance Details"
+			if (trip.route?.title && trip.route.title !== "Cave Entrance Details") {
+				return trip.route.title;
+			}
 		}
 		
-		// Check entrance location title
-		if (trip.route?.acf?.route_entrance_location_id?.title) {
-			return trip.route.acf.route_entrance_location_id.title;
+		// For mystery trips or other types, just use what we have
+		if (trip.acf.event_cave_name) {
+			return trip.acf.event_cave_name;
 		}
 		
-		// Fall back to event_cave_name
-		return trip.acf.event_cave_name || '';
+		if (trip.acf.event_possible_location) {
+			return trip.acf.event_possible_location;
+		}
+		
+		if (trip.acf.event_location) {
+			return trip.acf.event_location;
+		}
+		
+		return '';
 	};
 	const startDate = acf?.event_start_date_time ? new Date(acf.event_start_date_time) : null;
 	const endDate = acf?.event_finish_date_time ? new Date(acf.event_finish_date_time) : null;
@@ -190,7 +221,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
               )}
 
               {/* Location Display */}
-              {(acf?.event_location || acf?.event_cave_name) && (
+              {(getLocationName(trip)) && (
                 <Group gap="xs" wrap="nowrap" align="flex-start">
                   <IconMapPin size={20} style={{ marginTop: 3 }} />
                   <Text>
