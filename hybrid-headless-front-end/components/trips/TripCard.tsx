@@ -23,8 +23,15 @@ const requiresSRT = (trip: Trip) => {
 
   // Check gear requirements from ACF
   const gearRequiresSRT = trip.acf.event_gear_required?.toLowerCase().includes('srt');
+  
+  // Check skills requirements from ACF
+  const skillsRequiresSRT = trip.acf.event_skills_required?.toLowerCase().includes('srt');
+  
+  // Check route description for SRT mentions
+  const routeHasSRT = trip.route?.acf?.route_blurb?.toLowerCase().includes('srt') || 
+                      trip.route?.acf?.route_personal_gear_required?.includes('SRT Kit');
 
-  return isSRTTraining || gearRequiresSRT;
+  return isSRTTraining || gearRequiresSRT || skillsRequiresSRT || routeHasSRT;
 };
 
 const formatDateWithOrdinal = (dateString: string) => {
