@@ -231,6 +231,30 @@ export interface Trip {
 	has_variations: boolean;
 	is_variable: boolean;
 	route?: Route;
+	hut?: {
+		hut_id: number;
+		hut_name: string;
+		hut_sales_description?: string;
+		hut_club_name?: string;
+		hut_address?: string;
+		hut_location?: {
+			ID: number;
+			post_title: string;
+			post_name: string;
+			permalink: string;
+		};
+		hut_lat_long?: string;
+		hut_parking_instructions?: string;
+		hut_facilities?: string[];
+		hut_arrival_and_directions?: string;
+		hut_image?: {
+			ID: string;
+			url: boolean | string;
+			alt: boolean | string;
+			caption: boolean | string;
+		};
+		hut_dogs_allowed?: string;
+	};
 	acf: {
 		// Event Type
 		event_type: string;
