@@ -64,7 +64,13 @@ export function TripDetails({ trip }: TripDetailsProps) {
 			// Use entrance location with city if available
 			if (trip.route?.acf?.route_entrance_location_id?.title) {
 				const locationTitle = trip.route.acf.route_entrance_location_id.title;
-				const city = trip.route?.acf?.route_entrance_location_id?.acf?.location_parking_latlong?.city;
+				const parkingLatLong = trip.route?.acf?.route_entrance_location_id?.acf?.location_parking_latlong;
+				let city = '';
+				
+				// Check if parkingLatLong is an object with city property
+				if (parkingLatLong && typeof parkingLatLong === 'object' && 'city' in parkingLatLong) {
+					city = parkingLatLong.city || '';
+				}
 				
 				if (city) {
 					return `${locationTitle} near ${city}`;
