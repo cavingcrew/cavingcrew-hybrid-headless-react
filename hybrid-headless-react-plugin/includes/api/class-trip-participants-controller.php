@@ -143,7 +143,7 @@ class Hybrid_Headless_Trip_Participants_Controller {
      * @return string 'public', 'participant', or 'admin'
      */
     private function get_access_level($trip_id, $user_id) {
-        if (!$user_id || !is_user_logged_in()) {
+        if (!$user_id) {
             return 'public';
         }
 
@@ -197,7 +197,17 @@ class Hybrid_Headless_Trip_Participants_Controller {
      */
     public function get_trip_participants($request) {
         $trip_id = $request['trip_id'];
-        $user_id = get_current_user_id();
+        
+        // Ensure user is properly authenticated
+        $user_id = 0;
+        if (isset($_COOKIE[LOGGED_IN_COOKIE])) {
+            $cookie = $_COOKIE[LOGGED_IN_COOKIE];
+            $user_id = wp_validate_auth_cookie($cookie, 'logged_in');
+            if ($user_id) {
+                wp_set_current_user($user_id);
+            }
+        }
+        
         $access_level = $this->get_access_level($trip_id, $user_id);
 
         // For admin-level access, check if user has access to the event
@@ -525,7 +535,8 @@ class Hybrid_Headless_Trip_Participants_Controller {
             return false;
         }
 
-        if (!is_user_logged_in()) {
+        $user_id = get_current_user_id();
+        if (!$user_id) {
             return false;
         }
 
