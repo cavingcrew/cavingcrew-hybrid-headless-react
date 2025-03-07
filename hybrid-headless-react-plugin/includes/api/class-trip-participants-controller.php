@@ -143,7 +143,7 @@ class Hybrid_Headless_Trip_Participants_Controller {
      * @return string 'public', 'participant', or 'admin'
      */
     private function get_access_level($trip_id, $user_id) {
-        if (!$user_id) {
+        if (!$user_id || !is_user_logged_in()) {
             return 'public';
         }
         
@@ -199,6 +199,15 @@ class Hybrid_Headless_Trip_Participants_Controller {
         $trip_id = $request['trip_id'];
         $user_id = get_current_user_id();
         $access_level = $this->get_access_level($trip_id, $user_id);
+        
+        // For admin-level access, check if user has access to the event
+        if ($access_level === 'admin' && !$this->user_has_access_to_event($trip_id)) {
+            return new WP_Error(
+                'unauthorised_for_that_event',
+                __('You do not have access to this event.', 'hybrid-headless'),
+                array('status' => 403)
+            );
+        }
         
         // Get all orders for this trip
         $orders = $this->get_trip_orders($trip_id);
@@ -505,6 +514,63 @@ class Hybrid_Headless_Trip_Participants_Controller {
     }
 
     /**
+     * Check if user has access to event
+     *
+     * @param int $product_id Product/Trip ID.
+     * @return boolean
+     */
+    private function user_has_access_to_event($product_id) {
+        if (!is_user_logged_in()) {
+            return false;
+        }
+        
+        $current_user = wp_get_current_user();
+        $user_id = get_current_user_id();
+
+        // Check if the user has the committee_current meta key with a value other than "retired" or blank/null/undefined
+        $committee_current = get_user_meta($user_id, 'committee_current', true);
+        $is_committee = ($committee_current && $committee_current !== 'retired');
+
+        // If the user is part of the committee, return true
+        if ($is_committee) {
+            return true;
+        }
+
+        // Define the arguments for retrieving the order IDs
+        $args = array(
+            'customer_id' => $user_id,
+            'limit' => -1,
+            'orderby' => 'date',
+            'order' => 'DESC',
+            'return' => 'ids',
+        );
+
+        // Get the order IDs associated with the user ID
+        $order_ids = wc_get_orders($args);
+
+        foreach ($order_ids as $order_id) {
+            $order = wc_get_order($order_id);
+
+            // Check order meta conditions
+            $order_meta = get_post_meta($order_id);
+
+            // Check if cc_volunteer is not "none"
+            if (isset($order_meta['cc_volunteer'][0]) && $order_meta['cc_volunteer'][0] !== 'none' && 
+                isset($order_meta['cc_attendance'][0]) && $order_meta['cc_attendance'][0] === 'pending') {
+                // Iterate through an order's items
+                foreach ($order->get_items() as $item) {
+                    if ($item->get_product_id() == $product_id) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        // If no conditions are met, return false
+        return false;
+    }
+
+    /**
      * Update trip participant information
      *
      * @param WP_REST_Request $request Request object.
@@ -525,6 +591,15 @@ class Hybrid_Headless_Trip_Participants_Controller {
             );
         }
         
+        // Check if user has access to the event
+        if (!$this->user_has_access_to_event($trip_id)) {
+            return new WP_Error(
+                'unauthorised_for_that_event',
+                __('You do not have access to this event.', 'hybrid-headless'),
+                array('status' => 403)
+            );
+        }
+
         // Validate the order belongs to the user and trip
         $order = wc_get_order($order_id);
         if (!$order) {
