@@ -301,8 +301,8 @@ class Hybrid_Headless_Trip_Participants_Controller {
             );
         }
 
-        // Get all orders for this trip
-        $orders = $this->get_trip_orders($trip_id);
+        // Get all orders for this trip based on access level
+        $orders = $this->get_trip_orders($trip_id, $access_level);
 
         if (empty($orders)) {
             return rest_ensure_response([
@@ -325,8 +325,7 @@ class Hybrid_Headless_Trip_Participants_Controller {
             // Basic info for all access levels
             $participant = [
                 'first_name' => $user->first_name,
-                'order_id' => $order->get_id(),
-                'order_status' => $order->get_status()
+                'order_id' => $order->get_id()
             ];
 
             // Add additional info based on access level
@@ -346,6 +345,8 @@ class Hybrid_Headless_Trip_Participants_Controller {
             if ($access_level === 'admin') {
                 $admin_meta = $this->get_admin_meta($participant_user_id);
                 $participant['admin_meta'] = $admin_meta;
+                $participant['order_status'] = $order->get_status();
+                $participant['cc_attendance'] = $order->get_meta('cc_attendance');
             }
 
             $participants[] = $participant;
@@ -363,25 +364,40 @@ class Hybrid_Headless_Trip_Participants_Controller {
      * Get all orders for a trip
      *
      * @param int $trip_id Trip ID.
+     * @param string $access_level Access level ('public', 'participant', or 'admin').
      * @return array
      */
-    private function get_trip_orders($trip_id) {
+    private function get_trip_orders($trip_id, $access_level = 'public') {
         $orders = [];
 
+        // Define statuses based on access level
+        $statuses = ['on-hold', 'processing', 'completed'];
+        
         // Query for orders containing this product
         $order_ids = wc_get_orders([
             'limit' => -1,
             'return' => 'ids',
-            'status' => ['on-hold', 'processing', 'completed'],
+            'status' => $statuses,
         ]);
 
         foreach ($order_ids as $order_id) {
             $order = wc_get_order($order_id);
+            if (!$order) continue;
 
-            // Skip cancelled completed orders
-            if ($order->get_status() === 'completed') {
+            // For public and participant access, only show specific orders
+            if ($access_level !== 'admin') {
+                $order_status = $order->get_status();
                 $cc_attendance = $order->get_meta('cc_attendance');
-                if (strpos($cc_attendance, 'cancelled') !== false) continue;
+                
+                // Skip orders that don't meet criteria for public/participant view
+                if (!in_array($order_status, ['processing', 'on-hold', 'pending']) || 
+                    ($cc_attendance && $cc_attendance !== 'pending')) {
+                    continue;
+                }
+            } 
+            // For admin access, include all orders (even cancelled ones)
+            else {
+                // No filtering for admin
             }
 
             // Check if order contains the trip
