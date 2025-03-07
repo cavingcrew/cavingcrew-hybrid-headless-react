@@ -520,6 +520,11 @@ class Hybrid_Headless_Trip_Participants_Controller {
      * @return boolean
      */
     private function user_has_access_to_event($product_id) {
+        // Validate product ID
+        if (!$product_id || !wc_get_product($product_id)) {
+            return false;
+        }
+        
         if (!is_user_logged_in()) {
             return false;
         }
