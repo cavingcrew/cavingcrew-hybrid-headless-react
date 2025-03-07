@@ -151,6 +151,13 @@ class Hybrid_Headless_Trip_Participants_Controller {
         $committee_current = get_user_meta($user_id, 'committee_current', true);
         $is_committee = ($committee_current && $committee_current !== 'retired' && $committee_current !== '');
 
+        error_log(sprintf(
+            '[Trip Participants Access] User ID: %d, Committee: %s, Value: %s',
+            $user_id,
+            $is_committee ? 'yes' : 'no',
+            $committee_current
+        ));
+
         if ($is_committee) {
             return 'admin';
         }
@@ -162,23 +169,52 @@ class Hybrid_Headless_Trip_Participants_Controller {
             'status' => ['on-hold', 'processing', 'completed'],
         ]);
 
+        error_log(sprintf(
+            '[Trip Participants Access] User ID: %d, Orders found: %d',
+            $user_id,
+            count($orders)
+        ));
+
         $is_participant = false;
 
         foreach ($orders as $order) {
-            if ($order->get_status() === 'completed') {
+            $order_id = $order->get_id();
+            $order_status = $order->get_status();
+            
+            error_log(sprintf(
+                '[Trip Participants Access] Checking Order ID: %d, Status: %s',
+                $order_id,
+                $order_status
+            ));
+            
+            if ($order_status === 'completed') {
                 $cc_attendance = $order->get_meta('cc_attendance');
-                if (strpos($cc_attendance, 'cancelled') !== false) continue;
+                if (strpos($cc_attendance, 'cancelled') !== false) {
+                    error_log(sprintf('[Trip Participants Access] Order %d skipped - cancelled', $order_id));
+                    continue;
+                }
             }
 
             foreach ($order->get_items() as $item) {
                 $product = $item->get_product();
                 if ($product) {
                     $product_id = $product->get_parent_id() ?: $product->get_id();
+                    error_log(sprintf(
+                        '[Trip Participants Access] Order %d contains product %d, comparing with trip %d',
+                        $order_id,
+                        $product_id,
+                        $trip_id
+                    ));
+                    
                     if ($product_id == $trip_id) {
                         $is_participant = true;
+                        error_log(sprintf('[Trip Participants Access] User %d is participant for trip %d', $user_id, $trip_id));
 
                         $cc_volunteer = $order->get_meta('cc_volunteer');
+                        error_log(sprintf('[Trip Participants Access] Volunteer role: %s', $cc_volunteer));
+                        
                         if (strpos($cc_volunteer, 'director') !== false || $cc_volunteer === 'cabbage1239zz') {
+                            error_log(sprintf('[Trip Participants Access] User %d is admin for trip %d', $user_id, $trip_id));
                             return 'admin';
                         }
                     }
@@ -208,16 +244,53 @@ class Hybrid_Headless_Trip_Participants_Controller {
             }
         }
         
+        // Force integer type for comparison
+        $trip_id = (int)$trip_id;
+        
+        // Check user purchases directly
+        $has_purchased = false;
+        if ($user_id) {
+            $orders = wc_get_orders([
+                'customer_id' => $user_id,
+                'limit' => -1,
+                'status' => ['on-hold', 'processing', 'completed'],
+            ]);
+            
+            foreach ($orders as $order) {
+                foreach ($order->get_items() as $item) {
+                    $product = $item->get_product();
+                    if ($product) {
+                        $product_id = (int)($product->get_parent_id() ?: $product->get_id());
+                        if ($product_id === $trip_id) {
+                            $has_purchased = true;
+                            break 2;
+                        }
+                    }
+                }
+            }
+        }
+        
         $access_level = $this->get_access_level($trip_id, $user_id);
         
         // Debug logging for authentication issues
         error_log(sprintf(
-            '[Trip Participants] User ID: %d, Access Level: %s, Trip ID: %d, Cookie present: %s',
+            '[Trip Participants] User ID: %d, Access Level: %s, Trip ID: %d, Has Purchased: %s, Cookie present: %s',
             $user_id,
             $access_level,
             $trip_id,
+            $has_purchased ? 'yes' : 'no',
             isset($_COOKIE[LOGGED_IN_COOKIE]) ? 'yes' : 'no'
         ));
+        
+        // Override access level if user has purchased this trip
+        if ($has_purchased && $access_level === 'public') {
+            $access_level = 'participant';
+            error_log(sprintf(
+                '[Trip Participants] Upgrading access level to participant for user %d on trip %d',
+                $user_id,
+                $trip_id
+            ));
+        }
 
         // For admin-level access, check if user has access to the event
         if ($access_level === 'admin' && !$this->user_has_access_to_event($trip_id)) {

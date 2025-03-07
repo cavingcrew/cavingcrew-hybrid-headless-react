@@ -600,9 +600,10 @@ class Hybrid_Headless_Products_Controller {
                     'route_leading_difficulty_horizontal_leading_skills_required',
                     'route_leading_difficulty_navigation_difficulty'
                 ]),
-                'route_additional_images' => array_map(function($img) {
-                    return $this->get_image_data($img['image'] ?? 0);
-                }, $route_acf['route_additional_images'] ?? [])
+                'route_additional_images' => is_array($route_acf['route_additional_images'] ?? false) ? 
+                    array_map(function($img) {
+                        return $this->get_image_data($img['image'] ?? 0);
+                    }, $route_acf['route_additional_images']) : []
             ]
         ];
     }
@@ -724,12 +725,13 @@ class Hybrid_Headless_Products_Controller {
                 'location_info_url' => $location_acf['location_info_url'] ?? '',
                 'location_access_arrangement' => $location_acf['location_access_arrangement'] ?? [],
                 'location_access_url' => $location_acf['location_access_url'] ?? '',
-                'location_reference_links' => array_map(function($link) {
-                    return [
-                        'link_title' => $link['location_reference_link_text'] ?? '',
-                        'link_url' => $link['location_reference_link_url'] ?? ''
-                    ];
-                }, $location_acf['location_reference_links'] ?? []),
+                'location_reference_links' => is_array($location_acf['location_reference_links'] ?? false) ? 
+                    array_map(function($link) {
+                        return [
+                            'link_title' => $link['location_reference_link_text'] ?? '',
+                            'link_url' => $link['location_reference_link_url'] ?? ''
+                        ];
+                    }, $location_acf['location_reference_links']) : [],
                 'location_sensitive_access' => (bool)($location_acf['location_sensitive_access'] ?? false)
             ]
         ];
