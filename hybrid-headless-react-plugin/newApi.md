@@ -415,17 +415,11 @@ Allow admins to update:
          'admin-will-you-not-flake-please',                                                                                                                                                                                        
          'caving-srt-or-horizontal-preference',                                                                                                                                                                                    
          'admin-over18',                                                                                                                                                                                                           
-         'admin-personal-year-of-birth',                                                                                                                                                                                           
          'admin-personal-pronouns',                                                                                                                                                                                                
-         'admin-car-registration',                                                                                                                                                                                                 
-         'admin-health-shoulder',                                                                                                                                                                                                  
-         'admin-health-impairment-through-medication',                                                                                                                                                                             
+         'admin-car-registration',
          'admin_u18_child_name_of_supervisor',                                                                                                                                                                                     
          'admin_u18_participation_statement_one',                                                                                                                                                                                  
-         'admin_u18_participation_statement_two',                                                                                                                                                                                  
-         'admin_u18_supervisor_name_of_child',                                                                                                                                                                                     
-         'admin-health-asthma',                                                                                                                                                                                                    
-         'admin-health-missing-dose',                                                                                                                                                                                              
+         'admin_u18_participation_statement_two',                                                                                                                                                                                   
          'admin-bca-number',                                                                                                                                                                                                       
          'misc-any-other-requests',                                                                                                                                                                                                
          'admin_can_you_help_evenings',                                                                                                                                                                                            
@@ -553,7 +547,13 @@ Allow admins to update:
          'admin-social-instagram-handle',                                                                                                                                                                                          
          'caving_trip_leaving_postcode',                                                                                                                                                                                           
          'caving_trip_leaving_postcode_geocoded',                                                                                                                                                                                  
-         'caving_trip_leaving_postcode_geocoded_last_updated'                                                                                                                                                                      
+         'caving_trip_leaving_postcode_geocoded_last_updated'   ,
+         'admin-health-shoulder',                                                                                                                                                                                                  
+         'admin-health-impairment-through-medication',      
+         'admin_u18_supervisor_name_of_child',                                                                                                                                                                                     
+         'admin-health-asthma',        
+         'admin-personal-year-of-birth',
+         'admin-health-missing-dose'    
      ];                                                                                                                                                                                                                            
                                                                                                                                                                                                                                    
      $meta = [];                                                                                                                                                                                                                   
