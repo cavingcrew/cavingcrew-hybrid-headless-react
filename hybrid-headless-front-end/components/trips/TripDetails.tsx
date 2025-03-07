@@ -21,6 +21,7 @@ import { TripOvernightHut } from './TripOvernightHut';
 import { TripAccessDetails } from './TripAccessDetails';
 import { TripExperience } from './TripExperience';
 import { TripObjectionHandling } from './TripObjectionHandling';
+import { NeoClanVolunteeringWidget } from './NeoClanVolunteeringWidget';
 import { isWithinDays } from '../../utils/event-timing';
 import { useUser } from '@/lib/hooks/useUser';
 import { TripSignupWidget } from "./TripSignupWidget";
@@ -541,6 +542,9 @@ export function TripDetails({ trip }: TripDetailsProps) {
 					photo={acf.hut_photo}
 				/>
 			)}
+
+			{/* Trip Participants Widget */}
+			<NeoClanVolunteeringWidget trip={trip} />
 
 			{/* FAQ Section */}
 			{acf.trip_faq && acf.trip_faq.length > 0 && (

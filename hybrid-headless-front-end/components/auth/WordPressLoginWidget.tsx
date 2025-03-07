@@ -15,6 +15,7 @@ import { userKeys } from '@/lib/hooks/useUser';
 import { IconLogin, IconLock, IconUser } from '@tabler/icons-react';
 import { apiService } from '@/lib/api-service';
 import { tripKeys } from '@/lib/hooks/useTrips';
+import { participantKeys } from '@/lib/hooks/useTripParticipants';
 
 interface WordPressLoginWidgetProps {
   redirectTo?: string;
@@ -60,6 +61,7 @@ export function WordPressLoginWidget({
         // Invalidate user query and any other related queries
         queryClient.invalidateQueries({ queryKey: userKeys.user() });
         queryClient.invalidateQueries({ queryKey: tripKeys.all });
+        queryClient.invalidateQueries({ queryKey: participantKeys.all });
         onSuccess?.();
       } else {
         setError('Login failed - please check your credentials');

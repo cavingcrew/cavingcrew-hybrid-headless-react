@@ -135,6 +135,30 @@ export const apiService = {
     }
   },
 
+  async getTripParticipants(tripId: number): Promise<ApiResponse<any>> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/hybrid-headless/v1/trip-participants/${tripId}`, {
+        credentials: 'include',
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch trip participants for trip ${tripId}`);
+      }
+      
+      const data = await response.json();
+      return {
+        data,
+        success: true
+      };
+    } catch (error) {
+      return {
+        data: null,
+        success: false,
+        message: error instanceof Error ? error.message : 'Failed to fetch trip participants'
+      };
+    }
+  },
+
   async getCategories(): Promise<ApiResponse<Category[]>> {
     try {
       const response = await fetch(`${API_BASE_URL}/hybrid-headless/v1/categories`);

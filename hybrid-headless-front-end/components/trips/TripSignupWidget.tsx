@@ -4,6 +4,7 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useUser } from '@/lib/hooks/useUser';
+import { participantKeys } from '@/lib/hooks/useTripParticipants';
 import {
   Box,
   Button,
@@ -149,6 +150,10 @@ export function TripSignupWidget({
   const handleSignUp = () => {
     if (!selectedVariation) return;
     setIsSigningUp(true);
+    
+    // Invalidate participants cache for this trip
+    queryClient.invalidateQueries({ queryKey: participantKeys.list(trip.id) });
+    
     window.location.href = `/checkout/?add-to-cart=${selectedVariation}`;
   };
 
