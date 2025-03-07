@@ -98,11 +98,9 @@ class Hybrid_Headless_Trip_Participants_Controller {
             );
         }
 
-        // Check if user is a committee member
-        $committee_current = get_user_meta($user_id, 'committee_current', true);
-        $is_committee = ($committee_current && $committee_current !== 'retired' && $committee_current !== '');
-
-        if ($is_committee) {
+        // Check if user is an Administrator or Shop Manager
+        $user = get_userdata($user_id);
+        if ($user && ($user->has_cap('administrator') || $user->has_cap('manage_woocommerce'))) {
             return true;
         }
 
@@ -147,18 +145,17 @@ class Hybrid_Headless_Trip_Participants_Controller {
             return 'public';
         }
 
-        // Check if user is a committee member
-        $committee_current = get_user_meta($user_id, 'committee_current', true);
-        $is_committee = ($committee_current && $committee_current !== 'retired' && $committee_current !== '');
+        // Check if user is an Administrator or Shop Manager
+        $user = get_userdata($user_id);
+        $is_admin = $user && ($user->has_cap('administrator') || $user->has_cap('manage_woocommerce'));
 
         error_log(sprintf(
-            '[Trip Participants Access] User ID: %d, Committee: %s, Value: %s',
+            '[Trip Participants Access] User ID: %d, Admin: %s',
             $user_id,
-            $is_committee ? 'yes' : 'no',
-            $committee_current
+            $is_admin ? 'yes' : 'no'
         ));
 
-        if ($is_committee) {
+        if ($is_admin) {
             return 'admin';
         }
 
@@ -638,15 +635,9 @@ class Hybrid_Headless_Trip_Participants_Controller {
             return false;
         }
 
-        $current_user = wp_get_current_user();
-        $user_id = get_current_user_id();
-
-        // Check if the user has the committee_current meta key with a value other than "retired" or blank/null/undefined
-        $committee_current = get_user_meta($user_id, 'committee_current', true);
-        $is_committee = ($committee_current && $committee_current !== 'retired');
-
-        // If the user is part of the committee, return true
-        if ($is_committee) {
+        // Check if user is an Administrator or Shop Manager
+        $user = get_userdata($user_id);
+        if ($user && ($user->has_cap('administrator') || $user->has_cap('manage_woocommerce'))) {
             return true;
         }
 
