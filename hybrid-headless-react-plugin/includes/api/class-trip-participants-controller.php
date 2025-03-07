@@ -209,6 +209,15 @@ class Hybrid_Headless_Trip_Participants_Controller {
         }
         
         $access_level = $this->get_access_level($trip_id, $user_id);
+        
+        // Debug logging for authentication issues
+        error_log(sprintf(
+            '[Trip Participants] User ID: %d, Access Level: %s, Trip ID: %d, Cookie present: %s',
+            $user_id,
+            $access_level,
+            $trip_id,
+            isset($_COOKIE[LOGGED_IN_COOKIE]) ? 'yes' : 'no'
+        ));
 
         // For admin-level access, check if user has access to the event
         if ($access_level === 'admin' && !$this->user_has_access_to_event($trip_id)) {
