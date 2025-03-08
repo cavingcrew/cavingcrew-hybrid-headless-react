@@ -204,11 +204,11 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                 return trip.acf.event_cave_name;
             }
             
-            return trip.acf.event_location || trip.acf.event_possible_location || 'Unknown location';
+            return trip.acf.event_location || trip.acf.event_possible_location || '';
         };
         
         // Get route name
-        const routeName = trip.route?.acf?.route_name || trip.acf.event_possible_objectives || 'Unknown route';
+        const routeName = trip.route?.acf?.route_name || trip.acf.event_possible_objectives || '';
         
         // Get parking location
         const getParkingLocation = () => {
@@ -219,7 +219,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                 }
                 return String(parking);
             }
-            return 'Unknown parking location';
+            return '';
         };
         
         // Get signed up participants
@@ -248,14 +248,37 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
             'Whistle'
         ].join(', ');
         
-        // Build the callout text
-        const calloutTemplate = `Callout: ${formatTime(calloutTime)}
-ETA: ${formatTime(etaTime)}
-Cave: ${getLocationName()}
-Route: ${routeName}
-People: ${participantNames} (${participantCount})
-Parked at: ${getParkingLocation()}${carRegistrations ? `\nCar registrations: ${carRegistrations}` : ''}
-Equipped with: ${leadershipKit}`;
+        // Build the callout text with only defined sections
+        let calloutTemplate = '';
+        
+        // Always include callout time and ETA
+        calloutTemplate += `Callout: ${formatTime(calloutTime)}\n`;
+        calloutTemplate += `ETA: ${formatTime(etaTime)}\n`;
+        
+        // Only include sections with data
+        const locationName = getLocationName();
+        if (locationName) {
+            calloutTemplate += `Cave: ${locationName}\n`;
+        }
+        
+        if (routeName) {
+            calloutTemplate += `Route: ${routeName}\n`;
+        }
+        
+        if (participantNames) {
+            calloutTemplate += `People: ${participantNames} (${participantCount})\n`;
+        }
+        
+        const parkingLocation = getParkingLocation();
+        if (parkingLocation) {
+            calloutTemplate += `Parked at: ${parkingLocation}\n`;
+            
+            if (carRegistrations) {
+                calloutTemplate += `Car registrations: ${carRegistrations}\n`;
+            }
+        }
+        
+        calloutTemplate += `Equipped with: ${leadershipKit}`;
         
         return calloutTemplate;
     };
