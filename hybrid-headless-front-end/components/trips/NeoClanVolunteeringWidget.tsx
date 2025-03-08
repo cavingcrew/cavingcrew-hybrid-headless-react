@@ -10,7 +10,7 @@ import {
     IconUsers, IconAlertCircle, IconInfoCircle, IconTools,
     IconHeartHandshake, IconSchool, IconMedicalCross, IconShield,
     IconChartBar, IconAlertTriangle, IconCheck, IconX, IconCopy,
-    IconFileDescription, IconMessage
+    IconFileDescription, IconMessage, IconCar
 } from '@tabler/icons-react';
 
 // Import custom hooks and types
@@ -585,8 +585,8 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                             <Tabs.Tab value="equipment" leftSection={<IconTools size={14} />}>
                                 Gear
                             </Tabs.Tab>
-                            <Tabs.Tab value="dietary">Dietary Requirements</Tabs.Tab>
-                            <Tabs.Tab value="transport">Transport</Tabs.Tab>
+                            <Tabs.Tab value="dietary" leftSection={<IconInfoCircle size={14} />}>Dietary Requirements</Tabs.Tab>
+                            <Tabs.Tab value="transport" leftSection={<IconCar size={14} />}>Lift Sharing</Tabs.Tab>
                             <Tabs.Tab value="health" leftSection={<IconMedicalCross size={14} />}>
                                 Health Info
                             </Tabs.Tab>
