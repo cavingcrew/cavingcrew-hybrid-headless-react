@@ -115,7 +115,7 @@ export interface TripParticipant {
 			| null
 			| undefined
 			| string;
-		"transport-need-lift"?: 
+		"transport-need-lift"?:
 			| "Yes"
 			| "No"
 			| "Prefer to give lift or get lift but not drive a car solo"
@@ -195,7 +195,7 @@ export interface TripParticipant {
 		"admin-car-registration"?: string;
 		"admin-diet-allergies-health-extra-info"?: string;
 		"admin-health-shoulder"?: "Yes" | "No" | null | undefined | string;
-		"admin-health-asthma"?: 
+		"admin-health-asthma"?:
 			| "Yes and I'm bringing an inhaler"
 			| "Yes"
 			| "No"
