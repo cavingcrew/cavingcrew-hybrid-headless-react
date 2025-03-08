@@ -4,31 +4,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiService } from '../api-service';
 import { userKeys } from './useUser';
 import { tripKeys } from './useTrips';
-import type { ApiResponse } from '../../types/api';
-
-export interface TripParticipant {
-  first_name: string;
-  last_name?: string;
-  user_id?: number;
-  order_id: number;
-  order_status: string;
-  meta?: {
-    [key: string]: string | null;
-  };
-  order_meta?: {
-    [key: string]: string | null;
-  };
-  admin_meta?: {
-    [key: string]: string | null;
-  };
-}
-
-export interface TripParticipantsResponse {
-  participants: TripParticipant[];
-  access_level: 'public' | 'participant' | 'admin';
-  trip_id: number;
-  can_update: boolean;
-}
+import type { ApiResponse, TripParticipant, TripParticipantsResponse } from '../../types/api';
 
 export const participantKeys = {
   all: ['participants'] as const,

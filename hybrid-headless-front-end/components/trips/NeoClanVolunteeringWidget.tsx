@@ -13,25 +13,7 @@ import {
 
 // Import custom hooks and types
 import { useTripParticipants } from '@/lib/hooks/useTripParticipants';
-import type { Trip } from '@/types/api';
-
-// Define TripParticipant type locally if it's not available from the import
-interface TripParticipant {
-  first_name: string;
-  last_name?: string;
-  user_id?: number;
-  order_id: number;
-  order_status: string;
-  meta?: {
-    [key: string]: string | null;
-  };
-  order_meta?: {
-    [key: string]: string | null;
-  };
-  admin_meta?: {
-    [key: string]: string | null;
-  };
-}
+import type { Trip, TripParticipant } from '@/types/api';
 
 // Define props interface for the component
 interface NeoClanVolunteeringWidgetProps {
