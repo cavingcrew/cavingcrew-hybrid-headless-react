@@ -59,8 +59,8 @@ export const getStatusColor = (status: string): string => {
  * @param participant The trip participant object
  * @returns Boolean indicating if this is their first trip
  */
-export const isFirstTimeCaver = (participant: any): boolean => {
-	const attendedScore = participant.meta?.["stats_attendance_attended_cached"];
+export const isFirstTimeCaver = (participant: TripParticipant): boolean => {
+	const attendedScore = participant.meta?.stats_attendance_attended_cached;
 	return !attendedScore || attendedScore === "0" || attendedScore === "";
 };
 
