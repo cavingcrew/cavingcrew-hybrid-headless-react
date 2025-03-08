@@ -440,15 +440,22 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
         // Add route-specific equipment if available
         if (trip.route?.acf?.route_group_tackle_required) {
             const tackleRequired = trip.route.acf.route_group_tackle_required;
-            // Clean up HTML tags if present but preserve the content structure
-            const cleanedTackle = (typeof tackleRequired === 'string'
-                ? tackleRequired.replace(/<[^>]*>/g, '')
-                : String(tackleRequired))
-                .replace(/\s+/g, ' ')
+            // Clean up HTML tags while preserving structure
+            const cleanTackle = tackleRequired
+                // Replace paragraph tags with newlines
+                .replace(/\n/g, '')
+                .replace(/<p>/g, '')
+                .replace(/<\/p>/g, '\n')
+                // Replace <br /> tags with newlines
+                .replace(/<br\s*\/?>/g, '\n')
+                // Remove any other HTML tags
+                .replace(/<[^>]*>/g, '\n')
+                // Trim extra whitespace
+                .replace(/\n{3,}/g, '')
                 .trim();
 
             // Use the cleaned tackle text as a single item instead of splitting
-            requestTemplate += `- ${cleanedTackle}\n`;
+            requestTemplate += `- ${cleanTackle}\n`;
         } else {
             // Default equipment if no specific requirements
             requestTemplate += '- Standard Caving Crew Leaderbag\n';
