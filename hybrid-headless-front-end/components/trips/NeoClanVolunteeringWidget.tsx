@@ -269,13 +269,14 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
 
         if (participantNames) {
             calloutTemplate += `${participantCount} People: ${participantNames}\n`;
+            calloutTemplate += "Emergency contact details accessible via NeoCrew if required\n"
         }
 
         const parkingLocation = getParkingLocation();
         if (parkingLocation) {
             // Trim lat/long to 5 decimal places (approx 1 meter accuracy)
             const trimmedLocation = parkingLocation.replace(/(-?\d+\.\d{5})\d*,(-?\d+\.\d{5})\d*/g, '$1,$2');
-            calloutTemplate += `Parked at: ${trimmedLocation}\n`;
+            calloutTemplate += `Parked at (lat/long): ${trimmedLocation}\n`;
 
             if (carRegistrations) {
                 calloutTemplate += `Car registrations: ${carRegistrations}\n`;
@@ -384,7 +385,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                 .replace(/<[^>]*>/g, '')
                 .replace(/\s+/g, ' ')
                 .trim();
-                
+
             // Use the cleaned tackle text as a single item instead of splitting
             const tackleItems = [cleanedTackle].filter(Boolean);
 
