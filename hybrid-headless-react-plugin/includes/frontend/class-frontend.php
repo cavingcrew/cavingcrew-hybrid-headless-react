@@ -29,6 +29,12 @@ class Hybrid_Headless_Frontend {
         add_filter( 'template_include', array( $this, 'override_template' ), 999 );
         add_filter('login_redirect', array($this, 'handle_login_redirect'), 10, 3);
         add_filter('allowed_redirect_hosts', array($this, 'allow_redirect_hosts'));
+
+        // Only add WooCommerce hooks if WC is active
+        if (class_exists('WooCommerce')) {
+            add_filter('wc_add_to_cart_message_html', '__return_empty_string');
+            add_action('wp_loaded', array($this, 'remove_cart_notices'));
+        }
     }
 
     public function handle_login_redirect($redirect_to, $requested_redirect_to, $user) {
@@ -42,6 +48,28 @@ class Hybrid_Headless_Frontend {
     public function allow_redirect_hosts($hosts) {
         $hosts[] = parse_url(home_url(), PHP_URL_HOST);
         return $hosts;
+    }
+
+    public function remove_cart_notices() {
+        if (function_exists('wc_clear_notices') && function_exists('wc_get_notices')) {
+            if (get_option('hybrid_headless_disable_notices', true)) {
+                wc_clear_notices();
+                
+                // Only remove actions if they exist
+                if (has_action('woocommerce_before_single_product', 'woocommerce_output_all_notices')) {
+                    remove_action('woocommerce_before_single_product', 'woocommerce_output_all_notices', 10);
+                }
+                if (has_action('woocommerce_before_shop_loop', 'woocommerce_output_all_notices')) {
+                    remove_action('woocommerce_before_shop_loop', 'woocommerce_output_all_notices', 10);
+                }
+                if (has_action('woocommerce_before_cart', 'woocommerce_output_all_notices')) {
+                    remove_action('woocommerce_before_cart', 'woocommerce_output_all_notices', 10);
+                }
+                if (has_action('woocommerce_before_checkout_form', 'woocommerce_output_all_notices')) {
+                    remove_action('woocommerce_before_checkout_form', 'woocommerce_output_all_notices', 10);
+                }
+            }
+        }
     }
 
     /**
@@ -107,7 +135,7 @@ class Hybrid_Headless_Frontend {
         }
 
         // Only allow specific characters in the path
-        if (!preg_match('/^\/_next\/static\/[a-zA-Z0-9\-_\/\.%]+$/', $path)) {
+        if (!preg_match('/^\/_next\/(static|image)\/[a-zA-Z0-9\-_\/\.%]+$/', $path)) {
             return false;
         }
 
@@ -127,6 +155,15 @@ class Hybrid_Headless_Frontend {
         if (!file_exists($static_file_path)) {
             status_header(404);
             return;
+        }
+
+        // Add proper caching headers for static assets
+        if (strpos($request_uri, '/_next/static') === 0 || strpos($request_uri, '/_next/image') === 0) {
+            header('Cache-Control: public, max-age=31536000, immutable');
+        } elseif (strpos($request_uri, '/static') === 0) {
+            header('Cache-Control: public, max-age=3600');
+        } else {
+            header('Cache-Control: public, max-age=3600');
         }
 
         $mime_types = [
@@ -184,6 +221,12 @@ class Hybrid_Headless_Frontend {
             $this->serve_static_file($request_uri);
             return;
         }
+
+        // Set Next.js specific headers
+        header('X-NextJS-RSC: 1');
+        header('X-NextJS-Routing: client');
+        header('X-NextJS-Client-Routing: enabled');
+        header('Cache-Control: no-cache, no-store, must-revalidate');
         
         // If not a static file, proxy to Next.js
         $nextjs_url = $this->get_nextjs_url();
@@ -202,6 +245,7 @@ class Hybrid_Headless_Frontend {
                 'Accept' => $_SERVER['HTTP_ACCEPT'] ?? '*/*',
                 'Accept-Language' => $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '',
                 'User-Agent' => $_SERVER['HTTP_USER_AGENT'] ?? '',
+                'X-NextJS-Routing' => strpos($_SERVER['REQUEST_URI'], '_rsc=') !== false ? 'client' : '',
             ),
         );
         
@@ -263,49 +307,20 @@ class Hybrid_Headless_Frontend {
             return false;
         }
 
-        $wordpress_paths = array(
-            'my-account',
-            'checkout',
-            'cart',
-            'wp-login.php',
-            'wp-admin',
-            'wp-content',
-            'wp-includes',
-            'wp-json',
-            'wp-cron.php',
-            'wp-activate.php',
-            'wp-signup.php',
-            'wp-trackback.php',
-            'xmlrpc.php',
-            'feed',
-            'comments',
-        );
+        // Define patterns that should be handled by Next.js
+        $nextjs_patterns = [
+            '^trips(/.*)?$',
+            '^categories(/.*)?$',
+            '^trip(/.*)?$', 
+            '^category(/.*)?$',
+            '^test-client-nav$'
+        ];
 
-        // Check if the current path is a WordPress-specific path
-        foreach ($wordpress_paths as $path) {
-            if (strpos($current_path, $path) === 0) {
-                return true;
-            }
-        }
-
-        // Check if the current path is one of the frontend routes
-        $frontend_routes = array(
-            'categories',
-            'category',
-            'trips',
-            'trip',
-            'route-descriptions',
-        );
-
-        foreach ($frontend_routes as $route) {
-            if (strpos($current_path, $route) === 0) {
+        // Check if current path matches any Next.js pattern
+        foreach ($nextjs_patterns as $pattern) {
+            if (preg_match("#{$pattern}#", $current_path)) {
                 return false;
             }
-        }
-
-        // Handle the root path
-        if ($current_path === '') {
-            return false;
         }
 
         // Default to WordPress for all other routes

@@ -1,6 +1,6 @@
 'use client';
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider, HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { useState, type ReactNode } from 'react';
 
@@ -14,16 +14,12 @@ export function QueryProvider({ children }: QueryProviderProps) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: Infinity, // Never consider data stale
-            gcTime: 1000 * 60 * 60 * 24, // Keep cache for 24 hours
+            staleTime: 1000 * 90,       // 1.5 minutes
+            gcTime: 1000 * 600,         // 10 minutes
             refetchOnWindowFocus: false,
-            refetchOnMount: false,
-            refetchOnReconnect: false,
-            retry: false,
-            structuralSharing: true,
-            // Disable initial data to prevent SSR hydration issues
-            initialData: undefined,
-            initialDataUpdatedAt: 0,
+            structuralSharing: true,     // Enable structural sharing
+            retry: 1,                    // Add retry logic
+            throwOnError: true           // Better error handling
           }
         }
       })
@@ -31,8 +27,10 @@ export function QueryProvider({ children }: QueryProviderProps) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {children}
-      <ReactQueryDevtools initialIsOpen={false} />
+      <HydrationBoundary state={dehydrate(queryClient)}>
+        {children}
+        <ReactQueryDevtools initialIsOpen={false} />
+      </HydrationBoundary>
     </QueryClientProvider>
   );
 }

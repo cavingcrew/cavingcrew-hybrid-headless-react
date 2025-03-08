@@ -65,6 +65,7 @@ class Hybrid_Headless_Routes_Controller {
             'trip'       => '/trips/{slug}',
             'categories' => '/categories',
             'category'   => '/categories/{slug}',
+            'test'       => '/test-client-nav'
         );
     }
 
@@ -229,8 +230,9 @@ class Hybrid_Headless_Routes_Controller {
      * @return boolean
      */
     private function is_frontend_route($route) {
-        // Always proxy _next/ requests
-        if (strpos($route, '_next/') === 0) {
+        // Always proxy _next/ requests and RSC requests
+        if (strpos($route, '_next/') === 0 || 
+            strpos($_SERVER['REQUEST_URI'], '_rsc=') !== false) {
             return true;
         }
 
@@ -239,6 +241,7 @@ class Hybrid_Headless_Routes_Controller {
             '^trips/[^/]+/?',
             '^categories/?',
             '^categories/[^/]+/?',
+            '^test-client-nav/?$'
         );
 
         foreach ($frontend_patterns as $pattern) {

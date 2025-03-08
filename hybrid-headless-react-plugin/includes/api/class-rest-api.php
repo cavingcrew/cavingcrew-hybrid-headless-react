@@ -26,7 +26,7 @@ class Hybrid_Headless_Rest_API {
     public function __construct() {
         add_action( 'rest_api_init', array( $this, 'register_routes' ) );
         add_filter( 'rest_pre_serve_request', array( $this, 'handle_cors' ), 10, 4 );
-        
+
         // Load controllers
         $this->load_controllers();
     }
@@ -38,10 +38,14 @@ class Hybrid_Headless_Rest_API {
         require_once HYBRID_HEADLESS_PLUGIN_DIR . 'includes/api/class-products-controller.php';
         require_once HYBRID_HEADLESS_PLUGIN_DIR . 'includes/api/class-routes-controller.php';
         require_once HYBRID_HEADLESS_PLUGIN_DIR . 'includes/api/class-categories-controller.php';
-        
+        require_once HYBRID_HEADLESS_PLUGIN_DIR . 'includes/api/class-user-controller.php';
+        require_once HYBRID_HEADLESS_PLUGIN_DIR . 'includes/api/class-trip-participants-controller.php';
+
         new Hybrid_Headless_Products_Controller();
         new Hybrid_Headless_Routes_Controller();
         new Hybrid_Headless_Categories_Controller();
+        new Hybrid_Headless_User_Controller();
+        new Hybrid_Headless_Trip_Participants_Controller();
     }
 
     /**
@@ -59,64 +63,6 @@ class Hybrid_Headless_Rest_API {
                 ),
             )
         );
-
-        register_rest_route(
-            self::API_NAMESPACE,
-            '/user-status',
-            array(
-                array(
-                    'methods' => WP_REST_Server::READABLE,
-                    'callback' => array($this, 'get_user_status'),
-                    'permission_callback' => '__return_true',
-                )
-            )
-        );
-    }
-
-    public function get_user_status() {
-        // Manually validate WordPress auth cookies
-        $user_id = 0;
-        $logged_in = false;
-        
-        try {
-            if (isset($_COOKIE[LOGGED_IN_COOKIE])) {
-                $cookie = $_COOKIE[LOGGED_IN_COOKIE];
-                $user_id = wp_validate_auth_cookie($cookie, 'logged_in');
-                
-                if ($user_id) {
-                    wp_set_current_user($user_id);
-                    $logged_in = true;
-                }
-            }
-            
-            // Debug logging
-            error_log('[User Status] User ID: ' . $user_id);
-            error_log('[User Status] Logged in: ' . ($logged_in ? 'Yes' : 'No'));
-        } catch (Exception $e) {
-            error_log('[User Status] Error validating auth cookie: ' . $e->getMessage());
-            return rest_ensure_response([
-                'isLoggedIn' => false,
-                'isMember' => false,
-                'cartCount' => 0
-            ]);
-        }
-
-        // Get cart count safely
-        $cart_count = 0;
-        if (class_exists('WooCommerce') && WC()->cart) {
-            $cart_count = WC()->cart->get_cart_contents_count();
-        }
-
-        return rest_ensure_response([
-            'isLoggedIn' => $logged_in,
-            'isMember' => $this->is_member($user_id),
-            'cartCount' => $cart_count
-        ]);
-    }
-
-    private function is_member($user_id) {
-        if (!$user_id) return false;
-        return (bool) get_user_meta($user_id, 'cc_member', true);
     }
 
     /**
@@ -130,7 +76,19 @@ class Hybrid_Headless_Rest_API {
      */
     public function handle_cors($served, $result, $request, $server) {
         error_log('[API Auth] Starting CORS/Auth handling');
-        
+
+        // Initialize authentication first
+        if (isset($_COOKIE[LOGGED_IN_COOKIE])) {
+            $user_id = wp_validate_auth_cookie($_COOKIE[LOGGED_IN_COOKIE], 'logged_in');
+            if ($user_id) {
+                wp_set_current_user($user_id);
+                // Force WC customer initialization
+                if (class_exists('WooCommerce') && WC()->customer) {
+                    WC()->customer = new WC_Customer($user_id, true);
+                }
+            }
+        }
+
         // Set CORS headers
         $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
         if (in_array($origin, ['https://www.cavingcrew.com', 'http://localhost:3000'])) {
@@ -168,7 +126,7 @@ class Hybrid_Headless_Rest_API {
         if (class_exists('WC') && !WC()->session) {
             WC()->session = new WC_Session_Handler();
             WC()->session->init();
-            
+
             // Force session cookie parameters
             add_filter('wc_session_cookie_params', function($params) {
                 return [

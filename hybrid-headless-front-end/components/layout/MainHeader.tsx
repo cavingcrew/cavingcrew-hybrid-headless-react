@@ -10,11 +10,11 @@ import {
 	Stack,
 	Text,
 	UnstyledButton,
-	rem,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconChevronDown } from "@tabler/icons-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React from "react";
 import { useState } from "react";
 
@@ -23,12 +23,13 @@ const shouldFullRefresh = (href: string) => {
 };
 
 export function MainHeader() {
+	const router = useRouter();
 	const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] =
 		useDisclosure(false);
 	const [userMenuOpened, setUserMenuOpened] = useState(false);
 
 	const mainLinks = [
-		{ label: "Upcoming Trips", href: "/trips/" },
+		{ label: "Upcoming Trips", href: "/" },
 		{ label: "Become a Member", href: "/trip/get-caving-crew-membership/" },
 	];
 
@@ -68,59 +69,47 @@ export function MainHeader() {
 	// Desktop menu
 	const DesktopMenu = () => (
 		<Group gap={20}>
-			{mainLinks.map((link) => {
-				if (shouldFullRefresh(link.href)) {
-					return (
-						<UnstyledButton
-							key={link.href}
-							component="a"
-							href={link.href}
-							onClick={() => {
-								window.location.href = link.href;
-							}}
-						>
-							{link.label}
-						</UnstyledButton>
-					);
-				}
-
-				return (
-					<UnstyledButton key={link.href} component={Link} href={link.href}>
-						{link.label}
-					</UnstyledButton>
-				);
-			})}
+			{mainLinks.map((link) => (
+				<UnstyledButton
+					key={link.href}
+					onClick={() => {
+						if (shouldFullRefresh(link.href)) {
+							window.location.href = link.href;
+						} else {
+							router.push(link.href);
+						}
+					}}
+				>
+					{link.label}
+				</UnstyledButton>
+			))}
 
 			<Menu trigger="hover" openDelay={100} closeDelay={400}>
 				<Menu.Target>
 					<UnstyledButton>
 						<Group gap={3}>
 							<span>About Us</span>
-							<IconChevronDown size={rem(16)} />
+							<IconChevronDown size={16} />
 						</Group>
 					</UnstyledButton>
 				</Menu.Target>
 				<Menu.Dropdown>
-					{aboutLinks.map((link) => {
-						if (link.external) {
-							return (
-								<Menu.Item
-									key={link.href}
-									component="a"
-									href={link.href}
-									target="_blank"
-									rel="noopener noreferrer"
-								>
-									{link.label}
-								</Menu.Item>
-							);
-						}
-						return (
-							<Menu.Item key={link.href} component={Link} href={link.href}>
-								{link.label}
-							</Menu.Item>
-						);
-					})}
+					{aboutLinks.map((link) => (
+						<Menu.Item
+							key={link.href}
+							onClick={() => {
+								if (link.external) {
+									window.open(link.href, "_blank");
+								} else if (shouldFullRefresh(link.href)) {
+									window.location.href = link.href;
+								} else {
+									router.push(link.href);
+								}
+							}}
+						>
+							{link.label}
+						</Menu.Item>
+					))}
 				</Menu.Dropdown>
 			</Menu>
 
@@ -135,32 +124,23 @@ export function MainHeader() {
 					<UnstyledButton>
 						<Group gap={3}>
 							<span>My Account</span>
-							<IconChevronDown size={rem(16)} />
+							<IconChevronDown size={16} />
 						</Group>
 					</UnstyledButton>
 				</Menu.Target>
 				<Menu.Dropdown>
-					{accountLinks.map((link) => {
-						if (link.fullRefresh) {
-							return (
-								<Menu.Item
-									key={link.href}
-									component="a"
-									href={link.href}
-									onClick={() => {
-										window.location.href = link.href;
-									}}
-								>
-									{link.label}
-								</Menu.Item>
-							);
-						}
-						return (
-							<Menu.Item key={link.href} component={Link} href={link.href}>
-								{link.label}
-							</Menu.Item>
-						);
-					})}
+					{accountLinks.map((link) => (
+						<Menu.Item
+							key={link.href}
+							onClick={() => {
+								link.fullRefresh
+									? (window.location.href = link.href)
+									: router.push(link.href);
+							}}
+						>
+							{link.label}
+						</Menu.Item>
+					))}
 				</Menu.Dropdown>
 			</Menu>
 		</Group>
@@ -177,30 +157,21 @@ export function MainHeader() {
 			hiddenFrom="sm"
 		>
 			<Stack>
-				{mainLinks.map((link) =>
-					shouldFullRefresh(link.href) ? (
-						<UnstyledButton
-							key={link.href}
-							component="a"
-							href={link.href}
-							onClick={() => {
-								closeDrawer();
+				{mainLinks.map((link) => (
+					<UnstyledButton
+						key={link.href}
+						onClick={() => {
+							closeDrawer();
+							if (shouldFullRefresh(link.href)) {
 								window.location.href = link.href;
-							}}
-						>
-							{link.label}
-						</UnstyledButton>
-					) : (
-						<UnstyledButton
-							key={link.href}
-							component={Link}
-							href={link.href}
-							onClick={closeDrawer}
-						>
-							{link.label}
-						</UnstyledButton>
-					),
-				)}
+							} else {
+								router.push(link.href);
+							}
+						}}
+					>
+						{link.label}
+					</UnstyledButton>
+				))}
 
 				<Box>
 					<Text fw={500} mb="xs">
@@ -282,11 +253,11 @@ export function MainHeader() {
 		>
 			<Container size="lg" h="100%">
 				<Group h="100%" justify="space-between">
-					<Link href="/" style={{ textDecoration: "none" }}>
+					<UnstyledButton onClick={() => router.push("/")}>
 						<Text size="xl" fw={700}>
 							The Caving Crew
 						</Text>
-					</Link>
+					</UnstyledButton>
 
 					{/* Desktop menu */}
 					<Group visibleFrom="sm">

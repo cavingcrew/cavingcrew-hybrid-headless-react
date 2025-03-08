@@ -1,32 +1,28 @@
 import { API_BASE_URL } from './constants';
-import type { 
-  Trip, 
-  Category, 
-  ApiResponse, 
-  ProductStockResponse 
+import type {
+  Trip,
+  Category,
+  ApiResponse,
+  ProductStockResponse,
+  UserResponse,
+  TripParticipantsResponse
 } from '../types/api';
 
 export const apiService = {
-  async getUserStatus(): Promise<ApiResponse<{
-    isLoggedIn: boolean;
-    isMember: boolean;
-    cartCount: number;
-  }>> {
+  async getUser(): Promise<ApiResponse<UserResponse>> {
     try {
-      const response = await fetch(`${API_BASE_URL}/hybrid-headless/v1/user-status`, {
-        credentials: 'include', // Required for cookies
-        headers: {
-          'Cache-Control': 'no-store' // Prevent caching of auth state
-        }
+      const response = await fetch(`${API_BASE_URL}/hybrid-headless/v1/user`, {
+        credentials: 'include',
+        headers: { 'Cache-Control': 'no-store' }
       });
-      if (!response.ok) throw new Error('Failed to fetch user status');
+      if (!response.ok) throw new Error('Failed to fetch user data');
       const data = await response.json();
       return { data, success: true };
     } catch (error) {
       return {
         success: false,
         data: null,
-        message: error instanceof Error ? error.message : 'Failed to fetch user status'
+        message: error instanceof Error ? error.message : 'Failed to fetch user data'
       };
     }
   },
@@ -87,22 +83,35 @@ export const apiService = {
   },
 
 
-  async getTrips(page = 1, perPage = 12): Promise<ApiResponse<any>> {
+  async getTrips(useCache = true): Promise<ApiResponse<any>> {
     try {
-      const response = await fetch(`${API_BASE_URL}/hybrid-headless/v1/products`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch trips');
-      }
+      const cacheParam = useCache ? 'cachemeifyoucan=please' : 'nocache=please';
+      const url = `${API_BASE_URL}/hybrid-headless/v1/products?${cacheParam}`;
+
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Failed to fetch trips');
       const data = await response.json();
-      return { 
+
+      // Normalize variations
+      const normalizedTrips = data.products.map((trip: Trip) => ({
+        ...trip,
+        variations: (trip.variations || []).map(v => ({
+          ...v,
+          stock_quantity: v.stock_quantity ?? null,
+          stock_status: v.stock_status || 'instock'
+        }))
+      }));
+
+      return {
         success: true,
-        data 
+        data: normalizedTrips,
+        timestamp: Date.now()
       };
     } catch (error) {
-      return { 
-        success: false, 
+      return {
+        success: false,
         data: null,
-        message: error instanceof Error ? error.message : 'Failed to fetch trips' 
+        message: error instanceof Error ? error.message : 'Failed to fetch trips'
       };
     }
   },
@@ -114,15 +123,42 @@ export const apiService = {
         throw new Error(`Failed to fetch trip ${slug}`);
       }
       const data = await response.json();
-      return { 
-        data: data || null, 
-        success: true 
+      return {
+        data: data || null,
+        success: true
       };
     } catch (error) {
-      return { 
-        data: null, 
-        success: false, 
-        message: error instanceof Error ? error.message : 'Failed to fetch trip' 
+      return {
+        data: null,
+        success: false,
+        message: error instanceof Error ? error.message : 'Failed to fetch trip'
+      };
+    }
+  },
+
+  async getTripParticipants(tripId: number): Promise<ApiResponse<TripParticipantsResponse>> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/hybrid-headless/v1/trip-participants/${tripId}`, {
+        credentials: 'include',
+        headers: {
+          'Cache-Control': 'no-cache'
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch trip participants for trip ${tripId}`);
+      }
+      
+      const data = await response.json();
+      return {
+        data,
+        success: true
+      };
+    } catch (error) {
+      return {
+        data: null,
+        success: false,
+        message: error instanceof Error ? error.message : 'Failed to fetch trip participants'
       };
     }
   },
@@ -153,5 +189,6 @@ export const apiService = {
     } catch (error) {
       return { data: [], success: false, message: error instanceof Error ? error.message : 'Failed to fetch category trips' };
     }
-  }
+  },
+
 };
