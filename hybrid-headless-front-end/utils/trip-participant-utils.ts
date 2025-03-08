@@ -1,13 +1,14 @@
 /**
  * Utility functions for trip participants
  */
+import type { TripParticipant } from "../types/api";
 
 /**
  * Determine signup status for a participant
  * @param participant The trip participant object
  * @returns A string representing the participant's status
  */
-export const determineSignupStatus = (participant: any): string => {
+export const determineSignupStatus = (participant: TripParticipant): string => {
 	const { cc_attendance: attendance } = participant.order_meta || {};
 	const { order_status: orderStatus } = participant;
 
