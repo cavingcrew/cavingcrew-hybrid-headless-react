@@ -238,8 +238,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
             .join(', ');
         
         // Get tackle requirements from route data
-        const tackleRequired = trip.route?.acf?.route_group_tackle_required || 
-            'First Aid Kit, Emergency Shelter, Cave Survey, Mobile Phone, Spare Lights, Emergency Food, Whistle';
+        const tackleRequired = trip.route?.acf?.route_group_tackle_required || '';
         
         // Clean up HTML tags if present
         const cleanTackle = tackleRequired.replace(/<[^>]*>/g, ', ')
