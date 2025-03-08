@@ -12,8 +12,26 @@ import {
 } from '@tabler/icons-react';
 
 // Import custom hooks and types
-import { useTripParticipants, type TripParticipant } from '@/lib/hooks/useTripParticipants';
+import { useTripParticipants } from '@/lib/hooks/useTripParticipants';
 import type { Trip } from '@/types/api';
+
+// Define TripParticipant type locally if it's not available from the import
+interface TripParticipant {
+  first_name: string;
+  last_name?: string;
+  user_id?: number;
+  order_id: number;
+  order_status: string;
+  meta?: {
+    [key: string]: string | null;
+  };
+  order_meta?: {
+    [key: string]: string | null;
+  };
+  admin_meta?: {
+    [key: string]: string | null;
+  };
+}
 
 // Define props interface for the component
 interface NeoClanVolunteeringWidgetProps {
@@ -68,7 +86,7 @@ const isFirstTimeCaver = (participant: TripParticipant): boolean => {
     return !attendedScore || attendedScore === '0' || attendedScore === '';
 };
 
-const formatGearList = (gearString?: string) => {
+const formatGearList = (gearString?: string | null) => {
     if (!gearString) return <Text>None specified</Text>;
     
     const gearItems = gearString.split(',')
@@ -584,7 +602,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                         opened={confirmEmergencyAccess}
                         onClose={() => setConfirmEmergencyAccess(false)}
                         title={
-                            <Title order={4} color="red">
+                            <Title order={4} c="red">
                                 Emergency Information Access
                             </Title>
                         }
