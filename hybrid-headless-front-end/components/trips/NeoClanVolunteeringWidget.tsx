@@ -379,13 +379,14 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
         // Add route-specific equipment if available
         if (trip.route?.acf?.route_group_tackle_required) {
             const tackleRequired = trip.route.acf.route_group_tackle_required;
-            // Clean up HTML tags if present and split by commas or line breaks
-            const tackleItems = tackleRequired
-                .replace(/<[^>]*>/g, ', ')
-                .replace(/,\s*,/g, ',')
-                .split(/[,\n]/)
-                .map(item => item.trim())
-                .filter(Boolean);
+            // Clean up HTML tags if present but preserve the content structure
+            const cleanedTackle = tackleRequired
+                .replace(/<[^>]*>/g, '')
+                .replace(/\s+/g, ' ')
+                .trim();
+                
+            // Use the cleaned tackle text as a single item instead of splitting
+            const tackleItems = [cleanedTackle].filter(Boolean);
 
             // Add each tackle item
             tackleItems.forEach(item => {
