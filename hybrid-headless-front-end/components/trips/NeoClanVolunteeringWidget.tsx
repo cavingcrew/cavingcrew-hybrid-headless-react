@@ -14,8 +14,8 @@ import {
 } from '@tabler/icons-react';
 
 // Import custom hooks and types
-import { useTripParticipants } from '@/lib/hooks/useTripParticipants';
-import type { Trip, TripParticipant } from '@/types/api';
+import { useTripParticipants } from '../../../lib/hooks/useTripParticipants';
+import type { Trip, TripParticipant } from '../../../types/api';
 
 // Define props interface for the component
 interface NeoClanVolunteeringWidgetProps {
