@@ -334,19 +334,28 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                     {participants.map((participant) => (
                                         <Table.Tr key={participant.order_id}>
                                             <Table.Td>{participant.first_name} {participant.last_name}</Table.Td>
-                                            <Table.Td>{participant.meta?.['skills-horizontal'] || 'Not specified'}</Table.Td>
-                                            <Table.Td>{participant.meta?.['skills-srt'] || 'Not specified'}</Table.Td>
+                                            <Table.Td>
+                                                {participant.meta?.['skills-horizontal'] || 
+                                                 <Text c="dimmed">Not specified</Text>}
+                                            </Table.Td>
+                                            <Table.Td>
+                                                {participant.meta?.['skills-srt'] || 
+                                                 <Text c="dimmed">Not specified</Text>}
+                                            </Table.Td>
                                             <Table.Td>
                                                 {participant.meta?.['skills-leading-horizontal'] ||
                                                  participant.meta?.['caving-horizontal-happy-to-second-or-lead'] ||
-                                                 'Not specified'}
+                                                 <Text c="dimmed">Not specified</Text>}
                                             </Table.Td>
                                             <Table.Td>
                                                 {participant.meta?.['skills-leading-srt'] ||
                                                  participant.meta?.['caving-srt-happy-to-second-or-lead'] ||
-                                                 'Not specified'}
+                                                 <Text c="dimmed">Not specified</Text>}
                                             </Table.Td>
-                                            <Table.Td>{participant.meta?.['skills-leading-coaching'] || 'Not specified'}</Table.Td>
+                                            <Table.Td>
+                                                {participant.meta?.['skills-leading-coaching'] || 
+                                                 <Text c="dimmed">Not specified</Text>}
+                                            </Table.Td>
                                         </Table.Tr>
                                     ))}
                                 </Table.Tbody>
@@ -727,15 +736,21 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                             <Table.Td>
                                                 {participant.meta?.['transport-need-lift']?.toLowerCase() === 'yes' ? (
                                                     <Badge color="red">Needs Lift</Badge>
-                                                ) : 'No'}
+                                                ) : <Text c="dimmed">No</Text>}
                                             </Table.Td>
                                             <Table.Td>
                                                 {participant.meta?.['transport-will-you-give-lift']?.toLowerCase() === 'yes' ? (
                                                  <Text>Yes</Text>
-                                                ) : 'No'}
+                                                ) : <Text c="dimmed">No</Text>}
                                             </Table.Td>
-                                            <Table.Td>{participant.meta?.['transport-depature-time'] || 'Not specified'}</Table.Td>
-                                            <Table.Td>{participant.meta?.['transport-leaving-location'] || 'Not specified'}</Table.Td>
+                                            <Table.Td>
+                                                {participant.meta?.['transport-depature-time'] || 
+                                                 <Text c="dimmed">Not specified</Text>}
+                                            </Table.Td>
+                                            <Table.Td>
+                                                {participant.meta?.['transport-leaving-location'] || 
+                                                 <Text c="dimmed">Not specified</Text>}
+                                            </Table.Td>
                                         </Table.Tr>
                                     ))}
                                 </Table.Tbody>
