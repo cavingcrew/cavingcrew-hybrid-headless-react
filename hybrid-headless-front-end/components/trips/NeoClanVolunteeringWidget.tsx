@@ -583,7 +583,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                 Skills
                             </Tabs.Tab>
                             <Tabs.Tab value="equipment" leftSection={<IconTools size={14} />}>
-                                Equipment
+                                Gear
                             </Tabs.Tab>
                             <Tabs.Tab value="dietary">Dietary Requirements</Tabs.Tab>
                             <Tabs.Tab value="transport">Transport</Tabs.Tab>
