@@ -340,7 +340,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
         requestTemplate += 'With help from NeoCrew, I think we\'ll need:\n';
 
         // Track participants who need wellies but haven't specified a size
-        const participantsNeedingWellieSize = [];
+        const participantsNeedingWellieSize: string[] = [];
 
         // Process each participant's gear needs
         signedUpParticipants.forEach(participant => {
