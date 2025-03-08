@@ -64,6 +64,8 @@ export const isFirstTimeCaver = (participant: any): boolean => {
   return !attendedScore || attendedScore === '0' || attendedScore === '';
 };
 
+import React from 'react';
+
 /**
  * Format a gear list for display
  * @param gearString A comma-separated string of gear items
