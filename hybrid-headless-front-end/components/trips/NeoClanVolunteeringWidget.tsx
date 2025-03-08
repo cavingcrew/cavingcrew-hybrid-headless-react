@@ -349,7 +349,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
 
             // Get required gear from route if available, otherwise use standard list
             let standardGear: string[] = [];
-            
+
             if (routePersonalGear) {
                 // Parse from route_personal_gear_required
                 standardGear = (typeof routePersonalGear === 'string'
@@ -368,7 +368,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                     'Gloves',
                     'Wellies'
                 ];
-                
+
                 // Add SRT Kit if required for this trip
                 if (requiresSRT) {
                     standardGear.push('SRT Kit');
@@ -719,7 +719,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                             <Group justify="space-between" mb="md">
                                 <Badge color="blue" variant="light">
                                     Required gear for this trip: {
-                                        trip.route?.acf?.route_personal_gear_required 
+                                        trip.route?.acf?.route_personal_gear_required
                                             ? (typeof trip.route.acf.route_personal_gear_required === 'string'
                                                 ? trip.route.acf.route_personal_gear_required.replace(/<[^>]*>/g, '').trim().replace(/,/g, ', ')
                                                 : String(trip.route.acf.route_personal_gear_required).replace(/,/g, ', '))
@@ -773,7 +773,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
 
                                         // Get required gear from route if available, otherwise use standard list
                                         let standardGear: string[] = [];
-                                        
+
                                         if (routePersonalGear) {
                                             // Parse from route_personal_gear_required
                                             standardGear = (typeof routePersonalGear === 'string'
@@ -792,7 +792,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                                 'Gloves',
                                                 'Wellies'
                                             ];
-                                            
+
                                             // Add SRT Kit if required for this trip
                                             if (requiresSRT) {
                                                 standardGear.push('SRT Kit');
@@ -836,7 +836,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                             if (item.includes('Nothing') || item.includes('totally new')) {
                                                 return false;
                                             }
-                                            
+
                                             // Skip "Ropes" item as we'll handle it separately with rope length
                                             if (item.toLowerCase() === 'ropes') {
                                                 return false;
@@ -852,7 +852,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                         });
 
                                         // Check if rope is needed for this trip
-                                        const tripRequiresRope = trip.route?.acf?.route_group_tackle_required?.toLowerCase().includes('rope') || 
+                                        const tripRequiresRope = trip.route?.acf?.route_group_tackle_required?.toLowerCase().includes('rope') ||
                                                                trip.acf.event_gear_required?.toLowerCase().includes('srt');
 
                                         return (
@@ -918,7 +918,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                                                 </Badge>
                                                             )}
                                                             {/* Only show "Ropes" item if no length specified but they're bringing ropes */}
-                                                            {bringingItems.some(item => item.toLowerCase() === 'ropes') && 
+                                                            {bringingItems.some(item => item.toLowerCase() === 'ropes') &&
                                                              !participant.meta?.['gear-rope-length'] && (
                                                                 <Badge color="teal" variant="light">
                                                                     Ropes (length not specified)
@@ -1330,14 +1330,14 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
 
                         <Text fw={500} mb="xs">Required Gear:</Text>
                         <Text mb="md" style={{ whiteSpace: 'pre-line' }}>
-                            {trip.acf.event_gear_required ? 
-                                typeof trip.acf.event_gear_required === 'string' ? 
+                            {trip.acf.event_gear_required ?
+                                typeof trip.acf.event_gear_required === 'string' ?
                                     trip.acf.event_gear_required
-                                        .replace(/<br\s*\/?>/gi, '\n')
+                                        .replace(/<br\s*\/?>/gi, '\n\n')
                                         .replace(/<\/p>\s*<p>/gi, '\n\n')
-                                        .replace(/<\/?p>/gi, '\n')
-                                        .replace(/\n{3,}/g, '\n\n') : 
-                                    String(trip.acf.event_gear_required) : 
+                                        .replace(/<\/?p>/gi, '\n\n')
+                                        .replace(/\n{3,}/g, '\n\n') :
+                                    String(trip.acf.event_gear_required) :
                                 'None specified'}
                         </Text>
 
@@ -1394,14 +1394,14 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
 
                         <Text fw={500} mb="xs">Required Gear:</Text>
                         <Text mb="md" style={{ whiteSpace: 'pre-line' }}>
-                            {trip.acf.event_gear_required ? 
-                                typeof trip.acf.event_gear_required === 'string' ? 
+                            {trip.acf.event_gear_required ?
+                                typeof trip.acf.event_gear_required === 'string' ?
                                     trip.acf.event_gear_required
-                                        .replace(/<br\s*\/?>/gi, '\n')
+                                        .replace(/<br\s*\/?>/gi, '\n\n')
                                         .replace(/<\/p>\s*<p>/gi, '\n\n')
-                                        .replace(/<\/?p>/gi, '\n')
-                                        .replace(/\n{3,}/g, '\n\n') : 
-                                    String(trip.acf.event_gear_required) : 
+                                        .replace(/<\/?p>/gi, '\n\n')
+                                        .replace(/\n{3,}/g, '\n\n') :
+                                    String(trip.acf.event_gear_required) :
                                 'None specified'}
                         </Text>
 
