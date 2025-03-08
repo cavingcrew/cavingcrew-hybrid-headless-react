@@ -807,37 +807,58 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
 
                                         // Check each standard gear item
                                         standardGear.forEach(item => {
+                                            // Skip checking if they're a new caver claiming to bring nothing
+                                            if (isNewCaver && item !== 'Wellies') {
+                                                missingGear.push(item);
+                                                return;
+                                            }
+                                                
                                             // Special case for SRT Kit and Harness/Cowstails
                                             if (item === 'Harness and Cowstails' || item === 'SRT Kit') {
                                                 // If they have SRT Kit, they have Harness and Cowstails covered
                                                 const hasSRTKit = bringingItems.some(g => 
                                                     g.toLowerCase().includes('srt kit'));
-                                                
+                                                    
                                                 // If they have Harness and Cowstails specifically
                                                 const hasHarnessAndCowstails = bringingItems.some(g => 
                                                     g.toLowerCase().includes('harness') && 
                                                     g.toLowerCase().includes('cowstail'));
-                                                
+                                                    
                                                 // If they have either SRT Kit or Harness and Cowstails, they're covered
                                                 if ((item === 'SRT Kit' && hasSRTKit) || 
                                                     (item === 'Harness and Cowstails' && (hasSRTKit || hasHarnessAndCowstails))) {
                                                     return; // They have this covered
                                                 }
+                                            } else if (item === 'Helmet and Light') {
+                                                // Special case for Helmet and Light
+                                                const hasHelmet = bringingItems.some(g => 
+                                                    g.toLowerCase().includes('helmet'));
+                                                const hasLight = bringingItems.some(g => 
+                                                    g.toLowerCase().includes('light'));
+                                                    
+                                                if (hasHelmet && hasLight) {
+                                                    return; // They have both helmet and light
+                                                }
+                                                    
+                                                // Check for combined "Helmet and Light" item
+                                                const hasHelmetAndLight = bringingItems.some(g => 
+                                                    g.toLowerCase().includes('helmet') && 
+                                                    g.toLowerCase().includes('light'));
+                                                    
+                                                if (hasHelmetAndLight) {
+                                                    return; // They have a combined helmet and light
+                                                }
                                             } else {
                                                 // For all other items, check if they're bringing it
                                                 const hasBrought = bringingItems.some(g => 
-                                                    g.toLowerCase().includes(item.toLowerCase()) ||
-                                                    // Special case for Helmet and Light
-                                                    (item === 'Helmet and Light' && 
-                                                     (g.toLowerCase().includes('helmet') || 
-                                                      g.toLowerCase().includes('light')))
+                                                    g.toLowerCase().includes(item.toLowerCase())
                                                 );
-                                                
-                                                if (hasBrought && !(isNewCaver && item !== 'Wellies')) {
+                                                    
+                                                if (hasBrought) {
                                                     return; // They have this item
                                                 }
                                             }
-                                            
+                                                
                                             // If we get here, they need this item
                                             if (item === 'Wellies') {
                                                 if (welliesSize && welliesSize.trim() !== '') {
@@ -857,23 +878,23 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                                 return false;
                                             }
 
-                                            // Skip "Ropes" item as we'll handle it separately with rope length
-                                            if (item.toLowerCase().includes('rope')) {
-                                                return false;
-                                            }
-
-                                            // Check if this item is not in the required list
-                                            return !standardGear.some(req => {
+                                            // Skip items that are part of the standard gear list
+                                            for (const req of standardGear) {
                                                 // Handle special cases first
                                                 if (req === 'Helmet and Light' &&
                                                     (item.toLowerCase().includes('helmet') || 
                                                      item.toLowerCase().includes('light'))) {
-                                                    return true;
+                                                    return false;
                                                 }
                                                 
                                                 // Standard comparison
-                                                return item.toLowerCase().includes(req.toLowerCase());
-                                            });
+                                                if (item.toLowerCase().includes(req.toLowerCase())) {
+                                                    return false;
+                                                }
+                                            }
+                                            
+                                            // If we get here, this is additional gear
+                                            return true;
                                         });
 
                                         // Check if rope is needed for this trip
@@ -888,15 +909,43 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                                         <Text>None specified</Text>
                                                     ) : (
                                                         <Stack gap="xs">
-                                                            {bringingItems.map((item, index) => (
-                                                                <Badge
-                                                                    key={index}
-                                                                    color={item.includes('Nothing') ? 'red' : 'blue'}
-                                                                    variant="light"
-                                                                >
-                                                                    {item}
-                                                                </Badge>
-                                                            ))}
+                                                            {bringingItems
+                                                                .filter(item => {
+                                                                    // Only show items that match required gear
+                                                                    if (item.includes('Nothing') || item.includes('totally new')) {
+                                                                        return true; // Always show "Nothing" options
+                                                                    }
+                                                                    
+                                                                    // Check if this item is in the required list
+                                                                    return standardGear.some(req => {
+                                                                        // Handle special cases first
+                                                                        if (req === 'Helmet and Light' &&
+                                                                            (item.toLowerCase().includes('helmet') || 
+                                                                             item.toLowerCase().includes('light'))) {
+                                                                            return true;
+                                                                        }
+                                                                        
+                                                                        // Special case for SRT Kit and Harness/Cowstails
+                                                                        if ((req === 'SRT Kit' || req === 'Harness and Cowstails') &&
+                                                                            (item.toLowerCase().includes('srt kit') || 
+                                                                             (item.toLowerCase().includes('harness') && 
+                                                                              item.toLowerCase().includes('cowstail')))) {
+                                                                            return true;
+                                                                        }
+                                                                        
+                                                                        // Standard comparison
+                                                                        return item.toLowerCase().includes(req.toLowerCase());
+                                                                    });
+                                                                })
+                                                                .map((item, index) => (
+                                                                    <Badge
+                                                                        key={index}
+                                                                        color={item.includes('Nothing') ? 'red' : 'blue'}
+                                                                        variant="light"
+                                                                    >
+                                                                        {item}
+                                                                    </Badge>
+                                                                ))}
                                                         </Stack>
                                                     )}
                                                 </Table.Td>
@@ -936,8 +985,9 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                                                     {item}
                                                                 </Badge>
                                                             ))}
-                                                            {/* Handle rope display */}
-                                                            {bringingItems.some(item => item.toLowerCase().includes('rope')) ? (
+                                                            {/* Only show rope in additional gear if it's not part of required gear */}
+                                                            {bringingItems.some(item => item.toLowerCase().includes('rope')) && 
+                                                             !standardGear.some(item => item.toLowerCase().includes('rope')) ? (
                                                                 <Badge color="teal" variant="light">
                                                                     {participant.meta?.['gear-rope-length'] 
                                                                         ? `Rope: ${participant.meta['gear-rope-length']}`
