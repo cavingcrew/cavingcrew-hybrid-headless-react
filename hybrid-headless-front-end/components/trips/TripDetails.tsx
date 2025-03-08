@@ -322,8 +322,8 @@ export function TripDetails({ trip }: TripDetailsProps) {
                       <Text>
                         {trip.route?.acf?.route_personal_gear_required 
                           ? (typeof trip.route.acf.route_personal_gear_required === 'string' 
-                              ? trip.route.acf.route_personal_gear_required.replace(/<[^>]*>/g, '').trim()
-                              : String(trip.route.acf.route_personal_gear_required))
+                              ? trip.route.acf.route_personal_gear_required.replace(/<[^>]*>/g, '').trim().replace(/,/g, ', ')
+                              : String(trip.route.acf.route_personal_gear_required).replace(/,/g, ', '))
                           : acf.event_gear_required}
                       </Text>
                     </div>
