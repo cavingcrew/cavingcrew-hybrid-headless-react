@@ -278,7 +278,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
             }
         }
         
-        calloutTemplate += `Equipped with: ${cleanTackle}`;
+        calloutTemplate += `Equipped with:\n${cleanTackle}`;
         
         return calloutTemplate;
     };
