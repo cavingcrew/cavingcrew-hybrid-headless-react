@@ -851,6 +851,10 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                             );
                                         });
 
+                                        // Check if rope is needed for this trip
+                                        const tripRequiresRope = trip.route?.acf?.route_group_tackle_required?.toLowerCase().includes('rope') || 
+                                                               trip.acf.event_gear_required?.toLowerCase().includes('srt');
+
                                         return (
                                             <Table.Tr key={participant.order_id}>
                                                 <Table.Td>{participant.first_name} {participant.last_name}</Table.Td>
@@ -908,9 +912,16 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                                                 </Badge>
                                                             ))}
                                                             {/* Show rope with length if they're bringing ropes or if they specified a rope length */}
-                                                            {(bringingItems.some(item => item.toLowerCase() === 'ropes') || participant.meta?.['gear-rope-length']) && (
+                                                            {participant.meta?.['gear-rope-length'] && (
                                                                 <Badge color="teal" variant="light">
-                                                                    Rope: {participant.meta?.['gear-rope-length'] || 'length not specified'}
+                                                                    Rope: {participant.meta['gear-rope-length']}
+                                                                </Badge>
+                                                            )}
+                                                            {/* Only show "Ropes" item if no length specified but they're bringing ropes */}
+                                                            {bringingItems.some(item => item.toLowerCase() === 'ropes') && 
+                                                             !participant.meta?.['gear-rope-length'] && (
+                                                                <Badge color="teal" variant="light">
+                                                                    Ropes (length not specified)
                                                                 </Badge>
                                                             )}
                                                         </Stack>
