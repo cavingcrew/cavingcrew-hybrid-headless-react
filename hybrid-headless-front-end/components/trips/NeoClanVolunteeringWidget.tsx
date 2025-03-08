@@ -115,7 +115,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
             <Paper withBorder p="md" radius="md">
                 <Stack>
                     <Group justify="space-between">
-                        <Title order={3}>People who've Signed Up</Title>
+                        <Title order={3}>People Who've Signed Up</Title>
                         <Skeleton height={24} width={100} radius="xl" />
                     </Group>
                     <Skeleton height={200} radius="md" />
@@ -133,7 +133,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                     title="Error"
                     color="red"
                 >
-                    Failed to load participant information. Please try again later.
+                    Failed to load people's information. It probably isn't your fault. :) Please try again later.
                 </Alert>
             </Paper>
         );
@@ -847,20 +847,20 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                             } else if (item === 'Helmet and Light') {
                                                 // Special case for Helmet and Light
                                                 // Check for combined "Helmet and Light" item
-                                                const hasHelmetAndLight = bringingItems.some(g => 
+                                                const hasHelmetAndLight = bringingItems.some(g =>
                                                     g.toLowerCase().includes('helmet and light'));
-                                                
+
                                                 if (hasHelmetAndLight) {
                                                     return; // They have a combined helmet and light
                                                 }
-                                                
+
                                                 // Check for separate helmet and light items (not spare light)
-                                                const hasHelmet = bringingItems.some(g => 
+                                                const hasHelmet = bringingItems.some(g =>
                                                     g.toLowerCase().includes('helmet'));
-                                                const hasLight = bringingItems.some(g => 
-                                                    g.toLowerCase().includes('light') && 
+                                                const hasLight = bringingItems.some(g =>
+                                                    g.toLowerCase().includes('light') &&
                                                     !g.toLowerCase().includes('spare'));
-                                                
+
                                                 if (hasHelmet && hasLight) {
                                                     return; // They have both helmet and light
                                                 }
@@ -902,14 +902,14 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                                     // Don't match "Spare Light" as part of required gear
                                                     if (item.toLowerCase() === 'helmet and light' ||
                                                         item.toLowerCase() === 'helmet' ||
-                                                        (item.toLowerCase().includes('light') && 
+                                                        (item.toLowerCase().includes('light') &&
                                                          !item.toLowerCase().includes('spare'))) {
                                                         return false;
                                                     }
                                                     // Continue checking other requirements
                                                     continue;
                                                 }
-                                                
+
                                                 // Standard comparison
                                                 if (item.toLowerCase().includes(req.toLowerCase())) {
                                                     return false;
@@ -947,7 +947,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                                                             // Don't match "Spare Light" as part of required gear
                                                                             if (item.toLowerCase() === 'helmet and light' ||
                                                                                 item.toLowerCase() === 'helmet' ||
-                                                                                (item.toLowerCase().includes('light') && 
+                                                                                (item.toLowerCase().includes('light') &&
                                                                                  !item.toLowerCase().includes('spare'))) {
                                                                                 return true;
                                                                             }
