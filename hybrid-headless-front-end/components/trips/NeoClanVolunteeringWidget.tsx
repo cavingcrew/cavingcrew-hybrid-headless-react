@@ -100,6 +100,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
 
     // Fetch trip participants data
     const { data, isLoading, error } = useTripParticipants(trip.id);
+    const { isLoggedIn } = useUser();
 
     // Extract participants and access level with default fallbacks
     const participants = data?.data?.participants || [];
@@ -366,19 +367,19 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
             <Group justify="space-between" mb="md">
                 <Title order={3}>Trip Management</Title>
                 <Badge color="blue" size="lg">Admin Access</Badge>
-                <Text>Just to state the obvious, people who aren't you, can't see all this info</Text>
+                <Text>Just to state the obvious, people who aren't you can't see all this info</Text>
             </Group>
 
             {participants.length === 0 ? (
                 <Alert icon={<IconInfoCircle size={16} />} color="blue">
-                    No participants have signed up for this trip yet.
+                    No one has signed up for this trip yet.
                 </Alert>
             ) : (
                 <>
                     <Tabs value={activeTab} onChange={setActiveTab}>
                         <Tabs.List>
                             <Tabs.Tab value="cavers" leftSection={<IconUsers size={14} />}>
-                                Cavers
+                                People
                             </Tabs.Tab>
                             <Tabs.Tab value="skills" leftSection={<IconSchool size={14} />}>
                                 Skills
@@ -414,16 +415,16 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                     variant="outline"
                                     color="blue"
                                 >
-                                    Write me a callout
+                                    Generate callout text
                                 </Button>
                             </Group>
                             <Table striped>
                                 <Table.Thead>
                                     <Table.Tr>
                                         <Table.Th>Name</Table.Th>
-                                        <Table.Th>Signup Status</Table.Th>
+                                        <Table.Th>Status</Table.Th>
                                         <Table.Th>First Timer</Table.Th>
-                                        <Table.Th>Volunteer Role</Table.Th>
+                                        <Table.Th>Role</Table.Th>
                                         <Table.Th>Order ID</Table.Th>
                                     </Table.Tr>
                                 </Table.Thead>
@@ -929,7 +930,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                         onClose={() => setEmergencyModalOpen(false)}
                         title={
                             <Title order={4}>
-                                Emergency Information - {selectedParticipant?.first_name} {selectedParticipant?.last_name}
+                                Emergency Contact - {selectedParticipant?.first_name} {selectedParticipant?.last_name}
                             </Title>
                         }
                         size="lg"
@@ -1022,7 +1023,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                         onClose={() => setCalloutModalOpen(false)}
                         title={
                             <Title order={4}>
-                                Callout Information
+                                Callout Text
                             </Title>
                         }
                         size="lg"
