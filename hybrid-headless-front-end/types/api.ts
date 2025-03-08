@@ -58,7 +58,7 @@ export interface TripParticipant {
 	meta?: {
 		"gear-bringing-evening-or-day-trip"?: string;
 		gear_wellies_size?: string;
-		"skills-horizontal"?: 
+		"skills-horizontal"?:
 			| "New to caving"
 			| "Horizontal Basic"
 			| "Horizontal Intermediate"
@@ -74,7 +74,7 @@ export interface TripParticipant {
 			| "SRT Advanced"
 			| null
 			| undefined;
-		"skills-leading-horizontal"?: 
+		"skills-leading-horizontal"?:
 			| "no skills"
 			| "seconder"
 			| "learner leader"
@@ -99,7 +99,7 @@ export interface TripParticipant {
 			| null
 			| undefined
 			| string;
-		"caving-horizontal-happy-to-second-or-lead"?: 
+		"caving-horizontal-happy-to-second-or-lead"?:
 			| "Leader"
 			| "Seconder"
 			| "No"
