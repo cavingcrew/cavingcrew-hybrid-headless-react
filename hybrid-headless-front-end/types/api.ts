@@ -46,62 +46,89 @@ export interface TripParticipant {
 	last_name?: string;
 	user_id?: number;
 	order_id: number;
-	order_status: 'pending' | 'processing' | 'on-hold' | 'completed' | 'cancelled' | 'refunded' | 'failed' | string;
+	order_status:
+		| "pending"
+		| "processing"
+		| "on-hold"
+		| "completed"
+		| "cancelled"
+		| "refunded"
+		| "failed"
+		| string;
 	meta?: {
-		'gear-bringing-evening-or-day-trip'?: string;
-		'gear_wellies_size'?: string;
-		'skills-horizontal'?: string;
-		'skills-srt'?: string;
-		'skills-leading-horizontal'?: string;
-		'skills-leading-srt'?: string;
-		'skills-leading-coaching'?: string;
-		'caving-horizontal-happy-to-second-or-lead'?: string;
-		'caving-srt-happy-to-second-or-lead'?: string;
-		'transport-need-lift'?: 'yes' | 'no' | string;
-		'transport-will-you-give-lift'?: 'yes' | 'no' | string;
-		'transport-depature-time'?: string;
-		'transport-leaving-location'?: string;
-		'gear-rope-length'?: string;
-		'gear-walking-equipment-weekend'?: string;
-		'admin-dietary-requirements'?: string;
-		'admin-car-registration'?: string;
-		'stats_attendance_attended_cached'?: string;
-		'scores_volunteer_score_cached'?: string;
-		'scores_attendance_reliability_score_cached'?: string;
-		'cc_compliance_last_date_of_caving'?: string;
+		"gear-bringing-evening-or-day-trip"?: string;
+		gear_wellies_size?: string;
+		"skills-horizontal"?: string;
+		"skills-srt"?: string;
+		"skills-leading-horizontal"?: string;
+		"skills-leading-srt"?: string;
+		"skills-leading-coaching"?: string;
+		"caving-horizontal-happy-to-second-or-lead"?: string;
+		"caving-srt-happy-to-second-or-lead"?: string;
+		"transport-need-lift"?: "yes" | "no" | string;
+		"transport-will-you-give-lift"?: "yes" | "no" | string;
+		"transport-depature-time"?: string;
+		"transport-leaving-location"?: string;
+		"gear-rope-length"?: string;
+		"gear-walking-equipment-weekend"?: string;
+		"admin-dietary-requirements"?: string;
+		"admin-car-registration"?: string;
+		stats_attendance_attended_cached?: string;
+		scores_volunteer_score_cached?: string;
+		scores_attendance_reliability_score_cached?: string;
+		cc_compliance_last_date_of_caving?: string;
 		[key: string]: string | null | undefined;
 	};
 	order_meta?: {
-		'cc_attendance'?: 'attended' | 'noshow' | 'cancelled' | 'latebail' | 'no-register-show' | 'noregistershow' | 'pending' | string;
-		'cc_volunteer'?: 'none' | 'director' | 'tacklemanager' | 'lift' | 'cabbage1239zz' | 'floorwalker' | 'skillsharer' | 'announcements' | 'checkin' | 'pairing' | string;
-		'cc_volunteer_attendance'?: string;
-		'cc_location'?: string;
+		cc_attendance?:
+			| "attended"
+			| "noshow"
+			| "cancelled"
+			| "latebail"
+			| "no-register-show"
+			| "noregistershow"
+			| "pending"
+			| string;
+		cc_volunteer?:
+			| "none"
+			| "director"
+			| "tacklemanager"
+			| "lift"
+			| "cabbage1239zz"
+			| "floorwalker"
+			| "skillsharer"
+			| "announcements"
+			| "checkin"
+			| "pairing"
+			| string;
+		cc_volunteer_attendance?: string;
+		cc_location?: string;
 		[key: string]: string | null | undefined;
 	};
 	admin_meta?: {
-		'admin-emergency-contact-name'?: string;
-		'admin-emergency-contact-phone'?: string;
-		'admin-emergency-contact-relationship'?: string;
-		'admin-phone-number'?: string;
-		'billing_phone'?: string;
-		'billing_address_1'?: string;
-		'billing_address_2'?: string;
-		'billing_city'?: string;
-		'billing_postcode'?: string;
-		'admin-date-of-birth'?: string;
-		'admin-car-registration'?: string;
-		'admin-diet-allergies-health-extra-info'?: string;
-		'admin-health-shoulder'?: 'yes' | 'no' | string;
-		'admin-health-asthma'?: 'yes' | 'no' | string;
-		'admin-health-missing-dose'?: 'yes' | 'no' | string;
-		'admin-health-impairment-through-medication'?: 'yes' | 'no' | string;
+		"admin-emergency-contact-name"?: string;
+		"admin-emergency-contact-phone"?: string;
+		"admin-emergency-contact-relationship"?: string;
+		"admin-phone-number"?: string;
+		billing_phone?: string;
+		billing_address_1?: string;
+		billing_address_2?: string;
+		billing_city?: string;
+		billing_postcode?: string;
+		"admin-date-of-birth"?: string;
+		"admin-car-registration"?: string;
+		"admin-diet-allergies-health-extra-info"?: string;
+		"admin-health-shoulder"?: "yes" | "no" | string;
+		"admin-health-asthma"?: "yes" | "no" | string;
+		"admin-health-missing-dose"?: "yes" | "no" | string;
+		"admin-health-impairment-through-medication"?: "yes" | "no" | string;
 		[key: string]: string | null | undefined;
 	};
 }
 
 export interface TripParticipantsResponse {
 	participants: TripParticipant[];
-	access_level: 'public' | 'participant' | 'admin';
+	access_level: "public" | "participant" | "admin";
 	trip_id: number;
 	can_update: boolean;
 }
@@ -141,7 +168,7 @@ export interface Variation {
 		};
 	};
 	stock_quantity: number | null;
-	stock_status: 'instock' | 'outofstock' | 'onbackorder' | string;
+	stock_status: "instock" | "outofstock" | "onbackorder" | string;
 	price: string;
 	regular_price?: string;
 	sale_price?: string;
@@ -322,7 +349,7 @@ export interface Trip {
 	price: string;
 	regular_price?: string;
 	sale_price?: string;
-	stock_status: 'instock' | 'outofstock' | 'onbackorder' | string;
+	stock_status: "instock" | "outofstock" | "onbackorder" | string;
 	stock_quantity: number | null;
 	description: string;
 	short_description: string;
@@ -361,11 +388,18 @@ export interface Trip {
 			alt: boolean | string;
 			caption: boolean | string;
 		};
-		hut_dogs_allowed?: 'yes' | 'no' | string;
+		hut_dogs_allowed?: "yes" | "no" | string;
 	};
 	acf: {
 		// Event Type
-		event_type: 'known' | 'mystery' | 'overnight' | 'giggletrip' | 'training' | 'membership' | string;
+		event_type:
+			| "known"
+			| "mystery"
+			| "overnight"
+			| "giggletrip"
+			| "training"
+			| "membership"
+			| string;
 		// Date/Time Fields
 		event_start_date?: string;
 		event_finish_date?: string;
