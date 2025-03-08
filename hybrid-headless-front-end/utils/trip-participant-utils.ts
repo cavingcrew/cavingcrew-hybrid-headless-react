@@ -8,31 +8,30 @@
  * @returns A string representing the participant's status
  */
 export const determineSignupStatus = (participant: any): string => {
-  const { cc_attendance: attendance } = participant.order_meta || {};
-  const { order_status: orderStatus } = participant;
+	const { cc_attendance: attendance } = participant.order_meta || {};
+	const { order_status: orderStatus } = participant;
 
-  // Comprehensive status mapping
-  const statusMap: { [key: string]: string } = {
-    'attended': 'Attended',
-    'noshow': 'No Show',
-    'cancelled': 'Cancelled',
-    'latebail': 'Late Bail',
-    'no-register-show': 'Attended Without Signup',
-    'noregistershow': 'Attended Without Signup'
-  };
+	// Comprehensive status mapping
+	const statusMap: { [key: string]: string } = {
+		attended: "Attended",
+		noshow: "No Show",
+		cancelled: "Cancelled",
+		latebail: "Late Bail",
+		"no-register-show": "Attended Without Signup",
+		noregistershow: "Attended Without Signup",
+	};
 
-  // Check predefined statuses first
-  if (attendance && typeof attendance === 'string' && statusMap[attendance])
-    return statusMap[attendance];
+	// Check predefined statuses first
+	if (attendance && typeof attendance === "string" && statusMap[attendance])
+		return statusMap[attendance];
 
-  // Handle pending and processing statuses
-  if (orderStatus === 'processing' && (!attendance || attendance === 'pending'))
-    return 'Signed Up';
+	// Handle pending and processing statuses
+	if (orderStatus === "processing" && (!attendance || attendance === "pending"))
+		return "Signed Up";
 
-  if (orderStatus === 'on-hold' || orderStatus === 'pending')
-    return 'Other';
+	if (orderStatus === "on-hold" || orderStatus === "pending") return "Other";
 
-  return 'Other';
+	return "Other";
 };
 
 /**
@@ -41,17 +40,17 @@ export const determineSignupStatus = (participant: any): string => {
  * @returns A color string for the status
  */
 export const getStatusColor = (status: string): string => {
-  const colorMap: { [key: string]: string } = {
-    'Attended': 'green',
-    'No Show': 'red',
-    'Cancelled': 'gray',
-    'Late Bail': 'orange',
-    'Signed Up': 'blue',
-    'Attended Without Signup': 'teal',
-    'Other': 'yellow'
-  };
+	const colorMap: { [key: string]: string } = {
+		Attended: "green",
+		"No Show": "red",
+		Cancelled: "gray",
+		"Late Bail": "orange",
+		"Signed Up": "blue",
+		"Attended Without Signup": "teal",
+		Other: "yellow",
+	};
 
-  return colorMap[status] || 'yellow';
+	return colorMap[status] || "yellow";
 };
 
 /**
@@ -60,10 +59,9 @@ export const getStatusColor = (status: string): string => {
  * @returns Boolean indicating if this is their first trip
  */
 export const isFirstTimeCaver = (participant: any): boolean => {
-  const attendedScore = participant.meta?.['stats_attendance_attended_cached'];
-  return !attendedScore || attendedScore === '0' || attendedScore === '';
+	const attendedScore = participant.meta?.["stats_attendance_attended_cached"];
+	return !attendedScore || attendedScore === "0" || attendedScore === "";
 };
-
 
 /**
  * Format a gear list for display
@@ -71,24 +69,25 @@ export const isFirstTimeCaver = (participant: any): boolean => {
  * @returns JSX for displaying the gear list
  */
 export const formatGearList = (gearString?: string | null) => {
-  if (!gearString) return { type: 'p', props: { children: 'None specified' } };
+	if (!gearString) return { type: "p", props: { children: "None specified" } };
 
-  const gearItems = gearString.split(',')
-    .map(item => item.trim())
-    .filter(Boolean);
+	const gearItems = gearString
+		.split(",")
+		.map((item) => item.trim())
+		.filter(Boolean);
 
-  return gearItems.length === 0
-    ? { type: 'p', props: { children: 'None specified' } }
-    : {
-        type: 'ul',
-        props: {
-          children: gearItems.map((item, index) => ({
-            type: 'li',
-            key: index,
-            props: { children: item }
-          }))
-        }
-      };
+	return gearItems.length === 0
+		? { type: "p", props: { children: "None specified" } }
+		: {
+				type: "ul",
+				props: {
+					children: gearItems.map((item, index) => ({
+						type: "li",
+						key: index,
+						props: { children: item },
+					})),
+				},
+			};
 };
 
 /**
@@ -97,16 +96,18 @@ export const formatGearList = (gearString?: string | null) => {
  * @returns Cleaned string with preserved structure
  */
 export const cleanTackle = (tackleRequired: string): string => {
-  return tackleRequired
-    // Replace paragraph tags with newlines
-    .replace(/\n/g, '')
-    .replace(/<p>/g, '')
-    .replace(/<\/p>/g, '\n')
-    // Replace <br /> tags with newlines
-    .replace(/<br\s*\/?>/g, '\n')
-    // Remove any other HTML tags
-    .replace(/<[^>]*>/g, '\n')
-    // Trim extra whitespace
-    .replace(/\n{3,}/g, '')
-    .trim();
+	return (
+		tackleRequired
+			// Replace paragraph tags with newlines
+			.replace(/\n/g, "")
+			.replace(/<p>/g, "")
+			.replace(/<\/p>/g, "\n")
+			// Replace <br /> tags with newlines
+			.replace(/<br\s*\/?>/g, "\n")
+			// Remove any other HTML tags
+			.replace(/<[^>]*>/g, "\n")
+			// Trim extra whitespace
+			.replace(/\n{3,}/g, "")
+			.trim()
+	);
 };
