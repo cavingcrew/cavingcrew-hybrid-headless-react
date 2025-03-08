@@ -31,7 +31,8 @@ const determineSignupStatus = (participant: TripParticipant): string => {
         'noshow': 'No Show',
         'cancelled': 'Cancelled',
         'latebail': 'Late Bail',
-        'no-register-show': 'Attended Without Signup'
+        'no-register-show': 'Attended Without Signup',
+        'noregistershow': 'Attended Without Signup'
     };
 
     // Check predefined statuses first
@@ -56,10 +57,10 @@ const getStatusColor = (status: string): string => {
         'Late Bail': 'orange',
         'Signed Up': 'blue',
         'Attended Without Signup': 'teal',
-        'default': 'yellow'
+        'Other': 'yellow'
     };
 
-    return colorMap[status] || colorMap['default'];
+    return colorMap[status] || 'yellow';
 };
 
 const isFirstTimeCaver = (participant: TripParticipant): boolean => {
@@ -91,6 +92,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
     const [activeTab, setActiveTab] = useState<string | null>('cavers');
     const [emergencyModalOpen, setEmergencyModalOpen] = useState(false);
     const [selectedParticipant, setSelectedParticipant] = useState<TripParticipant | null>(null);
+    const [confirmEmergencyAccess, setConfirmEmergencyAccess] = useState(false);
 
     // Fetch trip participants data
     const { data, isLoading, error } = useTripParticipants(trip.id);
@@ -128,6 +130,18 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
             </Paper>
         );
     }
+
+    // Function to open emergency info modal with confirmation
+    const openEmergencyInfo = (participant: TripParticipant) => {
+        setSelectedParticipant(participant);
+        setConfirmEmergencyAccess(true);
+    };
+
+    // Function to confirm and show emergency info
+    const confirmAndShowEmergencyInfo = () => {
+        setConfirmEmergencyAccess(false);
+        setEmergencyModalOpen(true);
+    };
 
     // Render different views based on access level
     const renderAccessLevelView = () => {
@@ -300,7 +314,6 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                             </Table>
                         </Tabs.Panel>
 
-                        {/* Additional tabs would be rendered here, maintaining the original implementation */}
                         <Tabs.Panel value="skills" pt="xs">
                             <Table striped>
                                 <Table.Thead>
@@ -336,105 +349,374 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                             </Table>
                         </Tabs.Panel>
 
-                        {/* Rest of the tabs would follow the same pattern as original implementation */}
+                        <Tabs.Panel value="equipment" pt="xs">
+                            <Table striped>
+                                <Table.Thead>
+                                    <Table.Tr>
+                                        <Table.Th>Name</Table.Th>
+                                        <Table.Th>Wellies Size</Table.Th>
+                                        <Table.Th>Gear Bringing</Table.Th>
+                                        <Table.Th>Walking Equipment</Table.Th>
+                                        <Table.Th>Rope Length</Table.Th>
+                                    </Table.Tr>
+                                </Table.Thead>
+                                <Table.Tbody>
+                                    {participants.map((participant) => (
+                                        <Table.Tr key={participant.order_id}>
+                                            <Table.Td>{participant.first_name} {participant.last_name}</Table.Td>
+                                            <Table.Td>{participant.meta?.['gear_wellies_size'] || 'Not specified'}</Table.Td>
+                                            <Table.Td>
+                                                {formatGearList(participant.meta?.['gear-bringing-evening-or-day-trip'])}
+                                            </Table.Td>
+                                            <Table.Td>{participant.meta?.['gear-walking-equipment-weekend'] || 'Not specified'}</Table.Td>
+                                            <Table.Td>{participant.meta?.['gear-rope-length'] || 'Not specified'}</Table.Td>
+                                        </Table.Tr>
+                                    ))}
+                                </Table.Tbody>
+                            </Table>
+                        </Tabs.Panel>
+
+                        <Tabs.Panel value="dietary" pt="xs">
+                            <Table striped>
+                                <Table.Thead>
+                                    <Table.Tr>
+                                        <Table.Th>Name</Table.Th>
+                                        <Table.Th>Dietary Requirements</Table.Th>
+                                    </Table.Tr>
+                                </Table.Thead>
+                                <Table.Tbody>
+                                    {participants.map((participant) => (
+                                        <Table.Tr key={participant.order_id}>
+                                            <Table.Td>{participant.first_name} {participant.last_name}</Table.Td>
+                                            <Table.Td>{participant.meta?.['admin-dietary-requirements'] || 'None specified'}</Table.Td>
+                                        </Table.Tr>
+                                    ))}
+                                </Table.Tbody>
+                            </Table>
+                        </Tabs.Panel>
+
+                        <Tabs.Panel value="transport" pt="xs">
+                            <Table striped>
+                                <Table.Thead>
+                                    <Table.Tr>
+                                        <Table.Th>Name</Table.Th>
+                                        <Table.Th>Needs Lift</Table.Th>
+                                        <Table.Th>Giving Lift</Table.Th>
+                                        <Table.Th>Departure Time</Table.Th>
+                                        <Table.Th>Leaving From</Table.Th>
+                                    </Table.Tr>
+                                </Table.Thead>
+                                <Table.Tbody>
+                                    {participants.map((participant) => (
+                                        <Table.Tr key={participant.order_id}>
+                                            <Table.Td>{participant.first_name} {participant.last_name}</Table.Td>
+                                            <Table.Td>
+                                                {participant.meta?.['transport-need-lift'] === 'yes' ? (
+                                                    <Badge color="red">Needs Lift</Badge>
+                                                ) : 'No'}
+                                            </Table.Td>
+                                            <Table.Td>
+                                                {participant.meta?.['transport-will-you-give-lift'] === 'yes' ? (
+                                                    <Badge color="green">Giving Lift</Badge>
+                                                ) : 'No'}
+                                            </Table.Td>
+                                            <Table.Td>{participant.meta?.['transport-depature-time'] || 'Not specified'}</Table.Td>
+                                            <Table.Td>{participant.meta?.['transport-leaving-location'] || 'Not specified'}</Table.Td>
+                                        </Table.Tr>
+                                    ))}
+                                </Table.Tbody>
+                            </Table>
+                        </Tabs.Panel>
+
+                        <Tabs.Panel value="health" pt="xs">
+                            <Table striped>
+                                <Table.Thead>
+                                    <Table.Tr>
+                                        <Table.Th>Name</Table.Th>
+                                        <Table.Th>Health Information</Table.Th>
+                                        <Table.Th>Health Flags</Table.Th>
+                                    </Table.Tr>
+                                </Table.Thead>
+                                <Table.Tbody>
+                                    {participants.map((participant) => (
+                                        <Table.Tr key={participant.order_id}>
+                                            <Table.Td>{participant.first_name} {participant.last_name}</Table.Td>
+                                            <Table.Td>{participant.admin_meta?.['admin-diet-allergies-health-extra-info'] || 'None provided'}</Table.Td>
+                                            <Table.Td>
+                                                <Stack gap="xs">
+                                                    {participant.admin_meta?.['admin-health-shoulder'] === 'yes' && (
+                                                        <Badge color="red" variant="light">Shoulder Issues</Badge>
+                                                    )}
+                                                    {participant.admin_meta?.['admin-health-asthma'] === 'yes' && (
+                                                        <Badge color="red" variant="light">Asthma</Badge>
+                                                    )}
+                                                    {participant.admin_meta?.['admin-health-missing-dose'] === 'yes' && (
+                                                        <Badge color="red" variant="light">Critical Medication</Badge>
+                                                    )}
+                                                    {participant.admin_meta?.['admin-health-impairment-through-medication'] === 'yes' && (
+                                                        <Badge color="red" variant="light">Medication Impairment</Badge>
+                                                    )}
+                                                </Stack>
+                                            </Table.Td>
+                                        </Table.Tr>
+                                    ))}
+                                </Table.Tbody>
+                            </Table>
+                        </Tabs.Panel>
+
+                        <Tabs.Panel value="roles" pt="xs">
+                            <Table striped>
+                                <Table.Thead>
+                                    <Table.Tr>
+                                        <Table.Th>Name</Table.Th>
+                                        <Table.Th>Trip Role</Table.Th>
+                                        <Table.Th>Attendance Status</Table.Th>
+                                    </Table.Tr>
+                                </Table.Thead>
+                                <Table.Tbody>
+                                    {participants.map((participant) => (
+                                        <Table.Tr key={participant.order_id}>
+                                            <Table.Td>{participant.first_name} {participant.last_name}</Table.Td>
+                                            <Table.Td>
+                                                {participant.order_meta?.cc_volunteer && 
+                                                participant.order_meta.cc_volunteer !== 'none' ? (
+                                                    <Badge color="green">{participant.order_meta.cc_volunteer}</Badge>
+                                                ) : 'None'}
+                                            </Table.Td>
+                                            <Table.Td>
+                                                <Badge color={getStatusColor(determineSignupStatus(participant))}>
+                                                    {determineSignupStatus(participant)}
+                                                </Badge>
+                                            </Table.Td>
+                                        </Table.Tr>
+                                    ))}
+                                </Table.Tbody>
+                            </Table>
+                        </Tabs.Panel>
+
+                        <Tabs.Panel value="stats" pt="xs">
+                            <Table striped>
+                                <Table.Thead>
+                                    <Table.Tr>
+                                        <Table.Th>Name</Table.Th>
+                                        <Table.Th>Trips Attended</Table.Th>
+                                        <Table.Th>Last Caving Date</Table.Th>
+                                        <Table.Th>Volunteer Score</Table.Th>
+                                        <Table.Th>Reliability Score</Table.Th>
+                                    </Table.Tr>
+                                </Table.Thead>
+                                <Table.Tbody>
+                                    {participants.map((participant) => (
+                                        <Table.Tr key={participant.order_id}>
+                                            <Table.Td>{participant.first_name} {participant.last_name}</Table.Td>
+                                            <Table.Td>{participant.meta?.['stats_attendance_attended_cached'] || '0'}</Table.Td>
+                                            <Table.Td>{participant.meta?.['cc_compliance_last_date_of_caving'] || 'Unknown'}</Table.Td>
+                                            <Table.Td>
+                                                {participant.meta?.['scores_volunteer_score_cached'] ? (
+                                                    <Badge 
+                                                        color={
+                                                            parseFloat(participant.meta['scores_volunteer_score_cached']) > 0.7 ? 'green' : 
+                                                            parseFloat(participant.meta['scores_volunteer_score_cached']) > 0.4 ? 'yellow' : 'red'
+                                                        }
+                                                    >
+                                                        {participant.meta['scores_volunteer_score_cached']}
+                                                    </Badge>
+                                                ) : 'N/A'}
+                                            </Table.Td>
+                                            <Table.Td>
+                                                {participant.meta?.['scores_attendance_reliability_score_cached'] ? (
+                                                    <Badge 
+                                                        color={
+                                                            parseFloat(participant.meta['scores_attendance_reliability_score_cached']) > 0.7 ? 'green' : 
+                                                            parseFloat(participant.meta['scores_attendance_reliability_score_cached']) > 0.4 ? 'yellow' : 'red'
+                                                        }
+                                                    >
+                                                        {participant.meta['scores_attendance_reliability_score_cached']}
+                                                    </Badge>
+                                                ) : 'N/A'}
+                                            </Table.Td>
+                                        </Table.Tr>
+                                    ))}
+                                </Table.Tbody>
+                            </Table>
+                        </Tabs.Panel>
+
+                        <Tabs.Panel value="emergency" pt="xs">
+                            <Alert 
+                                icon={<IconAlertTriangle size={16} />} 
+                                color="red" 
+                                title="Confidential Information" 
+                                mb="md"
+                            >
+                                This information is for emergency use by authorized people only. Access is logged.
+                            </Alert>
+                            <Table striped>
+                                <Table.Thead>
+                                    <Table.Tr>
+                                        <Table.Th>Name</Table.Th>
+                                        <Table.Th>Actions</Table.Th>
+                                    </Table.Tr>
+                                </Table.Thead>
+                                <Table.Tbody>
+                                    {participants.map((participant) => (
+                                        <Table.Tr key={participant.order_id}>
+                                            <Table.Td>{participant.first_name} {participant.last_name}</Table.Td>
+                                            <Table.Td>
+                                                <Button 
+                                                    variant="outline" 
+                                                    color="red" 
+                                                    size="xs"
+                                                    leftSection={<IconShield size={14} />}
+                                                    onClick={() => openEmergencyInfo(participant)}
+                                                >
+                                                    View Emergency Info
+                                                </Button>
+                                            </Table.Td>
+                                        </Table.Tr>
+                                    ))}
+                                </Table.Tbody>
+                            </Table>
+                        </Tabs.Panel>
                     </Tabs>
 
-          {/* Emergency Information Modal */}
-          <Modal
-            opened={emergencyModalOpen}
-            onClose={() => setEmergencyModalOpen(false)}
-            title={
-              <Title order={4}>
-                Emergency Information - {selectedParticipant?.first_name} {selectedParticipant?.last_name}
-              </Title>
-            }
-            size="lg"
-          >
-            <Alert 
-              icon={<IconAlertTriangle size={16} />} 
-              color="red" 
-              title="Confidential Information" 
-              mb="md"
-            >
-              This is for emergency use by authorized people only - not just to be nosy. Access is logged.
-            </Alert>
-            
-            {selectedParticipant && (
-              <Stack>
-                <Group>
-                  <Text fw={700}>Full Name:</Text>
-                  <Text>{selectedParticipant.first_name} {selectedParticipant.last_name}</Text>
-                </Group>
-                
-                <Group>
-                  <Text fw={700}>Phone Number:</Text>
-                  <Text>{selectedParticipant.admin_meta?.['admin-phone-number'] || selectedParticipant.admin_meta?.['billing_phone'] || 'Not provided'}</Text>
-                </Group>
-                
-                <Group align="flex-start">
-                  <Text fw={700}>Emergency Contact:</Text>
-                  <Box>
-                    <Text>{selectedParticipant.admin_meta?.['admin-emergency-contact-name'] || 'Not provided'}</Text>
-                    <Text>{selectedParticipant.admin_meta?.['admin-emergency-contact-phone'] || 'No phone provided'}</Text>
-                    <Text>{selectedParticipant.admin_meta?.['admin-emergency-contact-relationship'] || 'Relationship not specified'}</Text>
-                  </Box>
-                </Group>
-                
-                <Group align="flex-start">
-                  <Text fw={700}>Address:</Text>
-                  <Box>
-                    <Text>{selectedParticipant.admin_meta?.['billing_address_1'] || 'Not provided'}</Text>
-                    {selectedParticipant.admin_meta?.['billing_address_2'] && (
-                      <Text>{selectedParticipant.admin_meta?.['billing_address_2']}</Text>
-                    )}
-                    <Text>
-                      {[
-                        selectedParticipant.admin_meta?.['billing_city'],
-                        selectedParticipant.admin_meta?.['billing_postcode']
-                      ].filter(Boolean).join(', ')}
-                    </Text>
-                  </Box>
-                </Group>
-                
-                <Group>
-                  <Text fw={700}>Date of Birth:</Text>
-                  <Text>{selectedParticipant.admin_meta?.['admin-date-of-birth'] || 'Not provided'}</Text>
-                </Group>
-                
-                <Group>
-                  <Text fw={700}>Car Registration:</Text>
-                  <Text>{selectedParticipant.admin_meta?.['admin-car-registration'] || 'Not provided'}</Text>
-                </Group>
-                
-                <Group align="flex-start">
-                  <Text fw={700}>Health Information:</Text>
-                  <Box>
-                    <Text>{selectedParticipant.admin_meta?.['admin-diet-allergies-health-extra-info'] || 'None provided'}</Text>
-                    {selectedParticipant.admin_meta?.['admin-health-shoulder'] && (
-                      <Text c="red">Has shoulder issues</Text>
-                    )}
-                    {selectedParticipant.admin_meta?.['admin-health-asthma'] && (
-                      <Text c="red">Has asthma</Text>
-                    )}
-                    {selectedParticipant.admin_meta?.['admin-health-missing-dose'] && (
-                      <Text c="red">Has medication that would be problematic if missed</Text>
-                    )}
-                    {selectedParticipant.admin_meta?.['admin-health-impairment-through-medication'] && (
-                      <Text c="red">Takes medication that may cause impairment</Text>
-                    )}
-                  </Box>
-                </Group>
-                
-                <Group justify="center" mt="md">
-                  <Button onClick={() => setEmergencyModalOpen(false)}>Close</Button>
-                </Group>
-              </Stack>
+                    {/* Emergency Access Confirmation Modal */}
+                    <Modal
+                        opened={confirmEmergencyAccess}
+                        onClose={() => setConfirmEmergencyAccess(false)}
+                        title={
+                            <Title order={4} color="red">
+                                Emergency Information Access
+                            </Title>
+                        }
+                        size="md"
+                    >
+                        <Alert 
+                            icon={<IconAlertTriangle size={16} />} 
+                            color="red" 
+                            title="Confidential Information" 
+                            mb="md"
+                        >
+                            This is for emergency use by authorized people only - not just to be nosy. Access is logged.
+                        </Alert>
+                        
+                        <Text mb="md">
+                            Are you sure you need to access this confidential emergency information?
+                        </Text>
+                        
+                        <Group justify="center" mt="xl">
+                            <Button 
+                                variant="outline" 
+                                onClick={() => setConfirmEmergencyAccess(false)}
+                            >
+                                Cancel
+                            </Button>
+                            <Button 
+                                color="red" 
+                                onClick={confirmAndShowEmergencyInfo}
+                            >
+                                Yes, I need this information
+                            </Button>
+                        </Group>
+                    </Modal>
+
+                    {/* Emergency Information Modal */}
+                    <Modal
+                        opened={emergencyModalOpen}
+                        onClose={() => setEmergencyModalOpen(false)}
+                        title={
+                            <Title order={4}>
+                                Emergency Information - {selectedParticipant?.first_name} {selectedParticipant?.last_name}
+                            </Title>
+                        }
+                        size="lg"
+                    >
+                        <Alert 
+                            icon={<IconAlertTriangle size={16} />} 
+                            color="red" 
+                            title="Confidential Information" 
+                            mb="md"
+                        >
+                            This is for emergency use by authorized people only - not just to be nosy. Access is logged.
+                        </Alert>
+                        
+                        {selectedParticipant && (
+                            <Stack>
+                                <Group>
+                                    <Text fw={700}>Full Name:</Text>
+                                    <Text>{selectedParticipant.first_name} {selectedParticipant.last_name}</Text>
+                                </Group>
+                                
+                                <Group>
+                                    <Text fw={700}>Phone Number:</Text>
+                                    <Text>{selectedParticipant.admin_meta?.['admin-phone-number'] || selectedParticipant.admin_meta?.['billing_phone'] || 'Not provided'}</Text>
+                                </Group>
+                                
+                                <Group align="flex-start">
+                                    <Text fw={700}>Emergency Contact:</Text>
+                                    <Box>
+                                        <Text>{selectedParticipant.admin_meta?.['admin-emergency-contact-name'] || 'Not provided'}</Text>
+                                        <Text>{selectedParticipant.admin_meta?.['admin-emergency-contact-phone'] || 'No phone provided'}</Text>
+                                        <Text>{selectedParticipant.admin_meta?.['admin-emergency-contact-relationship'] || 'Relationship not specified'}</Text>
+                                    </Box>
+                                </Group>
+                                
+                                <Group align="flex-start">
+                                    <Text fw={700}>Address:</Text>
+                                    <Box>
+                                        <Text>{selectedParticipant.admin_meta?.['billing_address_1'] || 'Not provided'}</Text>
+                                        {selectedParticipant.admin_meta?.['billing_address_2'] && (
+                                            <Text>{selectedParticipant.admin_meta?.['billing_address_2']}</Text>
+                                        )}
+                                        <Text>
+                                            {[
+                                                selectedParticipant.admin_meta?.['billing_city'],
+                                                selectedParticipant.admin_meta?.['billing_postcode']
+                                            ].filter(Boolean).join(', ')}
+                                        </Text>
+                                    </Box>
+                                </Group>
+                                
+                                <Group>
+                                    <Text fw={700}>Date of Birth:</Text>
+                                    <Text>{selectedParticipant.admin_meta?.['admin-date-of-birth'] || 'Not provided'}</Text>
+                                </Group>
+                                
+                                <Group>
+                                    <Text fw={700}>Car Registration:</Text>
+                                    <Text>{selectedParticipant.admin_meta?.['admin-car-registration'] || 'Not provided'}</Text>
+                                </Group>
+                                
+                                <Group align="flex-start">
+                                    <Text fw={700}>Health Information:</Text>
+                                    <Box>
+                                        <Text>{selectedParticipant.admin_meta?.['admin-diet-allergies-health-extra-info'] || 'None provided'}</Text>
+                                        {selectedParticipant.admin_meta?.['admin-health-shoulder'] === 'yes' && (
+                                            <Text c="red">Has shoulder issues</Text>
+                                        )}
+                                        {selectedParticipant.admin_meta?.['admin-health-asthma'] === 'yes' && (
+                                            <Text c="red">Has asthma</Text>
+                                        )}
+                                        {selectedParticipant.admin_meta?.['admin-health-missing-dose'] === 'yes' && (
+                                            <Text c="red">Has medication that would be problematic if missed</Text>
+                                        )}
+                                        {selectedParticipant.admin_meta?.['admin-health-impairment-through-medication'] === 'yes' && (
+                                            <Text c="red">Takes medication that may cause impairment</Text>
+                                        )}
+                                    </Box>
+                                </Group>
+                                
+                                <Group justify="center" mt="md">
+                                    <Button onClick={() => setEmergencyModalOpen(false)}>Close</Button>
+                                </Group>
+                            </Stack>
+                        )}
+                    </Modal>
+                </>
             )}
-          </Modal>
-        </>
-      )}
-    </Paper>
-  );
+        </Paper>
+    );
+
+    return renderAccessLevelView();
 }
 
 
