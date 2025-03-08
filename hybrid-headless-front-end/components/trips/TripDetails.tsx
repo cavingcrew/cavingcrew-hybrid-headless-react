@@ -314,12 +314,16 @@ export function TripDetails({ trip }: TripDetailsProps) {
                 )}
 
                 {/* Gear Required */}
-                {acf?.event_gear_required && acf.event_gear_required !== 'None' && (
+                {(trip.route?.acf?.route_personal_gear_required || (acf?.event_gear_required && acf.event_gear_required !== 'None')) && (
                   <Group gap="xs">
                     <IconTools size={20} />
                     <div>
                       <Text fw={500}>Required Gear:</Text>
-                      <Text>{acf.event_gear_required}</Text>
+                      <Text>
+                        {trip.route?.acf?.route_personal_gear_required 
+                          ? trip.route.acf.route_personal_gear_required.replace(/<[^>]*>/g, '').trim()
+                          : acf.event_gear_required}
+                      </Text>
                     </div>
                   </Group>
                 )}
@@ -415,9 +419,15 @@ export function TripDetails({ trip }: TripDetailsProps) {
               )}
 
               {/* Gear Requirements Clarification */}
-              {acf?.event_gear_required && acf.event_gear_required !== 'None' && (
+              {(trip.route?.acf?.route_personal_gear_required || (acf?.event_gear_required && acf.event_gear_required !== 'None')) && (
                 <Alert color="blue" mt="md" variant="light" icon={<IconTools size={18} />}>
                   {(() => {
+                    // If we have route-specific gear requirements, use those
+                    if (trip.route?.acf?.route_personal_gear_required) {
+                      return `You'll need: ${trip.route.acf.route_personal_gear_required.replace(/<[^>]*>/g, '').trim()}`;
+                    }
+                    
+                    // Otherwise fall back to the event gear required
                     switch(acf.event_gear_required) {
                       case 'Horizontal Caving Gear':
                         return "You'll need your own personal caving gear (helmet, light, caving suit, wellies)";

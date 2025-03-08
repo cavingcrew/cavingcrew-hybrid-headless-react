@@ -347,21 +347,33 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
             const gearBringing = participant.meta?.['gear-bringing-evening-or-day-trip'] || '';
             const welliesSize = participant.meta?.gear_wellies_size || '';
 
-            // List of standard gear items
-            const standardGear = [
-                'Oversuit',
-                'Undersuit',
-                'Helmet and Light',
-                'Kneepads',
-                'Gloves',
-                'Wellies'
-            ];
-
-            // Add SRT Kit if required for this trip
-            if (requiresSRT) {
-                standardGear.push('SRT Kit');
-                if (!gearBringing.includes('SRT Kit') && !gearBringing.includes('Harness and Cowstails')) {
-                    standardGear.push('Harness and Cowstails');
+            // Get required gear from route if available, otherwise use standard list
+            let standardGear: string[] = [];
+            
+            if (routePersonalGear) {
+                // Parse from route_personal_gear_required
+                standardGear = routePersonalGear
+                    .replace(/<[^>]*>/g, '')
+                    .split(/[,;]/)
+                    .map(item => item.trim())
+                    .filter(Boolean);
+            } else {
+                // Default standard gear
+                standardGear = [
+                    'Oversuit',
+                    'Undersuit',
+                    'Helmet and Light',
+                    'Kneepads',
+                    'Gloves',
+                    'Wellies'
+                ];
+                
+                // Add SRT Kit if required for this trip
+                if (requiresSRT) {
+                    standardGear.push('SRT Kit');
+                    if (!gearBringing.includes('SRT Kit') && !gearBringing.includes('Harness and Cowstails')) {
+                        standardGear.push('Harness and Cowstails');
+                    }
                 }
             }
 
@@ -704,7 +716,11 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                         <Tabs.Panel value="equipment" pt="xs">
                             <Group justify="space-between" mb="md">
                                 <Badge color="blue" variant="light">
-                                    Required gear for this trip: {trip.acf.event_gear_required || 'None specified'}
+                                    Required gear for this trip: {
+                                        trip.route?.acf?.route_personal_gear_required 
+                                            ? trip.route.acf.route_personal_gear_required.replace(/<[^>]*>/g, '').trim()
+                                            : trip.acf.event_gear_required || 'None specified'
+                                    }
                                 </Badge>
                                 <Button
                                     leftSection={<IconMessage size={16} />}
@@ -751,21 +767,33 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                         // Get route personal gear requirements
                                         const routePersonalGear = trip.route?.acf?.route_personal_gear_required || '';
 
-                                        // Standard gear requirements
-                                        const standardGear = [
-                                            'Oversuit',
-                                            'Undersuit',
-                                            'Helmet and Light',
-                                            'Kneepads',
-                                            'Gloves',
-                                            'Wellies'
-                                        ];
-
-                                        // Add SRT Kit if required for this trip
-                                        if (requiresSRT) {
-                                            standardGear.push('SRT Kit');
-                                            if (!gearBringing.includes('SRT Kit') && !gearBringing.includes('Harness and Cowstails')) {
-                                                standardGear.push('Harness and Cowstails');
+                                        // Get required gear from route if available, otherwise use standard list
+                                        let standardGear: string[] = [];
+                                        
+                                        if (routePersonalGear) {
+                                            // Parse from route_personal_gear_required
+                                            standardGear = routePersonalGear
+                                                .replace(/<[^>]*>/g, '')
+                                                .split(/[,;]/)
+                                                .map(item => item.trim())
+                                                .filter(Boolean);
+                                        } else {
+                                            // Default standard gear
+                                            standardGear = [
+                                                'Oversuit',
+                                                'Undersuit',
+                                                'Helmet and Light',
+                                                'Kneepads',
+                                                'Gloves',
+                                                'Wellies'
+                                            ];
+                                            
+                                            // Add SRT Kit if required for this trip
+                                            if (requiresSRT) {
+                                                standardGear.push('SRT Kit');
+                                                if (!gearBringing.includes('SRT Kit') && !gearBringing.includes('Harness and Cowstails')) {
+                                                    standardGear.push('Harness and Cowstails');
+                                                }
                                             }
                                         }
 
