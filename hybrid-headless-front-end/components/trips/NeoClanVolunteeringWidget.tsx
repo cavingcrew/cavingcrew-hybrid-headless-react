@@ -14,9 +14,9 @@ import {
 } from '@tabler/icons-react';
 
 // Import custom hooks and types
-import { useTripParticipants } from '@/lib/hooks/useTripParticipants';
-import { useUser } from '@/lib/hooks/useUser';
-import type { Trip, TripParticipant } from '@/types/api';
+import { useTripParticipants } from '../../lib/hooks/useTripParticipants';
+import { useUser } from '../../lib/hooks/useUser';
+import type { Trip, TripParticipant } from '../../types/api';
 
 // Define props interface for the component
 interface NeoClanVolunteeringWidgetProps {
@@ -905,10 +905,13 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                     </Alert>
                                 )}
                                 
-                                {participants.some(p => 
-                                    missingGear.length > 0 && !p.meta?.gear_wellies_size && 
-                                    missingGear.some(g => g.includes('Wellies'))
-                                ) && (
+                                {participants.some(p => {
+                                    // Check if this participant needs wellies but hasn't specified size
+                                    const gearBringing = p.meta?.['gear-bringing-evening-or-day-trip'] || '';
+                                    const hasWelliesSize = !!p.meta?.gear_wellies_size;
+                                    const needsWellies = !gearBringing.includes('Wellies');
+                                    return needsWellies && !hasWelliesSize;
+                                }) && (
                                     <Alert icon={<IconInfoCircle size={16} />} color="orange" mt="md">
                                         Some people need wellies but haven't specified their size. Please check with them.
                                     </Alert>
