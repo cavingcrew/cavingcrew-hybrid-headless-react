@@ -316,9 +316,6 @@ export const generateTackleRequestText = (trip: any, participants: any[]): strin
     requestTemplate += `\nI'll find out the wellie sizes for: ${participantsNeedingWellieSize.join(', ')}\n`;
   }
 
-  // Type the standardGear array
-  standardGear = standardGear as string[];
-
   // Add group equipment section
   requestTemplate += '\nThe Group equipment we need is:\n';
 

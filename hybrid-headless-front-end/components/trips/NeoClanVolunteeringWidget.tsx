@@ -398,9 +398,9 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                         );
 
                                         // Determine required gear based on trip type
-                                        const requiresSRT = trip.acf.event_gear_required?.includes('SRT') ||
-                                                          trip.acf.event_skills_required?.includes('SRT') ||
-                                                          trip.route?.acf?.route_personal_gear_required?.includes('SRT');
+                                        const requiresSRT = trip.acf.event_gear_required?.indexOf('SRT') !== -1 ||
+                                                          trip.acf.event_skills_required?.indexOf('SRT') !== -1 ||
+                                                          trip.route?.acf?.route_personal_gear_required?.indexOf('SRT') !== -1;
 
                                         // Get route personal gear requirements
                                         const routePersonalGear = trip.route?.acf?.route_personal_gear_required || '';
