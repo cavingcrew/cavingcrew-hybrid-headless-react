@@ -59,7 +59,7 @@ export interface TripParticipant {
 		"gear-bringing-evening-or-day-trip"?: string;
 		gear_wellies_size?: string;
 		"skills-horizontal"?: string;
-		"skills-srt"?: string;
+		"skills-srt"?: "No-SRT" | "Pre-SRT Basic" | "SRT Basic" | "Pre-SRT Intermediate" | "SRT Intermediate" | "SRT Advanced" | null | undefined;
 		"skills-leading-horizontal"?: string;
 		"skills-leading-srt"?: string;
 		"skills-leading-coaching"?: string;
