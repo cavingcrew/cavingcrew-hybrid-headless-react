@@ -34,6 +34,7 @@ import {
     generateCalloutText,
     generateTackleRequestText
 } from '../../utils/trip-admin-utils';
+import { formatRelativeTime } from '../../utils/date-utils';
 
 // Main component with improved structure and comments
 export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetProps) {
@@ -856,7 +857,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                         <Table.Tr key={participant.order_id}>
                                             <Table.Td>{participant.first_name} {participant.last_name}</Table.Td>
                                             <Table.Td>{participant.meta?.['stats_attendance_attended_cached'] || '0'}</Table.Td>
-                                            <Table.Td>{participant.meta?.['cc_compliance_last_date_of_caving'] || 'Unknown'}</Table.Td>
+                                            <Table.Td>{formatRelativeTime(participant.meta?.['cc_compliance_last_date_of_caving'])}</Table.Td>
                                             <Table.Td>
                                                 {participant.meta?.['scores_volunteer_score_cached'] ? (
                                                     <Badge
