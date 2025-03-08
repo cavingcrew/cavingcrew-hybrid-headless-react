@@ -15,6 +15,7 @@ import {
 
 // Import custom hooks and types
 import { useTripParticipants } from '@/lib/hooks/useTripParticipants';
+import { useUser } from '@/lib/hooks/useUser';
 import type { Trip, TripParticipant } from '@/types/api';
 
 // Define props interface for the component
