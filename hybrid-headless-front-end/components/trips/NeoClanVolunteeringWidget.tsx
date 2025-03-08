@@ -1332,6 +1332,11 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                             minRows={10}
                             autosize
                             mb="md"
+                            styles={{
+                                input: {
+                                    whiteSpace: 'pre-line'
+                                }
+                            }}
                         />
 
                         <Group justify="space-between" mt="md">
@@ -1373,7 +1378,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                         </Alert>
 
                         <Text fw={500} mb="xs">Required Gear:</Text>
-                        <Text mb="md">
+                        <Text mb="md" style={{ whiteSpace: 'pre-line' }}>
                             {trip.acf.event_gear_required ? 
                                 typeof trip.acf.event_gear_required === 'string' ? 
                                     trip.acf.event_gear_required.replace(/<br\s*\/?>/gi, '\n').replace(/<\/?p>/gi, '\n') : 
@@ -1387,6 +1392,11 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                             minRows={10}
                             autosize
                             mb="md"
+                            styles={{
+                                input: {
+                                    whiteSpace: 'pre-line'
+                                }
+                            }}
                         />
 
                         <Group justify="space-between" mt="md">
