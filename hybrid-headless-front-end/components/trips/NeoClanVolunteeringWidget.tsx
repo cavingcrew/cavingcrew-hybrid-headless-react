@@ -266,12 +266,14 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
         }
         
         if (participantNames) {
-            calloutTemplate += `People: ${participantNames} (${participantCount})\n`;
+            calloutTemplate += `${participantCount} People: ${participantNames}\n`;
         }
         
         const parkingLocation = getParkingLocation();
         if (parkingLocation) {
-            calloutTemplate += `Parked at: ${parkingLocation}\n`;
+            // Trim lat/long to 5 decimal places (approx 1 meter accuracy)
+            const trimmedLocation = parkingLocation.replace(/(-?\d+\.\d{5})\d*,(-?\d+\.\d{5})\d*/g, '$1,$2');
+            calloutTemplate += `Parked at: ${trimmedLocation}\n`;
             
             if (carRegistrations) {
                 calloutTemplate += `Car registrations: ${carRegistrations}\n`;
