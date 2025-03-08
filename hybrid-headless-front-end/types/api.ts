@@ -69,16 +69,58 @@ export interface TripParticipant {
 			| null
 			| undefined;
 		"skills-leading-horizontal"?: string;
-		"skills-leading-srt"?: string;
-		"skills-leading-coaching"?: string;
+		"skills-leading-srt"?: 
+			| "Nothing yet"
+			| "I can help derig"
+			| "I'm learning to rig"
+			| "srt leader basic"
+			| "srt leader advanced"
+			| null
+			| undefined
+			| string;
+		"skills-leading-coaching"?: 
+			| "no-skills"
+			| "I've helped out a bit and I'm learning"
+			| "I can use ground anchors and talk people through common manouveres"
+			| "I have significant personal skills and am good at teaching"
+			| null
+			| undefined
+			| string;
 		"caving-horizontal-happy-to-second-or-lead"?: string;
-		"caving-srt-happy-to-second-or-lead"?: string;
+		"caving-srt-happy-to-second-or-lead"?: 
+			| "leader"
+			| "seconder"
+			| "no"
+			| "n/a"
+			| null
+			| undefined
+			| string;
 		"transport-need-lift"?: "yes" | "no" | string;
 		"transport-will-you-give-lift"?: "yes" | "no" | string;
 		"transport-depature-time"?: string;
 		"transport-leaving-location"?: string;
 		"gear-rope-length"?: string;
-		"gear-walking-equipment-weekend"?: string;
+		"gear-walking-equipment-weekend"?: 
+			| "My boots"
+			| "Waterproof Jacket"
+			| "Waterproof Trousers"
+			| "Ice Axe"
+			| "Crampons"
+			| "Walkie-Talkies"
+			| "Navigation equipment"
+			| "Lots of warm clothes and gloves"
+			| "Im not planning on going walking"
+			| "A jetpack"
+			| "Can I borrow some"
+			| string;
+		"caving-srt-or-horizontal-preference"?:
+			| "No Preference"
+			| "SRT"
+			| "Horizontal"
+			| "Mostly Horizontal but small bits of SRT is fine"
+			| null
+			| undefined
+			| string;
 		"admin-dietary-requirements"?: string;
 		"admin-car-registration"?: string;
 		stats_attendance_attended_cached?: string;
