@@ -272,24 +272,24 @@ export const generateTackleRequestText = (trip: any, participants: any[]): strin
     const missingGear: string[] = [];
 
     // Parse individual items they're bringing
-    const bringingItems = gearBringing.split(',').map(item => item.trim());
+    const bringingItems = gearBringing.split(',').map((item: string) => item.trim());
 
     // Even if they selected "Nothing", check if they've also selected specific items
-    const isNewCaver = bringingItems.some(item =>
+    const isNewCaver = bringingItems.some((item: string) =>
       item.includes('Nothing') || item.includes('totally new')
     );
 
     // Check each standard gear item
-    standardGear.forEach(item => {
+    standardGear.forEach((item: string) => {
       // Special case for SRT Kit and Harness/Cowstails
-      if (item === 'Harness and Cowstails' && bringingItems.some(g =>
+      if (item === 'Harness and Cowstails' && bringingItems.some((g: string) =>
         g.includes('SRT Kit') || g.includes('Harness and Cowstails')
       )) {
         return; // They have this covered
       }
 
       // For all other items, check if they're bringing it
-      const hasBrought = bringingItems.some(g => g.includes(item));
+      const hasBrought = bringingItems.some((g: string) => g.includes(item));
 
       if (!hasBrought || (isNewCaver && item !== 'Wellies')) {
         if (item === 'Wellies') {
@@ -315,6 +315,9 @@ export const generateTackleRequestText = (trip: any, participants: any[]): strin
   if (participantsNeedingWellieSize.length > 0) {
     requestTemplate += `\nI'll find out the wellie sizes for: ${participantsNeedingWellieSize.join(', ')}\n`;
   }
+
+  // Type the standardGear array
+  standardGear = standardGear as string[];
 
   // Add group equipment section
   requestTemplate += '\nThe Group equipment we need is:\n';
