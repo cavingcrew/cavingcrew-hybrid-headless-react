@@ -291,66 +291,66 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
     const generateTackleRequestText = () => {
         // Get trip date and time
         const startDate = trip.acf.event_start_date_time ? new Date(trip.acf.event_start_date_time) : new Date();
-        
+
         // Format date and time
         const formattedDate = startDate.toLocaleDateString('en-GB', {
             weekday: 'long',
             day: 'numeric',
             month: 'long'
         });
-        
+
         const formattedTime = startDate.toLocaleTimeString('en-GB', {
             hour: '2-digit',
             minute: '2-digit'
         });
-        
+
         // Get location name
         const getLocationName = () => {
             if (trip.route?.acf?.route_entrance_location_id?.title) {
                 return trip.route.acf.route_entrance_location_id.title;
             }
-            
+
             return trip.acf.event_cave_name || trip.acf.event_location || 'the cave';
         };
-        
+
         // Get route name
         const routeName = trip.route?.acf?.route_name || trip.acf.event_possible_objectives || '';
-        
+
         // Get signed up participants
         const signedUpParticipants = participants.filter(p => {
             const status = determineSignupStatus(p);
             return status === 'Signed Up';
         });
-        
+
         // Build the tackle request text
         let requestTemplate = `On ${formattedDate} at ${formattedTime} we're going to ${getLocationName()}`;
-        
+
         if (routeName) {
             requestTemplate += ` to do ${routeName}`;
         }
-        
+
         requestTemplate += ':\n\n';
         requestTemplate += 'With help from NeoCrew, I think we\'ll need:\n';
-        
+
         // Process each participant's gear needs
         signedUpParticipants.forEach(participant => {
             const gearBringing = participant.meta?.['gear-bringing-evening-or-day-trip'] || '';
             const welliesSize = participant.meta?.gear_wellies_size || '';
-            
+
             // List of standard gear items
             const standardGear = [
-                'Oversuit', 
-                'Undersuit', 
-                'Helmet and Light', 
-                'Kneepads', 
-                'Gloves', 
-                'SRT Kit', 
+                'Oversuit',
+                'Undersuit',
+                'Helmet and Light',
+                'Kneepads',
+                'Gloves',
+                'SRT Kit',
                 'Wellies'
             ];
-            
+
             // Check what gear the participant is missing
             const missingGear = [];
-            
+
             // If they're totally new, they need everything
             if (gearBringing.includes('Nothing - Im totally new to this')) {
                 missingGear.push(...standardGear);
@@ -366,17 +366,16 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                     }
                 });
             }
-            
+
             // Only add participants who need gear
             if (missingGear.length > 0) {
                 requestTemplate += `${participant.first_name}: ${missingGear.join(', ')}\n`;
             }
         });
-        
+
         // Add group equipment section
-        requestTemplate += '\nThe group equipment we need is:\n';
-        requestTemplate += '- crew leaderbag\n';
-        
+        requestTemplate += '\nThe Group equipment we need is:\n';
+
         // Add route-specific equipment if available
         if (trip.route?.acf?.route_group_tackle_required) {
             const tackleRequired = trip.route.acf.route_group_tackle_required;
@@ -387,7 +386,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                 .split(/[,\n]/)
                 .map(item => item.trim())
                 .filter(Boolean);
-            
+
             // Add each tackle item
             tackleItems.forEach(item => {
                 requestTemplate += `- ${item}\n`;
@@ -398,7 +397,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
             requestTemplate += '- 3 carabiners\n';
             requestTemplate += '- extra tacklesack\n';
         }
-        
+
         return requestTemplate;
     };
 
@@ -485,10 +484,10 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
             <Group justify="space-between" mb="md">
                 <Title order={3}>Trip Management</Title>
                 <Badge color="blue" size="lg">Admin Access</Badge>
-                <Alert 
-                    color="blue" 
-                    variant="light" 
-                    title="Private Information" 
+                <Alert
+                    color="blue"
+                    variant="light"
+                    title="Private Information"
                     styles={{
                         root: {
                             marginTop: '0.5rem',
