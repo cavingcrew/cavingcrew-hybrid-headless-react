@@ -4,7 +4,8 @@ import type {
   Category,
   ApiResponse,
   ProductStockResponse,
-  UserResponse
+  UserResponse,
+  TripParticipantsResponse
 } from '../types/api';
 
 export const apiService = {
