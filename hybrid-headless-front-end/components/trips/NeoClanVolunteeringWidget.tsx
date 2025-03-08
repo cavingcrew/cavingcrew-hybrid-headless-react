@@ -1311,6 +1311,15 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                             Please review and edit this information before sharing. Ensure all details are accurate and up-to-date.
                         </Alert>
 
+                        <Text fw={500} mb="xs">Required Gear:</Text>
+                        <Text mb="md">
+                            {trip.acf.event_gear_required ? 
+                                typeof trip.acf.event_gear_required === 'string' ? 
+                                    trip.acf.event_gear_required.replace(/<br\s*\/?>/gi, '\n').replace(/<\/?p>/gi, '\n') : 
+                                    String(trip.acf.event_gear_required) : 
+                                'None specified'}
+                        </Text>
+
                         <Textarea
                             value={calloutText}
                             onChange={(e) => setCalloutText(e.currentTarget.value)}
@@ -1356,6 +1365,15 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                         >
                             This message summarizes the gear needed for your trip. Send it to the tackle manager to request equipment.
                         </Alert>
+
+                        <Text fw={500} mb="xs">Required Gear:</Text>
+                        <Text mb="md">
+                            {trip.acf.event_gear_required ? 
+                                typeof trip.acf.event_gear_required === 'string' ? 
+                                    trip.acf.event_gear_required.replace(/<br\s*\/?>/gi, '\n').replace(/<\/?p>/gi, '\n') : 
+                                    String(trip.acf.event_gear_required) : 
+                                'None specified'}
+                        </Text>
 
                         <Textarea
                             value={tackleRequestText}
