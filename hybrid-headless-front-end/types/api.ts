@@ -99,7 +99,14 @@ export interface TripParticipant {
 			| null
 			| undefined
 			| string;
-		"caving-horizontal-happy-to-second-or-lead"?: string;
+		"caving-horizontal-happy-to-second-or-lead"?: 
+			| "Leader"
+			| "Seconder"
+			| "No"
+			| "N/A"
+			| null
+			| undefined
+			| string;
 		"caving-srt-happy-to-second-or-lead"?:
 			| "leader"
 			| "seconder"
