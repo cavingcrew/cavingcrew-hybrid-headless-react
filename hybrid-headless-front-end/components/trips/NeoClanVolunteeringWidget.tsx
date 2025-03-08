@@ -3,12 +3,14 @@
 import React, { useState } from 'react';
 import {
     Paper, Title, Text, Group, Badge, Tabs, Table, Skeleton, Alert, 
-    Stack, Button, Modal, List, Anchor, Box, ThemeIcon
+    Stack, Button, Modal, List, Anchor, Box, ThemeIcon, Textarea,
+    CopyButton, ActionIcon, Tooltip
 } from '@mantine/core';
 import { 
     IconUsers, IconAlertCircle, IconInfoCircle, IconTools, 
     IconHeartHandshake, IconSchool, IconMedicalCross, IconShield,
-    IconChartBar, IconAlertTriangle, IconCheck, IconX
+    IconChartBar, IconAlertTriangle, IconCheck, IconX, IconCopy,
+    IconFileDescription
 } from '@tabler/icons-react';
 
 // Import custom hooks and types
@@ -93,6 +95,8 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
     const [emergencyModalOpen, setEmergencyModalOpen] = useState(false);
     const [selectedParticipant, setSelectedParticipant] = useState<TripParticipant | null>(null);
     const [confirmEmergencyAccess, setConfirmEmergencyAccess] = useState(false);
+    const [calloutModalOpen, setCalloutModalOpen] = useState(false);
+    const [calloutText, setCalloutText] = useState('');
 
     // Fetch trip participants data
     const { data, isLoading, error } = useTripParticipants(trip.id);
@@ -141,6 +145,119 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
     const confirmAndShowEmergencyInfo = () => {
         setConfirmEmergencyAccess(false);
         setEmergencyModalOpen(true);
+    };
+
+    // Function to generate callout text
+    const generateCalloutText = () => {
+        // Get current time
+        const now = new Date();
+        
+        // Calculate callout time (now + route duration * 0.25)
+        const routeDuration = trip.route?.acf?.route_time_for_eta ? 
+            parseInt(trip.route.acf.route_time_for_eta) : 4; // Default to 4 hours if not specified
+        const calloutTimeMs = now.getTime() + (routeDuration * 0.25 * 60 * 60 * 1000);
+        const calloutTime = new Date(calloutTimeMs);
+        
+        // Calculate ETA (callout time - 1 hour)
+        const etaTimeMs = calloutTimeMs - (60 * 60 * 1000);
+        const etaTime = new Date(etaTimeMs);
+        
+        // Format times
+        const formatTime = (date: Date) => {
+            return date.toLocaleTimeString('en-GB', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        };
+        
+        // Get cave and location information
+        const getLocationName = () => {
+            // For overnight trips, use the hut location
+            if (trip.acf.event_type === 'overnight') {
+                if (trip.hut?.hut_location?.post_title) {
+                    return trip.hut.hut_location.post_title;
+                }
+                return trip.acf.event_location || trip.acf.event_cave_name || '';
+            }
+            
+            // For other trips
+            if (trip.route?.acf?.route_entrance_location_id?.title) {
+                const locationTitle = trip.route.acf.route_entrance_location_id.title;
+                const parkingLatLong = trip.route?.acf?.route_entrance_location_id?.acf?.location_parking_latlong;
+                let city = '';
+                
+                // Check if parkingLatLong is an object with city property
+                if (parkingLatLong && typeof parkingLatLong === 'object' && 'city' in parkingLatLong) {
+                    city = parkingLatLong.city || '';
+                }
+                
+                if (city) {
+                    return `${locationTitle} near ${city}`;
+                }
+                return locationTitle;
+            }
+            
+            if (trip.acf.event_cave_name) {
+                if (trip.acf.event_possible_location) {
+                    return `${trip.acf.event_cave_name} near ${trip.acf.event_possible_location}`;
+                }
+                return trip.acf.event_cave_name;
+            }
+            
+            return trip.acf.event_location || trip.acf.event_possible_location || 'Unknown location';
+        };
+        
+        // Get route name
+        const routeName = trip.route?.acf?.route_name || trip.acf.event_possible_objectives || 'Unknown route';
+        
+        // Get parking location
+        const getParkingLocation = () => {
+            if (trip.route?.acf?.route_entrance_location_id?.acf?.location_parking_latlong) {
+                const parking = trip.route.acf.route_entrance_location_id.acf.location_parking_latlong;
+                if (typeof parking === 'object' && parking.lat && parking.lng) {
+                    return `${parking.lat},${parking.lng}`;
+                }
+                return String(parking);
+            }
+            return 'Unknown parking location';
+        };
+        
+        // Get signed up participants
+        const signedUpParticipants = participants.filter(p => {
+            const status = determineSignupStatus(p);
+            return status === 'Signed Up';
+        });
+        
+        const participantNames = signedUpParticipants.map(p => p.first_name).join(', ');
+        const participantCount = signedUpParticipants.length;
+        
+        // Get car registrations
+        const carRegistrations = signedUpParticipants
+            .map(p => p.meta?.['admin-car-registration'] || p.admin_meta?.['admin-car-registration'])
+            .filter(Boolean)
+            .join(', ');
+        
+        // Leadership kit list
+        const leadershipKit = [
+            'First Aid Kit',
+            'Emergency Shelter',
+            'Cave Survey',
+            'Mobile Phone',
+            'Spare Lights',
+            'Emergency Food',
+            'Whistle'
+        ].join(', ');
+        
+        // Build the callout text
+        const calloutTemplate = `Callout: ${formatTime(calloutTime)}
+ETA: ${formatTime(etaTime)}
+Cave: ${getLocationName()}
+Route: ${routeName}
+People: ${participantNames} (${participantCount})
+Parked at: ${getParkingLocation()}${carRegistrations ? `\nCar registrations: ${carRegistrations}` : ''}
+Equipped with: ${leadershipKit}`;
+        
+        return calloutTemplate;
     };
 
     // Render different views based on access level
@@ -263,6 +380,20 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                         </Tabs.List>
 
                         <Tabs.Panel value="cavers" pt="xs">
+                            <Group justify="flex-end" mb="md">
+                                <Button 
+                                    leftSection={<IconFileDescription size={16} />}
+                                    onClick={() => {
+                                        const text = generateCalloutText();
+                                        setCalloutText(text);
+                                        setCalloutModalOpen(true);
+                                    }}
+                                    variant="outline"
+                                    color="blue"
+                                >
+                                    Write me a callout
+                                </Button>
+                            </Group>
                             <Table striped>
                                 <Table.Thead>
                                     <Table.Tr>
@@ -710,6 +841,52 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                 </Group>
                             </Stack>
                         )}
+                    </Modal>
+
+                    {/* Callout Modal */}
+                    <Modal
+                        opened={calloutModalOpen}
+                        onClose={() => setCalloutModalOpen(false)}
+                        title={
+                            <Title order={4}>
+                                Callout Information
+                            </Title>
+                        }
+                        size="lg"
+                    >
+                        <Alert 
+                            icon={<IconInfoCircle size={16} />} 
+                            color="blue" 
+                            title="Advisory" 
+                            mb="md"
+                        >
+                            Please review and edit this information before sharing. Ensure all details are accurate and up-to-date.
+                        </Alert>
+                        
+                        <Textarea
+                            value={calloutText}
+                            onChange={(e) => setCalloutText(e.currentTarget.value)}
+                            minRows={10}
+                            autosize
+                            mb="md"
+                        />
+                        
+                        <Group justify="space-between" mt="md">
+                            <Button onClick={() => setCalloutModalOpen(false)}>
+                                Close
+                            </Button>
+                            <CopyButton value={calloutText} timeout={2000}>
+                                {({ copied, copy }) => (
+                                    <Button 
+                                        color={copied ? 'teal' : 'blue'} 
+                                        onClick={copy}
+                                        leftSection={<IconCopy size={16} />}
+                                    >
+                                        {copied ? 'Copied to clipboard' : 'Copy to clipboard'}
+                                    </Button>
+                                )}
+                            </CopyButton>
+                        </Group>
                     </Modal>
                 </>
             )}
