@@ -234,7 +234,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                             <Tabs.Tab value="dietary" leftSection={<IconInfoCircle size={14} />}>Dietary Requirements</Tabs.Tab>
                             <Tabs.Tab value="transport" leftSection={<IconCar size={14} />}>Lift Sharing</Tabs.Tab>
                             <Tabs.Tab value="health" leftSection={<IconMedicalCross size={14} />}>
-                                Health Info
+                                Health & Dietary
                             </Tabs.Tab>
                             <Tabs.Tab value="roles" leftSection={<IconHeartHandshake size={14} />}>
                                 Roles & Volunteering
@@ -747,6 +747,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                 <Table.Thead>
                                     <Table.Tr>
                                         <Table.Th>Name</Table.Th>
+                                        <Table.Th>Dietary Requirements</Table.Th>
                                         <Table.Th>Health Information</Table.Th>
                                         <Table.Th>Health Flags</Table.Th>
                                     </Table.Tr>
@@ -755,6 +756,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                     {participants.map((participant) => (
                                         <Table.Tr key={participant.order_id}>
                                             <Table.Td>{participant.first_name} {participant.last_name}</Table.Td>
+                                            <Table.Td>{participant.meta?.['admin-dietary-requirements'] || 'None specified'}</Table.Td>
                                             <Table.Td>{participant.admin_meta?.['admin-diet-allergies-health-extra-info'] || 'None provided'}</Table.Td>
                                             <Table.Td>
                                                 <Stack gap="xs">
@@ -770,6 +772,21 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                                     {participant.admin_meta?.['admin-health-impairment-through-medication'] === 'yes' && (
                                                         <Badge color="red" variant="light">Medication Impairment</Badge>
                                                     )}
+                                                    {Object.entries(participant.admin_meta || {})
+                                                        .filter(([key, value]) => 
+                                                            key.startsWith('admin-health-') && 
+                                                            !['admin-health-shoulder', 'admin-health-asthma', 
+                                                              'admin-health-missing-dose', 'admin-health-impairment-through-medication']
+                                                                .includes(key) && 
+                                                            value === 'yes')
+                                                        .map(([key]) => (
+                                                            <Badge key={key} color="orange" variant="light">
+                                                                {key.replace('admin-health-', '').split('-').map(word => 
+                                                                    word.charAt(0).toUpperCase() + word.slice(1)
+                                                                ).join(' ')}
+                                                            </Badge>
+                                                        ))
+                                                    }
                                                 </Stack>
                                             </Table.Td>
                                         </Table.Tr>
