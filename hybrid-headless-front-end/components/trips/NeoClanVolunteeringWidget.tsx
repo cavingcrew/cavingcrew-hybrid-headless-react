@@ -237,16 +237,15 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
             .filter(Boolean)
             .join(', ');
         
-        // Leadership kit list
-        const leadershipKit = [
-            'First Aid Kit',
-            'Emergency Shelter',
-            'Cave Survey',
-            'Mobile Phone',
-            'Spare Lights',
-            'Emergency Food',
-            'Whistle'
-        ].join(', ');
+        // Get tackle requirements from route data
+        const tackleRequired = trip.route?.acf?.route_group_tackle_required || 
+            'First Aid Kit, Emergency Shelter, Cave Survey, Mobile Phone, Spare Lights, Emergency Food, Whistle';
+        
+        // Clean up HTML tags if present
+        const cleanTackle = tackleRequired.replace(/<[^>]*>/g, ', ')
+            .replace(/,\s*,/g, ',')  // Remove double commas
+            .replace(/^,\s*/, '')    // Remove leading comma
+            .replace(/\s*,\s*$/, ''); // Remove trailing comma
         
         // Build the callout text with only defined sections
         let calloutTemplate = '';
@@ -280,7 +279,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
             }
         }
         
-        calloutTemplate += `Equipped with: ${leadershipKit}`;
+        calloutTemplate += `Equipped with: ${cleanTackle}`;
         
         return calloutTemplate;
     };
