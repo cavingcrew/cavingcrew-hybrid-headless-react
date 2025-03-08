@@ -767,7 +767,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                         }
 
                                         // Check what gear the participant is missing
-                                        const missingGear = [];
+                                        const missingGear: string[] = [];
                                         
                                         // Check each standard gear item
                                         standardGear.forEach(item => {
