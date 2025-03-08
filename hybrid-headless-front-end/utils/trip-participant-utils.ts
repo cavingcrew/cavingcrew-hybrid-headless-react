@@ -71,21 +71,24 @@ export const isFirstTimeCaver = (participant: any): boolean => {
  * @returns JSX for displaying the gear list
  */
 export const formatGearList = (gearString?: string | null) => {
-  if (!gearString) return <p>None specified</p>;
+  if (!gearString) return { type: 'p', props: { children: 'None specified' } };
 
   const gearItems = gearString.split(',')
     .map(item => item.trim())
     .filter(Boolean);
 
   return gearItems.length === 0
-    ? <p>None specified</p>
-    : (
-      <ul>
-        {gearItems.map((item, index) => (
-          <li key={index}>{item}</li>
-        ))}
-      </ul>
-    );
+    ? { type: 'p', props: { children: 'None specified' } }
+    : {
+        type: 'ul',
+        props: {
+          children: gearItems.map((item, index) => ({
+            type: 'li',
+            key: index,
+            props: { children: item }
+          }))
+        }
+      };
 };
 
 /**
