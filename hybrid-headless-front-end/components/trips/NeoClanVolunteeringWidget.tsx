@@ -352,8 +352,9 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
             
             if (routePersonalGear) {
                 // Parse from route_personal_gear_required
-                standardGear = routePersonalGear
-                    .replace(/<[^>]*>/g, '')
+                standardGear = (typeof routePersonalGear === 'string'
+                    ? routePersonalGear.replace(/<[^>]*>/g, '')
+                    : String(routePersonalGear))
                     .split(/[,;]/)
                     .map(item => item.trim())
                     .filter(Boolean);
@@ -432,8 +433,9 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
         if (trip.route?.acf?.route_group_tackle_required) {
             const tackleRequired = trip.route.acf.route_group_tackle_required;
             // Clean up HTML tags if present but preserve the content structure
-            const cleanedTackle = tackleRequired
-                .replace(/<[^>]*>/g, '')
+            const cleanedTackle = (typeof tackleRequired === 'string'
+                ? tackleRequired.replace(/<[^>]*>/g, '')
+                : String(tackleRequired))
                 .replace(/\s+/g, ' ')
                 .trim();
 
@@ -718,7 +720,9 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                 <Badge color="blue" variant="light">
                                     Required gear for this trip: {
                                         trip.route?.acf?.route_personal_gear_required 
-                                            ? trip.route.acf.route_personal_gear_required.replace(/<[^>]*>/g, '').trim()
+                                            ? (typeof trip.route.acf.route_personal_gear_required === 'string'
+                                                ? trip.route.acf.route_personal_gear_required.replace(/<[^>]*>/g, '').trim()
+                                                : String(trip.route.acf.route_personal_gear_required))
                                             : trip.acf.event_gear_required || 'None specified'
                                     }
                                 </Badge>
@@ -772,8 +776,9 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                         
                                         if (routePersonalGear) {
                                             // Parse from route_personal_gear_required
-                                            standardGear = routePersonalGear
-                                                .replace(/<[^>]*>/g, '')
+                                            standardGear = (typeof routePersonalGear === 'string'
+                                                ? routePersonalGear.replace(/<[^>]*>/g, '')
+                                                : String(routePersonalGear))
                                                 .split(/[,;]/)
                                                 .map(item => item.trim())
                                                 .filter(Boolean);

@@ -321,7 +321,9 @@ export function TripDetails({ trip }: TripDetailsProps) {
                       <Text fw={500}>Required Gear:</Text>
                       <Text>
                         {trip.route?.acf?.route_personal_gear_required 
-                          ? trip.route.acf.route_personal_gear_required.replace(/<[^>]*>/g, '').trim()
+                          ? (typeof trip.route.acf.route_personal_gear_required === 'string' 
+                              ? trip.route.acf.route_personal_gear_required.replace(/<[^>]*>/g, '').trim()
+                              : String(trip.route.acf.route_personal_gear_required))
                           : acf.event_gear_required}
                       </Text>
                     </div>
@@ -424,7 +426,9 @@ export function TripDetails({ trip }: TripDetailsProps) {
                   {(() => {
                     // If we have route-specific gear requirements, use those
                     if (trip.route?.acf?.route_personal_gear_required) {
-                      return `You'll need: ${trip.route.acf.route_personal_gear_required.replace(/<[^>]*>/g, '').trim()}`;
+                      return `You'll need: ${typeof trip.route.acf.route_personal_gear_required === 'string'
+                        ? trip.route.acf.route_personal_gear_required.replace(/<[^>]*>/g, '').trim()
+                        : String(trip.route.acf.route_personal_gear_required)}`;
                     }
                     
                     // Otherwise fall back to the event gear required
