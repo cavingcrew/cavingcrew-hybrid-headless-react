@@ -135,10 +135,13 @@ export const apiService = {
     }
   },
 
-  async getTripParticipants(tripId: number): Promise<ApiResponse<any>> {
+  async getTripParticipants(tripId: number): Promise<ApiResponse<TripParticipantsResponse>> {
     try {
       const response = await fetch(`${API_BASE_URL}/hybrid-headless/v1/trip-participants/${tripId}`, {
         credentials: 'include',
+        headers: {
+          'Cache-Control': 'no-cache'
+        }
       });
       
       if (!response.ok) {

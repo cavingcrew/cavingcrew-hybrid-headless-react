@@ -19,9 +19,12 @@ export function useTripParticipants(tripId: number) {
     queryKey: participantKeys.list(tripId),
     queryFn: async () => {
       try {
+        console.log('[useTripParticipants] Fetching participants for trip', tripId);
         const response = await apiService.getTripParticipants(tripId);
+        console.log('[useTripParticipants] Response:', response);
         return response;
       } catch (error) {
+        console.error('[useTripParticipants] Error:', error);
         return {
           success: false,
           data: null,
