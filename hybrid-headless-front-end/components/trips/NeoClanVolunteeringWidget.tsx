@@ -367,7 +367,24 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
             <Group justify="space-between" mb="md">
                 <Title order={3}>Trip Management</Title>
                 <Badge color="blue" size="lg">Admin Access</Badge>
-                <Text>Just to state the obvious, people who aren't you can't see all this info</Text>
+                <Alert 
+                    color="blue" 
+                    variant="light" 
+                    title="Private Information" 
+                    styles={{
+                        root: {
+                            marginTop: '0.5rem',
+                        },
+                        wrapper: {
+                            flexWrap: 'wrap',
+                        },
+                        title: {
+                            fontWeight: 600,
+                        }
+                    }}
+                >
+                    This administrative information is only visible to you and other trip organizers
+                </Alert>
             </Group>
 
             {participants.length === 0 ? (
