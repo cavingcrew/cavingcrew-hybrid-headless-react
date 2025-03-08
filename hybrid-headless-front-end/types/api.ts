@@ -1,3 +1,46 @@
+// Challenge rating types
+export type ChallengeRating = "green" | "amber" | "red" | "na";
+export type ChallengeDomain =
+	| "claustrophobia"
+	| "water"
+	| "heights"
+	| "hazard"
+	| "endurance";
+
+// Define the structure of the difficulty object
+export interface DifficultyData {
+	route_difficulty_psychological_claustrophobia?: string | number;
+	route_difficulty_objective_tightness?: string | number;
+	route_difficulty_wetness?: string | number;
+	route_difficulty_water_near_face?: string | number;
+	route_difficulty_exposure_to_deep_water?: string | number;
+	route_difficulty_muddiness?: string | number;
+	route_difficulty_exposure_to_heights?: string | number;
+	route_difficulty_technical_climbing_difficulty?: string | number;
+	route_difficulty_endurance?: string | number;
+	route_difficulty_objective_hazard?: string | number;
+	[key: string]: string | number | null | undefined; // For any other properties
+}
+
+export interface ChallengeMetric {
+	domain: ChallengeDomain;
+	label: string;
+	rating: ChallengeRating;
+	score: number;
+	details: Array<{
+		key: string;
+		label: string;
+		value: number | null;
+		weight: number;
+		contribution: number;
+	}>;
+}
+
+export interface ChallengeMetricsResult {
+	metrics: ChallengeMetric[];
+	weightedRank: number;
+}
+
 export interface TripParticipant {
 	first_name: string;
 	last_name?: string;
