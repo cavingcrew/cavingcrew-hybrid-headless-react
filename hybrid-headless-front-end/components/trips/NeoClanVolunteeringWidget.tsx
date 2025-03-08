@@ -2,12 +2,12 @@
 
 import React, { useState } from 'react';
 import {
-    Paper, Title, Text, Group, Badge, Tabs, Table, Skeleton, Alert, 
+    Paper, Title, Text, Group, Badge, Tabs, Table, Skeleton, Alert,
     Stack, Button, Modal, List, Anchor, Box, ThemeIcon, Textarea,
     CopyButton, ActionIcon, Tooltip
 } from '@mantine/core';
-import { 
-    IconUsers, IconAlertCircle, IconInfoCircle, IconTools, 
+import {
+    IconUsers, IconAlertCircle, IconInfoCircle, IconTools,
     IconHeartHandshake, IconSchool, IconMedicalCross, IconShield,
     IconChartBar, IconAlertTriangle, IconCheck, IconX, IconCopy,
     IconFileDescription
@@ -38,14 +38,14 @@ const determineSignupStatus = (participant: TripParticipant): string => {
     };
 
     // Check predefined statuses first
-    if (attendance && typeof attendance === 'string' && statusMap[attendance]) 
+    if (attendance && typeof attendance === 'string' && statusMap[attendance])
         return statusMap[attendance];
 
     // Handle pending and processing statuses
-    if (orderStatus === 'processing' && (!attendance || attendance === 'pending')) 
+    if (orderStatus === 'processing' && (!attendance || attendance === 'pending'))
         return 'Signed Up';
-    
-    if (orderStatus === 'on-hold' || orderStatus === 'pending') 
+
+    if (orderStatus === 'on-hold' || orderStatus === 'pending')
         return 'Other';
 
     return 'Other';
@@ -72,12 +72,12 @@ const isFirstTimeCaver = (participant: TripParticipant): boolean => {
 
 const formatGearList = (gearString?: string | null) => {
     if (!gearString) return <Text>None specified</Text>;
-    
+
     const gearItems = gearString.split(',')
         .map(item => item.trim())
         .filter(Boolean);
-    
-    return gearItems.length === 0 
+
+    return gearItems.length === 0
         ? <Text>None specified</Text>
         : (
             <List size="sm">
@@ -124,9 +124,9 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
     if (error || !data?.success) {
         return (
             <Paper withBorder p="md" radius="md">
-                <Alert 
-                    icon={<IconAlertCircle size={16} />} 
-                    title="Error" 
+                <Alert
+                    icon={<IconAlertCircle size={16} />}
+                    title="Error"
                     color="red"
                 >
                     Failed to load participant information. Please try again later.
@@ -151,17 +151,17 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
     const generateCalloutText = () => {
         // Get current time
         const now = new Date();
-        
+
         // Calculate callout time (now + route duration * 1.25)
-        const routeDuration = trip.route?.acf?.route_time_for_eta ? 
+        const routeDuration = trip.route?.acf?.route_time_for_eta ?
             parseInt(trip.route.acf.route_time_for_eta) : 4; // Default to 4 hours if not specified
         const calloutTimeMs = now.getTime() + (routeDuration * 1.25 * 60 * 60 * 1000);
         const calloutTime = new Date(calloutTimeMs);
-        
+
         // Calculate ETA (callout time - 1 hour)
         const etaTimeMs = calloutTimeMs - (60 * 60 * 1000);
         const etaTime = new Date(etaTimeMs);
-        
+
         // Format times
         const formatTime = (date: Date) => {
             return date.toLocaleTimeString('en-GB', {
@@ -169,7 +169,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                 minute: '2-digit'
             });
         };
-        
+
         // Get cave and location information
         const getLocationName = () => {
             // For overnight trips, use the hut location
@@ -179,37 +179,37 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                 }
                 return trip.acf.event_location || trip.acf.event_cave_name || '';
             }
-            
+
             // For other trips
             if (trip.route?.acf?.route_entrance_location_id?.title) {
                 const locationTitle = trip.route.acf.route_entrance_location_id.title;
                 const parkingLatLong = trip.route?.acf?.route_entrance_location_id?.acf?.location_parking_latlong;
                 let city = '';
-                
+
                 // Check if parkingLatLong is an object with city property
                 if (parkingLatLong && typeof parkingLatLong === 'object' && 'city' in parkingLatLong) {
                     city = parkingLatLong.city || '';
                 }
-                
+
                 if (city) {
                     return `${locationTitle} near ${city}`;
                 }
                 return locationTitle;
             }
-            
+
             if (trip.acf.event_cave_name) {
                 if (trip.acf.event_possible_location) {
                     return `${trip.acf.event_cave_name} near ${trip.acf.event_possible_location}`;
                 }
                 return trip.acf.event_cave_name;
             }
-            
+
             return trip.acf.event_location || trip.acf.event_possible_location || '';
         };
-        
+
         // Get route name
         const routeName = trip.route?.acf?.route_name || trip.acf.event_possible_objectives || '';
-        
+
         // Get parking location
         const getParkingLocation = () => {
             if (trip.route?.acf?.route_entrance_location_id?.acf?.location_parking_latlong) {
@@ -221,65 +221,65 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
             }
             return '';
         };
-        
+
         // Get signed up participants
         const signedUpParticipants = participants.filter(p => {
             const status = determineSignupStatus(p);
             return status === 'Signed Up';
         });
-        
+
         const participantNames = signedUpParticipants.map(p => p.first_name).join(', ');
         const participantCount = signedUpParticipants.length;
-        
+
         // Get car registrations
         const carRegistrations = signedUpParticipants
             .map(p => p.meta?.['admin-car-registration'] || p.admin_meta?.['admin-car-registration'])
             .filter(Boolean)
             .join(', ');
-        
+
         // Get tackle requirements from route data
         const tackleRequired = trip.route?.acf?.route_group_tackle_required || '';
-        
+
         // Clean up HTML tags if present
         const cleanTackle = tackleRequired.replace(/<[^>]*>/g, ', ')
             .replace(/,\s*,/g, ',')  // Remove double commas
             .replace(/^,\s*/, '')    // Remove leading comma
             .replace(/\s*,\s*$/, ''); // Remove trailing comma
-        
+
         // Build the callout text with only defined sections
         let calloutTemplate = '';
-        
+
         // Always include callout time and ETA
         calloutTemplate += `Callout: ${formatTime(calloutTime)}\n`;
         calloutTemplate += `ETA: ${formatTime(etaTime)}\n`;
-        
+
         // Only include sections with data
         const locationName = getLocationName();
         if (locationName) {
             calloutTemplate += `Cave: ${locationName}\n`;
         }
-        
+
         if (routeName) {
             calloutTemplate += `Route: ${routeName}\n`;
         }
-        
+
         if (participantNames) {
             calloutTemplate += `${participantCount} People: ${participantNames}\n`;
         }
-        
+
         const parkingLocation = getParkingLocation();
         if (parkingLocation) {
             // Trim lat/long to 5 decimal places (approx 1 meter accuracy)
             const trimmedLocation = parkingLocation.replace(/(-?\d+\.\d{5})\d*,(-?\d+\.\d{5})\d*/g, '$1,$2');
             calloutTemplate += `Parked at: ${trimmedLocation}\n`;
-            
+
             if (carRegistrations) {
                 calloutTemplate += `Car registrations: ${carRegistrations}\n`;
             }
         }
-        
+
         calloutTemplate += `Equipped with:\n${cleanTackle}`;
-        
+
         return calloutTemplate;
     };
 
@@ -404,7 +404,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
 
                         <Tabs.Panel value="cavers" pt="xs">
                             <Group justify="flex-end" mb="md">
-                                <Button 
+                                <Button
                                     leftSection={<IconFileDescription size={16} />}
                                     onClick={() => {
                                         const text = generateCalloutText();
@@ -431,7 +431,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                     {participants.map((participant) => {
                                         const status = determineSignupStatus(participant);
                                         const firstTimer = isFirstTimeCaver(participant);
-                                        
+
                                         return (
                                             <Table.Tr key={participant.order_id}>
                                                 <Table.Td>{participant.first_name} {participant.last_name}</Table.Td>
@@ -454,7 +454,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                                     ) : 'None'}
                                                 </Table.Td>
                                                 <Table.Td>
-                                                    <Anchor 
+                                                    <Anchor
                                                         href={`https://www.cavingcrew.com/wp-admin/post.php?post=${participant.order_id}&action=edit`}
                                                         target="_blank"
                                                     >
@@ -487,13 +487,13 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                             <Table.Td>{participant.meta?.['skills-horizontal'] || 'Not specified'}</Table.Td>
                                             <Table.Td>{participant.meta?.['skills-srt'] || 'Not specified'}</Table.Td>
                                             <Table.Td>
-                                                {participant.meta?.['skills-leading-horizontal'] || 
-                                                 participant.meta?.['caving-horizontal-happy-to-second-or-lead'] || 
+                                                {participant.meta?.['skills-leading-horizontal'] ||
+                                                 participant.meta?.['caving-horizontal-happy-to-second-or-lead'] ||
                                                  'Not specified'}
                                             </Table.Td>
                                             <Table.Td>
-                                                {participant.meta?.['skills-leading-srt'] || 
-                                                 participant.meta?.['caving-srt-happy-to-second-or-lead'] || 
+                                                {participant.meta?.['skills-leading-srt'] ||
+                                                 participant.meta?.['caving-srt-happy-to-second-or-lead'] ||
                                                  'Not specified'}
                                             </Table.Td>
                                             <Table.Td>{participant.meta?.['skills-leading-coaching'] || 'Not specified'}</Table.Td>
@@ -525,12 +525,12 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                         const gearItems = gearBringing.split(',')
                                             .map(item => item.trim())
                                             .filter(Boolean);
-                                        
+
                                         // Determine required gear based on trip type
-                                        const requiresSRT = trip.acf.event_gear_required?.includes('SRT') || 
+                                        const requiresSRT = trip.acf.event_gear_required?.includes('SRT') ||
                                                           trip.acf.event_skills_required?.includes('SRT') ||
                                                           trip.route?.acf?.route_personal_gear_required?.includes('SRT');
-                                        
+
                                         // Standard gear requirements
                                         const requiredGear = [
                                             'Oversuit',
@@ -539,48 +539,48 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                             'Helmet and Light',
                                             'Gloves'
                                         ];
-                                        
+
                                         // Add SRT kit if required
                                         if (requiresSRT) {
                                             requiredGear.push('SRT Kit', 'Harness and Cowstails');
                                         }
-                                        
+
                                         // Check what's missing
                                         const missingGear = requiredGear.filter(item => {
                                             // Special case for "Nothing - Im totally new to this"
                                             if (gearItems.some(g => g.includes('Nothing') || g.includes('totally new'))) {
                                                 return true;
                                             }
-                                            
+
                                             // Check if the participant has this gear item
-                                            return !gearItems.some(g => 
+                                            return !gearItems.some(g =>
                                                 g.toLowerCase().includes(item.toLowerCase()) ||
                                                 // Handle special cases
-                                                (item === 'Helmet and Light' && 
+                                                (item === 'Helmet and Light' &&
                                                  (g.toLowerCase().includes('helmet') || g.toLowerCase().includes('light')))
                                             );
                                         });
-                                        
+
                                         // Check for additional gear beyond requirements
                                         const additionalGear = gearItems.filter(item => {
                                             // Skip if it's the "Nothing" option
                                             if (item.includes('Nothing') || item.includes('totally new')) {
                                                 return false;
                                             }
-                                            
+
                                             // Check if this item is not in the required list
-                                            return !requiredGear.some(req => 
+                                            return !requiredGear.some(req =>
                                                 item.toLowerCase().includes(req.toLowerCase()) ||
                                                 // Handle special cases
-                                                (req === 'Helmet and Light' && 
+                                                (req === 'Helmet and Light' &&
                                                  (item.toLowerCase().includes('helmet') || item.toLowerCase().includes('light')))
                                             );
                                         });
-                                        
+
                                         // Check if wellies are needed but size not specified
-                                        const needsWelliesSize = missingGear.includes('Wellies') && 
+                                        const needsWelliesSize = missingGear.includes('Wellies') &&
                                                                !participant.meta?.['gear_wellies_size'];
-                                        
+
                                         return (
                                             <Table.Tr key={participant.order_id}>
                                                 <Table.Td>{participant.first_name} {participant.last_name}</Table.Td>
@@ -590,8 +590,8 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                                     ) : (
                                                         <Stack gap="xs">
                                                             {gearItems.map((item, index) => (
-                                                                <Badge 
-                                                                    key={index} 
+                                                                <Badge
+                                                                    key={index}
                                                                     color={item.includes('Nothing') ? 'red' : 'blue'}
                                                                     variant="light"
                                                                 >
@@ -607,13 +607,13 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                                     ) : (
                                                         <Stack gap="xs">
                                                             {missingGear.map((item, index) => (
-                                                                <Badge 
-                                                                    key={index} 
+                                                                <Badge
+                                                                    key={index}
                                                                     color="red"
                                                                     variant="light"
                                                                 >
                                                                     Needs: {item}
-                                                                    {item === 'Wellies' && participant.meta?.['gear_wellies_size'] && 
+                                                                    {item === 'Wellies' && participant.meta?.['gear_wellies_size'] &&
                                                                      ` (Size: ${participant.meta['gear_wellies_size']})`}
                                                                 </Badge>
                                                             ))}
@@ -631,8 +631,8 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                                     ) : (
                                                         <Stack gap="xs">
                                                             {additionalGear.map((item, index) => (
-                                                                <Badge 
-                                                                    key={index} 
+                                                                <Badge
+                                                                    key={index}
                                                                     color="teal"
                                                                     variant="light"
                                                                 >
@@ -652,7 +652,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                     })}
                                 </Table.Tbody>
                             </Table>
-                            
+
                             <Box mt="lg">
                                 <Alert icon={<IconInfoCircle size={16} />} color="blue" title="Equipment Legend">
                                     <Group gap="md">
@@ -662,14 +662,14 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                         <Badge color="orange" variant="light">Information needed</Badge>
                                     </Group>
                                 </Alert>
-                                
+
                                 {trip.acf.event_gear_required?.includes('SRT') && (
                                     <Alert icon={<IconInfoCircle size={16} />} color="yellow" mt="md">
                                         This trip requires SRT equipment. Ensure all participants have proper vertical caving gear.
                                     </Alert>
                                 )}
-                                
-                                {participants.some(p => 
+
+                                {participants.some(p =>
                                     p.meta?.['gear-bringing-evening-or-day-trip']?.includes('Nothing') ||
                                     p.meta?.['gear-bringing-evening-or-day-trip']?.includes('totally new')
                                 ) && (
@@ -705,7 +705,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                     <Table.Tr>
                                         <Table.Th>Name</Table.Th>
                                         <Table.Th>Needs Lift</Table.Th>
-                                        <Table.Th>Giving Lift</Table.Th>
+                                        <Table.Th>Can Give Lift</Table.Th>
                                         <Table.Th>Departure Time</Table.Th>
                                         <Table.Th>Leaving From</Table.Th>
                                     </Table.Tr>
@@ -721,7 +721,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                             </Table.Td>
                                             <Table.Td>
                                                 {participant.meta?.['transport-will-you-give-lift']?.toLowerCase() === 'yes' ? (
-                                                    <Badge color="green">Giving Lift</Badge>
+                                                 <Text>Yes</Text>
                                                 ) : 'No'}
                                             </Table.Td>
                                             <Table.Td>{participant.meta?.['transport-depature-time'] || 'Not specified'}</Table.Td>
@@ -782,7 +782,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                         <Table.Tr key={participant.order_id}>
                                             <Table.Td>{participant.first_name} {participant.last_name}</Table.Td>
                                             <Table.Td>
-                                                {participant.order_meta?.cc_volunteer && 
+                                                {participant.order_meta?.cc_volunteer &&
                                                 participant.order_meta.cc_volunteer !== 'none' ? (
                                                     <Badge color="green">{participant.order_meta.cc_volunteer}</Badge>
                                                 ) : 'None'}
@@ -817,9 +817,9 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                             <Table.Td>{participant.meta?.['cc_compliance_last_date_of_caving'] || 'Unknown'}</Table.Td>
                                             <Table.Td>
                                                 {participant.meta?.['scores_volunteer_score_cached'] ? (
-                                                    <Badge 
+                                                    <Badge
                                                         color={
-                                                            parseFloat(participant.meta['scores_volunteer_score_cached']) > 0.7 ? 'green' : 
+                                                            parseFloat(participant.meta['scores_volunteer_score_cached']) > 0.7 ? 'green' :
                                                             parseFloat(participant.meta['scores_volunteer_score_cached']) > 0.4 ? 'yellow' : 'red'
                                                         }
                                                     >
@@ -829,9 +829,9 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                             </Table.Td>
                                             <Table.Td>
                                                 {participant.meta?.['scores_attendance_reliability_score_cached'] ? (
-                                                    <Badge 
+                                                    <Badge
                                                         color={
-                                                            parseFloat(participant.meta['scores_attendance_reliability_score_cached']) > 0.7 ? 'green' : 
+                                                            parseFloat(participant.meta['scores_attendance_reliability_score_cached']) > 0.7 ? 'green' :
                                                             parseFloat(participant.meta['scores_attendance_reliability_score_cached']) > 0.4 ? 'yellow' : 'red'
                                                         }
                                                     >
@@ -846,10 +846,10 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                         </Tabs.Panel>
 
                         <Tabs.Panel value="emergency" pt="xs">
-                            <Alert 
-                                icon={<IconAlertTriangle size={16} />} 
-                                color="red" 
-                                title="Confidential Information" 
+                            <Alert
+                                icon={<IconAlertTriangle size={16} />}
+                                color="red"
+                                title="Confidential Information"
                                 mb="md"
                             >
                                 This information is for emergency use by authorized people only. Access is logged.
@@ -866,9 +866,9 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                         <Table.Tr key={participant.order_id}>
                                             <Table.Td>{participant.first_name} {participant.last_name}</Table.Td>
                                             <Table.Td>
-                                                <Button 
-                                                    variant="outline" 
-                                                    color="red" 
+                                                <Button
+                                                    variant="outline"
+                                                    color="red"
                                                     size="xs"
                                                     leftSection={<IconShield size={14} />}
                                                     onClick={() => openEmergencyInfo(participant)}
@@ -894,28 +894,28 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                         }
                         size="md"
                     >
-                        <Alert 
-                            icon={<IconAlertTriangle size={16} />} 
-                            color="red" 
-                            title="Confidential Information" 
+                        <Alert
+                            icon={<IconAlertTriangle size={16} />}
+                            color="red"
+                            title="Confidential Information"
                             mb="md"
                         >
                             This is for emergency use by authorized people only - not just to be nosy. Access is logged.
                         </Alert>
-                        
+
                         <Text mb="md">
                             Are you sure you need to access this confidential emergency information?
                         </Text>
-                        
+
                         <Group justify="center" mt="xl">
-                            <Button 
-                                variant="outline" 
+                            <Button
+                                variant="outline"
                                 onClick={() => setConfirmEmergencyAccess(false)}
                             >
                                 Cancel
                             </Button>
-                            <Button 
-                                color="red" 
+                            <Button
+                                color="red"
                                 onClick={confirmAndShowEmergencyInfo}
                             >
                                 Yes, I need this information
@@ -934,27 +934,27 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                         }
                         size="lg"
                     >
-                        <Alert 
-                            icon={<IconAlertTriangle size={16} />} 
-                            color="red" 
-                            title="Confidential Information" 
+                        <Alert
+                            icon={<IconAlertTriangle size={16} />}
+                            color="red"
+                            title="Confidential Information"
                             mb="md"
                         >
                             This is for emergency use by authorized people only - not just to be nosy. Access is logged.
                         </Alert>
-                        
+
                         {selectedParticipant && (
                             <Stack>
                                 <Group>
                                     <Text fw={700}>Full Name:</Text>
                                     <Text>{selectedParticipant.first_name} {selectedParticipant.last_name}</Text>
                                 </Group>
-                                
+
                                 <Group>
                                     <Text fw={700}>Phone Number:</Text>
                                     <Text>{selectedParticipant.admin_meta?.['admin-phone-number'] || selectedParticipant.admin_meta?.['billing_phone'] || 'Not provided'}</Text>
                                 </Group>
-                                
+
                                 <Group align="flex-start">
                                     <Text fw={700}>Emergency Contact:</Text>
                                     <Box>
@@ -963,7 +963,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                         <Text>{selectedParticipant.admin_meta?.['admin-emergency-contact-relationship'] || 'Relationship not specified'}</Text>
                                     </Box>
                                 </Group>
-                                
+
                                 <Group align="flex-start">
                                     <Text fw={700}>Address:</Text>
                                     <Box>
@@ -979,17 +979,17 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                         </Text>
                                     </Box>
                                 </Group>
-                                
+
                                 <Group>
                                     <Text fw={700}>Date of Birth:</Text>
                                     <Text>{selectedParticipant.admin_meta?.['admin-date-of-birth'] || 'Not provided'}</Text>
                                 </Group>
-                                
+
                                 <Group>
                                     <Text fw={700}>Car Registration:</Text>
                                     <Text>{selectedParticipant.admin_meta?.['admin-car-registration'] || 'Not provided'}</Text>
                                 </Group>
-                                
+
                                 <Group align="flex-start">
                                     <Text fw={700}>Health Information:</Text>
                                     <Box>
@@ -1008,7 +1008,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                         )}
                                     </Box>
                                 </Group>
-                                
+
                                 <Group justify="center" mt="md">
                                     <Button onClick={() => setEmergencyModalOpen(false)}>Close</Button>
                                 </Group>
@@ -1027,15 +1027,15 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                         }
                         size="lg"
                     >
-                        <Alert 
-                            icon={<IconInfoCircle size={16} />} 
-                            color="blue" 
-                            title="Advisory" 
+                        <Alert
+                            icon={<IconInfoCircle size={16} />}
+                            color="blue"
+                            title="Advisory"
                             mb="md"
                         >
                             Please review and edit this information before sharing. Ensure all details are accurate and up-to-date.
                         </Alert>
-                        
+
                         <Textarea
                             value={calloutText}
                             onChange={(e) => setCalloutText(e.currentTarget.value)}
@@ -1043,15 +1043,15 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                             autosize
                             mb="md"
                         />
-                        
+
                         <Group justify="space-between" mt="md">
                             <Button onClick={() => setCalloutModalOpen(false)}>
                                 Close
                             </Button>
                             <CopyButton value={calloutText} timeout={2000}>
                                 {({ copied, copy }) => (
-                                    <Button 
-                                        color={copied ? 'teal' : 'blue'} 
+                                    <Button
+                                        color={copied ? 'teal' : 'blue'}
                                         onClick={copy}
                                         leftSection={<IconCopy size={16} />}
                                     >
