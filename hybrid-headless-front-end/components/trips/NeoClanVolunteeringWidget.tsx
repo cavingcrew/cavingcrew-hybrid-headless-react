@@ -1396,7 +1396,11 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                         <Text mb="md" style={{ whiteSpace: 'pre-line' }}>
                             {trip.acf.event_gear_required ? 
                                 typeof trip.acf.event_gear_required === 'string' ? 
-                                    trip.acf.event_gear_required.replace(/<br\s*\/?>/gi, '\n').replace(/<\/?p>/gi, '\n') : 
+                                    trip.acf.event_gear_required
+                                        .replace(/<br\s*\/?>/gi, '\n')
+                                        .replace(/<\/p>\s*<p>/gi, '\n\n')
+                                        .replace(/<\/?p>/gi, '\n')
+                                        .replace(/\n{3,}/g, '\n\n') : 
                                     String(trip.acf.event_gear_required) : 
                                 'None specified'}
                         </Text>
