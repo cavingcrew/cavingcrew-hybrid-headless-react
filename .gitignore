@@ -1,2 +1,13 @@
+# ignore even valid files if in…
+.git/**
+node_modules/**
+package-lock.json
+package.json
 .aider*
-.env
+*/node_modules/**
+build/**
+dist/**
+.yarn/*
+.github/**
+.storybook/**
+.next/**

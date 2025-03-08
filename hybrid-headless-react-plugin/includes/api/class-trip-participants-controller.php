@@ -177,13 +177,13 @@ class Hybrid_Headless_Trip_Participants_Controller {
         foreach ($orders as $order) {
             $order_id = $order->get_id();
             $order_status = $order->get_status();
-            
+
             error_log(sprintf(
                 '[Trip Participants Access] Checking Order ID: %d, Status: %s',
                 $order_id,
                 $order_status
             ));
-            
+
             if ($order_status === 'completed') {
                 $cc_attendance = $order->get_meta('cc_attendance');
                 if (strpos($cc_attendance, 'cancelled') !== false) {
@@ -202,14 +202,14 @@ class Hybrid_Headless_Trip_Participants_Controller {
                         $product_id,
                         $trip_id
                     ));
-                    
+
                     if ($product_id == $trip_id) {
                         $is_participant = true;
                         error_log(sprintf('[Trip Participants Access] User %d is participant for trip %d', $user_id, $trip_id));
 
                         $cc_volunteer = $order->get_meta('cc_volunteer');
                         error_log(sprintf('[Trip Participants Access] Volunteer role: %s', $cc_volunteer));
-                        
+
                         if (strpos($cc_volunteer, 'director') !== false || $cc_volunteer === 'cabbage1239zz') {
                             error_log(sprintf('[Trip Participants Access] User %d is admin for trip %d', $user_id, $trip_id));
                             return 'admin';
@@ -230,7 +230,7 @@ class Hybrid_Headless_Trip_Participants_Controller {
      */
     public function get_trip_participants($request) {
         $trip_id = $request['trip_id'];
-        
+
         // Ensure user is properly authenticated
         $user_id = 0;
         if (isset($_COOKIE[LOGGED_IN_COOKIE])) {
@@ -240,10 +240,10 @@ class Hybrid_Headless_Trip_Participants_Controller {
                 wp_set_current_user($user_id);
             }
         }
-        
+
         // Force integer type for comparison
         $trip_id = (int)$trip_id;
-        
+
         // Check user purchases directly
         $has_purchased = false;
         if ($user_id) {
@@ -252,7 +252,7 @@ class Hybrid_Headless_Trip_Participants_Controller {
                 'limit' => -1,
                 'status' => ['on-hold', 'processing', 'completed'],
             ]);
-            
+
             foreach ($orders as $order) {
                 foreach ($order->get_items() as $item) {
                     $product = $item->get_product();
@@ -266,9 +266,9 @@ class Hybrid_Headless_Trip_Participants_Controller {
                 }
             }
         }
-        
+
         $access_level = $this->get_access_level($trip_id, $user_id);
-        
+
         // Debug logging for authentication issues
         error_log(sprintf(
             '[Trip Participants] User ID: %d, Access Level: %s, Trip ID: %d, Has Purchased: %s, Cookie present: %s',
@@ -278,7 +278,7 @@ class Hybrid_Headless_Trip_Participants_Controller {
             $has_purchased ? 'yes' : 'no',
             isset($_COOKIE[LOGGED_IN_COOKIE]) ? 'yes' : 'no'
         ));
-        
+
         // Override access level if user has purchased this trip
         if ($has_purchased && $access_level === 'public') {
             $access_level = 'participant';
@@ -369,7 +369,7 @@ class Hybrid_Headless_Trip_Participants_Controller {
 
         // Define statuses based on access level
         $statuses = ['on-hold', 'processing', 'completed'];
-        
+
         // Query for orders containing this product
         $order_ids = wc_get_orders([
             'limit' => -1,
@@ -385,13 +385,13 @@ class Hybrid_Headless_Trip_Participants_Controller {
             if ($access_level !== 'admin') {
                 $order_status = $order->get_status();
                 $cc_attendance = $order->get_meta('cc_attendance');
-                
+
                 // Skip orders that don't meet criteria for public/participant view
-                if (!in_array($order_status, ['processing', 'on-hold', 'pending']) || 
+                if (!in_array($order_status, ['processing', 'on-hold', 'pending']) ||
                     ($cc_attendance && $cc_attendance !== 'pending')) {
                     continue;
                 }
-            } 
+            }
             // For admin access, include all orders (even cancelled ones)
             else {
                 // No filtering for admin
@@ -440,7 +440,6 @@ class Hybrid_Headless_Trip_Participants_Controller {
             'admin_u18_child_name_of_supervisor',
             'admin_u18_participation_statement_one',
             'admin_u18_participation_statement_two',
-            'admin_u18_supervisor_name_of_child',
             'admin-bca-number',
             'misc-any-other-requests',
             'admin_can_you_help_evenings',
@@ -543,6 +542,7 @@ class Hybrid_Headless_Trip_Participants_Controller {
             'admin-participation-statement-two',
             'admin-diet-allergies-health-extra-info',
             'admin-phone-number',
+                        'admin_u18_supervisor_name_of_child',
             'billing_phone',
             'shipping_address_1',
             'shipping_address_2',
