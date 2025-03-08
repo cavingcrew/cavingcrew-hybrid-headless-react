@@ -393,7 +393,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                         if (welliesSize) {
                             missingGear.push(`Wellies size ${welliesSize}`);
                         } else {
-                            missingGear.push('Wellies');
+                            missingGear.push('Wellies (size to be confirmed)');
                             participantsNeedingWellieSize.push(participant.first_name);
                         }
                     } else {
