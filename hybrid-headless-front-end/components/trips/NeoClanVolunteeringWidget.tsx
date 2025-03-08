@@ -721,8 +721,8 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                     Required gear for this trip: {
                                         trip.route?.acf?.route_personal_gear_required 
                                             ? (typeof trip.route.acf.route_personal_gear_required === 'string'
-                                                ? trip.route.acf.route_personal_gear_required.replace(/<[^>]*>/g, '').trim()
-                                                : String(trip.route.acf.route_personal_gear_required))
+                                                ? trip.route.acf.route_personal_gear_required.replace(/<[^>]*>/g, '').trim().replace(/,/g, ', ')
+                                                : String(trip.route.acf.route_personal_gear_required).replace(/,/g, ', '))
                                             : trip.acf.event_gear_required || 'None specified'
                                     }
                                 </Badge>
