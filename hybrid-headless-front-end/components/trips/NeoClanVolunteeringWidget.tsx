@@ -393,9 +393,9 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
             });
         } else {
             // Default equipment if no specific requirements
-            requestTemplate += '- 15m rope\n';
-            requestTemplate += '- 3 carabiners\n';
-            requestTemplate += '- extra tacklesack\n';
+            requestTemplate += '- write your\n';
+            requestTemplate += '- tackle required\n';
+            requestTemplate += '- here\n';
         }
 
         return requestTemplate;
