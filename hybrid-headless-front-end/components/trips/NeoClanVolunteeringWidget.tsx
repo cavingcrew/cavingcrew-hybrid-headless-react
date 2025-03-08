@@ -390,7 +390,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
 
                 if (!hasBrought || (isNewCaver && item !== 'Wellies')) {
                     if (item === 'Wellies') {
-                        if (welliesSize) {
+                        if (welliesSize && welliesSize.trim() !== '') {
                             missingGear.push(`Wellies size ${welliesSize}`);
                         } else {
                             missingGear.push('Wellies (size to be confirmed)');
@@ -786,7 +786,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
 
                                             if (!hasBrought || (isNewCaver && item !== 'Wellies')) {
                                                 if (item === 'Wellies') {
-                                                    if (welliesSize) {
+                                                    if (welliesSize && welliesSize.trim() !== '') {
                                                         missingGear.push(`Wellies size ${welliesSize}`);
                                                     } else {
                                                         missingGear.push('Wellies (size unknown)');
