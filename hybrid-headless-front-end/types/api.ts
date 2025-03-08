@@ -69,7 +69,7 @@ export interface TripParticipant {
 			| null
 			| undefined;
 		"skills-leading-horizontal"?: string;
-		"skills-leading-srt"?: 
+		"skills-leading-srt"?:
 			| "Nothing yet"
 			| "I can help derig"
 			| "I'm learning to rig"
@@ -78,7 +78,7 @@ export interface TripParticipant {
 			| null
 			| undefined
 			| string;
-		"skills-leading-coaching"?: 
+		"skills-leading-coaching"?:
 			| "no-skills"
 			| "I've helped out a bit and I'm learning"
 			| "I can use ground anchors and talk people through common manouveres"
@@ -87,7 +87,7 @@ export interface TripParticipant {
 			| undefined
 			| string;
 		"caving-horizontal-happy-to-second-or-lead"?: string;
-		"caving-srt-happy-to-second-or-lead"?: 
+		"caving-srt-happy-to-second-or-lead"?:
 			| "leader"
 			| "seconder"
 			| "no"
@@ -100,7 +100,7 @@ export interface TripParticipant {
 		"transport-depature-time"?: string;
 		"transport-leaving-location"?: string;
 		"gear-rope-length"?: string;
-		"gear-walking-equipment-weekend"?: 
+		"gear-walking-equipment-weekend"?:
 			| "My boots"
 			| "Waterproof Jacket"
 			| "Waterproof Trousers"
