@@ -244,11 +244,18 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
         // Get tackle requirements from route data
         const tackleRequired = trip.route?.acf?.route_group_tackle_required || '';
 
-        // Clean up HTML tags if present
-        const cleanTackle = tackleRequired.replace(/<[^>]*>/g, ', ')
-            .replace(/,\s*,/g, ',')  // Remove double commas
-            .replace(/^,\s*/, '')    // Remove leading comma
-            .replace(/\s*,\s*$/, ''); // Remove trailing comma
+        // Clean up HTML tags while preserving structure
+        const cleanTackle = tackleRequired
+            // Replace paragraph tags with newlines
+            .replace(/<p>/g, '')
+            .replace(/<\/p>/g, '\n\n')
+            // Replace <br /> tags with newlines
+            .replace(/<br\s*\/?>/g, '\n')
+            // Remove any other HTML tags
+            .replace(/<[^>]*>/g, '')
+            // Trim extra whitespace
+            .replace(/\n{3,}/g, '\n\n')
+            .trim();
 
         // Build the callout text with only defined sections
         let calloutTemplate = '';
