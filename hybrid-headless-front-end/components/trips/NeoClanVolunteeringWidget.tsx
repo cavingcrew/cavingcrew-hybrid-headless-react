@@ -10,7 +10,7 @@ import {
     IconUsers, IconAlertCircle, IconInfoCircle, IconTools,
     IconHeartHandshake, IconSchool, IconMedicalCross, IconShield,
     IconChartBar, IconAlertTriangle, IconCheck, IconX, IconCopy,
-    IconFileDescription
+    IconFileDescription, IconMessage
 } from '@tabler/icons-react';
 
 // Import custom hooks and types
@@ -98,6 +98,8 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
     const [confirmEmergencyAccess, setConfirmEmergencyAccess] = useState(false);
     const [calloutModalOpen, setCalloutModalOpen] = useState(false);
     const [calloutText, setCalloutText] = useState('');
+    const [tackleRequestModalOpen, setTackleRequestModalOpen] = useState(false);
+    const [tackleRequestText, setTackleRequestText] = useState('');
 
     // Fetch trip participants data
     const { data, isLoading, error } = useTripParticipants(trip.id);
@@ -285,6 +287,121 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
         return calloutTemplate;
     };
 
+    // Function to generate tackle request text
+    const generateTackleRequestText = () => {
+        // Get trip date and time
+        const startDate = trip.acf.event_start_date_time ? new Date(trip.acf.event_start_date_time) : new Date();
+        
+        // Format date and time
+        const formattedDate = startDate.toLocaleDateString('en-GB', {
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long'
+        });
+        
+        const formattedTime = startDate.toLocaleTimeString('en-GB', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        
+        // Get location name
+        const getLocationName = () => {
+            if (trip.route?.acf?.route_entrance_location_id?.title) {
+                return trip.route.acf.route_entrance_location_id.title;
+            }
+            
+            return trip.acf.event_cave_name || trip.acf.event_location || 'the cave';
+        };
+        
+        // Get route name
+        const routeName = trip.route?.acf?.route_name || trip.acf.event_possible_objectives || '';
+        
+        // Get signed up participants
+        const signedUpParticipants = participants.filter(p => {
+            const status = determineSignupStatus(p);
+            return status === 'Signed Up';
+        });
+        
+        // Build the tackle request text
+        let requestTemplate = `On ${formattedDate} at ${formattedTime} we're going to ${getLocationName()}`;
+        
+        if (routeName) {
+            requestTemplate += ` to do ${routeName}`;
+        }
+        
+        requestTemplate += ':\n\n';
+        requestTemplate += 'With help from NeoCrew, I think we\'ll need:\n';
+        
+        // Process each participant's gear needs
+        signedUpParticipants.forEach(participant => {
+            const gearBringing = participant.meta?.['gear-bringing-evening-or-day-trip'] || '';
+            const welliesSize = participant.meta?.gear_wellies_size || '';
+            
+            // List of standard gear items
+            const standardGear = [
+                'Oversuit', 
+                'Undersuit', 
+                'Helmet and Light', 
+                'Kneepads', 
+                'Gloves', 
+                'SRT Kit', 
+                'Wellies'
+            ];
+            
+            // Check what gear the participant is missing
+            const missingGear = [];
+            
+            // If they're totally new, they need everything
+            if (gearBringing.includes('Nothing - Im totally new to this')) {
+                missingGear.push(...standardGear);
+            } else {
+                // Check each standard gear item
+                standardGear.forEach(item => {
+                    if (!gearBringing.includes(item)) {
+                        if (item === 'Wellies') {
+                            missingGear.push(`Wellies${welliesSize ? ` size ${welliesSize}` : ''}`);
+                        } else {
+                            missingGear.push(item);
+                        }
+                    }
+                });
+            }
+            
+            // Only add participants who need gear
+            if (missingGear.length > 0) {
+                requestTemplate += `${participant.first_name}: ${missingGear.join(', ')}\n`;
+            }
+        });
+        
+        // Add group equipment section
+        requestTemplate += '\nThe group equipment we need is:\n';
+        requestTemplate += '- crew leaderbag\n';
+        
+        // Add route-specific equipment if available
+        if (trip.route?.acf?.route_group_tackle_required) {
+            const tackleRequired = trip.route.acf.route_group_tackle_required;
+            // Clean up HTML tags if present and split by commas or line breaks
+            const tackleItems = tackleRequired
+                .replace(/<[^>]*>/g, ', ')
+                .replace(/,\s*,/g, ',')
+                .split(/[,\n]/)
+                .map(item => item.trim())
+                .filter(Boolean);
+            
+            // Add each tackle item
+            tackleItems.forEach(item => {
+                requestTemplate += `- ${item}\n`;
+            });
+        } else {
+            // Default equipment if no specific requirements
+            requestTemplate += '- 15m rope\n';
+            requestTemplate += '- 3 carabiners\n';
+            requestTemplate += '- extra tacklesack\n';
+        }
+        
+        return requestTemplate;
+    };
+
     // Render different views based on access level
     const renderAccessLevelView = () => {
         switch (accessLevel) {
@@ -423,6 +540,19 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
 
                         <Tabs.Panel value="cavers" pt="xs">
                             <Group justify="flex-end" mb="md">
+                                <Button
+                                    leftSection={<IconMessage size={16} />}
+                                    onClick={() => {
+                                        const text = generateTackleRequestText();
+                                        setTackleRequestText(text);
+                                        setTackleRequestModalOpen(true);
+                                    }}
+                                    variant="outline"
+                                    color="teal"
+                                    mr="xs"
+                                >
+                                    Write a request to the tackle manager
+                                </Button>
                                 <Button
                                     leftSection={<IconFileDescription size={16} />}
                                     onClick={() => {
@@ -1068,6 +1198,52 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                 Close
                             </Button>
                             <CopyButton value={calloutText} timeout={2000}>
+                                {({ copied, copy }) => (
+                                    <Button
+                                        color={copied ? 'teal' : 'blue'}
+                                        onClick={copy}
+                                        leftSection={<IconCopy size={16} />}
+                                    >
+                                        {copied ? 'Copied to clipboard' : 'Copy to clipboard'}
+                                    </Button>
+                                )}
+                            </CopyButton>
+                        </Group>
+                    </Modal>
+
+                    {/* Tackle Request Modal */}
+                    <Modal
+                        opened={tackleRequestModalOpen}
+                        onClose={() => setTackleRequestModalOpen(false)}
+                        title={
+                            <Title order={4}>
+                                Tackle Manager Request
+                            </Title>
+                        }
+                        size="lg"
+                    >
+                        <Alert
+                            icon={<IconInfoCircle size={16} />}
+                            color="teal"
+                            title="Tackle Request"
+                            mb="md"
+                        >
+                            This message summarizes the gear needed for your trip. Send it to the tackle manager to request equipment.
+                        </Alert>
+
+                        <Textarea
+                            value={tackleRequestText}
+                            onChange={(e) => setTackleRequestText(e.currentTarget.value)}
+                            minRows={10}
+                            autosize
+                            mb="md"
+                        />
+
+                        <Group justify="space-between" mt="md">
+                            <Button onClick={() => setTackleRequestModalOpen(false)}>
+                                Close
+                            </Button>
+                            <CopyButton value={tackleRequestText} timeout={2000}>
                                 {({ copied, copy }) => (
                                     <Button
                                         color={copied ? 'teal' : 'blue'}
