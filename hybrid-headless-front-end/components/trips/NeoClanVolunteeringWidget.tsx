@@ -846,22 +846,23 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                                 }
                                             } else if (item === 'Helmet and Light') {
                                                 // Special case for Helmet and Light
-                                                const hasHelmet = bringingItems.some(g =>
-                                                    g.toLowerCase().includes('helmet'));
-                                                const hasLight = bringingItems.some(g =>
-                                                    g.toLowerCase().includes('light'));
-
-                                                if (hasHelmet && hasLight) {
-                                                    return; // They have both helmet and light
-                                                }
-
                                                 // Check for combined "Helmet and Light" item
-                                                const hasHelmetAndLight = bringingItems.some(g =>
-                                                    g.toLowerCase().includes('helmet') &&
-                                                    g.toLowerCase().includes('light'));
-
+                                                const hasHelmetAndLight = bringingItems.some(g => 
+                                                    g.toLowerCase().includes('helmet and light'));
+                                                
                                                 if (hasHelmetAndLight) {
                                                     return; // They have a combined helmet and light
+                                                }
+                                                
+                                                // Check for separate helmet and light items (not spare light)
+                                                const hasHelmet = bringingItems.some(g => 
+                                                    g.toLowerCase().includes('helmet'));
+                                                const hasLight = bringingItems.some(g => 
+                                                    g.toLowerCase().includes('light') && 
+                                                    !g.toLowerCase().includes('spare'));
+                                                
+                                                if (hasHelmet && hasLight) {
+                                                    return; // They have both helmet and light
                                                 }
                                             } else {
                                                 // For all other items, check if they're bringing it
@@ -896,12 +897,19 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                             // Skip items that are part of the standard gear list
                                             for (const req of standardGear) {
                                                 // Handle special cases first
-                                                if (req === 'Helmet and Light' &&
-                                                    (item.toLowerCase().includes('helmet') ||
-                                                     item.toLowerCase().includes('light'))) {
-                                                    return false;
+                                                if (req === 'Helmet and Light') {
+                                                    // Only match exact "Helmet and Light" or separate helmet/light items
+                                                    // Don't match "Spare Light" as part of required gear
+                                                    if (item.toLowerCase() === 'helmet and light' ||
+                                                        item.toLowerCase() === 'helmet' ||
+                                                        (item.toLowerCase().includes('light') && 
+                                                         !item.toLowerCase().includes('spare'))) {
+                                                        return false;
+                                                    }
+                                                    // Continue checking other requirements
+                                                    continue;
                                                 }
-
+                                                
                                                 // Standard comparison
                                                 if (item.toLowerCase().includes(req.toLowerCase())) {
                                                     return false;
@@ -934,10 +942,16 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                                                     // Check if this item is in the required list
                                                                     return standardGear.some(req => {
                                                                         // Handle special cases first
-                                                                        if (req === 'Helmet and Light' &&
-                                                                            (item.toLowerCase().includes('helmet') ||
-                                                                             item.toLowerCase().includes('light'))) {
-                                                                            return true;
+                                                                        if (req === 'Helmet and Light') {
+                                                                            // Only match exact "Helmet and Light" or separate helmet/light items
+                                                                            // Don't match "Spare Light" as part of required gear
+                                                                            if (item.toLowerCase() === 'helmet and light' ||
+                                                                                item.toLowerCase() === 'helmet' ||
+                                                                                (item.toLowerCase().includes('light') && 
+                                                                                 !item.toLowerCase().includes('spare'))) {
+                                                                                return true;
+                                                                            }
+                                                                            return false;
                                                                         }
 
                                                                         // Special case for SRT Kit and Harness/Cowstails
