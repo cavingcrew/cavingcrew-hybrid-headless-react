@@ -108,14 +108,20 @@ export interface TripParticipant {
 			| undefined
 			| string;
 		"caving-srt-happy-to-second-or-lead"?:
-			| "leader"
-			| "seconder"
-			| "no"
-			| "n/a"
+			| "Leader"
+			| "Seconder"
+			| "No"
+			| "N/A"
 			| null
 			| undefined
 			| string;
-		"transport-need-lift"?: "yes" | "no" | string;
+		"transport-need-lift"?: 
+			| "Yes"
+			| "No"
+			| "Prefer to give lift or get lift but not drive a car solo"
+			| null
+			| undefined
+			| string;
 		"transport-will-you-give-lift"?: "yes" | "no" | string;
 		"transport-depature-time"?: string;
 		"transport-leaving-location"?: string;
@@ -188,8 +194,14 @@ export interface TripParticipant {
 		"admin-date-of-birth"?: string;
 		"admin-car-registration"?: string;
 		"admin-diet-allergies-health-extra-info"?: string;
-		"admin-health-shoulder"?: "yes" | "no" | string;
-		"admin-health-asthma"?: "yes" | "no" | string;
+		"admin-health-shoulder"?: "Yes" | "No" | null | undefined | string;
+		"admin-health-asthma"?: 
+			| "Yes and I'm bringing an inhaler"
+			| "Yes"
+			| "No"
+			| null
+			| undefined
+			| string;
 		"admin-health-missing-dose"?: "yes" | "no" | string;
 		"admin-health-impairment-through-medication"?: "yes" | "no" | string;
 		[key: string]: string | null | undefined;
