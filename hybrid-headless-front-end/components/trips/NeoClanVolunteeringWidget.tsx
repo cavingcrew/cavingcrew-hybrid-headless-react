@@ -323,6 +323,12 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
             return status === 'Signed Up';
         });
 
+        // Get route personal gear requirements
+        const routePersonalGear = trip.route?.acf?.route_personal_gear_required || '';
+        const requiresSRT = trip.acf.event_gear_required?.includes('SRT') || 
+                           routePersonalGear.includes('SRT Kit') ||
+                           trip.acf.event_skills_required?.includes('SRT');
+        
         // Build the tackle request text
         let requestTemplate = `On ${formattedDate} at ${formattedTime} we're going to ${getLocationName()}`;
 
@@ -332,6 +338,9 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
 
         requestTemplate += ':\n\n';
         requestTemplate += 'With help from NeoCrew, I think we\'ll need:\n';
+
+        // Track participants who need wellies but haven't specified a size
+        const participantsNeedingWellieSize = [];
 
         // Process each participant's gear needs
         signedUpParticipants.forEach(participant => {
@@ -345,34 +354,64 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                 'Helmet and Light',
                 'Kneepads',
                 'Gloves',
-                'SRT Kit',
                 'Wellies'
             ];
+            
+            // Add SRT Kit if required for this trip
+            if (requiresSRT) {
+                standardGear.push('SRT Kit');
+                if (!gearBringing.includes('SRT Kit') && !gearBringing.includes('Harness and Cowstails')) {
+                    standardGear.push('Harness and Cowstails');
+                }
+            }
 
             // Check what gear the participant is missing
             const missingGear = [];
-
-            // If they're totally new, they need everything
-            if (gearBringing.includes('Nothing - Im totally new to this')) {
-                missingGear.push(...standardGear);
-            } else {
-                // Check each standard gear item
-                standardGear.forEach(item => {
-                    if (!gearBringing.includes(item)) {
-                        if (item === 'Wellies') {
-                            missingGear.push(`Wellies${welliesSize ? ` size ${welliesSize}` : ''}`);
+            
+            // Parse individual items they're bringing
+            const bringingItems = gearBringing.split(',').map(item => item.trim());
+            
+            // Even if they selected "Nothing", check if they've also selected specific items
+            const isNewCaver = bringingItems.some(item => 
+                item.includes('Nothing') || item.includes('totally new')
+            );
+            
+            // Check each standard gear item
+            standardGear.forEach(item => {
+                // Special case for SRT Kit and Harness/Cowstails
+                if (item === 'Harness and Cowstails' && bringingItems.some(g => 
+                    g.includes('SRT Kit') || g.includes('Harness and Cowstails')
+                )) {
+                    return; // They have this covered
+                }
+                
+                // For all other items, check if they're bringing it
+                const hasBrought = bringingItems.some(g => g.includes(item));
+                
+                if (!hasBrought || (isNewCaver && item !== 'Wellies')) {
+                    if (item === 'Wellies') {
+                        if (welliesSize) {
+                            missingGear.push(`Wellies size ${welliesSize}`);
                         } else {
-                            missingGear.push(item);
+                            missingGear.push('Wellies');
+                            participantsNeedingWellieSize.push(participant.first_name);
                         }
+                    } else {
+                        missingGear.push(item);
                     }
-                });
-            }
+                }
+            });
 
             // Only add participants who need gear
             if (missingGear.length > 0) {
                 requestTemplate += `${participant.first_name}: ${missingGear.join(', ')}\n`;
             }
         });
+
+        // Add note about wellie sizes if needed
+        if (participantsNeedingWellieSize.length > 0) {
+            requestTemplate += `\nI'll find out the wellie sizes for: ${participantsNeedingWellieSize.join(', ')}\n`;
+        }
 
         // Add group equipment section
         requestTemplate += '\nThe Group equipment we need is:\n';
@@ -385,19 +424,25 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                 .replace(/<[^>]*>/g, '')
                 .replace(/\s+/g, ' ')
                 .trim();
-
+                
             // Use the cleaned tackle text as a single item instead of splitting
-            const tackleItems = [cleanedTackle].filter(Boolean);
-
-            // Add each tackle item
-            tackleItems.forEach(item => {
-                requestTemplate += `- ${item}\n`;
-            });
+            requestTemplate += `- ${cleanedTackle}\n`;
         } else {
             // Default equipment if no specific requirements
-            requestTemplate += '- write your\n';
-            requestTemplate += '- tackle required\n';
-            requestTemplate += '- here\n';
+            requestTemplate += '- crew leaderbag\n';
+            
+            if (requiresSRT) {
+                requestTemplate += '- rope bag\n';
+                requestTemplate += '- 30m rope\n';
+                requestTemplate += '- 6 carabiners\n';
+                requestTemplate += '- 4 maillons\n';
+                requestTemplate += '- 2 slings\n';
+            } else {
+                requestTemplate += '- 15m handline\n';
+                requestTemplate += '- 3 carabiners\n';
+            }
+            
+            requestTemplate += '- extra tacklesack\n';
         }
 
         return requestTemplate;
