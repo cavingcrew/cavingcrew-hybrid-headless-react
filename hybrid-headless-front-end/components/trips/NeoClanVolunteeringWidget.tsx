@@ -111,7 +111,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
             <Paper withBorder p="md" radius="md">
                 <Stack>
                     <Group justify="space-between">
-                        <Title order={3}>Trip Participants</Title>
+                        <Title order={3}>People who've Signed Up</Title>
                         <Skeleton height={24} width={100} radius="xl" />
                     </Group>
                     <Skeleton height={200} radius="md" />
