@@ -836,6 +836,11 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                             if (item.includes('Nothing') || item.includes('totally new')) {
                                                 return false;
                                             }
+                                            
+                                            // Skip "Ropes" item as we'll handle it separately with rope length
+                                            if (item.toLowerCase() === 'ropes') {
+                                                return false;
+                                            }
 
                                             // Check if this item is not in the required list
                                             return !standardGear.some(req =>
@@ -902,9 +907,10 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                                                     {item}
                                                                 </Badge>
                                                             ))}
-                                                            {participant.meta?.['gear-rope-length'] && (
+                                                            {/* Show rope with length if they're bringing ropes or if they specified a rope length */}
+                                                            {(bringingItems.some(item => item.toLowerCase() === 'ropes') || participant.meta?.['gear-rope-length']) && (
                                                                 <Badge color="teal" variant="light">
-                                                                    Rope: {participant.meta['gear-rope-length']}
+                                                                    Rope: {participant.meta?.['gear-rope-length'] || 'length not specified'}
                                                                 </Badge>
                                                             )}
                                                         </Stack>
