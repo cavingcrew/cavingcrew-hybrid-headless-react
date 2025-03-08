@@ -325,10 +325,10 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
 
         // Get route personal gear requirements
         const routePersonalGear = trip.route?.acf?.route_personal_gear_required || '';
-        const requiresSRT = trip.acf.event_gear_required?.includes('SRT') || 
+        const requiresSRT = trip.acf.event_gear_required?.includes('SRT') ||
                            routePersonalGear.includes('SRT Kit') ||
                            trip.acf.event_skills_required?.includes('SRT');
-        
+
         // Build the tackle request text
         let requestTemplate = `On ${formattedDate} at ${formattedTime} we're going to ${getLocationName()}`;
 
@@ -356,7 +356,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                 'Gloves',
                 'Wellies'
             ];
-            
+
             // Add SRT Kit if required for this trip
             if (requiresSRT) {
                 standardGear.push('SRT Kit');
@@ -367,27 +367,27 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
 
             // Check what gear the participant is missing
             const missingGear: string[] = [];
-            
+
             // Parse individual items they're bringing
             const bringingItems = gearBringing.split(',').map(item => item.trim());
-            
+
             // Even if they selected "Nothing", check if they've also selected specific items
-            const isNewCaver = bringingItems.some(item => 
+            const isNewCaver = bringingItems.some(item =>
                 item.includes('Nothing') || item.includes('totally new')
             );
-            
+
             // Check each standard gear item
             standardGear.forEach(item => {
                 // Special case for SRT Kit and Harness/Cowstails
-                if (item === 'Harness and Cowstails' && bringingItems.some(g => 
+                if (item === 'Harness and Cowstails' && bringingItems.some(g =>
                     g.includes('SRT Kit') || g.includes('Harness and Cowstails')
                 )) {
                     return; // They have this covered
                 }
-                
+
                 // For all other items, check if they're bringing it
                 const hasBrought = bringingItems.some(g => g.includes(item));
-                
+
                 if (!hasBrought || (isNewCaver && item !== 'Wellies')) {
                     if (item === 'Wellies') {
                         if (welliesSize) {
@@ -404,7 +404,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
 
             // Only add participants who need gear
             if (missingGear.length > 0) {
-                requestTemplate += `${participant.first_name}: ${missingGear.join(', ')}\n`;
+                requestTemplate += `${participant.first_name} ${participant.last_name}: ${missingGear.join(', ')}\n`;
             }
         });
 
@@ -424,25 +424,28 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                 .replace(/<[^>]*>/g, '')
                 .replace(/\s+/g, ' ')
                 .trim();
-                
+
             // Use the cleaned tackle text as a single item instead of splitting
             requestTemplate += `- ${cleanedTackle}\n`;
         } else {
             // Default equipment if no specific requirements
-            requestTemplate += '- crew leaderbag\n';
-            
+            requestTemplate += '- Standard Caving Crew Leaderbag\n';
+
             if (requiresSRT) {
-                requestTemplate += '- rope bag\n';
-                requestTemplate += '- 30m rope\n';
-                requestTemplate += '- 6 carabiners\n';
-                requestTemplate += '- 4 maillons\n';
-                requestTemplate += '- 2 slings\n';
+                requestTemplate += '- rope bags?\n';
+                requestTemplate += '- XXm rope?\n';
+                requestTemplate += '- X carabiners?\n';
+                requestTemplate += '- 1 x emergency rope (xM)\n';
+                requestTemplate += '- 1 SRT Leader Kit\n';
+                requestTemplate += '- x slings\n';
+
             } else {
-                requestTemplate += '- 15m handline\n';
-                requestTemplate += '- 3 carabiners\n';
+                requestTemplate += '- XXm handline rope\n';
+                requestTemplate += '- x carabiners\n';
+                requestTemplate += '- x slings\n';
+
             }
-            
-            requestTemplate += '- extra tacklesack\n';
+
         }
 
         return requestTemplate;
@@ -731,12 +734,12 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                         // Parse gear bringing from participant meta
                                         const gearBringing = participant.meta?.['gear-bringing-evening-or-day-trip'] || '';
                                         const welliesSize = participant.meta?.gear_wellies_size || '';
-                                        
+
                                         // Parse individual items they're bringing
                                         const bringingItems = gearBringing.split(',').map(item => item.trim()).filter(Boolean);
-                                        
+
                                         // Check if they're a new caver
-                                        const isNewCaver = bringingItems.some(item => 
+                                        const isNewCaver = bringingItems.some(item =>
                                             item.includes('Nothing') || item.includes('totally new')
                                         );
 
@@ -757,7 +760,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                             'Gloves',
                                             'Wellies'
                                         ];
-                                        
+
                                         // Add SRT Kit if required for this trip
                                         if (requiresSRT) {
                                             standardGear.push('SRT Kit');
@@ -768,19 +771,19 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
 
                                         // Check what gear the participant is missing
                                         const missingGear: string[] = [];
-                                        
+
                                         // Check each standard gear item
                                         standardGear.forEach(item => {
                                             // Special case for SRT Kit and Harness/Cowstails
-                                            if (item === 'Harness and Cowstails' && bringingItems.some(g => 
+                                            if (item === 'Harness and Cowstails' && bringingItems.some(g =>
                                                 g.includes('SRT Kit') || g.includes('Harness and Cowstails')
                                             )) {
                                                 return; // They have this covered
                                             }
-                                            
+
                                             // For all other items, check if they're bringing it
                                             const hasBrought = bringingItems.some(g => g.includes(item));
-                                            
+
                                             if (!hasBrought || (isNewCaver && item !== 'Wellies')) {
                                                 if (item === 'Wellies') {
                                                     if (welliesSize) {
@@ -904,7 +907,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                         Some people are new and need full equipment. Please coordinate gear loans.
                                     </Alert>
                                 )}
-                                
+
                                 {participants.some(p => {
                                     // Check if this participant needs wellies but hasn't specified size
                                     const gearBringing = p.meta?.['gear-bringing-evening-or-day-trip'] || '';
