@@ -699,17 +699,30 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                         </Tabs.Panel>
 
                         <Tabs.Panel value="equipment" pt="xs">
-                            <Group justify="flex-end" mb="md">
+                            <Group justify="space-between" mb="md">
                                 <Badge color="blue" variant="light">
                                     Required gear for this trip: {trip.acf.event_gear_required || 'None specified'}
                                 </Badge>
+                                <Button
+                                    leftSection={<IconMessage size={16} />}
+                                    onClick={() => {
+                                        const text = generateTackleRequestText();
+                                        setTackleRequestText(text);
+                                        setTackleRequestModalOpen(true);
+                                    }}
+                                    variant="outline"
+                                    color="teal"
+                                    size="sm"
+                                >
+                                    Generate tackle request
+                                </Button>
                             </Group>
                             <Table striped>
                                 <Table.Thead>
                                     <Table.Tr>
                                         <Table.Th>Name</Table.Th>
                                         <Table.Th>Gear Bringing</Table.Th>
-                                        <Table.Th>Missing Items</Table.Th>
+                                        <Table.Th>Needs</Table.Th>
                                         <Table.Th>Additional Gear</Table.Th>
                                     </Table.Tr>
                                 </Table.Thead>
@@ -717,54 +730,79 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                     {participants.map((participant) => {
                                         // Parse gear bringing from participant meta
                                         const gearBringing = participant.meta?.['gear-bringing-evening-or-day-trip'] || '';
-                                        const gearItems = gearBringing.split(',')
-                                            .map(item => item.trim())
-                                            .filter(Boolean);
+                                        const welliesSize = participant.meta?.gear_wellies_size || '';
+                                        
+                                        // Parse individual items they're bringing
+                                        const bringingItems = gearBringing.split(',').map(item => item.trim()).filter(Boolean);
+                                        
+                                        // Check if they're a new caver
+                                        const isNewCaver = bringingItems.some(item => 
+                                            item.includes('Nothing') || item.includes('totally new')
+                                        );
 
                                         // Determine required gear based on trip type
                                         const requiresSRT = trip.acf.event_gear_required?.includes('SRT') ||
                                                           trip.acf.event_skills_required?.includes('SRT') ||
                                                           trip.route?.acf?.route_personal_gear_required?.includes('SRT');
 
+                                        // Get route personal gear requirements
+                                        const routePersonalGear = trip.route?.acf?.route_personal_gear_required || '';
+
                                         // Standard gear requirements
-                                        const requiredGear = [
+                                        const standardGear = [
                                             'Oversuit',
                                             'Undersuit',
-                                            'Wellies',
                                             'Helmet and Light',
-                                            'Gloves'
+                                            'Kneepads',
+                                            'Gloves',
+                                            'Wellies'
                                         ];
-
-                                        // Add SRT kit if required
+                                        
+                                        // Add SRT Kit if required for this trip
                                         if (requiresSRT) {
-                                            requiredGear.push('SRT Kit', 'Harness and Cowstails');
+                                            standardGear.push('SRT Kit');
+                                            if (!gearBringing.includes('SRT Kit') && !gearBringing.includes('Harness and Cowstails')) {
+                                                standardGear.push('Harness and Cowstails');
+                                            }
                                         }
 
-                                        // Check what's missing
-                                        const missingGear = requiredGear.filter(item => {
-                                            // Special case for "Nothing - Im totally new to this"
-                                            if (gearItems.some(g => g.includes('Nothing') || g.includes('totally new'))) {
-                                                return true;
+                                        // Check what gear the participant is missing
+                                        const missingGear = [];
+                                        
+                                        // Check each standard gear item
+                                        standardGear.forEach(item => {
+                                            // Special case for SRT Kit and Harness/Cowstails
+                                            if (item === 'Harness and Cowstails' && bringingItems.some(g => 
+                                                g.includes('SRT Kit') || g.includes('Harness and Cowstails')
+                                            )) {
+                                                return; // They have this covered
                                             }
-
-                                            // Check if the participant has this gear item
-                                            return !gearItems.some(g =>
-                                                g.toLowerCase().includes(item.toLowerCase()) ||
-                                                // Handle special cases
-                                                (item === 'Helmet and Light' &&
-                                                 (g.toLowerCase().includes('helmet') || g.toLowerCase().includes('light')))
-                                            );
+                                            
+                                            // For all other items, check if they're bringing it
+                                            const hasBrought = bringingItems.some(g => g.includes(item));
+                                            
+                                            if (!hasBrought || (isNewCaver && item !== 'Wellies')) {
+                                                if (item === 'Wellies') {
+                                                    if (welliesSize) {
+                                                        missingGear.push(`Wellies size ${welliesSize}`);
+                                                    } else {
+                                                        missingGear.push('Wellies (size unknown)');
+                                                    }
+                                                } else {
+                                                    missingGear.push(item);
+                                                }
+                                            }
                                         });
 
                                         // Check for additional gear beyond requirements
-                                        const additionalGear = gearItems.filter(item => {
+                                        const additionalGear = bringingItems.filter(item => {
                                             // Skip if it's the "Nothing" option
                                             if (item.includes('Nothing') || item.includes('totally new')) {
                                                 return false;
                                             }
 
                                             // Check if this item is not in the required list
-                                            return !requiredGear.some(req =>
+                                            return !standardGear.some(req =>
                                                 item.toLowerCase().includes(req.toLowerCase()) ||
                                                 // Handle special cases
                                                 (req === 'Helmet and Light' &&
@@ -772,19 +810,15 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                             );
                                         });
 
-                                        // Check if wellies are needed but size not specified
-                                        const needsWelliesSize = missingGear.includes('Wellies') &&
-                                                               !participant.meta?.['gear_wellies_size'];
-
                                         return (
                                             <Table.Tr key={participant.order_id}>
                                                 <Table.Td>{participant.first_name} {participant.last_name}</Table.Td>
                                                 <Table.Td>
-                                                    {gearItems.length === 0 ? (
+                                                    {bringingItems.length === 0 ? (
                                                         <Text>None specified</Text>
                                                     ) : (
                                                         <Stack gap="xs">
-                                                            {gearItems.map((item, index) => (
+                                                            {bringingItems.map((item, index) => (
                                                                 <Badge
                                                                     key={index}
                                                                     color={item.includes('Nothing') ? 'red' : 'blue'}
@@ -807,14 +841,12 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                                                     color="red"
                                                                     variant="light"
                                                                 >
-                                                                    Needs: {item}
-                                                                    {item === 'Wellies' && participant.meta?.['gear_wellies_size'] &&
-                                                                     ` (Size: ${participant.meta['gear_wellies_size']})`}
+                                                                    {item}
                                                                 </Badge>
                                                             ))}
-                                                            {needsWelliesSize && (
+                                                            {!welliesSize && missingGear.some(g => g.includes('Wellies')) && (
                                                                 <Badge color="orange" variant="light">
-                                                                    Wellies size not specified
+                                                                    Need wellie size
                                                                 </Badge>
                                                             )}
                                                         </Stack>
@@ -860,7 +892,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
 
                                 {trip.acf.event_gear_required?.includes('SRT') && (
                                     <Alert icon={<IconInfoCircle size={16} />} color="yellow" mt="md">
-                                        This trip requires SRT equipment. Ensure all participants have proper vertical caving gear.
+                                        This trip requires SRT equipment. Ensure all people have proper vertical caving gear.
                                     </Alert>
                                 )}
 
@@ -869,7 +901,16 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                     p.meta?.['gear-bringing-evening-or-day-trip']?.includes('totally new')
                                 ) && (
                                     <Alert icon={<IconInfoCircle size={16} />} color="red" mt="md">
-                                        Some participants are new and need full equipment. Please coordinate gear loans.
+                                        Some people are new and need full equipment. Please coordinate gear loans.
+                                    </Alert>
+                                )}
+                                
+                                {participants.some(p => 
+                                    missingGear.length > 0 && !p.meta?.gear_wellies_size && 
+                                    missingGear.some(g => g.includes('Wellies'))
+                                ) && (
+                                    <Alert icon={<IconInfoCircle size={16} />} color="orange" mt="md">
+                                        Some people need wellies but haven't specified their size. Please check with them.
                                     </Alert>
                                 )}
                             </Box>
