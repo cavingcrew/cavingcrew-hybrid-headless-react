@@ -366,7 +366,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
             }
 
             // Check what gear the participant is missing
-            const missingGear = [];
+            const missingGear: string[] = [];
             
             // Parse individual items they're bringing
             const bringingItems = gearBringing.split(',').map(item => item.trim());
