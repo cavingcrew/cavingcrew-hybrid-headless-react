@@ -152,10 +152,10 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
         // Get current time
         const now = new Date();
         
-        // Calculate callout time (now + route duration * 0.25)
+        // Calculate callout time (now + route duration * 1.25)
         const routeDuration = trip.route?.acf?.route_time_for_eta ? 
             parseInt(trip.route.acf.route_time_for_eta) : 4; // Default to 4 hours if not specified
-        const calloutTimeMs = now.getTime() + (routeDuration * 0.25 * 60 * 60 * 1000);
+        const calloutTimeMs = now.getTime() + (routeDuration * 1.25 * 60 * 60 * 1000);
         const calloutTime = new Date(calloutTimeMs);
         
         // Calculate ETA (callout time - 1 hour)
