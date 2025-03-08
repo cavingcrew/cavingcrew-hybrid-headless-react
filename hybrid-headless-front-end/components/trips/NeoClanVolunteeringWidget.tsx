@@ -35,7 +35,8 @@ const determineSignupStatus = (participant: TripParticipant): string => {
     };
 
     // Check predefined statuses first
-    if (statusMap[attendance]) return statusMap[attendance];
+    if (attendance && typeof attendance === 'string' && statusMap[attendance]) 
+        return statusMap[attendance];
 
     // Handle pending and processing statuses
     if (orderStatus === 'processing' && (!attendance || attendance === 'pending')) 
