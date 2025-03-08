@@ -715,12 +715,12 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                         <Table.Tr key={participant.order_id}>
                                             <Table.Td>{participant.first_name} {participant.last_name}</Table.Td>
                                             <Table.Td>
-                                                {participant.meta?.['transport-need-lift'] === 'yes' ? (
+                                                {participant.meta?.['transport-need-lift']?.toLowerCase() === 'yes' ? (
                                                     <Badge color="red">Needs Lift</Badge>
                                                 ) : 'No'}
                                             </Table.Td>
                                             <Table.Td>
-                                                {participant.meta?.['transport-will-you-give-lift'] === 'yes' ? (
+                                                {participant.meta?.['transport-will-you-give-lift']?.toLowerCase() === 'yes' ? (
                                                     <Badge color="green">Giving Lift</Badge>
                                                 ) : 'No'}
                                             </Table.Td>
