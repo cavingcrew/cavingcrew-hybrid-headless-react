@@ -838,7 +838,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                             }
 
                                             // Skip "Ropes" item as we'll handle it separately with rope length
-                                            if (item.toLowerCase() === 'ropes') {
+                                            if (item.toLowerCase().includes('rope')) {
                                                 return false;
                                             }
 
@@ -918,7 +918,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                                                 </Badge>
                                                             )}
                                                             {/* Only show "Ropes" item if no length specified but they're bringing ropes */}
-                                                            {bringingItems.some(item => item.toLowerCase() === 'ropes') &&
+                                                            {bringingItems.some(item => item.toLowerCase().includes('rope')) &&
                                                              !participant.meta?.['gear-rope-length'] && (
                                                                 <Badge color="teal" variant="light">
                                                                     Ropes (length not specified)
