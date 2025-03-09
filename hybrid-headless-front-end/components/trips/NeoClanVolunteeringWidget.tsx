@@ -38,7 +38,8 @@ import { formatRelativeTime } from '../../utils/date-utils';
 import { 
     getSkillLabel, 
     getSkillDescription, 
-    getSkillInfoUrl 
+    getSkillInfoUrl,
+    getSkillDefinition
 } from '../../utils/skill-definitions';
 
 // Main component with improved structure and comments
