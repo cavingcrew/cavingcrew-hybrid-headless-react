@@ -9,7 +9,7 @@ import {
 import {
     IconUsers, IconAlertCircle, IconInfoCircle, IconTools,
     IconHeartHandshake, IconSchool, IconMedicalCross, IconShield,
-    IconChartBar, IconCheck, IconX,
+    IconChartBar, IconCheck, IconX, IconAlertTriangle,
     IconFileDescription, IconMessage, IconCar
 } from '@tabler/icons-react';
 
