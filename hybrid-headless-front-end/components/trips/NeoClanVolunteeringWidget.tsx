@@ -3,13 +3,13 @@
 import React, { useState } from 'react';
 import {
     Paper, Title, Text, Group, Badge, Tabs, Table, Skeleton, Alert,
-    Stack, Button, Modal, List, Anchor, Box, ThemeIcon, Textarea,
+    Stack, Button, List, Anchor, Box, ThemeIcon, 
     CopyButton, ActionIcon, Tooltip
 } from '@mantine/core';
 import {
     IconUsers, IconAlertCircle, IconInfoCircle, IconTools,
     IconHeartHandshake, IconSchool, IconMedicalCross, IconShield,
-    IconChartBar, IconAlertTriangle, IconCheck, IconX, IconCopy,
+    IconChartBar, IconCheck, IconX,
     IconFileDescription, IconMessage, IconCar
 } from '@tabler/icons-react';
 
@@ -41,6 +41,12 @@ import {
     getSkillInfoUrl,
     getSkillDefinition
 } from '../../utils/skill-definitions';
+import {
+    EmergencyAccessModal,
+    EmergencyInfoModal,
+    CalloutModal,
+    TackleRequestModal
+} from './modals';
 
 // Main component with improved structure and comments
 export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetProps) {
@@ -1057,266 +1063,34 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                         </Tabs.Panel>
                     </Tabs>
 
-                    {/* Emergency Access Confirmation Modal */}
-                    <Modal
+                    {/* Modals */}
+                    <EmergencyAccessModal
                         opened={confirmEmergencyAccess}
                         onClose={() => setConfirmEmergencyAccess(false)}
-                        title={
-                            <Title order={4} c="red">
-                                Emergency Information Access
-                            </Title>
-                        }
-                        size="md"
-                    >
-                        <Alert
-                            icon={<IconAlertTriangle size={16} />}
-                            color="red"
-                            title="Confidential Information"
-                            mb="md"
-                        >
-                            This is for emergency use by authorized people only - not just to be nosy. Access is logged.
-                        </Alert>
+                        onConfirm={confirmAndShowEmergencyInfo}
+                    />
 
-                        <Text mb="md">
-                            Are you sure you need to access this confidential emergency information?
-                        </Text>
-
-                        <Group justify="center" mt="xl">
-                            <Button
-                                variant="outline"
-                                onClick={() => setConfirmEmergencyAccess(false)}
-                            >
-                                Cancel
-                            </Button>
-                            <Button
-                                color="red"
-                                onClick={confirmAndShowEmergencyInfo}
-                            >
-                                Yes, I need this information
-                            </Button>
-                        </Group>
-                    </Modal>
-
-                    {/* Emergency Information Modal */}
-                    <Modal
+                    <EmergencyInfoModal
                         opened={emergencyModalOpen}
                         onClose={() => setEmergencyModalOpen(false)}
-                        title={
-                            <Title order={4}>
-                                Emergency Contact - {selectedParticipant?.first_name} {selectedParticipant?.last_name}
-                            </Title>
-                        }
-                        size="lg"
-                    >
-                        <Alert
-                            icon={<IconAlertTriangle size={16} />}
-                            color="red"
-                            title="Confidential Information"
-                            mb="md"
-                        >
-                            This is for emergency use by authorized people only - not just to be nosy. Access is logged.
-                        </Alert>
+                        participant={selectedParticipant}
+                    />
 
-                        {selectedParticipant && (
-                            <Stack>
-                                <Group>
-                                    <Text fw={700}>Full Name:</Text>
-                                    <Text>{selectedParticipant.first_name} {selectedParticipant.last_name}</Text>
-                                </Group>
-
-                                <Group>
-                                    <Text fw={700}>Phone Number:</Text>
-                                    <Text>{selectedParticipant.admin_meta?.['admin-phone-number'] || selectedParticipant.admin_meta?.['billing_phone'] || 'Not provided'}</Text>
-                                </Group>
-
-                                <Group align="flex-start">
-                                    <Text fw={700}>Emergency Contact:</Text>
-                                    <Box>
-                                        <Text>{selectedParticipant.admin_meta?.['admin-emergency-contact-name'] || 'Not provided'}</Text>
-                                        <Text>{selectedParticipant.admin_meta?.['admin-emergency-contact-phone'] || 'No phone provided'}</Text>
-                                        <Text>{selectedParticipant.admin_meta?.['admin-emergency-contact-relationship'] || 'Relationship not specified'}</Text>
-                                    </Box>
-                                </Group>
-
-                                <Group align="flex-start">
-                                    <Text fw={700}>Address:</Text>
-                                    <Box>
-                                        <Text>{selectedParticipant.admin_meta?.['billing_address_1'] || 'Not provided'}</Text>
-                                        {selectedParticipant.admin_meta?.['billing_address_2'] && (
-                                            <Text>{selectedParticipant.admin_meta?.['billing_address_2']}</Text>
-                                        )}
-                                        <Text>
-                                            {[
-                                                selectedParticipant.admin_meta?.['billing_city'],
-                                                selectedParticipant.admin_meta?.['billing_postcode']
-                                            ].filter(Boolean).join(', ')}
-                                        </Text>
-                                    </Box>
-                                </Group>
-
-                                <Group>
-                                    <Text fw={700}>Date of Birth:</Text>
-                                    <Text>{selectedParticipant.admin_meta?.['admin-date-of-birth'] || 'Not provided'}</Text>
-                                </Group>
-
-                                <Group>
-                                    <Text fw={700}>Car Registration:</Text>
-                                    <Text>{selectedParticipant.admin_meta?.['admin-car-registration'] || 'Not provided'}</Text>
-                                </Group>
-
-                                <Group align="flex-start">
-                                    <Text fw={700}>Health Information:</Text>
-                                    <Box>
-                                        <Text>{selectedParticipant.admin_meta?.['admin-diet-allergies-health-extra-info'] || 'None provided'}</Text>
-                                        {selectedParticipant.admin_meta?.['admin-health-shoulder'] === 'yes' && (
-                                            <Text c="red">Has shoulder issues</Text>
-                                        )}
-                                        {selectedParticipant.admin_meta?.['admin-health-asthma'] === 'yes' && (
-                                            <Text c="red">Has asthma</Text>
-                                        )}
-                                        {selectedParticipant.admin_meta?.['admin-health-missing-dose'] === 'yes' && (
-                                            <Text c="red">Has medication that would be problematic if missed</Text>
-                                        )}
-                                        {selectedParticipant.admin_meta?.['admin-health-impairment-through-medication'] === 'yes' && (
-                                            <Text c="red">Takes medication that may cause impairment</Text>
-                                        )}
-                                    </Box>
-                                </Group>
-
-                                <Group justify="center" mt="md">
-                                    <Button onClick={() => setEmergencyModalOpen(false)}>Close</Button>
-                                </Group>
-                            </Stack>
-                        )}
-                    </Modal>
-
-                    {/* Callout Modal */}
-                    <Modal
+                    <CalloutModal
                         opened={calloutModalOpen}
                         onClose={() => setCalloutModalOpen(false)}
-                        title={
-                            <Title order={4}>
-                                Callout Text
-                            </Title>
-                        }
-                        size="lg"
-                    >
-                        <Alert
-                            icon={<IconInfoCircle size={16} />}
-                            color="blue"
-                            title="Advisory"
-                            mb="md"
-                        >
-                            Please review and edit this information before sharing. Ensure all details are accurate and up-to-date.
-                        </Alert>
+                        calloutText={calloutText}
+                        onTextChange={setCalloutText}
+                        trip={trip}
+                    />
 
-                        <Text fw={500} mb="xs">Required Gear:</Text>
-                        <Text mb="md" style={{ whiteSpace: 'pre-line' }}>
-                            {trip.acf.event_gear_required ?
-                                typeof trip.acf.event_gear_required === 'string' ?
-                                    trip.acf.event_gear_required
-                                        .replace(/<br\s*\/?>/gi, '\n\n')
-                                        .replace(/<\/p>\s*<p>/gi, '\n\n')
-                                        .replace(/<\/?p>/gi, '\n\n')
-                                        .replace(/\n{3,}/g, '\n\n') :
-                                    String(trip.acf.event_gear_required) :
-                                'None specified'}
-                        </Text>
-
-                        <Textarea
-                            value={calloutText}
-                            onChange={(e) => setCalloutText(e.currentTarget.value)}
-                            minRows={10}
-                            autosize
-                            mb="md"
-                            styles={{
-                                input: {
-                                    whiteSpace: 'pre-line'
-                                }
-                            }}
-                        />
-
-                        <Group justify="space-between" mt="md">
-                            <Button onClick={() => setCalloutModalOpen(false)}>
-                                Close
-                            </Button>
-                            <CopyButton value={calloutText} timeout={2000}>
-                                {({ copied, copy }) => (
-                                    <Button
-                                        color={copied ? 'teal' : 'blue'}
-                                        onClick={copy}
-                                        leftSection={<IconCopy size={16} />}
-                                    >
-                                        {copied ? 'Copied to clipboard' : 'Copy to clipboard'}
-                                    </Button>
-                                )}
-                            </CopyButton>
-                        </Group>
-                    </Modal>
-
-                    {/* Tackle Request Modal */}
-                    <Modal
+                    <TackleRequestModal
                         opened={tackleRequestModalOpen}
                         onClose={() => setTackleRequestModalOpen(false)}
-                        title={
-                            <Title order={4}>
-                                Tackle Manager Request
-                            </Title>
-                        }
-                        size="lg"
-                    >
-                        <Alert
-                            icon={<IconInfoCircle size={16} />}
-                            color="teal"
-                            title="Tackle Request"
-                            mb="md"
-                        >
-                            This message summarizes the gear needed for your trip. Send it to the tackle manager to request equipment.
-                        </Alert>
-
-                        <Text fw={500} mb="xs">Required Gear:</Text>
-                        <Text mb="md" style={{ whiteSpace: 'pre-line' }}>
-                            {trip.acf.event_gear_required ?
-                                typeof trip.acf.event_gear_required === 'string' ?
-                                    trip.acf.event_gear_required
-                                        .replace(/<br\s*\/?>/gi, '\n\n')
-                                        .replace(/<\/p>\s*<p>/gi, '\n\n')
-                                        .replace(/<\/?p>/gi, '\n\n')
-                                        .replace(/\n{3,}/g, '\n\n') :
-                                    String(trip.acf.event_gear_required) :
-                                'None specified'}
-                        </Text>
-
-                        <Textarea
-                            value={tackleRequestText}
-                            onChange={(e) => setTackleRequestText(e.currentTarget.value)}
-                            minRows={10}
-                            autosize
-                            mb="md"
-                            styles={{
-                                input: {
-                                    whiteSpace: 'pre-line'
-                                }
-                            }}
-                        />
-
-                        <Group justify="space-between" mt="md">
-                            <Button onClick={() => setTackleRequestModalOpen(false)}>
-                                Close
-                            </Button>
-                            <CopyButton value={tackleRequestText} timeout={2000}>
-                                {({ copied, copy }) => (
-                                    <Button
-                                        color={copied ? 'teal' : 'blue'}
-                                        onClick={copy}
-                                        leftSection={<IconCopy size={16} />}
-                                    >
-                                        {copied ? 'Copied to clipboard' : 'Copy to clipboard'}
-                                    </Button>
-                                )}
-                            </CopyButton>
-                        </Group>
-                    </Modal>
+                        tackleRequestText={tackleRequestText}
+                        onTextChange={setTackleRequestText}
+                        trip={trip}
+                    />
                 </>
             )}
         </Paper>
