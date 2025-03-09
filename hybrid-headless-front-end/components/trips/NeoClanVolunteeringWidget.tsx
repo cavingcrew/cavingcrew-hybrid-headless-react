@@ -12,6 +12,7 @@ import {
     IconChartBar, IconCheck, IconX, IconAlertTriangle,
     IconFileDescription, IconMessage, IconCar
 } from '@tabler/icons-react';
+import { cleanHtmlEntities } from '../../utils/string-utils';
 
 // Import custom hooks and types
 import { useTripParticipants } from '../../lib/hooks/useTripParticipants';
@@ -878,7 +879,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                     {participants.map((participant) => (
                                         <Table.Tr key={participant.order_id}>
                                             <Table.Td>{participant.first_name} {participant.last_name}</Table.Td>
-                                            <Table.Td>{participant.meta?.['admin-dietary-requirements'] || 'None specified'}</Table.Td>
+                                            <Table.Td>{cleanHtmlEntities(participant.meta?.['admin-dietary-requirements']) || 'None specified'}</Table.Td>
                                         </Table.Tr>
                                     ))}
                                 </Table.Tbody>
@@ -948,8 +949,8 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                     {participants.map((participant) => (
                                         <Table.Tr key={participant.order_id}>
                                             <Table.Td>{participant.first_name} {participant.last_name}</Table.Td>
-                                            <Table.Td>{participant.meta?.['admin-dietary-requirements'] || 'None specified'}</Table.Td>
-                                            <Table.Td>{participant.admin_meta?.['admin-diet-allergies-health-extra-info'] || 'None provided'}</Table.Td>
+                                            <Table.Td>{cleanHtmlEntities(participant.meta?.['admin-dietary-requirements']) || 'None specified'}</Table.Td>
+                                            <Table.Td>{cleanHtmlEntities(participant.admin_meta?.['admin-diet-allergies-health-extra-info']) || 'None provided'}</Table.Td>
                                             <Table.Td>
                                                 <Stack gap="xs">
                                                     {participant.admin_meta?.['admin-health-shoulder'] === 'yes' && (

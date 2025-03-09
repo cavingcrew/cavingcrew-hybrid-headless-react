@@ -13,6 +13,7 @@ import {
 import { IconAlertTriangle } from "@tabler/icons-react";
 import React from "react";
 import type { TripParticipant } from "../../../types/api";
+import { cleanHtmlEntities } from "../../../utils/string-utils";
 
 interface EmergencyInfoModalProps {
 	opened: boolean;
@@ -124,9 +125,9 @@ export function EmergencyInfoModal({
 						<Text fw={700}>Health Information:</Text>
 						<Box>
 							<Text>
-								{participant.admin_meta?.[
+								{cleanHtmlEntities(participant.admin_meta?.[
 									"admin-diet-allergies-health-extra-info"
-								] || "None provided"}
+								]) || "None provided"}
 							</Text>
 							{participant.admin_meta?.["admin-health-shoulder"] === "yes" && (
 								<Text c="red">Has shoulder issues</Text>
