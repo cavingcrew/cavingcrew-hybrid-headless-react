@@ -350,6 +350,154 @@ export const generateTackleRequestText = (trip: any, participants: any[]): strin
 };
 
 /**
+ * Generate gear trip check message for a trip
+ * @param trip The trip object
+ * @param participants List of trip participants
+ * @returns Formatted gear check message
+ */
+export const generateGearTripCheckText = (trip: any, participants: any[]): string => {
+  // Get signed up participants
+  const signedUpParticipants = participants.filter(p => {
+    const status = determineSignupStatus(p);
+    return status === 'Signed Up';
+  });
+
+  // Get route personal gear requirements
+  const routePersonalGear = trip.route?.acf?.route_personal_gear_required || '';
+  const requiresSRT = trip.acf.event_gear_required?.indexOf('SRT') !== -1 ||
+                     routePersonalGear.indexOf('SRT Kit') !== -1 ||
+                     trip.acf.event_skills_required?.indexOf('SRT') !== -1;
+
+  // Build the gear check message
+  let messageTemplate = `I've just been checking NeoCrew for people's gear requirements for this trip. `;
+
+  // Add the required gear section
+  if (routePersonalGear) {
+    // Parse from route_personal_gear_required
+    const gearList = (typeof routePersonalGear === 'string'
+      ? routePersonalGear.replace(/<[^>]*>/g, '')
+      : String(routePersonalGear))
+      .split(/[,;]/)
+      .map(item => item.trim())
+      .filter(Boolean)
+      .join(', ');
+    
+    messageTemplate += `The kit everyone needs is: ${gearList}.\n\n`;
+  } else {
+    // Default standard gear
+    let standardGear = [
+      'Oversuit',
+      'Undersuit',
+      'Helmet and Light',
+      'Kneepads',
+      'Gloves',
+      'Wellies'
+    ];
+
+    // Add SRT Kit if required for this trip
+    if (requiresSRT) {
+      standardGear.push('SRT Kit');
+    }
+
+    messageTemplate += `The kit everyone needs is: ${standardGear.join(', ')}.\n\n`;
+  }
+
+  // Add the individual needs section
+  messageTemplate += `From what I can see:\n`;
+
+  // Track participants who need wellies but haven't specified a size
+  const participantsNeedingWellieSize: string[] = [];
+
+  // Process each participant's gear needs
+  signedUpParticipants.forEach(participant => {
+    const gearBringing = participant.meta?.['gear-bringing-evening-or-day-trip'] || '';
+    const welliesSize = participant.meta?.gear_wellies_size || '';
+
+    // Get required gear from route if available, otherwise use standard list
+    let standardGear: string[] = [];
+
+    if (routePersonalGear) {
+      // Parse from route_personal_gear_required
+      standardGear = (typeof routePersonalGear === 'string'
+        ? routePersonalGear.replace(/<[^>]*>/g, '')
+        : String(routePersonalGear))
+        .split(/[,;]/)
+        .map(item => item.trim())
+        .filter(Boolean);
+    } else {
+      // Default standard gear
+      standardGear = [
+        'Oversuit',
+        'Undersuit',
+        'Helmet and Light',
+        'Kneepads',
+        'Gloves',
+        'Wellies'
+      ];
+
+      // Add SRT Kit if required for this trip
+      if (requiresSRT) {
+        standardGear.push('SRT Kit');
+        if (!gearBringing.indexOf('SRT Kit') !== -1 && !gearBringing.indexOf('Harness and Cowstails') !== -1) {
+          standardGear.push('Harness and Cowstails');
+        }
+      }
+    }
+
+    // Check what gear the participant is missing
+    const missingGear: string[] = [];
+
+    // Parse individual items they're bringing
+    const bringingItems = gearBringing.split(',').map((item: string) => item.trim());
+
+    // Even if they selected "Nothing", check if they've also selected specific items
+    const isNewCaver = bringingItems.some((item: string) =>
+      item.indexOf('Nothing') !== -1 || item.indexOf('totally new') !== -1
+    );
+
+    // Check each standard gear item
+    standardGear.forEach((item: string) => {
+      // Special case for SRT Kit and Harness/Cowstails
+      if (item === 'Harness and Cowstails' && bringingItems.some((g: string) =>
+        g.indexOf('SRT Kit') !== -1 || g.indexOf('Harness and Cowstails') !== -1
+      )) {
+        return; // They have this covered
+      }
+
+      // For all other items, check if they're bringing it
+      const hasBrought = bringingItems.some((g: string) => g.indexOf(item) !== -1);
+
+      if (!hasBrought || (isNewCaver && item !== 'Wellies')) {
+        if (item === 'Wellies') {
+          if (welliesSize && welliesSize.trim() !== '') {
+            missingGear.push(`Wellies (size ${welliesSize})`);
+          } else {
+            missingGear.push('Wellies');
+            participantsNeedingWellieSize.push(participant.first_name);
+          }
+        } else {
+          missingGear.push(item);
+        }
+      }
+    });
+
+    // Only add participants who need gear
+    if (missingGear.length > 0) {
+      messageTemplate += `- ${participant.first_name} needs ${missingGear.join(', ')}\n`;
+    }
+  });
+
+  // Add note about wellie sizes if needed
+  if (participantsNeedingWellieSize.length > 0) {
+    messageTemplate += `\n${participantsNeedingWellieSize.join(', ')}: can you clarify what size wellies you need?\n`;
+  }
+
+  messageTemplate += `\nDoes that sound right to everyone?`;
+
+  return messageTemplate;
+};
+
+/**
  * Helper function for determineSignupStatus
  * Imported from trip-participant-utils to avoid circular dependencies
  */
