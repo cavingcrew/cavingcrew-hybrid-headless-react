@@ -53,7 +53,7 @@ export const SKILL_DEFINITIONS: SkillMap = {
 		"No-SRT": {
 			label: "None",
 			description: "No SRT skills so far",
-			color: "dimmed",
+			color: "gray",
 		},
 		"Pre-SRT Basic": {
 			label: "Pre-SRT Basic",
@@ -98,7 +98,7 @@ export const SKILL_DEFINITIONS: SkillMap = {
 		"no skills": {
 			label: "None",
 			description: "No experience leading horizontal caves",
-			color: "dimmed",
+			color: "gray",
 		},
 		seconder: {
 			label: "Seconder",
@@ -127,7 +127,7 @@ export const SKILL_DEFINITIONS: SkillMap = {
 		"Nothing yet": {
 			label: "None",
 			description: "No experience leading SRT caves",
-			color: "dimmed",
+			color: "gray",
 		},
 		"I can help derig": {
 			label: "Helper",
@@ -169,7 +169,7 @@ export const SKILL_DEFINITIONS: SkillMap = {
 		"no-skills": {
 			label: "None",
 			description: "No experience coaching caving skills",
-			color: "dimmed",
+			color: "gray",
 		},
 		"I've helped out a bit and I'm learning": {
 			label: "Helper",
