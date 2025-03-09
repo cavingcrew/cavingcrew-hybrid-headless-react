@@ -109,10 +109,12 @@ function generateLiftCoordinationText(trip: Trip, participants: TripParticipant[
       })
     : 'the upcoming trip';
 
-  const location = trip.route?.acf?.route_name || trip.acf.event_cave_name ||
+  const location = trip.route?.acf?.route_entrance_location_id?.acf?.location_name ||
+      trip.route?.acf?.route_name ||
+      trip.acf.event_cave_name ||
+      trip.acf.event_location ||
+      'our destination';
 
-                  trip.acf.event_location ||
-                  'our destination';
 
   // Find participants who need lifts
   const needLifts = signedUpParticipants.filter(p =>
@@ -131,7 +133,7 @@ function generateLiftCoordinationText(trip: Trip, participants: TripParticipant[
   );
 
   // Build the message
-  let message = `Hi everyone,\n\nI've been checking the lift arrangements for ${tripDate} to ${location}.\n\n`;
+  let message = `I've been checking the lift arrangements for ${tripDate} to ${location}.\n\n`;
 
   if (needLifts.length === 0 && preferCarShare.length === 0) {
     message += 'It looks like everyone has their transport sorted out. Great!\n';
