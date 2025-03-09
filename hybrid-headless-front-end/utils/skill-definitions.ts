@@ -155,7 +155,7 @@ export const SKILL_DEFINITIONS: SkillMap = {
 				"https://www.cavingcrew.com/training-levels/leading-srt-levels/srt-leader-advanced/",
 			color: "green",
 		},
-		"seconder": {
+		seconder: {
 			label: "SRT Seconder",
 			description: "Can assist an SRT leader with rigging and derigging",
 			infoUrl:
@@ -195,8 +195,7 @@ export const SKILL_DEFINITIONS: SkillMap = {
 		},
 		"I can coach basic SRT skills": {
 			label: "SRT Coach Basic",
-			description:
-				"Can effectively coach basic SRT techniques to beginners",
+			description: "Can effectively coach basic SRT techniques to beginners",
 			infoUrl:
 				"https://www.cavingcrew.com/training-levels/coaching-learners-and-leaders-levels/srt-coach-basic-2/",
 			color: "cyan",
