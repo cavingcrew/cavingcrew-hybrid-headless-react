@@ -28,7 +28,7 @@ export const SKILL_DEFINITIONS: SkillMap = {
 		"New to caving": {
 			label: "New to caving",
 			description: "Little or no previous caving experience",
-			color: "yellow",
+			color: "orange",
 		},
 		"Horizontal Basic": {
 			label: "Horizontal Basic",
@@ -53,13 +53,13 @@ export const SKILL_DEFINITIONS: SkillMap = {
 		"No-SRT": {
 			label: "None",
 			description: "No SRT skills so far",
-			color: "gray",
+			color: "dimmed",
 		},
 		"Pre-SRT Basic": {
 			label: "Pre-SRT Basic",
 			description:
 				"Familiar with SRT equipment but not yet proficient in techniques",
-			color: "yellow",
+			color: "orange",
 		},
 		"SRT Basic": {
 			label: "SRT Basic",
@@ -67,7 +67,7 @@ export const SKILL_DEFINITIONS: SkillMap = {
 				"Can safely ascend and descend a single rope with supervision",
 			infoUrl:
 				"https://www.cavingcrew.com/training-levels/srt-personal-skills-levels/srt-basic/",
-			color: "orange",
+			color: "yellow",
 		},
 		"Pre-SRT Intermediate": {
 			label: "Pre-SRT Intermediate",
@@ -98,7 +98,7 @@ export const SKILL_DEFINITIONS: SkillMap = {
 		"no skills": {
 			label: "None",
 			description: "No experience leading horizontal caves",
-			color: "gray",
+			color: "dimmed",
 		},
 		seconder: {
 			label: "Seconder",
@@ -127,7 +127,7 @@ export const SKILL_DEFINITIONS: SkillMap = {
 		"Nothing yet": {
 			label: "None",
 			description: "No experience leading SRT caves",
-			color: "gray",
+			color: "dimmed",
 		},
 		"I can help derig": {
 			label: "Helper",
