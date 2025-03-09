@@ -169,7 +169,7 @@ export const SKILL_DEFINITIONS: SkillMap = {
 		"no-skills": {
 			label: "None",
 			description: "No experience coaching caving skills",
-			color: "gray",
+			color: "dimmed",
 		},
 		"I've helped out a bit and I'm learning": {
 			label: "Helper",
