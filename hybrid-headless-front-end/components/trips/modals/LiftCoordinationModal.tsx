@@ -141,7 +141,7 @@ function generateLiftCoordinationText(trip: Trip, participants: TripParticipant[
       needLifts.forEach(p => {
         const location = p.meta?.['transport-leaving-location'] || 'location not specified';
         const time = p.meta?.['transport-depature-time'] || 'time not specified';
-        message += `- ${p.first_name} ${p.last_name} from ${location} (preferred departure: ${time})\n`;
+        message += `- ${p.first_name} from ${location} (preferred departure: ${time})\n`;
       });
       message += '\n';
     }
@@ -151,7 +151,7 @@ function generateLiftCoordinationText(trip: Trip, participants: TripParticipant[
       preferCarShare.forEach(p => {
         const location = p.meta?.['transport-leaving-location'] || 'location not specified';
         const time = p.meta?.['transport-depature-time'] || 'time not specified';
-        message += `- ${p.first_name} ${p.last_name} from ${location} (preferred departure: ${time})\n`;
+        message += `- ${p.first_name} from ${location} (preferred departure: ${time})\n`;
       });
       message += '\n';
     }
@@ -161,7 +161,7 @@ function generateLiftCoordinationText(trip: Trip, participants: TripParticipant[
       canGiveLifts.forEach(p => {
         const location = p.meta?.['transport-leaving-location'] || 'location not specified';
         const time = p.meta?.['transport-depature-time'] || 'time not specified';
-        message += `- ${p.first_name} ${p.last_name} from ${location} (departure: ${time})\n`;
+        message += `- ${p.first_name} from ${location} (departure: ${time})\n`;
       });
       message += '\n';
     }
@@ -170,9 +170,29 @@ function generateLiftCoordinationText(trip: Trip, participants: TripParticipant[
     const potentialMatches = findPotentialMatches(needLifts, canGiveLifts);
     if (potentialMatches.length > 0) {
       message += 'Potential lift arrangements based on locations:\n';
+      
+      // Group matches by location to avoid duplicates
+      const locationGroups = new Map<string, Array<{driver: string, passenger: string}>>();
+      
       potentialMatches.forEach(match => {
-        message += `- ${match.driver.first_name} could potentially give a lift to ${match.passenger.first_name} (both from ${match.driver.meta?.['transport-leaving-location']})\n`;
+        const locationKey = match.location.toLowerCase();
+        if (!locationGroups.has(locationKey)) {
+          locationGroups.set(locationKey, []);
+        }
+        locationGroups.get(locationKey)?.push({
+          driver: match.driver.first_name,
+          passenger: match.passenger.first_name
+        });
       });
+      
+      // Output grouped matches
+      locationGroups.forEach((matches, locationKey) => {
+        // For each location, list all possible combinations
+        matches.forEach(pair => {
+          message += `- ${pair.driver} could give a lift to ${pair.passenger}\n`;
+        });
+      });
+      
       message += '\n';
     }
 
@@ -189,6 +209,7 @@ function generateLiftCoordinationText(trip: Trip, participants: TripParticipant[
 interface PotentialMatch {
   driver: TripParticipant;
   passenger: TripParticipant;
+  location: string;
 }
 
 function findPotentialMatches(
@@ -211,7 +232,16 @@ function findPotentialMatches(
         driverLocation.includes(passengerLocation) ||
         passengerLocation.includes(driverLocation)
       ) {
-        matches.push({ driver, passenger });
+        // Use the more specific location description for the match
+        const locationToUse = driverLocation.length >= passengerLocation.length 
+          ? driver.meta?.['transport-leaving-location'] 
+          : passenger.meta?.['transport-leaving-location'];
+          
+        matches.push({ 
+          driver, 
+          passenger, 
+          location: locationToUse || ''
+        });
       }
     });
   });
