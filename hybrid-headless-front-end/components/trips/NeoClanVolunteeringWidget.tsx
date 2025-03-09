@@ -47,7 +47,8 @@ import {
     EmergencyInfoModal,
     CalloutModal,
     TackleRequestModal,
-    GearTripCheckModal
+    GearTripCheckModal,
+    LiftCoordinationModal
 } from './modals';
 
 // Main component with improved structure and comments
@@ -63,6 +64,8 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
     const [tackleRequestText, setTackleRequestText] = useState('');
     const [gearTripCheckModalOpen, setGearTripCheckModalOpen] = useState(false);
     const [gearTripCheckText, setGearTripCheckText] = useState('');
+    const [liftCoordinationModalOpen, setLiftCoordinationModalOpen] = useState(false);
+    const [liftCoordinationText, setLiftCoordinationText] = useState('');
 
     // Fetch trip participants data
     const { data, isLoading, error } = useTripParticipants(trip.id);
@@ -133,6 +136,12 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
         const text = generateGearTripCheckText(trip, participants);
         setGearTripCheckText(text);
         setGearTripCheckModalOpen(true);
+    };
+
+    // Function to open lift coordination modal
+    const handleOpenLiftCoordinationModal = () => {
+        setLiftCoordinationText(''); // Reset text to trigger auto-generation
+        setLiftCoordinationModalOpen(true);
     };
 
     // Render different views based on access level
@@ -877,6 +886,16 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                         </Tabs.Panel>
 
                         <Tabs.Panel value="transport" pt="xs">
+                            <Group justify="flex-end" mb="md">
+                                <Button
+                                    leftSection={<IconCar size={16} />}
+                                    onClick={handleOpenLiftCoordinationModal}
+                                    variant="outline"
+                                    color="blue"
+                                >
+                                    Generate Lift Coordination Message
+                                </Button>
+                            </Group>
                             <Table striped>
                                 <Table.Thead>
                                     <Table.Tr>
@@ -1118,6 +1137,15 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                         gearCheckText={gearTripCheckText}
                         onTextChange={setGearTripCheckText}
                         trip={trip}
+                    />
+
+                    <LiftCoordinationModal
+                        opened={liftCoordinationModalOpen}
+                        onClose={() => setLiftCoordinationModalOpen(false)}
+                        liftCoordinationText={liftCoordinationText}
+                        onTextChange={setLiftCoordinationText}
+                        trip={trip}
+                        participants={participants}
                     />
                 </>
             )}
