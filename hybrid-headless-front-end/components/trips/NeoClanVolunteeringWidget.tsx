@@ -347,7 +347,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                                         disabled={!getSkillDescription('horizontalSkills', participant.meta['skills-horizontal'])}
                                                     >
                                                         <Badge 
-                                                            color="blue" 
+                                                            color={getSkillDefinition('horizontalSkills', participant.meta['skills-horizontal'])?.color || 'blue'} 
                                                             variant="light"
                                                             component={getSkillInfoUrl('horizontalSkills', participant.meta['skills-horizontal']) ? 'a' : 'div'}
                                                             href={getSkillInfoUrl('horizontalSkills', participant.meta['skills-horizontal'])}
@@ -368,7 +368,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                                         disabled={!getSkillDescription('srtSkills', participant.meta['skills-srt'])}
                                                     >
                                                         <Badge 
-                                                            color="red" 
+                                                            color={getSkillDefinition('srtSkills', participant.meta['skills-srt'])?.color || 'blue'} 
                                                             variant="light"
                                                             component={getSkillInfoUrl('srtSkills', participant.meta['skills-srt']) ? 'a' : 'div'}
                                                             href={getSkillInfoUrl('srtSkills', participant.meta['skills-srt'])}
@@ -395,7 +395,10 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                                         )}
                                                     >
                                                         <Badge 
-                                                            color="teal" 
+                                                            color={getSkillDefinition('leadingHorizontalSkills', 
+                                                                participant.meta['skills-leading-horizontal'] || 
+                                                                participant.meta['caving-horizontal-happy-to-second-or-lead']
+                                                            )?.color || 'teal'} 
                                                             variant="light"
                                                             component={getSkillInfoUrl('leadingHorizontalSkills', 
                                                                 participant.meta['skills-leading-horizontal'] || 
@@ -434,7 +437,10 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                                         )}
                                                     >
                                                         <Badge 
-                                                            color="orange" 
+                                                            color={getSkillDefinition('leadingSrtSkills', 
+                                                                participant.meta['skills-leading-srt'] || 
+                                                                participant.meta['caving-srt-happy-to-second-or-lead']
+                                                            )?.color || 'orange'} 
                                                             variant="light"
                                                             component={getSkillInfoUrl('leadingSrtSkills', 
                                                                 participant.meta['skills-leading-srt'] || 
@@ -467,7 +473,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                                         disabled={!getSkillDescription('leadingCoachingSkills', participant.meta['skills-leading-coaching'])}
                                                     >
                                                         <Badge 
-                                                            color="grape" 
+                                                            color={getSkillDefinition('leadingCoachingSkills', participant.meta['skills-leading-coaching'])?.color || 'grape'} 
                                                             variant="light"
                                                             component={getSkillInfoUrl('leadingCoachingSkills', participant.meta['skills-leading-coaching']) ? 'a' : 'div'}
                                                             href={getSkillInfoUrl('leadingCoachingSkills', participant.meta['skills-leading-coaching'])}
