@@ -438,7 +438,7 @@ export const generateGearTripCheckText = (trip: any, participants: any[]): strin
       // Add SRT Kit if required for this trip
       if (requiresSRT) {
         standardGear.push('SRT Kit');
-        if (!gearBringing.indexOf('SRT Kit') !== -1 && !gearBringing.indexOf('Harness and Cowstails') !== -1) {
+        if (gearBringing.indexOf('SRT Kit') === -1 && gearBringing.indexOf('Harness and Cowstails') === -1) {
           standardGear.push('Harness and Cowstails');
         }
       }
