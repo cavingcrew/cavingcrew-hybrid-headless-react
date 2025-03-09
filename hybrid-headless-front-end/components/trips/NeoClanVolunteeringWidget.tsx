@@ -32,7 +32,8 @@ import {
 } from '../../utils/trip-participant-utils';
 import {
     generateCalloutText,
-    generateTackleRequestText
+    generateTackleRequestText,
+    generateGearTripCheckText
 } from '../../utils/trip-admin-utils';
 import { formatRelativeTime } from '../../utils/date-utils';
 import { 
@@ -45,7 +46,8 @@ import {
     EmergencyAccessModal,
     EmergencyInfoModal,
     CalloutModal,
-    TackleRequestModal
+    TackleRequestModal,
+    GearTripCheckModal
 } from './modals';
 
 // Main component with improved structure and comments
@@ -59,6 +61,8 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
     const [calloutText, setCalloutText] = useState('');
     const [tackleRequestModalOpen, setTackleRequestModalOpen] = useState(false);
     const [tackleRequestText, setTackleRequestText] = useState('');
+    const [gearTripCheckModalOpen, setGearTripCheckModalOpen] = useState(false);
+    const [gearTripCheckText, setGearTripCheckText] = useState('');
 
     // Fetch trip participants data
     const { data, isLoading, error } = useTripParticipants(trip.id);
@@ -122,6 +126,13 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
         const text = generateTackleRequestText(trip, participants);
         setTackleRequestText(text);
         setTackleRequestModalOpen(true);
+    };
+
+    // Function to generate gear trip check text
+    const handleGenerateGearTripCheckText = () => {
+        const text = generateGearTripCheckText(trip, participants);
+        setGearTripCheckText(text);
+        setGearTripCheckModalOpen(true);
     };
 
     // Render different views based on access level
@@ -276,8 +287,17 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                     onClick={handleGenerateCalloutText}
                                     variant="outline"
                                     color="blue"
+                                    mr="xs"
                                 >
                                     Generate callout text
+                                </Button>
+                                <Button
+                                    leftSection={<IconMessage size={16} />}
+                                    onClick={handleGenerateGearTripCheckText}
+                                    variant="outline"
+                                    color="indigo"
+                                >
+                                    Gear Trip Check
                                 </Button>
                             </Group>
                             <Table striped>
@@ -1089,6 +1109,14 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                         onClose={() => setTackleRequestModalOpen(false)}
                         tackleRequestText={tackleRequestText}
                         onTextChange={setTackleRequestText}
+                        trip={trip}
+                    />
+
+                    <GearTripCheckModal
+                        opened={gearTripCheckModalOpen}
+                        onClose={() => setGearTripCheckModalOpen(false)}
+                        gearCheckText={gearTripCheckText}
+                        onTextChange={setGearTripCheckText}
                         trip={trip}
                     />
                 </>
