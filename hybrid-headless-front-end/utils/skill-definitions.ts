@@ -35,7 +35,7 @@ export const SKILL_DEFINITIONS: SkillMap = {
 			description:
 				"Comfortable moving through horizontal cave passages, climbing small obstacles, and navigating simple cave systems",
 			infoUrl:
-				"https://www.cavingcrew.com/training-levels/horizontal-caving-levels/horizontal-basic/",
+				"https://www.cavingcrew.com/training-levels/horizontal-personal-skills-levels/horizontal-basic/",
 			color: "blue",
 		},
 		"Horizontal Intermediate": {
@@ -43,7 +43,7 @@ export const SKILL_DEFINITIONS: SkillMap = {
 			description:
 				"Experienced in horizontal caving with good movement skills, able to handle more challenging terrain and longer trips",
 			infoUrl:
-				"https://www.cavingcrew.com/training-levels/horizontal-caving-levels/horizontal-intermediate/",
+				"https://www.cavingcrew.com/training-levels/horizontal-personal-skills-levels/horizontal-intermediate/",
 			color: "teal",
 		},
 	},
@@ -66,7 +66,7 @@ export const SKILL_DEFINITIONS: SkillMap = {
 			description:
 				"Can safely ascend and descend a single rope with supervision",
 			infoUrl:
-				"https://www.cavingcrew.com/training-levels/srt-levels/srt-basic/",
+				"https://www.cavingcrew.com/training-levels/srt-personal-skills-levels/srt-basic/",
 			color: "orange",
 		},
 		"Pre-SRT Intermediate": {
@@ -80,7 +80,7 @@ export const SKILL_DEFINITIONS: SkillMap = {
 			description:
 				"Competent in SRT techniques including rebelays and deviations",
 			infoUrl:
-				"https://www.cavingcrew.com/training-levels/srt-levels/srt-intermediate/",
+				"https://www.cavingcrew.com/training-levels/srt-personal-skills-levels/srt-intermediate/",
 			color: "blue",
 		},
 		"SRT Advanced": {
@@ -88,7 +88,7 @@ export const SKILL_DEFINITIONS: SkillMap = {
 			description:
 				"Highly proficient in all SRT techniques including complex maneuvers and problem-solving",
 			infoUrl:
-				"https://www.cavingcrew.com/training-levels/srt-levels/srt-advanced/",
+				"https://www.cavingcrew.com/training-levels/srt-personal-skills-levels/srt-advanced/",
 			color: "teal",
 		},
 	},
@@ -104,6 +104,8 @@ export const SKILL_DEFINITIONS: SkillMap = {
 			label: "Seconder",
 			description:
 				"Can assist a leader but not yet ready to lead independently",
+			infoUrl:
+				"https://www.cavingcrew.com/training-levels/horizontal-leading-levels/horizontal-seconder/",
 			color: "yellow",
 		},
 		"learner leader": {
@@ -115,7 +117,7 @@ export const SKILL_DEFINITIONS: SkillMap = {
 			label: "Horizontal Leader",
 			description: "Qualified to lead horizontal caving trips independently",
 			infoUrl:
-				"https://www.cavingcrew.com/training-levels/leading-horizontal-levels/horizontal-leader/",
+				"https://www.cavingcrew.com/training-levels/horizontal-leading-levels/horizontal-leader/",
 			color: "green",
 		},
 	},
@@ -153,6 +155,13 @@ export const SKILL_DEFINITIONS: SkillMap = {
 				"https://www.cavingcrew.com/training-levels/leading-srt-levels/srt-leader-advanced/",
 			color: "green",
 		},
+		"seconder": {
+			label: "SRT Seconder",
+			description: "Can assist an SRT leader with rigging and derigging",
+			infoUrl:
+				"https://www.cavingcrew.com/training-levels/leading-srt-levels/srt-seconder/",
+			color: "yellow",
+		},
 	},
 
 	// Coaching skills
@@ -172,6 +181,8 @@ export const SKILL_DEFINITIONS: SkillMap = {
 			label: "Basic Coach",
 			description:
 				"Can coach basic techniques and help beginners develop skills",
+			infoUrl:
+				"https://www.cavingcrew.com/training-levels/coaching-learners-and-leaders-levels/srt-coach-basic/",
 			color: "blue",
 		},
 		"I have significant personal skills and am good at teaching": {
@@ -179,8 +190,16 @@ export const SKILL_DEFINITIONS: SkillMap = {
 			description:
 				"Experienced coach with strong teaching abilities and extensive personal skills",
 			infoUrl:
-				"https://www.cavingcrew.com/training-levels/coaching-levels/advanced-coach/",
+				"https://www.cavingcrew.com/training-levels/coaching-learners-and-leaders-levels/srt-coach-advanced/",
 			color: "green",
+		},
+		"I can coach basic SRT skills": {
+			label: "SRT Coach Basic",
+			description:
+				"Can effectively coach basic SRT techniques to beginners",
+			infoUrl:
+				"https://www.cavingcrew.com/training-levels/coaching-learners-and-leaders-levels/srt-coach-basic-2/",
+			color: "cyan",
 		},
 	},
 };
