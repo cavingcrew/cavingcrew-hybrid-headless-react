@@ -682,18 +682,147 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                     </Table.Tr>
                                 </Table.Thead>
                                 <Table.Tbody>
-                                    {participants.map((participant) => {
-                                        // Parse gear bringing from participant meta
-                                        const gearBringing = participant.meta?.['gear-bringing-evening-or-day-trip'] || '';
-                                        const welliesSize = participant.meta?.gear_wellies_size || '';
+                                    {participants
+                                        .map(participant => {
+                                            // Parse gear bringing from participant meta
+                                            const gearBringing = participant.meta?.['gear-bringing-evening-or-day-trip'] || '';
+                                            const welliesSize = participant.meta?.gear_wellies_size || '';
 
-                                        // Parse individual items they're bringing
-                                        const bringingItems = gearBringing.split(',').map(item => item.trim()).filter(Boolean);
+                                            // Parse individual items they're bringing
+                                            const bringingItems = gearBringing.split(',').map(item => item.trim()).filter(Boolean);
 
-                                        // Check if they're a new caver
-                                        const isNewCaver = bringingItems.some(item =>
-                                            item.indexOf('Nothing') !== -1 || item.indexOf('totally new') !== -1
-                                        );
+                                            // Check if they're a new caver
+                                            const isNewCaver = bringingItems.some(item =>
+                                                item.indexOf('Nothing') !== -1 || item.indexOf('totally new') !== -1
+                                            );
+
+                                            // Determine required gear based on trip type
+                                            const requiresSRT = trip.acf.event_gear_required?.indexOf('SRT') !== -1 ||
+                                                              trip.acf.event_skills_required?.indexOf('SRT') !== -1 ||
+                                                              trip.route?.acf?.route_personal_gear_required?.indexOf('SRT') !== -1;
+
+                                            // Get route personal gear requirements
+                                            const routePersonalGear = trip.route?.acf?.route_personal_gear_required || '';
+
+                                            // Get required gear from route if available, otherwise use standard list
+                                            let standardGear: string[] = [];
+
+                                            if (routePersonalGear) {
+                                                // Parse from route_personal_gear_required
+                                                standardGear = (typeof routePersonalGear === 'string'
+                                                    ? routePersonalGear.replace(/<[^>]*>/g, '')
+                                                    : String(routePersonalGear))
+                                                    .split(/[,;]/)
+                                                    .map(item => item.trim())
+                                                    .filter(Boolean);
+                                            } else {
+                                                // Default standard gear
+                                                standardGear = [
+                                                    'Oversuit',
+                                                    'Undersuit',
+                                                    'Helmet and Light',
+                                                    'Kneepads',
+                                                    'Gloves',
+                                                    'Wellies'
+                                                ];
+
+                                                // Add SRT Kit if required for this trip
+                                                if (requiresSRT) {
+                                                    standardGear.push('SRT Kit');
+                                                    if (!gearBringing.includes('SRT Kit') && !gearBringing.includes('Harness and Cowstails')) {
+                                                        standardGear.push('Harness and Cowstails');
+                                                    }
+                                                }
+                                            }
+
+                                            // Calculate how many items they have and how many they need
+                                            let itemsHaveCount = 0;
+                                            let itemsNeedCount = 0;
+                                            
+                                            // Check each standard gear item
+                                            standardGear.forEach(item => {
+                                                // Skip checking if they're a new caver claiming to bring nothing
+                                                if (isNewCaver && item !== 'Wellies') {
+                                                    itemsNeedCount++;
+                                                    return;
+                                                }
+
+                                                // Special case for SRT Kit and Harness/Cowstails
+                                                if (item === 'Harness and Cowstails' || item === 'SRT Kit') {
+                                                    // If they have SRT Kit, they have Harness and Cowstails covered
+                                                    const hasSRTKit = bringingItems.some(g =>
+                                                        g.toLowerCase().indexOf('srt kit') !== -1);
+
+                                                    // If they have Harness and Cowstails specifically
+                                                    const hasHarnessAndCowstails = bringingItems.some(g =>
+                                                        g.toLowerCase().indexOf('harness') !== -1 &&
+                                                        g.toLowerCase().indexOf('cowstail') !== -1);
+
+                                                    // If they have either SRT Kit or Harness and Cowstails, they're covered
+                                                    if ((item === 'SRT Kit' && hasSRTKit) ||
+                                                        (item === 'Harness and Cowstails' && (hasSRTKit || hasHarnessAndCowstails))) {
+                                                        itemsHaveCount++;
+                                                    } else {
+                                                        itemsNeedCount++;
+                                                    }
+                                                } else if (item === 'Helmet and Light') {
+                                                    // Special case for Helmet and Light
+                                                    // Check for combined "Helmet and Light" item
+                                                    const hasHelmetAndLight = bringingItems.some(g =>
+                                                        g.toLowerCase().indexOf('helmet and light') !== -1);
+
+                                                    if (hasHelmetAndLight) {
+                                                        itemsHaveCount++;
+                                                    } else {
+                                                        // Check for separate helmet and light items (not spare light)
+                                                        const hasHelmet = bringingItems.some(g =>
+                                                            g.toLowerCase().indexOf('helmet') !== -1);
+                                                        const hasLight = bringingItems.some(g =>
+                                                            g.toLowerCase().indexOf('light') !== -1 &&
+                                                            g.toLowerCase().indexOf('spare') === -1);
+
+                                                        if (hasHelmet && hasLight) {
+                                                            itemsHaveCount++;
+                                                        } else {
+                                                            itemsNeedCount++;
+                                                        }
+                                                    }
+                                                } else {
+                                                    // For all other items, check if they're bringing it
+                                                    const hasBrought = bringingItems.some(g =>
+                                                        g.toLowerCase().indexOf(item.toLowerCase()) !== -1
+                                                    );
+
+                                                    if (hasBrought) {
+                                                        itemsHaveCount++;
+                                                    } else {
+                                                        itemsNeedCount++;
+                                                    }
+                                                }
+                                            });
+
+                                            // Return participant with gear counts for sorting
+                                            return {
+                                                participant,
+                                                itemsHaveCount,
+                                                itemsNeedCount,
+                                                gearCompleteness: itemsHaveCount / (itemsHaveCount + itemsNeedCount)
+                                            };
+                                        })
+                                        // Sort by gear completeness (most complete first)
+                                        .sort((a, b) => b.gearCompleteness - a.gearCompleteness)
+                                        .map(({ participant }) => {
+                                            // Parse gear bringing from participant meta
+                                            const gearBringing = participant.meta?.['gear-bringing-evening-or-day-trip'] || '';
+                                            const welliesSize = participant.meta?.gear_wellies_size || '';
+
+                                            // Parse individual items they're bringing
+                                            const bringingItems = gearBringing.split(',').map(item => item.trim()).filter(Boolean);
+
+                                            // Check if they're a new caver
+                                            const isNewCaver = bringingItems.some(item =>
+                                                item.indexOf('Nothing') !== -1 || item.indexOf('totally new') !== -1
+                                            );
 
                                         // Determine required gear based on trip type
                                         const requiresSRT = trip.acf.event_gear_required?.indexOf('SRT') !== -1 ||
