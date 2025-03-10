@@ -125,9 +125,11 @@ export function EmergencyInfoModal({
 						<Text fw={700}>Health Information:</Text>
 						<Box>
 							<Text>
-								{cleanHtmlEntities(participant.admin_meta?.[
-									"admin-diet-allergies-health-extra-info"
-								]) || "None provided"}
+								{cleanHtmlEntities(
+									participant.admin_meta?.[
+										"admin-diet-allergies-health-extra-info"
+									],
+								) || "None provided"}
 							</Text>
 							{participant.admin_meta?.["admin-health-shoulder"] === "yes" && (
 								<Text c="red">Has shoulder issues</Text>
