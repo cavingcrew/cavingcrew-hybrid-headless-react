@@ -14,7 +14,7 @@ export const generateCalloutText = (trip: any, participants: any[]): string => {
 
 	// Calculate callout time (now + route duration * 1.25)
 	const routeDuration = trip.route?.acf?.route_time_for_eta
-		? parseInt(trip.route.acf.route_time_for_eta, 10)
+		? Number.parseInt(trip.route.acf.route_time_for_eta, 10)
 		: 4; // Default to 4 hours if not specified
 	const calloutTimeMs = now.getTime() + routeDuration * 1.25 * 60 * 60 * 1000;
 	const calloutTime = new Date(calloutTimeMs);
@@ -548,13 +548,14 @@ export const generateLocationInfoText = (trip: any): string => {
 		trip.route?.acf?.route_entrance_location_id?.acf
 			?.location_parking_description
 	) {
-		const parkingDescription = trip.route.acf.route_entrance_location_id.acf.location_parking_description
-			.replace(/<br\s*\/?>/gi, "\n")
-			.replace(/<\/p>\s*<p>/gi, "\n\n")
-			.replace(/<[^>]*>/g, "")
-			.replace(/\n{3,}/g, "\n\n")
-			.trim();
-			
+		const parkingDescription =
+			trip.route.acf.route_entrance_location_id.acf.location_parking_description
+				.replace(/<br\s*\/?>/gi, "\n")
+				.replace(/<\/p>\s*<p>/gi, "\n\n")
+				.replace(/<[^>]*>/g, "")
+				.replace(/\n{3,}/g, "\n\n")
+				.trim();
+
 		message += `Here's a description of the parking:\n`;
 		message += `${parkingDescription}\n\n`;
 	}
