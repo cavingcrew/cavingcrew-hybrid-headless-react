@@ -564,6 +564,16 @@ export const generateLocationInfoText = (trip: any): string => {
 		message += `${parkingDescription}\n\n`;
 	}
 
+	// Add note about parking photos if available
+	if (
+		trip.route?.acf?.route_entrance_location_id?.acf?.location_parking_photos &&
+		Array.isArray(trip.route.acf.route_entrance_location_id.acf.location_parking_photos) &&
+		trip.route.acf.route_entrance_location_id.acf.location_parking_photos.length > 0
+	) {
+		message += `Note: Photos of the parking area are available on the trip signup page if you're logged in.\n`;
+		message += `You can view them at: ${trip.permalink || window.location.href}#parking\n\n`;
+	}
+
 	// Add additional information for giggletrips
 	if (trip.acf.event_type === "giggletrip") {
 		message += `Caving is an energy heavy activity so do eat something sustaining beforehand.\n\n`;
