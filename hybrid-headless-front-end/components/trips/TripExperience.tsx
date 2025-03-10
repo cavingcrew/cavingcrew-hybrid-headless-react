@@ -111,18 +111,18 @@ export function TripExperience({ trip }: TripExperienceProps) {
 	const challengeResult = extractChallengeMetrics(routeData);
 	const challengeMetrics = challengeResult?.metrics;
 	const weightedRank = challengeResult?.weightedRank;
-	
+
 	// Check if we have enough data to show the trip experience section
-	const hasExperienceData = 
+	const hasExperienceData =
 		// First check if we have a valid route with meaningful data
-		routeData && 
-		trip.route?.id !== null && 
+		routeData &&
+		trip.route?.id !== null &&
 		trip.route?.title !== "Cave Entrance Details" &&
 		// Then check if any of these specific fields have actual content
 		(
-			(starRating && starRating > 0) || 
-			(estimatedTime && estimatedTime.trim() !== '') || 
-			(routeData.route_blurb && routeData.route_blurb.trim() !== '') || 
+			(starRating && starRating > 0) ||
+			(estimatedTime && estimatedTime.trim() !== '') ||
+			(routeData.route_blurb && routeData.route_blurb.trim() !== '') ||
 			(challengeMetrics && challengeMetrics.length > 0)
 		);
 
@@ -351,10 +351,21 @@ export function TripExperience({ trip }: TripExperienceProps) {
 
 							<Alert color="blue" icon={<IconInfoCircle size={16} />}>
 								<Text size="sm">
-									Don't have any of the gear? The Crew has all equipment available to
-									borrow - just let us know what you need after you sign up.
+									{trip.acf.event_gear_required === 'Horizontal Caving Gear and SRT Kit' ||
+									(Array.isArray(personalGear) && personalGear.length > 0 &&
+										trip.acf.event_gear_required !== 'None') ? (
+										<>
+											<strong>Important:</strong> This trip requires you bring your own gear. The Crew can't offer you gear for this trip - usually because its already in use.
+										</>
+									) : (
+										<>
+											Don't have any of the gear? The Crew has all equipment available to
+											borrow - just let us know what you need after you sign up.
+										</>
+									)}
 								</Text>
 							</Alert>
+
 						</Stack>
 					)}
 
@@ -397,12 +408,12 @@ export function TripExperience({ trip }: TripExperienceProps) {
 			)}
 
 			{/* Leading the Trip - Separate Paper Container - Only visible to logged in users */}
-			{leadingDifficulty && 
-			  isLoggedIn && 
+			{leadingDifficulty &&
+			  isLoggedIn &&
 			  // Make sure we have actual leading difficulty data with meaningful content
-			  (leadingDifficulty.route_leading_difficulty_navigation_difficulty || 
-			   leadingDifficulty.route_leading_difficulty_horizontal_leading_level_required || 
-			   (leadingDifficulty.route_leading_difficulty_horizontal_leading_skills_required && 
+			  (leadingDifficulty.route_leading_difficulty_navigation_difficulty ||
+			   leadingDifficulty.route_leading_difficulty_horizontal_leading_level_required ||
+			   (leadingDifficulty.route_leading_difficulty_horizontal_leading_skills_required &&
 				leadingDifficulty.route_leading_difficulty_horizontal_leading_skills_required.length > 0)) && (
 				<Paper withBorder p="md" radius="md" mt="md">
 					<Stack gap="md" mb="xl">
