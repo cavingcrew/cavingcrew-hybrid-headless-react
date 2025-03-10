@@ -14,7 +14,7 @@ export const generateCalloutText = (trip: any, participants: any[]): string => {
 
 	// Calculate callout time (now + route duration * 1.25)
 	const routeDuration = trip.route?.acf?.route_time_for_eta
-		? parseInt(trip.route.acf.route_time_for_eta, 10)
+		? Number.parseInt(trip.route.acf.route_time_for_eta, 10)
 		: 4; // Default to 4 hours if not specified
 	const calloutTimeMs = now.getTime() + routeDuration * 1.25 * 60 * 60 * 1000;
 	const calloutTime = new Date(calloutTimeMs);
@@ -511,7 +511,7 @@ export const generateLocationInfoText = (trip: any): string => {
 		message += `\n`;
 	}
 
-		// Only include wellies information for giggletrips
+	// Only include wellies information for giggletrips
 	if (trip.acf.event_type === "giggletrip") {
 		message += `We'll bring all the gear for you if you've let us know you aren't bringing it in the signup page.\n\n`;
 		message += `We 'can' provide Wellies. But if you have your own they probably will feel more comfortable! Any wellies are fine - pink sparkles or dinosaurs are fine - whatever! And remember Welly socks too.\n\n`;
@@ -567,8 +567,11 @@ export const generateLocationInfoText = (trip: any): string => {
 	// Add note about parking photos if available
 	if (
 		trip.route?.acf?.route_entrance_location_id?.acf?.location_parking_photos &&
-		Array.isArray(trip.route.acf.route_entrance_location_id.acf.location_parking_photos) &&
-		trip.route.acf.route_entrance_location_id.acf.location_parking_photos.length > 0
+		Array.isArray(
+			trip.route.acf.route_entrance_location_id.acf.location_parking_photos,
+		) &&
+		trip.route.acf.route_entrance_location_id.acf.location_parking_photos
+			.length > 0
 	) {
 		message += `Note: Photos of the parking area are available on the trip signup page if you're logged in.\n`;
 		message += `You can view them at: ${trip.permalink || window.location.href}#parking\n\n`;
