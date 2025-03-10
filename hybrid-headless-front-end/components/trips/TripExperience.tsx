@@ -360,7 +360,7 @@ export function TripExperience({ trip }: TripExperienceProps) {
 									) : (
 										<>
 											Don't have any of the gear? The Crew has all equipment available to
-											borrow - just let us know what you need after you sign up.
+											borrow - just let us know what you already have after you sign up.
 										</>
 									)}
 								</Text>
