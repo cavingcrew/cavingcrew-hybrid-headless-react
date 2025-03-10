@@ -251,7 +251,7 @@ function findPotentialMatches(
 		for (const driver of canGiveLifts) {
 			const driverLocation =
 				driver.meta?.["transport-leaving-location"]?.toLowerCase();
-			if (!driverLocation) return;
+			if (!driverLocation) continue;
 
 			// Check for location match (exact or partial)
 			if (
