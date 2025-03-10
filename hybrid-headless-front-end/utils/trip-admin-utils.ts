@@ -497,14 +497,14 @@ export const generateLocationInfoText = (trip: any): string => {
 	const parkingCoords = getParkingCoordinates();
 	const requiredGear = getRequiredGear();
 
-	message += `On the evening of ${formattedDate}, we're going caving.\n`;
-	message += `Let's meet at the ${locationName} parking around ${formattedTime}.\n\n`;
-	message += `If you discover you're going to be late, please stay on route, and drop us a message with your adjusted ETA. Chances are it'll be absolutel fine. We'll see you when you arrive.\n\n`;
+	message += `🗓️ On the evening of ${formattedDate}, we're going caving.\n`;
+	message += `🕒 Let's meet at the ${locationName} parking around ${formattedTime}.\n\n`;
+	message += `⏱️ If you discover you're going to be late, please stay on route, and drop us a message with your adjusted ETA. Chances are it'll be absolutel fine. We'll see you when you arrive.\n\n`;
 
 	// Add gear information
-	message += `Everyone will need:\n`;
+	message += `🧰 Everyone will need:\n`;
 	requiredGear.forEach((item: string) => {
-		message += `${item},\n`;
+		message += `- ${item}\n`;
 	});
 
 	// Add note about gear borrowing for horizontal trips that aren't overnight or giggletrips
@@ -524,17 +524,17 @@ export const generateLocationInfoText = (trip: any): string => {
 
 	// Only include wellies information for giggletrips
 	if (trip.acf.event_type === "giggletrip") {
-		message += `Unless you've told us not to, we'll bring all the gear for you\n\n`;
+		message += `🎒 Unless you've told us not to, we'll bring all the gear for you\n\n`;
 	}
 
 	// Only include this message for giggletrips
 	if (trip.acf.event_type === "giggletrip") {
-		message += `You do not need to wear extra layers beneath the undersuit, unless you're a very chilly person.\n\n`;
+		message += `❄️ You do not need to wear extra layers beneath the undersuit, unless you're a very chilly person.\n\n`;
 	}
 
 	// Add information about what to bring for giggletrips
 	if (trip.acf.event_type === "giggletrip") {
-		message += `Here's what you should bring:\n\n`;
+		message += `📋 Here's what you should bring:\n\n`;
 		message += `👕 Some warm older/less nice clothes to wear as a base layer underneath the caving-specific clothes we will provide. Some examples:\n`;
 		message += `   - Leggings\n`;
 		message += `   - Summer base layers/swimming t-shirts\n`;
@@ -549,9 +549,16 @@ export const generateLocationInfoText = (trip: any): string => {
 		message += `☕ A hot drink in a warm flask for afterwards is also recommended.\n\n`;
 	}
 
+	// Add additional information for giggletrips
+	if (trip.acf.event_type === "giggletrip") {
+		message += `\n🍽️ Caving is an energy heavy activity so do eat something sustaining beforehand.\n\n`;
+		message += `🌳 Lastly, there are no toilets at the cave, so do 'wild wee' before you arrive, or in the woodland nearby.\n\n`;
+		message += `✨ This is a great trip! I'm really looking forward to meeting you.\n\n`;
+	}
+
 	// Add parking coordinates if available
 	if (parkingCoords) {
-		message += `This is the pin for the ${locationName} Parking.\n`;
+		message += `📍 This is the pin for the ${locationName} Parking.\n`;
 		message += `http://maps.apple.com/?address=${parkingCoords.lat},${parkingCoords.lng}\n\n`;
 	}
 
@@ -568,7 +575,7 @@ export const generateLocationInfoText = (trip: any): string => {
 				.replace(/\n{3,}/g, "\n\n")
 				.trim();
 
-		message += `Here's a description of the parking:\n`;
+		message += `🚗 Here's a description of the parking:\n`;
 		message += `${parkingDescription}\n\n`;
 	}
 
@@ -581,15 +588,8 @@ export const generateLocationInfoText = (trip: any): string => {
 		trip.route.acf.route_entrance_location_id.acf.location_parking_photos
 			.length > 0
 	) {
-		message += `Note: Photos of the parking area are available on the trip signup page if you're logged in.\n`;
+		message += `📸 Note: Photos of the parking area are available on the trip signup page if you're logged in.\n`;
 		message += `You can view them at: ${trip.permalink || window.location.href}#parking\n\n`;
-	}
-
-	// Add additional information for giggletrips
-	if (trip.acf.event_type === "giggletrip") {
-		message += `Caving is an energy heavy activity so do eat something sustaining beforehand.\n\n`;
-		message += `Lastly, there are no toilets at the cave, so do 'wild wee' before you arrive, or in the woodland nearby.\n\n`;
-		message += `This is a great trip! I'm really looking forward to meeting you.\n`;
 	}
 
 	return message;
