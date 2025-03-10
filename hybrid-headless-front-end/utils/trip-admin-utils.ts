@@ -499,7 +499,7 @@ export const generateLocationInfoText = (trip: any): string => {
 
 	message += `On the evening of ${formattedDate}, we're going caving.\n\n`;
 	message += `Let's meet at the ${locationName} parking around ${formattedTime}.\n`;
-	message += `Please let me know if you're going to be significantly late. But please don't fret about minutes!\n\n`;
+	message += `If you discover you're going to be late, please stay on route, and drop us a message with your adjusted ETA. Chances are it'll be absolutel fine. We'll see you when you arrive.\n\n`;
 
 	// Add gear information
 	message += `Everyone will need:\n`;
