@@ -497,8 +497,8 @@ export const generateLocationInfoText = (trip: any): string => {
 	const parkingCoords = getParkingCoordinates();
 	const requiredGear = getRequiredGear();
 
-	message += `On the evening of ${formattedDate}, we're going caving.\n\n`;
-	message += `Let's meet at the ${locationName} parking around ${formattedTime}.\n`;
+	message += `On the evening of ${formattedDate}, we're going caving.\n`;
+	message += `Let's meet at the ${locationName} parking around ${formattedTime}.\n\n`;
 	message += `If you discover you're going to be late, please stay on route, and drop us a message with your adjusted ETA. Chances are it'll be absolutel fine. We'll see you when you arrive.\n\n`;
 
 	// Add gear information
