@@ -88,8 +88,7 @@ export function EmergencyInfoModal({
 						<Text fw={700}>Address:</Text>
 						<Box>
 							<Text>
-								{participant.admin_meta?.billing_address_1 ||
-									"Not provided"}
+								{participant.admin_meta?.billing_address_1 || "Not provided"}
 							</Text>
 							{participant.admin_meta?.billing_address_2 && (
 								<Text>{participant.admin_meta?.billing_address_2}</Text>
