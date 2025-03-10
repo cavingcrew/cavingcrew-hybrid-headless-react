@@ -514,27 +514,74 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                                     <Text c="dimmed">Not specified</Text>
                                                 )}
                                             </Table.Td>
-                                            <Table.Td>
-                                                {participant.meta?.['skills-srt'] ? (
-                                                    <Tooltip 
-                                                        label={getSkillDescription('srtSkills', participant.meta['skills-srt'])}
-                                                        disabled={!getSkillDescription('srtSkills', participant.meta['skills-srt'])}
-                                                    >
-                                                        <Badge 
-                                                            color={getSkillDefinition('srtSkills', participant.meta['skills-srt'])?.color || 'blue'} 
-                                                            variant="light"
-                                                            component={getSkillInfoUrl('srtSkills', participant.meta['skills-srt']) ? 'a' : 'div'}
-                                                            href={getSkillInfoUrl('srtSkills', participant.meta['skills-srt'])}
-                                                            target="_blank"
-                                                            style={{ cursor: getSkillInfoUrl('srtSkills', participant.meta['skills-srt']) ? 'pointer' : 'default' }}
-                                                        >
-                                                            {getSkillLabel('srtSkills', participant.meta['skills-srt'])}
-                                                        </Badge>
-                                                    </Tooltip>
-                                                ) : (
-                                                    <Text c="dimmed">Not specified</Text>
-                                                )}
-                                            </Table.Td>
+                                            {(trip.acf.event_skills_required?.indexOf('SRT') !== -1 || 
+                                              trip.acf.event_skills_required === 'other') && (
+                                                <>
+                                                    <Table.Td>
+                                                        {participant.meta?.['skills-srt'] ? (
+                                                            <Tooltip 
+                                                                label={getSkillDescription('srtSkills', participant.meta['skills-srt'])}
+                                                                disabled={!getSkillDescription('srtSkills', participant.meta['skills-srt'])}
+                                                            >
+                                                                <Badge 
+                                                                    color={getSkillDefinition('srtSkills', participant.meta['skills-srt'])?.color || 'blue'} 
+                                                                    variant="light"
+                                                                    component={getSkillInfoUrl('srtSkills', participant.meta['skills-srt']) ? 'a' : 'div'}
+                                                                    href={getSkillInfoUrl('srtSkills', participant.meta['skills-srt'])}
+                                                                    target="_blank"
+                                                                    style={{ cursor: getSkillInfoUrl('srtSkills', participant.meta['skills-srt']) ? 'pointer' : 'default' }}
+                                                                >
+                                                                    {getSkillLabel('srtSkills', participant.meta['skills-srt'])}
+                                                                </Badge>
+                                                            </Tooltip>
+                                                        ) : (
+                                                            <Text c="dimmed">Not specified</Text>
+                                                        )}
+                                                    </Table.Td>
+                                                    <Table.Td>
+                                                        {participant.meta?.['skills-leading-srt'] || participant.meta?.['caving-srt-happy-to-second-or-lead'] ? (
+                                                            <Tooltip 
+                                                                label={getSkillDescription('leadingSrtSkills', 
+                                                                    participant.meta['skills-leading-srt'] || 
+                                                                    participant.meta['caving-srt-happy-to-second-or-lead']
+                                                                )}
+                                                                disabled={!getSkillDescription('leadingSrtSkills', 
+                                                                    participant.meta['skills-leading-srt'] || 
+                                                                    participant.meta['caving-srt-happy-to-second-or-lead']
+                                                                )}
+                                                            >
+                                                                <Badge 
+                                                                    color={getSkillDefinition('leadingSrtSkills', 
+                                                                        participant.meta['skills-leading-srt'] || 
+                                                                        participant.meta['caving-srt-happy-to-second-or-lead']
+                                                                    )?.color || 'orange'} 
+                                                                    variant="light"
+                                                                    component={getSkillInfoUrl('leadingSrtSkills', 
+                                                                        participant.meta['skills-leading-srt'] || 
+                                                                        participant.meta['caving-srt-happy-to-second-or-lead']
+                                                                    ) ? 'a' : 'div'}
+                                                                    href={getSkillInfoUrl('leadingSrtSkills', 
+                                                                        participant.meta['skills-leading-srt'] || 
+                                                                        participant.meta['caving-srt-happy-to-second-or-lead']
+                                                                    )}
+                                                                    target="_blank"
+                                                                    style={{ cursor: getSkillInfoUrl('leadingSrtSkills', 
+                                                                        participant.meta['skills-leading-srt'] || 
+                                                                        participant.meta['caving-srt-happy-to-second-or-lead']
+                                                                    ) ? 'pointer' : 'default' }}
+                                                                >
+                                                                    {getSkillLabel('leadingSrtSkills', 
+                                                                        participant.meta['skills-leading-srt'] || 
+                                                                        participant.meta['caving-srt-happy-to-second-or-lead']
+                                                                    )}
+                                                                </Badge>
+                                                            </Tooltip>
+                                                        ) : (
+                                                            <Text c="dimmed">Not specified</Text>
+                                                        )}
+                                                    </Table.Td>
+                                                </>
+                                            )}
                                             <Table.Td>
                                                 {participant.meta?.['skills-leading-horizontal'] || participant.meta?.['caving-horizontal-happy-to-second-or-lead'] ? (
                                                     <Tooltip 
@@ -570,48 +617,6 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                                             {getSkillLabel('leadingHorizontalSkills', 
                                                                 participant.meta['skills-leading-horizontal'] || 
                                                                 participant.meta['caving-horizontal-happy-to-second-or-lead']
-                                                            )}
-                                                        </Badge>
-                                                    </Tooltip>
-                                                ) : (
-                                                    <Text c="dimmed">Not specified</Text>
-                                                )}
-                                            </Table.Td>
-                                            <Table.Td>
-                                                {participant.meta?.['skills-leading-srt'] || participant.meta?.['caving-srt-happy-to-second-or-lead'] ? (
-                                                    <Tooltip 
-                                                        label={getSkillDescription('leadingSrtSkills', 
-                                                            participant.meta['skills-leading-srt'] || 
-                                                            participant.meta['caving-srt-happy-to-second-or-lead']
-                                                        )}
-                                                        disabled={!getSkillDescription('leadingSrtSkills', 
-                                                            participant.meta['skills-leading-srt'] || 
-                                                            participant.meta['caving-srt-happy-to-second-or-lead']
-                                                        )}
-                                                    >
-                                                        <Badge 
-                                                            color={getSkillDefinition('leadingSrtSkills', 
-                                                                participant.meta['skills-leading-srt'] || 
-                                                                participant.meta['caving-srt-happy-to-second-or-lead']
-                                                            )?.color || 'orange'} 
-                                                            variant="light"
-                                                            component={getSkillInfoUrl('leadingSrtSkills', 
-                                                                participant.meta['skills-leading-srt'] || 
-                                                                participant.meta['caving-srt-happy-to-second-or-lead']
-                                                            ) ? 'a' : 'div'}
-                                                            href={getSkillInfoUrl('leadingSrtSkills', 
-                                                                participant.meta['skills-leading-srt'] || 
-                                                                participant.meta['caving-srt-happy-to-second-or-lead']
-                                                            )}
-                                                            target="_blank"
-                                                            style={{ cursor: getSkillInfoUrl('leadingSrtSkills', 
-                                                                participant.meta['skills-leading-srt'] || 
-                                                                participant.meta['caving-srt-happy-to-second-or-lead']
-                                                            ) ? 'pointer' : 'default' }}
-                                                        >
-                                                            {getSkillLabel('leadingSrtSkills', 
-                                                                participant.meta['skills-leading-srt'] || 
-                                                                participant.meta['caving-srt-happy-to-second-or-lead']
                                                             )}
                                                         </Badge>
                                                     </Tooltip>
