@@ -289,7 +289,7 @@ export const generateTackleRequestText = (trip: any, participants: any[]): strin
       }
 
       // For all other items, check if they're bringing it
-      const hasBrought = bringingItems.some((g: string) => g.includes(item));
+      const hasBrought = bringingItems.some((g: string) => g.indexOf(item) !== -1);
 
       if (!hasBrought || (isNewCaver && item !== 'Wellies')) {
         if (item === 'Wellies') {
