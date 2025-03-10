@@ -827,7 +827,8 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                         // Determine required gear based on trip type
                                         const requiresSRT = trip.acf.event_gear_required?.indexOf('SRT') !== -1 ||
                                                           trip.acf.event_skills_required?.indexOf('SRT') !== -1 ||
-                                                          trip.route?.acf?.route_personal_gear_required?.indexOf('SRT') !== -1;
+                                                          (typeof trip.route?.acf?.route_personal_gear_required === 'string' && 
+                                                           trip.route?.acf?.route_personal_gear_required?.indexOf('SRT') !== -1);
 
                                         // Get route personal gear requirements
                                         const routePersonalGear = trip.route?.acf?.route_personal_gear_required || '';
@@ -857,7 +858,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                             // Add SRT Kit if required for this trip
                                             if (requiresSRT) {
                                                 standardGear.push('SRT Kit');
-                                                if (!gearBringing.includes('SRT Kit') && !gearBringing.includes('Harness and Cowstails')) {
+                                                if (gearBringing.indexOf('SRT Kit') === -1 && gearBringing.indexOf('Harness and Cowstails') === -1) {
                                                     standardGear.push('Harness and Cowstails');
                                                 }
                                             }
@@ -967,8 +968,10 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                         });
 
                                         // Check if rope is needed for this trip
-                                        const tripRequiresRope = trip.route?.acf?.route_group_tackle_required?.toLowerCase().includes('rope') ||
-                                                               trip.acf.event_gear_required?.toLowerCase().includes('srt');
+                                        const tripRequiresRope = (typeof trip.route?.acf?.route_group_tackle_required === 'string' && 
+                                                                trip.route?.acf?.route_group_tackle_required?.toLowerCase().indexOf('rope') !== -1) ||
+                                                               (typeof trip.acf.event_gear_required === 'string' && 
+                                                                trip.acf.event_gear_required?.toLowerCase().indexOf('srt') !== -1);
 
                                         return (
                                             <Table.Tr key={participant.order_id}>
@@ -993,8 +996,8 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                                                             // Don't match "Spare Light" as part of required gear
                                                                             if (item.toLowerCase() === 'helmet and light' ||
                                                                                 item.toLowerCase() === 'helmet' ||
-                                                                                (item.toLowerCase().includes('light') &&
-                                                                                 !item.toLowerCase().includes('spare'))) {
+                                                                                (item.toLowerCase().indexOf('light') !== -1 &&
+                                                                                 item.toLowerCase().indexOf('spare') === -1)) {
                                                                                 return true;
                                                                             }
                                                                             return false;
@@ -1002,14 +1005,14 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
 
                                                                         // Special case for SRT Kit and Harness/Cowstails
                                                                         if ((req === 'SRT Kit' || req === 'Harness and Cowstails') &&
-                                                                            (item.toLowerCase().includes('srt kit') ||
-                                                                             (item.toLowerCase().includes('harness') &&
-                                                                              item.toLowerCase().includes('cowstail')))) {
+                                                                            (item.toLowerCase().indexOf('srt kit') !== -1 ||
+                                                                             (item.toLowerCase().indexOf('harness') !== -1 &&
+                                                                              item.toLowerCase().indexOf('cowstail') !== -1))) {
                                                                             return true;
                                                                         }
 
                                                                         // Standard comparison
-                                                                        return item.toLowerCase().includes(req.toLowerCase());
+                                                                        return item.toLowerCase().indexOf(req.toLowerCase()) !== -1;
                                                                     });
                                                                 })
                                                                 .map((item, index) => (
