@@ -520,7 +520,7 @@ export const generateLocationInfoText = (trip: any): string => {
 
 	// Only include this message for giggletrips
 	if (trip.acf.event_type === "giggletrip") {
-		message += `You do not need to wear anything beneath the undersuit, unless you're a very chilly person.\n\n`;
+		message += `You do not need to wear extra layers beneath the undersuit, unless you're a very chilly person.\n\n`;
 	}
 
 	// Add information about what to bring for giggletrips
