@@ -14,7 +14,7 @@ export const generateCalloutText = (trip: any, participants: any[]): string => {
 
 	// Calculate callout time (now + route duration * 1.25)
 	const routeDuration = trip.route?.acf?.route_time_for_eta
-		? parseInt(trip.route.acf.route_time_for_eta, 10)
+		? Number.parseInt(trip.route.acf.route_time_for_eta, 10)
 		: 4; // Default to 4 hours if not specified
 	const calloutTimeMs = now.getTime() + routeDuration * 1.25 * 60 * 60 * 1000;
 	const calloutTime = new Date(calloutTimeMs);
@@ -506,7 +506,7 @@ export const generateLocationInfoText = (trip: any): string => {
 	requiredGear.forEach((item: string) => {
 		message += `${item},\n`;
 	});
-	
+
 	// Only include wellies information for giggletrips
 	if (trip.acf.event_type === "giggletrip") {
 		message += `\nWe'll bring all the gear for you if you've let us know you aren't bringing it in the signup page.\n\n`;
@@ -539,9 +539,12 @@ export const generateLocationInfoText = (trip: any): string => {
 		message += `This is the link for the ${locationName} Carpark.\n`;
 		message += `http://maps.apple.com/?address=${parkingCoords.lat},${parkingCoords.lng}\n\n`;
 	}
-	
+
 	// Add parking description if available
-	if (trip.route?.acf?.route_entrance_location_id?.acf?.location_parking_description) {
+	if (
+		trip.route?.acf?.route_entrance_location_id?.acf
+			?.location_parking_description
+	) {
 		message += `Here's a description of the parking:\n`;
 		message += `${trip.route.acf.route_entrance_location_id.acf.location_parking_description}\n\n`;
 	}
