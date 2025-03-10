@@ -208,7 +208,7 @@ function generateLiftCoordinationText(
 
 			// Output grouped matches
 			for (const locationKey in locationGroups) {
-				if (locationGroups.hasOwnProperty(locationKey)) {
+				if (Object.hasOwn(locationGroups, locationKey)) {
 					const matches = locationGroups[locationKey];
 					// For each location, list all possible combinations
 					matches.forEach((pair) => {
