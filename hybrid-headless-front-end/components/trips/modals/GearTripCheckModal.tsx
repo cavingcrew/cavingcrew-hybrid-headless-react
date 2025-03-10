@@ -42,7 +42,8 @@ export function GearTripCheckModal({
 				title="Group Message"
 				mb="md"
 			>
-				This message summarizes the gear needs for your trip participants. You can share it with the group to confirm everyone has what they need.
+				This message summarizes the gear needs for your trip participants. You
+				can share it with the group to confirm everyone has what they need.
 			</Alert>
 
 			<Text fw={500} mb="xs">
