@@ -497,8 +497,8 @@ export const generateLocationInfoText = (trip: any): string => {
 	const parkingCoords = getParkingCoordinates();
 	const requiredGear = getRequiredGear();
 
-	message += `${formattedDate} ${trip.acf.event_type === "known" && startDate.getHours() >= 17 ? "evening" : "trip"}!\n\n`;
-	message += `We meet at the ${locationName} car park at:\n${formattedTime}.\n`;
+	message += `On the evening of ${formattedDate}, we're going caving.\n\n`;
+	message += `Let's meet at the ${locationName} parking around ${formattedTime}.\n`;
 	message += `Please let me know if you're going to be significantly late. But please don't fret about minutes!\n\n`;
 
 	// Add gear information
@@ -514,7 +514,10 @@ export const generateLocationInfoText = (trip: any): string => {
 		message += `*If you do need Wellies, please tell me your Size!\n\n`;
 	}
 
-	message += `You do not need to wear anything beneath the undersuit, unless you're a very chilly person.\n\n`;
+	// Only include this message for giggletrips
+	if (trip.acf.event_type === "giggletrip") {
+		message += `You do not need to wear anything beneath the undersuit, unless you're a very chilly person.\n\n`;
+	}
 
 	// Add information about what to bring for giggletrips
 	if (trip.acf.event_type === "giggletrip") {
@@ -536,7 +539,7 @@ export const generateLocationInfoText = (trip: any): string => {
 
 	// Add parking coordinates if available
 	if (parkingCoords) {
-		message += `This is the link for the ${locationName} Carpark.\n`;
+		message += `This is the pin for the ${locationName} Parking.\n`;
 		message += `http://maps.apple.com/?address=${parkingCoords.lat},${parkingCoords.lng}\n\n`;
 	}
 
@@ -545,8 +548,15 @@ export const generateLocationInfoText = (trip: any): string => {
 		trip.route?.acf?.route_entrance_location_id?.acf
 			?.location_parking_description
 	) {
+		const parkingDescription = trip.route.acf.route_entrance_location_id.acf.location_parking_description
+			.replace(/<br\s*\/?>/gi, "\n")
+			.replace(/<\/p>\s*<p>/gi, "\n\n")
+			.replace(/<[^>]*>/g, "")
+			.replace(/\n{3,}/g, "\n\n")
+			.trim();
+			
 		message += `Here's a description of the parking:\n`;
-		message += `${trip.route.acf.route_entrance_location_id.acf.location_parking_description}\n\n`;
+		message += `${parkingDescription}\n\n`;
 	}
 
 	// Add additional information for giggletrips
