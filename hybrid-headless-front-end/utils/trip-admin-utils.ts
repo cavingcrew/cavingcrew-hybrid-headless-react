@@ -524,8 +524,7 @@ export const generateLocationInfoText = (trip: any): string => {
 
 	// Only include wellies information for giggletrips
 	if (trip.acf.event_type === "giggletrip") {
-		message += `We'll bring all the gear for you if you've let us know you aren't bringing it in the signup page.\n\n`;
-		message += `We 'can' provide Wellies. But if you have your own they probably will feel more comfortable! Any wellies are fine - pink sparkles or dinosaurs are fine - whatever! And remember Welly socks too.\n\n`;
+		message += `Unless you've told us not to, we'll bring all the gear for you\n\n`;
 	}
 
 	// Only include this message for giggletrips
@@ -536,19 +535,18 @@ export const generateLocationInfoText = (trip: any): string => {
 	// Add information about what to bring for giggletrips
 	if (trip.acf.event_type === "giggletrip") {
 		message += `Here's what you should bring:\n\n`;
-		message += `1. Some warm older/less nice clothes to wear as a base layer underneath the caving-specific clothes we will provide. Some examples:\n`;
-		message += `   - Fleece jumpers\n`;
+		message += `👕 Some warm older/less nice clothes to wear as a base layer underneath the caving-specific clothes we will provide. Some examples:\n`;
 		message += `   - Leggings\n`;
-		message += `   - Thermal base layers\n`;
+		message += `   - Summer base layers/swimming t-shirts\n`;
 		message += `   - Outdoorsy t-shirts\n\n`;
-		message += `Avoid anything made from cotton or untreated wool (such as t-shirts or wooly jumpers); synthetic fabrics that keep their warmth when wet work best here. You will be provided with a thick fleece layer and a protective outer layer to wear over this, so if all you have is cotton you're better going without.\n\n`;
-		message += `2. Change of socks/underwear/replacement clothing. Anything you wear into the cave will likely be too wet and dirty to wear afterwards in the car, so make sure you have spare clothes for the drive home.\n`;
-		message += `3. Wellies (we do have spares if necessary, but the sizes and stock are limited). These aren't special wellies – £12 wellies from go-outdoors or sparkling pink wellies with fur linings are great for caving.\n`;
-		message += `4. Towel\n`;
-		message += `5. Any important medicines you take\n`;
-		message += `6. Contact lenses or string for your glasses.\n`;
-		message += `7. A full sealed snack you enjoy eating (eg a mars bar)\n`;
-		message += `8. A hot drink for afterwards is also recommended.\n\n`;
+		message += `👖 Change of socks/underwear/replacement clothing. (Anything you wear into the cave will likely be too wet and dirty to wear afterwards in the car, so make sure you have spare clothes for the drive home.)\n`;
+		message += `👢 Wellies (We 'can' provide Wellies. But if you have your own they probably will feel more comfortable! Any wellies are fine - shortie pink sparkles festival wellies or dinosaurs are fine - whatever! And remember Welly socks too.)\n`;
+		message += `🧖 Towel\n`;
+		message += `💊 Any important medicines you take (including inhalers)\n`;
+		message += `👓 Contact lenses or string for your glasses.\n`;
+		message += `🍫 A full sealed snack you enjoy eating (eg a mars bar) to put in our kit bag to take underground\n`;
+		message += `📱 A waterproof case if you plan on bringing your phone.\n`;
+		message += `☕ A hot drink in a warm flask for afterwards is also recommended.\n\n`;
 	}
 
 	// Add parking coordinates if available
@@ -590,7 +588,7 @@ export const generateLocationInfoText = (trip: any): string => {
 	// Add additional information for giggletrips
 	if (trip.acf.event_type === "giggletrip") {
 		message += `Caving is an energy heavy activity so do eat something sustaining beforehand.\n\n`;
-		message += `Lastly, there are no toilets, so do 'free wee' before you arrive, or in the woodland nearby.\n\n`;
+		message += `Lastly, there are no toilets at the cave, so do 'wild wee' before you arrive, or in the woodland nearby.\n\n`;
 		message += `This is a great trip! I'm really looking forward to meeting you.\n`;
 	}
 
