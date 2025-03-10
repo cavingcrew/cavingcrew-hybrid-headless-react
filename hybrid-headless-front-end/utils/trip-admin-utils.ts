@@ -14,7 +14,7 @@ export const generateCalloutText = (trip: any, participants: any[]): string => {
 
 	// Calculate callout time (now + route duration * 1.25)
 	const routeDuration = trip.route?.acf?.route_time_for_eta
-		? Number.parseInt(trip.route.acf.route_time_for_eta, 10)
+		? parseInt(trip.route.acf.route_time_for_eta, 10)
 		: 4; // Default to 4 hours if not specified
 	const calloutTimeMs = now.getTime() + routeDuration * 1.25 * 60 * 60 * 1000;
 	const calloutTime = new Date(calloutTimeMs);
