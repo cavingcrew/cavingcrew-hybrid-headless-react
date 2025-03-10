@@ -506,7 +506,14 @@ export const generateLocationInfoText = (trip: any): string => {
 	requiredGear.forEach((item: string) => {
 		message += `${item},\n`;
 	});
-
+	
+	// Add note about gear borrowing for horizontal trips that aren't overnight or giggletrips
+	if (trip.acf.event_type !== "giggletrip" && trip.acf.event_type !== "overnight" && 
+	    (trip.acf.event_gear_required?.indexOf("Horizontal") !== -1 || 
+	     trip.route?.acf?.route_personal_gear_required?.indexOf("Horizontal") !== -1)) {
+		message += `\nNote: it's not possible to borrow this from the Crew this time.\n`;
+	}
+	
 	if (trip.acf.event_type != "giggletrip") {
 		message += `\n`;
 	}
