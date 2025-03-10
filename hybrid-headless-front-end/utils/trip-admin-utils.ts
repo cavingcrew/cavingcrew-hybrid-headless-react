@@ -393,8 +393,8 @@ export const generateLocationInfoText = (trip: any): string => {
   const getRequiredGear = () => {
     if (trip.route?.acf?.route_personal_gear_required) {
       return typeof trip.route.acf.route_personal_gear_required === 'string'
-        ? trip.route.acf.route_personal_gear_required.replace(/<[^>]*>/g, '').trim().split(/[,;]/).map(item => item.trim()).filter(Boolean)
-        : String(trip.route.acf.route_personal_gear_required).split(/[,;]/).map(item => item.trim()).filter(Boolean);
+        ? trip.route.acf.route_personal_gear_required.replace(/<[^>]*>/g, '').trim().split(/[,;]/).map((item: string) => item.trim()).filter(Boolean)
+        : String(trip.route.acf.route_personal_gear_required).split(/[,;]/).map((item: string) => item.trim()).filter(Boolean);
     }
     
     // Default gear based on trip type
