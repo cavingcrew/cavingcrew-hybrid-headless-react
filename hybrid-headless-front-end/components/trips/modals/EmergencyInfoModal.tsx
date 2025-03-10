@@ -60,7 +60,7 @@ export function EmergencyInfoModal({
 						<Text fw={700}>Phone Number:</Text>
 						<Text>
 							{participant.admin_meta?.["admin-phone-number"] ||
-								participant.admin_meta?.["billing_phone"] ||
+								participant.admin_meta?.billing_phone ||
 								"Not provided"}
 						</Text>
 					</Group>
@@ -88,16 +88,16 @@ export function EmergencyInfoModal({
 						<Text fw={700}>Address:</Text>
 						<Box>
 							<Text>
-								{participant.admin_meta?.["billing_address_1"] ||
+								{participant.admin_meta?.billing_address_1 ||
 									"Not provided"}
 							</Text>
-							{participant.admin_meta?.["billing_address_2"] && (
-								<Text>{participant.admin_meta?.["billing_address_2"]}</Text>
+							{participant.admin_meta?.billing_address_2 && (
+								<Text>{participant.admin_meta?.billing_address_2}</Text>
 							)}
 							<Text>
 								{[
-									participant.admin_meta?.["billing_city"],
-									participant.admin_meta?.["billing_postcode"],
+									participant.admin_meta?.billing_city,
+									participant.admin_meta?.billing_postcode,
 								]
 									.filter(Boolean)
 									.join(", ")}
