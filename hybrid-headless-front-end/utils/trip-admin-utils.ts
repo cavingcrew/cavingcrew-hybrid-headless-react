@@ -439,7 +439,7 @@ export const generateLocationInfoText = (trip: any): string => {
   
   // Add gear information
   message += `We will provide each of you with:\n`;
-  requiredGear.forEach(item => {
+  requiredGear.forEach((item: string) => {
     message += `${item},\n`;
   });
   message += `\nWe 'can' provide Wellies. But if you have your own they probably will feel more comfortable! Any wellies are fine - pink sparkles or dinosaurs are fine - whatever! And remember Welly socks too.\n\n`;
