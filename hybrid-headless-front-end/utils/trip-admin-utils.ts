@@ -502,26 +502,26 @@ export const generateLocationInfoText = (trip: any): string => {
 	message += `Please let me know if you're going to be significantly late. But please don't fret about minutes!\n\n`;
 
 	// Add gear information
-	message += `We will provide each of you with:\n`;
+	message += `Everyone will need:\n`;
 	requiredGear.forEach((item: string) => {
 		message += `${item},\n`;
 	});
-	message += `\nWe 'can' provide Wellies. But if you have your own they probably will feel more comfortable! Any wellies are fine - pink sparkles or dinosaurs are fine - whatever! And remember Welly socks too.\n\n`;
-	message += `*If you do need Wellies, please tell me your Size!\n\n`;
+	
+	// Only include wellies information for giggletrips
+	if (trip.acf.event_type === "giggletrip") {
+		message += `\nWe'll bring all the gear for you if you've let us know you aren't bringing it in the signup page.\n\n`;
+		message += `We 'can' provide Wellies. But if you have your own they probably will feel more comfortable! Any wellies are fine - pink sparkles or dinosaurs are fine - whatever! And remember Welly socks too.\n\n`;
+		message += `*If you do need Wellies, please tell me your Size!\n\n`;
+	}
 
 	message += `You do not need to wear anything beneath the undersuit, unless you're a very chilly person.\n\n`;
 
-	// Add information about wetness if it's a cave
-	if (
-		trip.route?.acf?.route_difficulty?.route_difficulty_wetness > 3 ||
-		trip.acf.event_cave_name ||
-		trip.acf.event_type === "known"
-	) {
-		message += `The cave will be a bit wet in some places.\n`;
-		message += `So you will need to Bring:\n`;
+	// Add information about wetness only for giggletrips
+	if (trip.acf.event_type === "giggletrip") {
+		message += `Everyone will need to bring:\n`;
 		message += `Towel,\n`;
-		message += `And a change undies and socks.\n`;
-		message += `A hot drink for afterwards. It may seem like a clever idea.\n\n`;
+		message += `A change of undies and socks.\n`;
+		message += `A hot drink for afterwards is also recommended.\n\n`;
 	}
 
 	// Add parking coordinates if available
@@ -534,10 +534,8 @@ export const generateLocationInfoText = (trip: any): string => {
 	if (trip.acf.event_type === "giggletrip") {
 		message += `Caving is an energy heavy activity so do eat something sustaining beforehand.\n\n`;
 		message += `Lastly, there are no toilets, so do 'free wee' before you arrive, or in the woodland nearby.\n\n`;
+		message += `This is a great trip! I'm really looking forward to meeting you.\n`;
 	}
-
-	message += `This is a great trip! I'm really looking forward to meeting you.\n`;
-	message += `${trip.acf.event_trip_leader || "Trip Leader"}`;
 
 	return message;
 };
