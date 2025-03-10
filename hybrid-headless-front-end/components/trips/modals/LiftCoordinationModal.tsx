@@ -174,26 +174,29 @@ function generateLiftCoordinationText(trip: Trip, participants: TripParticipant[
       message += 'Potential lift arrangements based on locations:\n';
 
       // Group matches by location to avoid duplicates
-      const locationGroups = new Map<string, Array<{driver: string, passenger: string}>>();
+      const locationGroups: Record<string, Array<{driver: string, passenger: string}>> = {};
 
       potentialMatches.forEach(match => {
         const locationKey = match.location.toLowerCase();
-        if (!locationGroups.has(locationKey)) {
-          locationGroups.set(locationKey, []);
+        if (!locationGroups[locationKey]) {
+          locationGroups[locationKey] = [];
         }
-        locationGroups.get(locationKey)?.push({
+        locationGroups[locationKey].push({
           driver: match.driver.first_name,
           passenger: match.passenger.first_name
         });
       });
 
       // Output grouped matches
-      locationGroups.forEach((matches, locationKey) => {
-        // For each location, list all possible combinations
-        matches.forEach(pair => {
-          message += `- ${pair.driver} could give a lift to ${pair.passenger}\n`;
-        });
-      });
+      for (const locationKey in locationGroups) {
+        if (locationGroups.hasOwnProperty(locationKey)) {
+          const matches = locationGroups[locationKey];
+          // For each location, list all possible combinations
+          matches.forEach(pair => {
+            message += `- ${pair.driver} could give a lift to ${pair.passenger}\n`;
+          });
+        }
+      }
 
       message += '\n';
     }
@@ -231,8 +234,8 @@ function findPotentialMatches(
       // Check for location match (exact or partial)
       if (
         driverLocation === passengerLocation ||
-        driverLocation.includes(passengerLocation) ||
-        passengerLocation.includes(driverLocation)
+        driverLocation.indexOf(passengerLocation) !== -1 ||
+        passengerLocation.indexOf(driverLocation) !== -1
       ) {
         // Use the more specific location description for the match
         const locationToUse = driverLocation.length >= passengerLocation.length

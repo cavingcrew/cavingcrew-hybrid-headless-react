@@ -985,21 +985,32 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                                     {participant.admin_meta?.['admin-health-impairment-through-medication'] === 'yes' && (
                                                         <Badge color="red" variant="light">Medication Impairment</Badge>
                                                     )}
-                                                    {Object.entries(participant.admin_meta || {})
-                                                        .filter(([key, value]) => 
-                                                            key.startsWith('admin-health-') && 
-                                                            !['admin-health-shoulder', 'admin-health-asthma', 
-                                                              'admin-health-missing-dose', 'admin-health-impairment-through-medication']
-                                                                .includes(key) && 
-                                                            value === 'yes')
-                                                        .map(([key]) => (
-                                                            <Badge key={key} color="orange" variant="light">
-                                                                {key.replace('admin-health-', '').split('-').map(word => 
-                                                                    word.charAt(0).toUpperCase() + word.slice(1)
-                                                                ).join(' ')}
-                                                            </Badge>
-                                                        ))
-                                                    }
+                                                    {(() => {
+                                                        const entries: Array<[string, string | null | undefined]> = [];
+                                                        if (participant.admin_meta) {
+                                                            for (const key in participant.admin_meta) {
+                                                                if (participant.admin_meta.hasOwnProperty(key)) {
+                                                                    entries.push([key, participant.admin_meta[key]]);
+                                                                }
+                                                            }
+                                                        }
+                                                        
+                                                        return entries
+                                                            .filter(([key, value]) => 
+                                                                key.startsWith('admin-health-') && 
+                                                                key !== 'admin-health-shoulder' && 
+                                                                key !== 'admin-health-asthma' && 
+                                                                key !== 'admin-health-missing-dose' && 
+                                                                key !== 'admin-health-impairment-through-medication' && 
+                                                                value === 'yes')
+                                                            .map(([key]) => (
+                                                                <Badge key={key} color="orange" variant="light">
+                                                                    {key.replace('admin-health-', '').split('-').map(word => 
+                                                                        word.charAt(0).toUpperCase() + word.slice(1)
+                                                                    ).join(' ')}
+                                                                </Badge>
+                                                            ));
+                                                    })()}
                                                 </Stack>
                                             </Table.Td>
                                         </Table.Tr>
