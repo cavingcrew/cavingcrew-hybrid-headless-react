@@ -1126,12 +1126,32 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                     </Table.Tr>
                                 </Table.Thead>
                                 <Table.Tbody>
-                                    {participants.map((participant) => (
-                                        <Table.Tr key={participant.order_id}>
-                                            <Table.Td>{participant.first_name} {participant.last_name}</Table.Td>
-                                            <Table.Td>{cleanHtmlEntities(participant.meta?.['admin-dietary-requirements']) || 'None specified'}</Table.Td>
-                                        </Table.Tr>
-                                    ))}
+                                    {[...participants]
+                                        .sort((a, b) => {
+                                            // Get dietary requirements
+                                            const aDiet = cleanHtmlEntities(a.meta?.['admin-dietary-requirements'] || '').toLowerCase();
+                                            const bDiet = cleanHtmlEntities(b.meta?.['admin-dietary-requirements'] || '').toLowerCase();
+                                            
+                                            // Sort vegan and vegetarian together at the top
+                                            if (aDiet.indexOf('vegan') !== -1 && bDiet.indexOf('vegan') === -1) return -1;
+                                            if (aDiet.indexOf('vegan') === -1 && bDiet.indexOf('vegan') !== -1) return 1;
+                                            if (aDiet.indexOf('vegetarian') !== -1 && bDiet.indexOf('vegetarian') === -1) return -1;
+                                            if (aDiet.indexOf('vegetarian') === -1 && bDiet.indexOf('vegetarian') !== -1) return 1;
+                                            
+                                            // Then sort by whether they have any dietary requirements
+                                            if (aDiet && !bDiet) return -1;
+                                            if (!aDiet && bDiet) return 1;
+                                            
+                                            // If both have or don't have dietary requirements, sort alphabetically by name
+                                            return (a.first_name || '').localeCompare(b.first_name || '');
+                                        })
+                                        .map((participant) => (
+                                            <Table.Tr key={participant.order_id}>
+                                                <Table.Td>{participant.first_name} {participant.last_name}</Table.Td>
+                                                <Table.Td>{cleanHtmlEntities(participant.meta?.['admin-dietary-requirements']) || 'None specified'}</Table.Td>
+                                            </Table.Tr>
+                                        ))
+                                    }
                                 </Table.Tbody>
                             </Table>
                         </Tabs.Panel>
@@ -1158,29 +1178,57 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                     </Table.Tr>
                                 </Table.Thead>
                                 <Table.Tbody>
-                                    {participants.map((participant) => (
-                                        <Table.Tr key={participant.order_id}>
-                                            <Table.Td>{participant.first_name} {participant.last_name}</Table.Td>
-                                            <Table.Td>
-                                                {participant.meta?.['transport-need-lift']?.toLowerCase() === 'yes' ? (
-                                                    <Badge color="red">Needs Lift</Badge>
-                                                ) : <Text c="dimmed">No</Text>}
-                                            </Table.Td>
-                                            <Table.Td>
-                                                {participant.meta?.['transport-will-you-give-lift']?.toLowerCase() === 'yes' ? (
-                                                 <Text>Yes</Text>
-                                                ) : <Text c="dimmed">No</Text>}
-                                            </Table.Td>
-                                            <Table.Td>
-                                                {participant.meta?.['transport-depature-time'] || 
-                                                 <Text c="dimmed">Not specified</Text>}
-                                            </Table.Td>
-                                            <Table.Td>
-                                                {participant.meta?.['transport-leaving-location'] || 
-                                                 <Text c="dimmed">Not specified</Text>}
-                                            </Table.Td>
-                                        </Table.Tr>
-                                    ))}
+                                    {[...participants]
+                                        .sort((a, b) => {
+                                            // Sort by needs lift (yes at top)
+                                            const aNeedsLift = a.meta?.['transport-need-lift']?.toLowerCase() === 'yes';
+                                            const bNeedsLift = b.meta?.['transport-need-lift']?.toLowerCase() === 'yes';
+                                            
+                                            if (aNeedsLift && !bNeedsLift) return -1;
+                                            if (!aNeedsLift && bNeedsLift) return 1;
+                                            
+                                            // Then sort by can give lift (yes at top)
+                                            const aCanGiveLift = a.meta?.['transport-will-you-give-lift']?.toLowerCase() === 'yes';
+                                            const bCanGiveLift = b.meta?.['transport-will-you-give-lift']?.toLowerCase() === 'yes';
+                                            
+                                            if (aCanGiveLift && !bCanGiveLift) return -1;
+                                            if (!aCanGiveLift && bCanGiveLift) return 1;
+                                            
+                                            // Then sort by location
+                                            const aLocation = a.meta?.['transport-leaving-location'] || '';
+                                            const bLocation = b.meta?.['transport-leaving-location'] || '';
+                                            
+                                            if (aLocation && !bLocation) return -1;
+                                            if (!aLocation && bLocation) return 1;
+                                            if (aLocation !== bLocation) return aLocation.localeCompare(bLocation);
+                                            
+                                            // Finally sort by name
+                                            return (a.first_name || '').localeCompare(b.first_name || '');
+                                        })
+                                        .map((participant) => (
+                                            <Table.Tr key={participant.order_id}>
+                                                <Table.Td>{participant.first_name} {participant.last_name}</Table.Td>
+                                                <Table.Td>
+                                                    {participant.meta?.['transport-need-lift']?.toLowerCase() === 'yes' ? (
+                                                        <Badge color="red">Needs Lift</Badge>
+                                                    ) : <Text c="dimmed">No</Text>}
+                                                </Table.Td>
+                                                <Table.Td>
+                                                    {participant.meta?.['transport-will-you-give-lift']?.toLowerCase() === 'yes' ? (
+                                                     <Text>Yes</Text>
+                                                    ) : <Text c="dimmed">No</Text>}
+                                                </Table.Td>
+                                                <Table.Td>
+                                                    {participant.meta?.['transport-depature-time'] || 
+                                                     <Text c="dimmed">Not specified</Text>}
+                                                </Table.Td>
+                                                <Table.Td>
+                                                    {participant.meta?.['transport-leaving-location'] || 
+                                                     <Text c="dimmed">Not specified</Text>}
+                                                </Table.Td>
+                                            </Table.Tr>
+                                        ))
+                                    }
                                 </Table.Tbody>
                             </Table>
                         </Tabs.Panel>
@@ -1196,25 +1244,63 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                     </Table.Tr>
                                 </Table.Thead>
                                 <Table.Tbody>
-                                    {participants.map((participant) => (
-                                        <Table.Tr key={participant.order_id}>
-                                            <Table.Td>{participant.first_name} {participant.last_name}</Table.Td>
-                                            <Table.Td>{cleanHtmlEntities(participant.meta?.['admin-dietary-requirements']) || 'None specified'}</Table.Td>
-                                            <Table.Td>{cleanHtmlEntities(participant.admin_meta?.['admin-diet-allergies-health-extra-info']) || 'None provided'}</Table.Td>
-                                            <Table.Td>
-                                                <Stack gap="xs">
-                                                    {participant.admin_meta?.['admin-health-shoulder'] === 'yes' && (
-                                                        <Badge color="red" variant="light">Shoulder Issues</Badge>
-                                                    )}
-                                                    {participant.admin_meta?.['admin-health-asthma'] === 'yes' && (
-                                                        <Badge color="red" variant="light">Asthma</Badge>
-                                                    )}
-                                                    {participant.admin_meta?.['admin-health-missing-dose'] === 'yes' && (
-                                                        <Badge color="red" variant="light">Critical Medication</Badge>
-                                                    )}
-                                                    {participant.admin_meta?.['admin-health-impairment-through-medication'] === 'yes' && (
-                                                        <Badge color="red" variant="light">Medication Impairment</Badge>
-                                                    )}
+                                    {[...participants]
+                                        .sort((a, b) => {
+                                            // Count health flags for each participant
+                                            const aHealthFlags = [
+                                                a.admin_meta?.['admin-health-shoulder'] === 'yes',
+                                                a.admin_meta?.['admin-health-asthma'] === 'yes',
+                                                a.admin_meta?.['admin-health-missing-dose'] === 'yes',
+                                                a.admin_meta?.['admin-health-impairment-through-medication'] === 'yes'
+                                            ].filter(Boolean).length;
+                                            
+                                            const bHealthFlags = [
+                                                b.admin_meta?.['admin-health-shoulder'] === 'yes',
+                                                b.admin_meta?.['admin-health-asthma'] === 'yes',
+                                                b.admin_meta?.['admin-health-missing-dose'] === 'yes',
+                                                b.admin_meta?.['admin-health-impairment-through-medication'] === 'yes'
+                                            ].filter(Boolean).length;
+                                            
+                                            // Sort by number of health flags (most first)
+                                            if (aHealthFlags !== bHealthFlags) {
+                                                return bHealthFlags - aHealthFlags;
+                                            }
+                                            
+                                            // Then sort by dietary requirements (vegan/vegetarian first)
+                                            const aDiet = cleanHtmlEntities(a.meta?.['admin-dietary-requirements'] || '').toLowerCase();
+                                            const bDiet = cleanHtmlEntities(b.meta?.['admin-dietary-requirements'] || '').toLowerCase();
+                                            
+                                            if (aDiet.indexOf('vegan') !== -1 && bDiet.indexOf('vegan') === -1) return -1;
+                                            if (aDiet.indexOf('vegan') === -1 && bDiet.indexOf('vegan') !== -1) return 1;
+                                            if (aDiet.indexOf('vegetarian') !== -1 && bDiet.indexOf('vegetarian') === -1) return -1;
+                                            if (aDiet.indexOf('vegetarian') === -1 && bDiet.indexOf('vegetarian') !== -1) return 1;
+                                            
+                                            // Then sort by whether they have any dietary requirements
+                                            if (aDiet && !bDiet) return -1;
+                                            if (!aDiet && bDiet) return 1;
+                                            
+                                            // Finally sort by name
+                                            return (a.first_name || '').localeCompare(b.first_name || '');
+                                        })
+                                        .map((participant) => (
+                                            <Table.Tr key={participant.order_id}>
+                                                <Table.Td>{participant.first_name} {participant.last_name}</Table.Td>
+                                                <Table.Td>{cleanHtmlEntities(participant.meta?.['admin-dietary-requirements']) || 'None specified'}</Table.Td>
+                                                <Table.Td>{cleanHtmlEntities(participant.admin_meta?.['admin-diet-allergies-health-extra-info']) || 'None provided'}</Table.Td>
+                                                <Table.Td>
+                                                    <Stack gap="xs">
+                                                        {participant.admin_meta?.['admin-health-shoulder'] === 'yes' && (
+                                                            <Badge color="red" variant="light">Shoulder Issues</Badge>
+                                                        )}
+                                                        {participant.admin_meta?.['admin-health-asthma'] === 'yes' && (
+                                                            <Badge color="red" variant="light">Asthma</Badge>
+                                                        )}
+                                                        {participant.admin_meta?.['admin-health-missing-dose'] === 'yes' && (
+                                                            <Badge color="red" variant="light">Critical Medication</Badge>
+                                                        )}
+                                                        {participant.admin_meta?.['admin-health-impairment-through-medication'] === 'yes' && (
+                                                            <Badge color="red" variant="light">Medication Impairment</Badge>
+                                                        )}
                                                     {(() => {
                                                         const entries: Array<[string, string | null | undefined]> = [];
                                                         if (participant.admin_meta) {
