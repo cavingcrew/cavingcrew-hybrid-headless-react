@@ -506,14 +506,14 @@ export const generateLocationInfoText = (trip: any): string => {
 	requiredGear.forEach((item: string) => {
 		message += `${item},\n`;
 	});
-	
+
 	// Add note about gear borrowing for horizontal trips that aren't overnight or giggletrips
-	if (trip.acf.event_type !== "giggletrip" && trip.acf.event_type !== "overnight" && 
-	    (trip.acf.event_gear_required?.indexOf("Horizontal") !== -1 || 
+	if (trip.acf.event_type !== "giggletrip" && trip.acf.event_type !== "overnight" &&
+	    (trip.acf.event_gear_required?.indexOf("Horizontal") !== -1 ||
 	     trip.route?.acf?.route_personal_gear_required?.indexOf("Horizontal") !== -1)) {
 		message += `\nNote: it's not possible to borrow this from the Crew this time.\n`;
 	}
-	
+
 	if (trip.acf.event_type != "giggletrip") {
 		message += `\n`;
 	}
@@ -522,7 +522,6 @@ export const generateLocationInfoText = (trip: any): string => {
 	if (trip.acf.event_type === "giggletrip") {
 		message += `We'll bring all the gear for you if you've let us know you aren't bringing it in the signup page.\n\n`;
 		message += `We 'can' provide Wellies. But if you have your own they probably will feel more comfortable! Any wellies are fine - pink sparkles or dinosaurs are fine - whatever! And remember Welly socks too.\n\n`;
-		message += `*If you do need Wellies, please tell me your Size!\n\n`;
 	}
 
 	// Only include this message for giggletrips
