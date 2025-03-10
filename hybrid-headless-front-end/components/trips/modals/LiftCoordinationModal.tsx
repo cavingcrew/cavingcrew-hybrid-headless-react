@@ -149,38 +149,38 @@ function generateLiftCoordinationText(
 	} else {
 		if (needLifts.length > 0) {
 			message += "The following people need lifts:\n";
-			needLifts.forEach((p) => {
+			for (const p of needLifts) {
 				const location =
 					p.meta?.["transport-leaving-location"] || "location not specified";
 				const time =
 					p.meta?.["transport-depature-time"] || "time not specified";
 				message += `- ${p.first_name} from ${location} (preferred departure: ${time})\n`;
-			});
+			}
 			message += "\n";
 		}
 
 		if (preferCarShare.length > 0) {
 			message +=
 				"The following people would prefer to car share rather than drive solo:\n";
-			preferCarShare.forEach((p) => {
+			for (const p of preferCarShare) {
 				const location =
 					p.meta?.["transport-leaving-location"] || "location not specified";
 				const time =
 					p.meta?.["transport-depature-time"] || "time not specified";
 				message += `- ${p.first_name} from ${location} (preferred departure: ${time})\n`;
-			});
+			}
 			message += "\n";
 		}
 
 		if (canGiveLifts.length > 0) {
 			message += "The following people can offer lifts:\n";
-			canGiveLifts.forEach((p) => {
+			for (const p of canGiveLifts) {
 				const location =
 					p.meta?.["transport-leaving-location"] || "location not specified";
 				const time =
 					p.meta?.["transport-depature-time"] || "time not specified";
 				message += `- ${p.first_name} from ${location} (departure: ${time})\n`;
-			});
+			}
 			message += "\n";
 		}
 
@@ -195,7 +195,7 @@ function generateLiftCoordinationText(
 				Array<{ driver: string; passenger: string }>
 			> = {};
 
-			potentialMatches.forEach((match) => {
+			for (const match of potentialMatches) {
 				const locationKey = match.location.toLowerCase();
 				if (!locationGroups[locationKey]) {
 					locationGroups[locationKey] = [];
@@ -204,16 +204,16 @@ function generateLiftCoordinationText(
 					driver: match.driver.first_name,
 					passenger: match.passenger.first_name,
 				});
-			});
+			}
 
 			// Output grouped matches
 			for (const locationKey in locationGroups) {
 				if (Object.hasOwn(locationGroups, locationKey)) {
 					const matches = locationGroups[locationKey];
 					// For each location, list all possible combinations
-					matches.forEach((pair) => {
+					for (const pair of matches) {
 						message += `- ${pair.driver} could give a lift to ${pair.passenger}\n`;
-					});
+					}
 				}
 			}
 
@@ -243,12 +243,12 @@ function findPotentialMatches(
 ): PotentialMatch[] {
 	const matches: PotentialMatch[] = [];
 
-	needLifts.forEach((passenger) => {
+	for (const passenger of needLifts) {
 		const passengerLocation =
 			passenger.meta?.["transport-leaving-location"]?.toLowerCase();
-		if (!passengerLocation) return;
+		if (!passengerLocation) continue;
 
-		canGiveLifts.forEach((driver) => {
+		for (const driver of canGiveLifts) {
 			const driverLocation =
 				driver.meta?.["transport-leaving-location"]?.toLowerCase();
 			if (!driverLocation) return;
@@ -271,8 +271,8 @@ function findPotentialMatches(
 					location: locationToUse || "",
 				});
 			}
-		});
-	});
+		}
+	}
 
 	return matches;
 }
