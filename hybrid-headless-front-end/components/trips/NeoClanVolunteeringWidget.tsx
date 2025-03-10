@@ -387,14 +387,110 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                     <Table.Tr>
                                         <Table.Th>Name</Table.Th>
                                         <Table.Th>Horizontal Skills</Table.Th>
-                                        <Table.Th>SRT Skills</Table.Th>
+                                        {(trip.acf.event_skills_required?.includes('SRT') || 
+                                          trip.acf.event_skills_required === 'other') && (
+                                            <>
+                                                <Table.Th>SRT Skills</Table.Th>
+                                                <Table.Th>Leading SRT</Table.Th>
+                                            </>
+                                        )}
                                         <Table.Th>Leading Horizontal</Table.Th>
-                                        <Table.Th>Leading SRT</Table.Th>
                                         <Table.Th>Leading Coaching</Table.Th>
                                     </Table.Tr>
                                 </Table.Thead>
                                 <Table.Tbody>
-                                    {participants.map((participant) => (
+                                    {[...participants]
+                                        .sort((a, b) => {
+                                            // Sort by horizontal skills (most competent first)
+                                            const horizontalSkillOrder = {
+                                                'Horizontal Intermediate': 3,
+                                                'Horizontal Basic': 2,
+                                                'New to caving': 1,
+                                                'Not specified': 0
+                                            };
+                                            
+                                            const aHorizontalSkill = a.meta?.['skills-horizontal'] || 'Not specified';
+                                            const bHorizontalSkill = b.meta?.['skills-horizontal'] || 'Not specified';
+                                            
+                                            const aHorizontalValue = horizontalSkillOrder[aHorizontalSkill] || 0;
+                                            const bHorizontalValue = horizontalSkillOrder[bHorizontalSkill] || 0;
+                                            
+                                            if (aHorizontalValue !== bHorizontalValue) {
+                                                return bHorizontalValue - aHorizontalValue;
+                                            }
+                                            
+                                            // If horizontal skills are the same, sort by SRT skills
+                                            const srtSkillOrder = {
+                                                'SRT Advanced': 6,
+                                                'SRT Intermediate': 5,
+                                                'Pre-SRT Intermediate': 4,
+                                                'SRT Basic': 3,
+                                                'Pre-SRT Basic': 2,
+                                                'No-SRT': 1,
+                                                'Not specified': 0
+                                            };
+                                            
+                                            const aSrtSkill = a.meta?.['skills-srt'] || 'Not specified';
+                                            const bSrtSkill = b.meta?.['skills-srt'] || 'Not specified';
+                                            
+                                            const aSrtValue = srtSkillOrder[aSrtSkill] || 0;
+                                            const bSrtValue = srtSkillOrder[bSrtSkill] || 0;
+                                            
+                                            if (aSrtValue !== bSrtValue) {
+                                                return bSrtValue - aSrtValue;
+                                            }
+                                            
+                                            // If SRT skills are the same, sort by leading horizontal
+                                            const leadingHorizontalOrder = {
+                                                'Horizontal Leader': 4,
+                                                'learner leader': 3,
+                                                'seconder': 2,
+                                                'no skills': 1,
+                                                'Not specified': 0
+                                            };
+                                            
+                                            const aLeadingHorizontal = a.meta?.['skills-leading-horizontal'] || 
+                                                                      a.meta?.['caving-horizontal-happy-to-second-or-lead'] || 
+                                                                      'Not specified';
+                                            const bLeadingHorizontal = b.meta?.['skills-leading-horizontal'] || 
+                                                                      b.meta?.['caving-horizontal-happy-to-second-or-lead'] || 
+                                                                      'Not specified';
+                                            
+                                            const aLeadingHorizontalValue = leadingHorizontalOrder[aLeadingHorizontal] || 0;
+                                            const bLeadingHorizontalValue = leadingHorizontalOrder[bLeadingHorizontal] || 0;
+                                            
+                                            if (aLeadingHorizontalValue !== bLeadingHorizontalValue) {
+                                                return bLeadingHorizontalValue - aLeadingHorizontalValue;
+                                            }
+                                            
+                                            // If leading horizontal skills are the same, sort by leading SRT
+                                            const leadingSrtOrder = {
+                                                'srt leader advanced': 5,
+                                                'srt leader basic': 4,
+                                                'I\'m learning to rig': 3,
+                                                'I can help derig': 2,
+                                                'Nothing yet': 1,
+                                                'Not specified': 0
+                                            };
+                                            
+                                            const aLeadingSrt = a.meta?.['skills-leading-srt'] || 
+                                                              a.meta?.['caving-srt-happy-to-second-or-lead'] || 
+                                                              'Not specified';
+                                            const bLeadingSrt = b.meta?.['skills-leading-srt'] || 
+                                                              b.meta?.['caving-srt-happy-to-second-or-lead'] || 
+                                                              'Not specified';
+                                            
+                                            const aLeadingSrtValue = leadingSrtOrder[aLeadingSrt] || 0;
+                                            const bLeadingSrtValue = leadingSrtOrder[bLeadingSrt] || 0;
+                                            
+                                            if (aLeadingSrtValue !== bLeadingSrtValue) {
+                                                return bLeadingSrtValue - aLeadingSrtValue;
+                                            }
+                                            
+                                            // If all else is equal, sort by name
+                                            return (a.first_name || '').localeCompare(b.first_name || '');
+                                        })
+                                        .map((participant) => (
                                         <Table.Tr key={participant.order_id}>
                                             <Table.Td>{participant.first_name} {participant.last_name}</Table.Td>
                                             <Table.Td>
