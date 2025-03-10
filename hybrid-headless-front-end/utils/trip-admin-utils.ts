@@ -516,12 +516,22 @@ export const generateLocationInfoText = (trip: any): string => {
 
 	message += `You do not need to wear anything beneath the undersuit, unless you're a very chilly person.\n\n`;
 
-	// Add information about wetness only for giggletrips
+	// Add information about what to bring for giggletrips
 	if (trip.acf.event_type === "giggletrip") {
-		message += `Everyone will need to bring:\n`;
-		message += `Towel,\n`;
-		message += `A change of undies and socks.\n`;
-		message += `A hot drink for afterwards is also recommended.\n\n`;
+		message += `Here's what you should bring:\n\n`;
+		message += `1. Some warm older/less nice clothes to wear as a base layer underneath the caving-specific clothes we will provide. Some examples:\n`;
+		message += `   - Fleece jumpers\n`;
+		message += `   - Leggings\n`;
+		message += `   - Thermal base layers\n`;
+		message += `   - Outdoorsy t-shirts\n\n`;
+		message += `Avoid anything made from cotton or untreated wool (such as t-shirts or wooly jumpers); synthetic fabrics that keep their warmth when wet work best here. You will be provided with a thick fleece layer and a protective outer layer to wear over this, so if all you have is cotton you're better going without.\n\n`;
+		message += `2. Change of socks/underwear/replacement clothing. Anything you wear into the cave will likely be too wet and dirty to wear afterwards in the car, so make sure you have spare clothes for the drive home.\n`;
+		message += `3. Wellies (we do have spares if necessary, but the sizes and stock are limited). These aren't special wellies – £12 wellies from go-outdoors or sparkling pink wellies with fur linings are great for caving.\n`;
+		message += `4. Towel\n`;
+		message += `5. Any important medicines you take\n`;
+		message += `6. Contact lenses or string for your glasses.\n`;
+		message += `7. A full sealed snack you enjoy eating (eg a mars bar)\n`;
+		message += `8. A hot drink for afterwards is also recommended.\n\n`;
 	}
 
 	// Add parking coordinates if available
