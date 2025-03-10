@@ -529,6 +529,12 @@ export const generateLocationInfoText = (trip: any): string => {
 		message += `This is the link for the ${locationName} Carpark.\n`;
 		message += `http://maps.apple.com/?address=${parkingCoords.lat},${parkingCoords.lng}\n\n`;
 	}
+	
+	// Add parking description if available
+	if (trip.route?.acf?.route_entrance_location_id?.acf?.location_parking_description) {
+		message += `Here's a description of the parking:\n`;
+		message += `${trip.route.acf.route_entrance_location_id.acf.location_parking_description}\n\n`;
+	}
 
 	// Add additional information for giggletrips
 	if (trip.acf.event_type === "giggletrip") {
