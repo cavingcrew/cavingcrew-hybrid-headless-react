@@ -729,7 +729,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                                 // Add SRT Kit if required for this trip
                                                 if (requiresSRT) {
                                                     standardGear.push('SRT Kit');
-                                                    if (!gearBringing.includes('SRT Kit') && !gearBringing.includes('Harness and Cowstails')) {
+                                                    if (gearBringing.indexOf('SRT Kit') === -1 && gearBringing.indexOf('Harness and Cowstails') === -1) {
                                                         standardGear.push('Harness and Cowstails');
                                                     }
                                                 }
@@ -1107,7 +1107,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                     // Check if this participant needs wellies but hasn't specified size
                                     const gearBringing = p.meta?.['gear-bringing-evening-or-day-trip'] || '';
                                     const hasWelliesSize = !!p.meta?.gear_wellies_size;
-                                    const needsWellies = !gearBringing.includes('Wellies');
+                                    const needsWellies = gearBringing.indexOf('Wellies') === -1;
                                     return needsWellies && !hasWelliesSize;
                                 }) && (
                                     <Alert icon={<IconInfoCircle size={16} />} color="orange" mt="md">

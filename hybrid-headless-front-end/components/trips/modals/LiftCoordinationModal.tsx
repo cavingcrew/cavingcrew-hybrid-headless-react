@@ -128,8 +128,8 @@ function generateLiftCoordinationText(trip: Trip, participants: TripParticipant[
 
   // Find participants who prefer to car share
   const preferCarShare = signedUpParticipants.filter(p =>
-    p.meta?.['transport-need-lift']?.toLowerCase().includes('prefer') ||
-    p.meta?.['transport-need-lift']?.toLowerCase().includes('share')
+    (p.meta?.['transport-need-lift']?.toLowerCase() && p.meta?.['transport-need-lift']?.toLowerCase().indexOf('prefer') !== -1) ||
+    (p.meta?.['transport-need-lift']?.toLowerCase() && p.meta?.['transport-need-lift']?.toLowerCase().indexOf('share') !== -1)
   );
 
   // Build the message
