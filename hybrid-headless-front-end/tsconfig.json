@@ -2,7 +2,7 @@
 	"compilerOptions": {
 		"types": ["node", "jest", "@testing-library/jest-dom"],
 		"target": "es2017",
-		"lib": ["dom", "dom.iterable", "esnext", "es2015", "es2017"],
+		"lib": ["dom", "dom.iterable", "esnext", "es2015", "es2017", "es2018", "es2019", "es2020"],
 		"allowJs": true,
 		"skipLibCheck": true,
 		"strict": true,

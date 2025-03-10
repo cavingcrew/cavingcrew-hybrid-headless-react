@@ -387,7 +387,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                     <Table.Tr>
                                         <Table.Th>Name</Table.Th>
                                         <Table.Th>Horizontal Skills</Table.Th>
-                                        {(trip.acf.event_skills_required?.includes('SRT') || 
+                                        {(trip.acf.event_skills_required?.indexOf('SRT') !== -1 || 
                                           trip.acf.event_skills_required === 'other') && (
                                             <>
                                                 <Table.Th>SRT Skills</Table.Th>
@@ -692,7 +692,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
 
                                         // Check if they're a new caver
                                         const isNewCaver = bringingItems.some(item =>
-                                            item.includes('Nothing') || item.includes('totally new')
+                                            item.indexOf('Nothing') !== -1 || item.indexOf('totally new') !== -1
                                         );
 
                                         // Determine required gear based on trip type
@@ -749,12 +749,12 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                             if (item === 'Harness and Cowstails' || item === 'SRT Kit') {
                                                 // If they have SRT Kit, they have Harness and Cowstails covered
                                                 const hasSRTKit = bringingItems.some(g =>
-                                                    g.toLowerCase().includes('srt kit'));
+                                                    g.toLowerCase().indexOf('srt kit') !== -1);
 
                                                 // If they have Harness and Cowstails specifically
                                                 const hasHarnessAndCowstails = bringingItems.some(g =>
-                                                    g.toLowerCase().includes('harness') &&
-                                                    g.toLowerCase().includes('cowstail'));
+                                                    g.toLowerCase().indexOf('harness') !== -1 &&
+                                                    g.toLowerCase().indexOf('cowstail') !== -1);
 
                                                 // If they have either SRT Kit or Harness and Cowstails, they're covered
                                                 if ((item === 'SRT Kit' && hasSRTKit) ||
@@ -765,7 +765,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                                 // Special case for Helmet and Light
                                                 // Check for combined "Helmet and Light" item
                                                 const hasHelmetAndLight = bringingItems.some(g =>
-                                                    g.toLowerCase().includes('helmet and light'));
+                                                    g.toLowerCase().indexOf('helmet and light') !== -1);
 
                                                 if (hasHelmetAndLight) {
                                                     return; // They have a combined helmet and light
@@ -773,10 +773,10 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
 
                                                 // Check for separate helmet and light items (not spare light)
                                                 const hasHelmet = bringingItems.some(g =>
-                                                    g.toLowerCase().includes('helmet'));
+                                                    g.toLowerCase().indexOf('helmet') !== -1);
                                                 const hasLight = bringingItems.some(g =>
-                                                    g.toLowerCase().includes('light') &&
-                                                    !g.toLowerCase().includes('spare'));
+                                                    g.toLowerCase().indexOf('light') !== -1 &&
+                                                    g.toLowerCase().indexOf('spare') === -1);
 
                                                 if (hasHelmet && hasLight) {
                                                     return; // They have both helmet and light
@@ -784,7 +784,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                             } else {
                                                 // For all other items, check if they're bringing it
                                                 const hasBrought = bringingItems.some(g =>
-                                                    g.toLowerCase().includes(item.toLowerCase())
+                                                    g.toLowerCase().indexOf(item.toLowerCase()) !== -1
                                                 );
 
                                                 if (hasBrought) {
@@ -807,7 +807,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                         // Check for additional gear beyond requirements
                                         const additionalGear = bringingItems.filter(item => {
                                             // Skip if it's the "Nothing" option
-                                            if (item.includes('Nothing') || item.includes('totally new')) {
+                                            if (item.indexOf('Nothing') !== -1 || item.indexOf('totally new') !== -1) {
                                                 return false;
                                             }
 
@@ -819,8 +819,8 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                                     // Don't match "Spare Light" as part of required gear
                                                     if (item.toLowerCase() === 'helmet and light' ||
                                                         item.toLowerCase() === 'helmet' ||
-                                                        (item.toLowerCase().includes('light') &&
-                                                         !item.toLowerCase().includes('spare'))) {
+                                                        (item.toLowerCase().indexOf('light') !== -1 &&
+                                                         item.toLowerCase().indexOf('spare') === -1)) {
                                                         return false;
                                                     }
                                                     // Continue checking other requirements
@@ -828,7 +828,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                                 }
 
                                                 // Standard comparison
-                                                if (item.toLowerCase().includes(req.toLowerCase())) {
+                                                if (item.toLowerCase().indexOf(req.toLowerCase()) !== -1) {
                                                     return false;
                                                 }
                                             }
@@ -932,8 +932,8 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                                                 </Badge>
                                                             ))}
                                                             {/* Only show rope in additional gear if it's not part of required gear */}
-                                                            {bringingItems.some(item => item.toLowerCase().includes('rope')) &&
-                                                             !standardGear.some(item => item.toLowerCase().includes('rope')) ? (
+                                                            {bringingItems.some(item => item.toLowerCase().indexOf('rope') !== -1) &&
+                                                             !standardGear.some(item => item.toLowerCase().indexOf('rope') !== -1) ? (
                                                                 <Badge color="teal" variant="light">
                                                                     {participant.meta?.['gear-rope-length']
                                                                         ? `Rope: ${participant.meta['gear-rope-length']}`
@@ -959,15 +959,15 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                     </Group>
                                 </Alert>
 
-                                {trip.acf.event_gear_required?.includes('SRT') && (
+                                {trip.acf.event_gear_required?.indexOf('SRT') !== -1 && (
                                     <Alert icon={<IconInfoCircle size={16} />} color="yellow" mt="md">
                                         This trip requires SRT equipment. Ensure all people have proper vertical caving gear.
                                     </Alert>
                                 )}
 
                                 {participants.some(p =>
-                                    p.meta?.['gear-bringing-evening-or-day-trip']?.includes('Nothing') ||
-                                    p.meta?.['gear-bringing-evening-or-day-trip']?.includes('totally new')
+                                    p.meta?.['gear-bringing-evening-or-day-trip']?.indexOf('Nothing') !== -1 ||
+                                    p.meta?.['gear-bringing-evening-or-day-trip']?.indexOf('totally new') !== -1
                                 ) && (
                                     <Alert icon={<IconInfoCircle size={16} />} color="red" mt="md">
                                         Some people are new and need full equipment. Please coordinate gear loans.
