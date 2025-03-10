@@ -402,7 +402,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                     {[...participants]
                                         .sort((a, b) => {
                                             // Sort by horizontal skills (most competent first)
-                                            const horizontalSkillOrder = {
+                                            const horizontalSkillOrder: Record<string, number> = {
                                                 'Horizontal Intermediate': 3,
                                                 'Horizontal Basic': 2,
                                                 'New to caving': 1,
@@ -412,15 +412,15 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                             const aHorizontalSkill = a.meta?.['skills-horizontal'] || 'Not specified';
                                             const bHorizontalSkill = b.meta?.['skills-horizontal'] || 'Not specified';
                                             
-                                            const aHorizontalValue = horizontalSkillOrder[aHorizontalSkill] || 0;
-                                            const bHorizontalValue = horizontalSkillOrder[bHorizontalSkill] || 0;
+                                            const aHorizontalValue = horizontalSkillOrder[aHorizontalSkill as string] || 0;
+                                            const bHorizontalValue = horizontalSkillOrder[bHorizontalSkill as string] || 0;
                                             
                                             if (aHorizontalValue !== bHorizontalValue) {
                                                 return bHorizontalValue - aHorizontalValue;
                                             }
                                             
                                             // If horizontal skills are the same, sort by SRT skills
-                                            const srtSkillOrder = {
+                                            const srtSkillOrder: Record<string, number> = {
                                                 'SRT Advanced': 6,
                                                 'SRT Intermediate': 5,
                                                 'Pre-SRT Intermediate': 4,
@@ -433,15 +433,15 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                             const aSrtSkill = a.meta?.['skills-srt'] || 'Not specified';
                                             const bSrtSkill = b.meta?.['skills-srt'] || 'Not specified';
                                             
-                                            const aSrtValue = srtSkillOrder[aSrtSkill] || 0;
-                                            const bSrtValue = srtSkillOrder[bSrtSkill] || 0;
+                                            const aSrtValue = srtSkillOrder[aSrtSkill as string] || 0;
+                                            const bSrtValue = srtSkillOrder[bSrtSkill as string] || 0;
                                             
                                             if (aSrtValue !== bSrtValue) {
                                                 return bSrtValue - aSrtValue;
                                             }
                                             
                                             // If SRT skills are the same, sort by leading horizontal
-                                            const leadingHorizontalOrder = {
+                                            const leadingHorizontalOrder: Record<string, number> = {
                                                 'Horizontal Leader': 4,
                                                 'learner leader': 3,
                                                 'seconder': 2,
@@ -456,15 +456,15 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                                                       b.meta?.['caving-horizontal-happy-to-second-or-lead'] || 
                                                                       'Not specified';
                                             
-                                            const aLeadingHorizontalValue = leadingHorizontalOrder[aLeadingHorizontal] || 0;
-                                            const bLeadingHorizontalValue = leadingHorizontalOrder[bLeadingHorizontal] || 0;
+                                            const aLeadingHorizontalValue = leadingHorizontalOrder[aLeadingHorizontal as string] || 0;
+                                            const bLeadingHorizontalValue = leadingHorizontalOrder[bLeadingHorizontal as string] || 0;
                                             
                                             if (aLeadingHorizontalValue !== bLeadingHorizontalValue) {
                                                 return bLeadingHorizontalValue - aLeadingHorizontalValue;
                                             }
                                             
                                             // If leading horizontal skills are the same, sort by leading SRT
-                                            const leadingSrtOrder = {
+                                            const leadingSrtOrder: Record<string, number> = {
                                                 'srt leader advanced': 5,
                                                 'srt leader basic': 4,
                                                 'I\'m learning to rig': 3,
@@ -480,8 +480,8 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                                               b.meta?.['caving-srt-happy-to-second-or-lead'] || 
                                                               'Not specified';
                                             
-                                            const aLeadingSrtValue = leadingSrtOrder[aLeadingSrt] || 0;
-                                            const bLeadingSrtValue = leadingSrtOrder[bLeadingSrt] || 0;
+                                            const aLeadingSrtValue = leadingSrtOrder[aLeadingSrt as string] || 0;
+                                            const bLeadingSrtValue = leadingSrtOrder[bLeadingSrt as string] || 0;
                                             
                                             if (aLeadingSrtValue !== bLeadingSrtValue) {
                                                 return bLeadingSrtValue - aLeadingSrtValue;
@@ -1098,7 +1098,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                                         
                                                         return entries
                                                             .filter(([key, value]) => 
-                                                                key.startsWith('admin-health-') && 
+                                                                key.indexOf('admin-health-') === 0 && 
                                                                 key !== 'admin-health-shoulder' && 
                                                                 key !== 'admin-health-asthma' && 
                                                                 key !== 'admin-health-missing-dose' && 
