@@ -276,14 +276,14 @@ export const generateTackleRequestText = (trip: any, participants: any[]): strin
 
     // Even if they selected "Nothing", check if they've also selected specific items
     const isNewCaver = bringingItems.some((item: string) =>
-      item.includes('Nothing') || item.includes('totally new')
+      item.indexOf('Nothing') !== -1 || item.indexOf('totally new') !== -1
     );
 
     // Check each standard gear item
     standardGear.forEach((item: string) => {
       // Special case for SRT Kit and Harness/Cowstails
       if (item === 'Harness and Cowstails' && bringingItems.some((g: string) =>
-        g.includes('SRT Kit') || g.includes('Harness and Cowstails')
+        g.indexOf('SRT Kit') !== -1 || g.indexOf('Harness and Cowstails') !== -1
       )) {
         return; // They have this covered
       }
