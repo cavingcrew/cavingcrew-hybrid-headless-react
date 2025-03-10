@@ -34,7 +34,8 @@ import {
 import {
     generateCalloutText,
     generateTackleRequestText,
-    generateGearTripCheckText
+    generateGearTripCheckText,
+    generateLocationInfoText
 } from '../../utils/trip-admin-utils';
 import { formatRelativeTime } from '../../utils/date-utils';
 import { 
@@ -49,7 +50,8 @@ import {
     CalloutModal,
     TackleRequestModal,
     GearTripCheckModal,
-    LiftCoordinationModal
+    LiftCoordinationModal,
+    LocationInfoModal
 } from './modals';
 
 // Main component with improved structure and comments
@@ -67,6 +69,8 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
     const [gearTripCheckText, setGearTripCheckText] = useState('');
     const [liftCoordinationModalOpen, setLiftCoordinationModalOpen] = useState(false);
     const [liftCoordinationText, setLiftCoordinationText] = useState('');
+    const [locationInfoModalOpen, setLocationInfoModalOpen] = useState(false);
+    const [locationInfoText, setLocationInfoText] = useState('');
 
     // Fetch trip participants data
     const { data, isLoading, error } = useTripParticipants(trip.id);
@@ -143,6 +147,13 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
     const handleOpenLiftCoordinationModal = () => {
         setLiftCoordinationText(''); // Reset text to trigger auto-generation
         setLiftCoordinationModalOpen(true);
+    };
+
+    // Function to generate location info text
+    const handleGenerateLocationInfoText = () => {
+        const text = generateLocationInfoText(trip);
+        setLocationInfoText(text);
+        setLocationInfoModalOpen(true);
     };
 
     // Render different views based on access level
@@ -306,8 +317,17 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                     onClick={handleGenerateGearTripCheckText}
                                     variant="outline"
                                     color="indigo"
+                                    mr="xs"
                                 >
                                     Gear Trip Check
+                                </Button>
+                                <Button
+                                    leftSection={<IconMessage size={16} />}
+                                    onClick={handleGenerateLocationInfoText}
+                                    variant="outline"
+                                    color="green"
+                                >
+                                    Location Info Message
                                 </Button>
                             </Group>
                             <Table striped>
@@ -1147,6 +1167,14 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                         onTextChange={setLiftCoordinationText}
                         trip={trip}
                         participants={participants}
+                    />
+
+                    <LocationInfoModal
+                        opened={locationInfoModalOpen}
+                        onClose={() => setLocationInfoModalOpen(false)}
+                        locationInfoText={locationInfoText}
+                        onTextChange={setLocationInfoText}
+                        trip={trip}
                     />
                 </>
             )}

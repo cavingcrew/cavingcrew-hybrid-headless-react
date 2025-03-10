@@ -350,6 +350,133 @@ export const generateTackleRequestText = (trip: any, participants: any[]): strin
 };
 
 /**
+ * Generate location info message for a trip
+ * @param trip The trip object
+ * @returns Formatted location info message
+ */
+export const generateLocationInfoText = (trip: any): string => {
+  // Get trip date and time
+  const startDate = trip.acf.event_start_date_time ? new Date(trip.acf.event_start_date_time) : new Date();
+  
+  // Format date and time
+  const formattedDate = startDate.toLocaleDateString('en-GB', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long'
+  });
+
+  const formattedTime = startDate.toLocaleTimeString('en-GB', {
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+
+  // Get location information
+  const getLocationName = () => {
+    if (trip.route?.acf?.route_entrance_location_id?.title) {
+      return trip.route.acf.route_entrance_location_id.title;
+    }
+    return trip.acf.event_cave_name || trip.acf.event_location || 'the meeting point';
+  };
+
+  // Get parking coordinates
+  const getParkingCoordinates = () => {
+    if (trip.route?.acf?.route_entrance_location_id?.acf?.location_parking_latlong) {
+      const parking = trip.route.acf.route_entrance_location_id.acf.location_parking_latlong;
+      if (typeof parking === 'object' && parking.lat && parking.lng) {
+        return { lat: parking.lat, lng: parking.lng };
+      }
+    }
+    return null;
+  };
+
+  // Get required gear
+  const getRequiredGear = () => {
+    if (trip.route?.acf?.route_personal_gear_required) {
+      return typeof trip.route.acf.route_personal_gear_required === 'string'
+        ? trip.route.acf.route_personal_gear_required.replace(/<[^>]*>/g, '').trim().split(/[,;]/).map(item => item.trim()).filter(Boolean)
+        : String(trip.route.acf.route_personal_gear_required).split(/[,;]/).map(item => item.trim()).filter(Boolean);
+    }
+    
+    // Default gear based on trip type
+    const requiresSRT = trip.acf.event_gear_required?.includes('SRT') || 
+                       trip.acf.event_skills_required?.includes('SRT');
+    
+    const standardGear = [
+      'Oversuit',
+      'Undersuit',
+      'Helmet with headtorch',
+      'Kneepads',
+      'Gloves',
+      'Wellies'
+    ];
+    
+    if (requiresSRT) {
+      standardGear.push('SRT Kit');
+    }
+    
+    return standardGear;
+  };
+
+  // Build the message based on trip type
+  let message = '';
+  
+  // For overnight trips
+  if (trip.acf.event_type === 'overnight') {
+    message = `This is an overnight trip to ${trip.acf.event_location || 'our destination'}.\n\n`;
+    message += `Please check the trip page for detailed information about accommodation, kit list, and plans for each day.\n\n`;
+    message += `If you have any questions, please contact the trip leader: ${trip.acf.event_trip_leader || 'the trip leader'}.\n`;
+    return message;
+  }
+  
+  // For giggletrips and other trips
+  const locationName = getLocationName();
+  const parkingCoords = getParkingCoordinates();
+  const requiredGear = getRequiredGear();
+  
+  message += `${formattedDate} ${trip.acf.event_type === 'known' && startDate.getHours() >= 17 ? 'evening' : 'trip'}!\n\n`;
+  message += `We meet at the ${locationName} car park at:\n${formattedTime}.\n`;
+  message += `Please let me know if you're going to be significantly late. But please don't fret about minutes!\n\n`;
+  
+  // Add gear information
+  message += `We will provide each of you with:\n`;
+  requiredGear.forEach(item => {
+    message += `${item},\n`;
+  });
+  message += `\nWe 'can' provide Wellies. But if you have your own they probably will feel more comfortable! Any wellies are fine - pink sparkles or dinosaurs are fine - whatever! And remember Welly socks too.\n\n`;
+  message += `*If you do need Wellies, please tell me your Size!\n\n`;
+  
+  message += `You do not need to wear anything beneath the undersuit, unless you're a very chilly person.\n\n`;
+  
+  // Add information about wetness if it's a cave
+  if (trip.route?.acf?.route_difficulty?.route_difficulty_wetness > 3 || 
+      trip.acf.event_cave_name || 
+      trip.acf.event_type === 'known') {
+    message += `The cave will be a bit wet in some places.\n`;
+    message += `So you will need to Bring:\n`;
+    message += `Towel,\n`;
+    message += `And a change undies and socks.\n`;
+    message += `A hot drink for afterwards. It may seem like a clever idea.\n\n`;
+  }
+  
+  // Add parking coordinates if available
+  if (parkingCoords) {
+    message += `This is the link for the ${locationName} Carpark.\n`;
+    message += `http://maps.apple.com/?address=${parkingCoords.lat},${parkingCoords.lng}\n\n`;
+  }
+  
+  // Add additional information for giggletrips
+  if (trip.acf.event_type === 'giggletrip') {
+    message += `Caving is an energy heavy activity so do eat something sustaining beforehand.\n\n`;
+    message += `Lastly, there are no toilets, so do 'free wee' before you arrive, or in the woodland nearby.\n\n`;
+  }
+  
+  message += `This is a great trip! I'm really looking forward to meeting you.\n`;
+  message += `${trip.acf.event_trip_leader || 'Trip Leader'}`;
+  
+  return message;
+};
+
+/**
  * Generate gear trip check message for a trip
  * @param trip The trip object
  * @param participants List of trip participants
