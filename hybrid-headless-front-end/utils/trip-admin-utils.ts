@@ -215,9 +215,9 @@ export const generateTackleRequestText = (trip: any, participants: any[]): strin
 
   // Get route personal gear requirements
   const routePersonalGear = trip.route?.acf?.route_personal_gear_required || '';
-  const requiresSRT = trip.acf.event_gear_required?.includes('SRT') ||
-                     routePersonalGear.includes('SRT Kit') ||
-                     trip.acf.event_skills_required?.includes('SRT');
+  const requiresSRT = trip.acf.event_gear_required?.indexOf('SRT') !== -1 ||
+                     (typeof routePersonalGear === 'string' && routePersonalGear.indexOf('SRT Kit') !== -1) ||
+                     trip.acf.event_skills_required?.indexOf('SRT') !== -1;
 
   // Build the tackle request text
   let requestTemplate = `On ${formattedDate} at ${formattedTime} we're going to ${getLocationName()}`;
@@ -262,7 +262,7 @@ export const generateTackleRequestText = (trip: any, participants: any[]): strin
       // Add SRT Kit if required for this trip
       if (requiresSRT) {
         standardGear.push('SRT Kit');
-        if (!gearBringing.includes('SRT Kit') && !gearBringing.includes('Harness and Cowstails')) {
+        if (gearBringing.indexOf('SRT Kit') === -1 && gearBringing.indexOf('Harness and Cowstails') === -1) {
           standardGear.push('Harness and Cowstails');
         }
       }
@@ -492,7 +492,7 @@ export const generateGearTripCheckText = (trip: any, participants: any[]): strin
   // Get route personal gear requirements
   const routePersonalGear = trip.route?.acf?.route_personal_gear_required || '';
   const requiresSRT = trip.acf.event_gear_required?.indexOf('SRT') !== -1 ||
-                     routePersonalGear.indexOf('SRT Kit') !== -1 ||
+                     (typeof routePersonalGear === 'string' && routePersonalGear.indexOf('SRT Kit') !== -1) ||
                      trip.acf.event_skills_required?.indexOf('SRT') !== -1;
 
   // Build the gear check message
