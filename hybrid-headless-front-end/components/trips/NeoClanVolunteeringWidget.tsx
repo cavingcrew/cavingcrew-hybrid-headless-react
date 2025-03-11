@@ -6,6 +6,7 @@ import {
     Stack, Button, List, Anchor, Box, ThemeIcon, 
     CopyButton, ActionIcon, Tooltip
 } from '@mantine/core';
+import { WordPressLoginWidget } from '../auth/WordPressLoginWidget';
 import {
     IconUsers, IconAlertCircle, IconInfoCircle, IconTools,
     IconHeartHandshake, IconSchool, IconMedicalCross, IconShield,
@@ -186,7 +187,12 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                     <Group gap="xs" mb="xs">
                         <Badge color="blue">{formatParticipantCount(data?.data?.participant_count || 0, 'public')}</Badge>
                     </Group>
-                    <Text size="sm" c="dimmed">Sign in to see who's coming</Text>
+                    <Text size="sm" c="dimmed" mb="md">Sign in to see who's coming</Text>
+                    
+                    <Box mt="md">
+                        <Title order={5} mb="sm">Sign In</Title>
+                        <WordPressLoginWidget redirectTo={typeof window !== 'undefined' ? window.location.href : '/'} />
+                    </Box>
                 </>
             )}
         </Paper>
