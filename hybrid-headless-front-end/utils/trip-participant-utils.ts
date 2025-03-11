@@ -9,7 +9,10 @@ import type { TripParticipant } from "../types/api";
  * @param isLoggedIn Whether the user is logged in
  * @returns A formatted string for display
  */
-export const formatParticipantCount = (count: number, isLoggedIn: boolean): string => {
+export const formatParticipantCount = (
+	count: number,
+	isLoggedIn: boolean,
+): string => {
 	if (count === 0) return "No participants yet";
 	if (count === 1) return "1 participant";
 	return `${count} participants`;
