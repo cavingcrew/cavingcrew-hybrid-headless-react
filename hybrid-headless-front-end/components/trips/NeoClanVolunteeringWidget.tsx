@@ -227,7 +227,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
 
                     {isSignedUpNonMember() && (
                         <Alert color="yellow" title="Membership Required" mb="md">
-                            You need to be a member to see full participant details.
+                            You need to be a member and signed up for this trip to see more details.
                         </Alert>
                     )}
                 </>
