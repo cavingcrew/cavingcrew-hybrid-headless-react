@@ -6,7 +6,7 @@ import type { TripParticipant } from "../types/api";
 /**
  * Format participant count for display
  * @param count The number of participants
- * @param accessLevel The user's access level ('public', 'logged_in', 'participant', or 'admin')
+ * @param accessLevel The user's access level ('public', 'logged_in', 'participant', 'event_role', 'admin', or 'super_admin')
  * @returns A formatted string for display
  */
 export const formatParticipantCount = (

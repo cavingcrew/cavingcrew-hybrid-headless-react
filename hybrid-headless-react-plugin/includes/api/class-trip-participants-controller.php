@@ -138,24 +138,38 @@ class Hybrid_Headless_Trip_Participants_Controller {
      *
      * @param int $trip_id Trip ID.
      * @param int $user_id User ID.
-     * @return string 'public', 'logged_in', 'participant', or 'admin'
+     * @return string 'public', 'logged_in', 'participant', 'event_role', 'admin', or 'super_admin'
      */
     private function get_access_level($trip_id, $user_id) {
         if (!$user_id) {
             return 'public';
         }
 
-        // Check if user is an Administrator or Shop Manager
+        // Check if user is an Administrator or Shop Manager (super_admin)
         $user = get_userdata($user_id);
-        $is_admin = $user && ($user->has_cap('administrator') || $user->has_cap('manage_woocommerce'));
+        $is_super_admin = $user && ($user->has_cap('administrator') || $user->has_cap('manage_woocommerce'));
 
         error_log(sprintf(
-            '[Trip Participants Access] User ID: %d, Admin: %s',
+            '[Trip Participants Access] User ID: %d, Super Admin: %s',
             $user_id,
-            $is_admin ? 'yes' : 'no'
+            $is_super_admin ? 'yes' : 'no'
         ));
 
-        if ($is_admin) {
+        if ($is_super_admin) {
+            return 'super_admin';
+        }
+
+        // Check if user is a committee member (admin)
+        $committee_current = get_user_meta($user_id, 'committee_current', true);
+        $is_committee = $committee_current && 
+                        $committee_current !== '' && 
+                        $committee_current !== 'retired' && 
+                        $committee_current !== 'revoked' && 
+                        $committee_current !== 'legacy' && 
+                        $committee_current !== 'expired';
+        
+        if ($is_committee) {
+            error_log(sprintf('[Trip Participants Access] User %d is committee member with role: %s', $user_id, $committee_current));
             return 'admin';
         }
 
@@ -173,6 +187,7 @@ class Hybrid_Headless_Trip_Participants_Controller {
         ));
 
         $is_participant = false;
+        $is_event_role = false;
 
         foreach ($orders as $order) {
             $order_id = $order->get_id();
@@ -210,15 +225,30 @@ class Hybrid_Headless_Trip_Participants_Controller {
                         $cc_volunteer = $order->get_meta('cc_volunteer');
                         error_log(sprintf('[Trip Participants Access] Volunteer role: %s', $cc_volunteer));
 
-                        if (strpos($cc_volunteer, 'director') !== false || $cc_volunteer === 'cabbage1239zz') {
+                        // Check for trip director role (admin)
+                        if (strpos(strtolower($cc_volunteer), 'director') !== false && 
+                            strpos(strtolower($cc_volunteer), 'trip') !== false || 
+                            $cc_volunteer === 'cabbage1239zz') {
                             error_log(sprintf('[Trip Participants Access] User %d is admin for trip %d', $user_id, $trip_id));
                             return 'admin';
+                        }
+                        
+                        // Check for event role
+                        if ($order_status === 'processing' && 
+                            (!$order->get_meta('cc_attendance') || $order->get_meta('cc_attendance') === 'pending') && 
+                            $cc_volunteer && $cc_volunteer !== 'none') {
+                            $is_event_role = true;
+                            error_log(sprintf('[Trip Participants Access] User %d has event role for trip %d', $user_id, $trip_id));
                         }
                     }
                 }
             }
         }
 
+        if ($is_event_role) {
+            return 'event_role';
+        }
+        
         return $is_participant ? 'participant' : 'logged_in';
     }
 
@@ -297,6 +327,11 @@ class Hybrid_Headless_Trip_Participants_Controller {
                 array('status' => 403)
             );
         }
+        
+        // Super admin always has access
+        if ($access_level === 'super_admin') {
+            error_log(sprintf('[Trip Participants] Super admin access granted for user %d on trip %d', $user_id, $trip_id));
+        }
 
         // Get all orders for this trip based on access level
         $orders = $this->get_trip_orders($trip_id, $access_level);
@@ -340,7 +375,7 @@ class Hybrid_Headless_Trip_Participants_Controller {
             ];
 
             // Add additional info based on access level
-            if ($access_level === 'participant' || $access_level === 'admin') {
+            if ($access_level === 'participant' || $access_level === 'event_role' || $access_level === 'admin' || $access_level === 'super_admin') {
                 $participant['last_name'] = $user->last_name;
                 $participant['user_id'] = $participant_user_id;
 
@@ -353,7 +388,7 @@ class Hybrid_Headless_Trip_Participants_Controller {
             }
 
             // Add admin-level meta
-            if ($access_level === 'admin') {
+            if ($access_level === 'admin' || $access_level === 'super_admin') {
                 $admin_meta = $this->get_admin_meta($participant_user_id);
                 $participant['admin_meta'] = $admin_meta;
                 $participant['order_status'] = $order->get_status();
@@ -367,7 +402,7 @@ class Hybrid_Headless_Trip_Participants_Controller {
             'participants' => $participants,
             'access_level' => $access_level,
             'trip_id' => $trip_id,
-            'can_update' => ($access_level === 'admin'),
+            'can_update' => ($access_level === 'admin' || $access_level === 'super_admin'),
             'participant_count' => $participant_count,
             'is_logged_in' => true
         ]);
