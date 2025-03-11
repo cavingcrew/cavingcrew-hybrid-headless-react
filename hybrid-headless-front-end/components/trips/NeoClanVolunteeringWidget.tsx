@@ -968,7 +968,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                                         // Check for additional gear beyond requirements
                                         const additionalGear = bringingItems.filter(item => {
                                             // Skip if it's the "Nothing" option
-                                            if (item.indexOf('Nothing') !== -1 || item.indexOf('totally new') !== -1) {
+                                            if (item.toLowerCase().indexOf('Nothing') !== -1 || item.toLowerCase().indexOf('totally new') !== -1) {
                                                 return false;
                                             }
 
