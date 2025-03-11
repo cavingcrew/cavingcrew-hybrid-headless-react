@@ -29,7 +29,8 @@ import {
     getStatusColor, 
     isFirstTimeCaver, 
     formatGearList,
-    cleanTackle
+    cleanTackle,
+    formatParticipantCount
 } from '../../utils/trip-participant-utils';
 import {
     generateCalloutText,
@@ -161,15 +162,38 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
         switch (accessLevel) {
             case 'public':
                 return renderPublicView();
+            case 'logged_in':
+                return renderLoggedInView();
             case 'participant':
+            case 'event_role':
                 return renderParticipantView();
-            default:
+            case 'admin':
+            case 'super_admin':
                 return renderAdminView();
+            default:
+                return renderPublicView();
         }
     };
 
-    // Public view - minimal information
+    // Public view - minimal information (no names)
     const renderPublicView = () => (
+        <Paper withBorder p="md" radius="md">
+            <Title order={3} mb="md">Who's Coming</Title>
+            {data?.data?.participant_count === 0 ? (
+                <Text c="dimmed">No one has signed up yet. Be the first!</Text>
+            ) : (
+                <>
+                    <Group gap="xs" mb="xs">
+                        <Badge color="blue">{formatParticipantCount(data?.data?.participant_count || 0, 'public')}</Badge>
+                    </Group>
+                    <Text size="sm" c="dimmed">Sign in to see who's coming</Text>
+                </>
+            )}
+        </Paper>
+    );
+
+    // Logged in view - shows first names only
+    const renderLoggedInView = () => (
         <Paper withBorder p="md" radius="md">
             <Title order={3} mb="md">Who's Coming</Title>
             {participants.length === 0 ? (
@@ -177,7 +201,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
             ) : (
                 <>
                     <Group gap="xs" mb="xs">
-                        <Badge color="blue">{participants.length} people signed up</Badge>
+                        <Badge color="blue">{formatParticipantCount(participants.length, accessLevel)}</Badge>
                     </Group>
                     <Group gap="xs">
                         {participants.map((participant, index) => (
@@ -194,7 +218,12 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
     // Participant view - more details but still limited
     const renderParticipantView = () => (
         <Paper withBorder p="md" radius="md">
-            <Title order={3} mb="md">People confirmed for this trip</Title>
+            <Group justify="space-between" mb="md">
+                <Title order={3}>People confirmed for this trip</Title>
+                {accessLevel === 'event_role' && (
+                    <Badge color="teal" size="lg">Event Role Access</Badge>
+                )}
+            </Group>
             {participants.length === 0 ? (
                 <Text c="dimmed">No one has signed up yet. Be the first!</Text>
             ) : (
@@ -238,7 +267,9 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
         <Paper withBorder p="md" radius="md">
             <Group justify="space-between" mb="md">
                 <Title order={3}>Trip Management</Title>
-                <Badge color="blue" size="lg">Admin Access</Badge>
+                <Badge color={accessLevel === 'super_admin' ? 'violet' : 'blue'} size="lg">
+                    {accessLevel === 'super_admin' ? 'Super Admin Access' : 'Admin Access'}
+                </Badge>
                 <Alert
                     color="blue"
                     variant="light"
