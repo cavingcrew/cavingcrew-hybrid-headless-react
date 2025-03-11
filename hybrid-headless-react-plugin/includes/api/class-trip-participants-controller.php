@@ -106,7 +106,9 @@ class Hybrid_Headless_Trip_Participants_Controller {
         
         // Check if user is a committee member
         if ($this->is_committee_member($user_id)) {
-            error_log(sprintf('[Trip Participants Admin] User %d is committee member - granting admin permissions', $user_id));
+            if (WP_DEBUG) {
+                error_log(sprintf('[Trip Participants Admin] User %d is committee member - granting admin permissions', $user_id));
+            }
             return true;
         }
 
@@ -155,11 +157,13 @@ class Hybrid_Headless_Trip_Participants_Controller {
         $user = get_userdata($user_id);
         $is_super_admin = $user && ($user->has_cap('administrator') || $user->has_cap('manage_woocommerce'));
 
-        error_log(sprintf(
-            '[Trip Participants Access] User ID: %d, Super Admin: %s',
-            $user_id,
-            $is_super_admin ? 'yes' : 'no'
-        ));
+        if (WP_DEBUG) {
+            error_log(sprintf(
+                '[Trip Participants Access] User ID: %d, Super Admin: %s',
+                $user_id,
+                $is_super_admin ? 'yes' : 'no'
+            ));
+        }
 
         if ($is_super_admin) {
             return 'super_admin';
@@ -167,7 +171,9 @@ class Hybrid_Headless_Trip_Participants_Controller {
 
         // Check if user is a committee member (admin)
         $committee_current = get_user_meta($user_id, 'committee_current', true);
-        error_log(sprintf('[Trip Participants Access] User %d committee_current value: "%s"', $user_id, $committee_current));
+        if (WP_DEBUG) {
+            error_log(sprintf('[Trip Participants Access] User %d committee_current value: "%s"', $user_id, $committee_current));
+        }
         
         $is_committee = $committee_current && 
                         $committee_current !== '' && 
@@ -177,9 +183,11 @@ class Hybrid_Headless_Trip_Participants_Controller {
                         $committee_current !== 'expired';
         
         if ($is_committee) {
-            error_log(sprintf('[Trip Participants Access] User %d is committee member with role: %s', $user_id, $committee_current));
+            if (WP_DEBUG) {
+                error_log(sprintf('[Trip Participants Access] User %d is committee member with role: %s', $user_id, $committee_current));
+            }
             return 'admin';
-        } else {
+        } else if (WP_DEBUG) {
             error_log(sprintf('[Trip Participants Access] User %d is NOT a valid committee member', $user_id));
         }
 
@@ -190,11 +198,13 @@ class Hybrid_Headless_Trip_Participants_Controller {
             'status' => ['on-hold', 'processing', 'completed'],
         ]);
 
-        error_log(sprintf(
-            '[Trip Participants Access] User ID: %d, Orders found: %d',
-            $user_id,
-            count($orders)
-        ));
+        if (WP_DEBUG) {
+            error_log(sprintf(
+                '[Trip Participants Access] User ID: %d, Orders found: %d',
+                $user_id,
+                count($orders)
+            ));
+        }
 
         $is_participant = false;
         $is_event_role = false;
@@ -203,16 +213,20 @@ class Hybrid_Headless_Trip_Participants_Controller {
             $order_id = $order->get_id();
             $order_status = $order->get_status();
 
-            error_log(sprintf(
-                '[Trip Participants Access] Checking Order ID: %d, Status: %s',
-                $order_id,
-                $order_status
-            ));
+            if (WP_DEBUG) {
+                error_log(sprintf(
+                    '[Trip Participants Access] Checking Order ID: %d, Status: %s',
+                    $order_id,
+                    $order_status
+                ));
+            }
 
             if ($order_status === 'completed') {
                 $cc_attendance = $order->get_meta('cc_attendance');
                 if (strpos($cc_attendance, 'cancelled') !== false) {
-                    error_log(sprintf('[Trip Participants Access] Order %d skipped - cancelled', $order_id));
+                    if (WP_DEBUG) {
+                        error_log(sprintf('[Trip Participants Access] Order %d skipped - cancelled', $order_id));
+                    }
                     continue;
                 }
             }
@@ -221,25 +235,31 @@ class Hybrid_Headless_Trip_Participants_Controller {
                 $product = $item->get_product();
                 if ($product) {
                     $product_id = $product->get_parent_id() ?: $product->get_id();
-                    error_log(sprintf(
-                        '[Trip Participants Access] Order %d contains product %d, comparing with trip %d',
-                        $order_id,
-                        $product_id,
-                        $trip_id
-                    ));
+                    if (WP_DEBUG) {
+                        error_log(sprintf(
+                            '[Trip Participants Access] Order %d contains product %d, comparing with trip %d',
+                            $order_id,
+                            $product_id,
+                            $trip_id
+                        ));
+                    }
 
                     if ($product_id == $trip_id) {
                         $is_participant = true;
-                        error_log(sprintf('[Trip Participants Access] User %d is participant for trip %d', $user_id, $trip_id));
+                        if (WP_DEBUG) {
+                            error_log(sprintf('[Trip Participants Access] User %d is participant for trip %d', $user_id, $trip_id));
 
-                        $cc_volunteer = $order->get_meta('cc_volunteer');
-                        error_log(sprintf('[Trip Participants Access] Volunteer role: %s', $cc_volunteer));
+                            $cc_volunteer = $order->get_meta('cc_volunteer');
+                            error_log(sprintf('[Trip Participants Access] Volunteer role: %s', $cc_volunteer));
+                        }
 
                         // Check for trip director role (admin)
                         if (strpos(strtolower($cc_volunteer), 'director') !== false && 
                             strpos(strtolower($cc_volunteer), 'trip') !== false || 
                             $cc_volunteer === 'cabbage1239zz') {
-                            error_log(sprintf('[Trip Participants Access] User %d is admin for trip %d', $user_id, $trip_id));
+                            if (WP_DEBUG) {
+                                error_log(sprintf('[Trip Participants Access] User %d is admin for trip %d', $user_id, $trip_id));
+                            }
                             return 'admin';
                         }
                         
@@ -248,7 +268,9 @@ class Hybrid_Headless_Trip_Participants_Controller {
                             (!$order->get_meta('cc_attendance') || $order->get_meta('cc_attendance') === 'pending') && 
                             $cc_volunteer && $cc_volunteer !== 'none') {
                             $is_event_role = true;
-                            error_log(sprintf('[Trip Participants Access] User %d has event role for trip %d', $user_id, $trip_id));
+                            if (WP_DEBUG) {
+                                error_log(sprintf('[Trip Participants Access] User %d has event role for trip %d', $user_id, $trip_id));
+                            }
                         }
                     }
                 }
@@ -310,23 +332,27 @@ class Hybrid_Headless_Trip_Participants_Controller {
         $access_level = $this->get_access_level($trip_id, $user_id);
 
         // Debug logging for authentication issues
-        error_log(sprintf(
-            '[Trip Participants] User ID: %d, Access Level: %s, Trip ID: %d, Has Purchased: %s, Cookie present: %s',
-            $user_id,
-            $access_level,
-            $trip_id,
-            $has_purchased ? 'yes' : 'no',
-            isset($_COOKIE[LOGGED_IN_COOKIE]) ? 'yes' : 'no'
-        ));
+        if (WP_DEBUG) {
+            error_log(sprintf(
+                '[Trip Participants] User ID: %d, Access Level: %s, Trip ID: %d, Has Purchased: %s, Cookie present: %s',
+                $user_id,
+                $access_level,
+                $trip_id,
+                $has_purchased ? 'yes' : 'no',
+                isset($_COOKIE[LOGGED_IN_COOKIE]) ? 'yes' : 'no'
+            ));
+        }
 
         // Override access level if user has purchased this trip
         if ($has_purchased && ($access_level === 'public' || $access_level === 'logged_in')) {
             $access_level = 'participant';
-            error_log(sprintf(
-                '[Trip Participants] Upgrading access level to participant for user %d on trip %d',
-                $user_id,
-                $trip_id
-            ));
+            if (WP_DEBUG) {
+                error_log(sprintf(
+                    '[Trip Participants] Upgrading access level to participant for user %d on trip %d',
+                    $user_id,
+                    $trip_id
+                ));
+            }
         }
 
         // For admin-level access, check if user has access to the event
@@ -335,20 +361,24 @@ class Hybrid_Headless_Trip_Participants_Controller {
             $is_committee = $this->is_committee_member($user_id);
             $has_event_access = $this->user_has_access_to_event($trip_id);
             
-            error_log(sprintf(
-                '[Trip Participants Auth] User %d, Access Level: %s, Is Committee: %s, Has Event Access: %s',
-                $user_id,
-                $access_level,
-                $is_committee ? 'yes' : 'no',
-                $has_event_access ? 'yes' : 'no'
-            ));
+            if (WP_DEBUG) {
+                error_log(sprintf(
+                    '[Trip Participants Auth] User %d, Access Level: %s, Is Committee: %s, Has Event Access: %s',
+                    $user_id,
+                    $access_level,
+                    $is_committee ? 'yes' : 'no',
+                    $has_event_access ? 'yes' : 'no'
+                ));
+            }
             
             if (!$is_committee && !$has_event_access) {
-                error_log(sprintf(
-                    '[Trip Participants Auth] DENYING ACCESS to User %d for trip %d - not committee and no event access',
-                    $user_id,
-                    $trip_id
-                ));
+                if (WP_DEBUG) {
+                    error_log(sprintf(
+                        '[Trip Participants Auth] DENYING ACCESS to User %d for trip %d - not committee and no event access',
+                        $user_id,
+                        $trip_id
+                    ));
+                }
                 return new WP_Error(
                     'unauthorised_for_that_event',
                     __('You do not have access to this event.', 'hybrid-headless'),
@@ -356,16 +386,18 @@ class Hybrid_Headless_Trip_Participants_Controller {
                 );
             }
             
-            error_log(sprintf(
-                '[Trip Participants Auth] GRANTING ACCESS to User %d for trip %d - %s',
-                $user_id,
-                $trip_id,
-                $is_committee ? 'is committee member' : 'has event access'
-            ));
+            if (WP_DEBUG) {
+                error_log(sprintf(
+                    '[Trip Participants Auth] GRANTING ACCESS to User %d for trip %d - %s',
+                    $user_id,
+                    $trip_id,
+                    $is_committee ? 'is committee member' : 'has event access'
+                ));
+            }
         }
         
         // Super admin always has access
-        if ($access_level === 'super_admin') {
+        if ($access_level === 'super_admin' && WP_DEBUG) {
             error_log(sprintf('[Trip Participants] Super admin access granted for user %d on trip %d', $user_id, $trip_id));
         }
 
@@ -714,28 +746,38 @@ class Hybrid_Headless_Trip_Participants_Controller {
     private function user_has_access_to_event($product_id) {
         // Validate product ID
         if (!$product_id || !wc_get_product($product_id)) {
-            error_log(sprintf('[Event Access] Invalid product ID: %s', $product_id));
+            if (WP_DEBUG) {
+                error_log(sprintf('[Event Access] Invalid product ID: %s', $product_id));
+            }
             return false;
         }
 
         $user_id = get_current_user_id();
         if (!$user_id) {
-            error_log('[Event Access] No current user ID');
+            if (WP_DEBUG) {
+                error_log('[Event Access] No current user ID');
+            }
             return false;
         }
 
-        error_log(sprintf('[Event Access] Checking access for User %d to Product %d', $user_id, $product_id));
+        if (WP_DEBUG) {
+            error_log(sprintf('[Event Access] Checking access for User %d to Product %d', $user_id, $product_id));
+        }
 
         // Check if user is an Administrator or Shop Manager
         $user = get_userdata($user_id);
         if ($user && ($user->has_cap('administrator') || $user->has_cap('manage_woocommerce'))) {
-            error_log(sprintf('[Event Access] User %d is admin/shop manager - granting access', $user_id));
+            if (WP_DEBUG) {
+                error_log(sprintf('[Event Access] User %d is admin/shop manager - granting access', $user_id));
+            }
             return true;
         }
         
         // Check if user is a committee member
         $committee_current = get_user_meta($user_id, 'committee_current', true);
-        error_log(sprintf('[Event Access] User %d committee_current value: "%s"', $user_id, $committee_current));
+        if (WP_DEBUG) {
+            error_log(sprintf('[Event Access] User %d committee_current value: "%s"', $user_id, $committee_current));
+        }
         
         $is_committee = $committee_current && 
                         $committee_current !== '' && 
@@ -745,7 +787,9 @@ class Hybrid_Headless_Trip_Participants_Controller {
                         $committee_current !== 'expired';
         
         if ($is_committee) {
-            error_log(sprintf('[Event Access] User %d is committee member with role: %s - granting access to event', $user_id, $committee_current));
+            if (WP_DEBUG) {
+                error_log(sprintf('[Event Access] User %d is committee member with role: %s - granting access to event', $user_id, $committee_current));
+            }
             return true;
         }
 
@@ -791,12 +835,16 @@ class Hybrid_Headless_Trip_Participants_Controller {
      */
     private function is_committee_member($user_id) {
         if (!$user_id) {
-            error_log(sprintf('[Committee Check] Invalid user ID: %s', $user_id));
+            if (WP_DEBUG) {
+                error_log(sprintf('[Committee Check] Invalid user ID: %s', $user_id));
+            }
             return false;
         }
         
         $committee_current = get_user_meta($user_id, 'committee_current', true);
-        error_log(sprintf('[Committee Check] User %d committee_current value: "%s"', $user_id, $committee_current));
+        if (WP_DEBUG) {
+            error_log(sprintf('[Committee Check] User %d committee_current value: "%s"', $user_id, $committee_current));
+        }
         
         $is_valid_committee = $committee_current && 
                              $committee_current !== '' && 
@@ -805,9 +853,11 @@ class Hybrid_Headless_Trip_Participants_Controller {
                              $committee_current !== 'legacy' && 
                              $committee_current !== 'expired';
         
-        error_log(sprintf('[Committee Check] User %d is_valid_committee: %s', 
-                         $user_id, 
-                         $is_valid_committee ? 'yes' : 'no'));
+        if (WP_DEBUG) {
+            error_log(sprintf('[Committee Check] User %d is_valid_committee: %s', 
+                             $user_id, 
+                             $is_valid_committee ? 'yes' : 'no'));
+        }
         
         return $is_valid_committee;
     }
