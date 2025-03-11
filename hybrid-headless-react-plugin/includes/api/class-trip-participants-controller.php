@@ -190,6 +190,12 @@ class Hybrid_Headless_Trip_Participants_Controller {
         } else if (WP_DEBUG) {
             error_log(sprintf('[Trip Participants Access] User %d is NOT a valid committee member', $user_id));
         }
+        
+        // Check if user is a member
+        $is_member = get_user_meta($user_id, 'cc_member', true) === 'yes';
+        if (WP_DEBUG) {
+            error_log(sprintf('[Trip Participants Access] User %d is member: %s', $user_id, $is_member ? 'yes' : 'no'));
+        }
 
         // Check if user is signed up for this trip and/or is a trip director
         $orders = wc_get_orders([
@@ -277,11 +283,12 @@ class Hybrid_Headless_Trip_Participants_Controller {
             }
         }
 
+        // If user is an event role or participant but not a member, downgrade to logged_in
         if ($is_event_role) {
-            return 'event_role';
+            return $is_member ? 'event_role' : 'logged_in';
         }
         
-        return $is_participant ? 'participant' : 'logged_in';
+        return $is_participant ? ($is_member ? 'participant' : 'logged_in') : 'logged_in';
     }
 
     /**
@@ -343,14 +350,18 @@ class Hybrid_Headless_Trip_Participants_Controller {
             ));
         }
 
-        // Override access level if user has purchased this trip
+        // Override access level if user has purchased this trip and is a member
         if ($has_purchased && ($access_level === 'public' || $access_level === 'logged_in')) {
-            $access_level = 'participant';
+            $is_member = get_user_meta($user_id, 'cc_member', true) === 'yes';
+            $access_level = $is_member ? 'participant' : 'logged_in';
             if (WP_DEBUG) {
                 error_log(sprintf(
-                    '[Trip Participants] Upgrading access level to participant for user %d on trip %d',
+                    '[Trip Participants] %s access level to %s for user %d on trip %d (is_member: %s)',
+                    $is_member ? 'Upgrading' : 'Setting',
+                    $access_level,
                     $user_id,
-                    $trip_id
+                    $trip_id,
+                    $is_member ? 'yes' : 'no'
                 ));
             }
         }

@@ -31,7 +31,8 @@ import {
     isFirstTimeCaver, 
     formatGearList,
     cleanTackle,
-    formatParticipantCount
+    formatParticipantCount,
+    requiresMembership
 } from '../../utils/trip-participant-utils';
 import {
     generateCalloutText,
@@ -175,6 +176,13 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                 return renderPublicView();
         }
     };
+    
+    // Check if user is signed up but not a member
+    const isSignedUpNonMember = () => {
+        return data?.data?.is_logged_in && 
+               data?.data?.access_level === 'logged_in' && 
+               data?.data?.participants?.length > 0;
+    };
 
     // Public view - minimal information (no names)
     const renderPublicView = () => (
@@ -209,13 +217,20 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                     <Group gap="xs" mb="xs">
                         <Badge color="blue">{formatParticipantCount(participants.length, accessLevel)}</Badge>
                     </Group>
-                    <Group gap="xs">
+                    <Group gap="xs" mb="md">
                         {participants.map((participant, index) => (
                             <Badge key={index} variant="outline">
                                 {participant.first_name}
                             </Badge>
                         ))}
                     </Group>
+                    
+                    {isSignedUpNonMember() && (
+                        <Alert color="yellow" title="Membership Required" mb="md">
+                            You're signed up for this trip, but you need to be a member to see full participant details.
+                            Please check your membership status in your account.
+                        </Alert>
+                    )}
                 </>
             )}
         </Paper>

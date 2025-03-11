@@ -19,6 +19,15 @@ export const formatParticipantCount = (
 };
 
 /**
+ * Check if access level requires membership
+ * @param accessLevel The user's access level
+ * @returns Boolean indicating if this access level requires membership
+ */
+export const requiresMembership = (accessLevel: string): boolean => {
+	return ['participant', 'event_role', 'admin', 'super_admin'].includes(accessLevel);
+};
+
+/**
  * Determine signup status for a participant
  * @param participant The trip participant object
  * @returns A string representing the participant's status
