@@ -79,7 +79,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
 
     // Extract participants and access level with default fallbacks
     const participants = data?.data?.participants || [];
-    const accessLevel = data?.data?.access_level || 'public';
+    const accessLevel = (data?.data?.access_level || 'public') as "public" | "logged_in" | "participant" | "event_role" | "admin" | "super_admin";
 
     // Loading state rendering
     if (isLoading) {
@@ -179,7 +179,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
     const renderPublicView = () => (
         <Paper withBorder p="md" radius="md">
             <Title order={3} mb="md">Who's Coming</Title>
-            {data?.data?.participant_count === 0 ? (
+            {(data?.data?.participant_count === 0 || !data?.data?.participant_count) ? (
                 <Text c="dimmed">No one has signed up yet. Be the first!</Text>
             ) : (
                 <>

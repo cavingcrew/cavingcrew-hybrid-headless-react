@@ -210,9 +210,11 @@ export interface TripParticipant {
 
 export interface TripParticipantsResponse {
 	participants: TripParticipant[];
-	access_level: "public" | "participant" | "admin";
+	access_level: "public" | "logged_in" | "participant" | "event_role" | "admin" | "super_admin";
 	trip_id: number;
 	can_update: boolean;
+	participant_count?: number;
+	is_logged_in?: boolean;
 }
 
 export interface TripsResponse {
