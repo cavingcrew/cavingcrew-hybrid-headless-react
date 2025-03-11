@@ -138,7 +138,7 @@ class Hybrid_Headless_Trip_Participants_Controller {
      *
      * @param int $trip_id Trip ID.
      * @param int $user_id User ID.
-     * @return string 'public', 'participant', or 'admin'
+     * @return string 'public', 'logged_in', 'participant', or 'admin'
      */
     private function get_access_level($trip_id, $user_id) {
         if (!$user_id) {
@@ -219,7 +219,7 @@ class Hybrid_Headless_Trip_Participants_Controller {
             }
         }
 
-        return $is_participant ? 'participant' : 'public';
+        return $is_participant ? 'participant' : 'logged_in';
     }
 
     /**
@@ -280,7 +280,7 @@ class Hybrid_Headless_Trip_Participants_Controller {
         ));
 
         // Override access level if user has purchased this trip
-        if ($has_purchased && $access_level === 'public') {
+        if ($has_purchased && ($access_level === 'public' || $access_level === 'logged_in')) {
             $access_level = 'participant';
             error_log(sprintf(
                 '[Trip Participants] Upgrading access level to participant for user %d on trip %d',
@@ -315,8 +315,8 @@ class Hybrid_Headless_Trip_Participants_Controller {
         $participants = [];
         $participant_count = count($orders);
 
-        // If not logged in, only return the count of participants
-        if (!$user_id) {
+        // If not logged in or just logged in (but not participant/admin), only return appropriate data
+        if ($access_level === 'public') {
             return rest_ensure_response([
                 'participants' => [],
                 'access_level' => $access_level,

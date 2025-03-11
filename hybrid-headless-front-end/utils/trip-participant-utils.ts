@@ -6,12 +6,12 @@ import type { TripParticipant } from "../types/api";
 /**
  * Format participant count for display
  * @param count The number of participants
- * @param isLoggedIn Whether the user is logged in
+ * @param accessLevel The user's access level ('public', 'logged_in', 'participant', or 'admin')
  * @returns A formatted string for display
  */
 export const formatParticipantCount = (
 	count: number,
-	isLoggedIn: boolean,
+	accessLevel: string,
 ): string => {
 	if (count === 0) return "No participants yet";
 	if (count === 1) return "1 participant";
