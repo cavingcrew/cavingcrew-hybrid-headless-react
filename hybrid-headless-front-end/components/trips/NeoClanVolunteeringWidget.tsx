@@ -307,7 +307,7 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
                         }
                     }}
                 >
-                    This administrative information is only visible to you and other trip organizers
+                    This administrative information is only visible to you and other trip organisers
                 </Alert>
             </Group>
 
