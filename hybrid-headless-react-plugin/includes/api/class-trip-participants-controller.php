@@ -103,6 +103,12 @@ class Hybrid_Headless_Trip_Participants_Controller {
         if ($user && ($user->has_cap('administrator') || $user->has_cap('manage_woocommerce'))) {
             return true;
         }
+        
+        // Check if user is a committee member
+        if ($this->is_committee_member($user_id)) {
+            error_log(sprintf('[Trip Participants Admin] User %d is committee member - granting admin permissions', $user_id));
+            return true;
+        }
 
         // Check if user is a trip director for this trip
         $orders = wc_get_orders([
@@ -320,7 +326,8 @@ class Hybrid_Headless_Trip_Participants_Controller {
         }
 
         // For admin-level access, check if user has access to the event
-        if ($access_level === 'admin' && !$this->user_has_access_to_event($trip_id)) {
+        // Skip this check for committee members who already have admin access level
+        if ($access_level === 'admin' && !$this->is_committee_member($user_id) && !$this->user_has_access_to_event($trip_id)) {
             return new WP_Error(
                 'unauthorised_for_that_event',
                 __('You do not have access to this event.', 'hybrid-headless'),
@@ -691,6 +698,20 @@ class Hybrid_Headless_Trip_Participants_Controller {
         if ($user && ($user->has_cap('administrator') || $user->has_cap('manage_woocommerce'))) {
             return true;
         }
+        
+        // Check if user is a committee member
+        $committee_current = get_user_meta($user_id, 'committee_current', true);
+        $is_committee = $committee_current && 
+                        $committee_current !== '' && 
+                        $committee_current !== 'retired' && 
+                        $committee_current !== 'revoked' && 
+                        $committee_current !== 'legacy' && 
+                        $committee_current !== 'expired';
+        
+        if ($is_committee) {
+            error_log(sprintf('[Trip Participants Access] User %d is committee member with role: %s - granting access to event', $user_id, $committee_current));
+            return true;
+        }
 
         // Define the arguments for retrieving the order IDs
         $args = array(
@@ -726,6 +747,24 @@ class Hybrid_Headless_Trip_Participants_Controller {
         return false;
     }
 
+    /**
+     * Check if user is a committee member
+     *
+     * @param int $user_id User ID.
+     * @return boolean
+     */
+    private function is_committee_member($user_id) {
+        if (!$user_id) return false;
+        
+        $committee_current = get_user_meta($user_id, 'committee_current', true);
+        return $committee_current && 
+               $committee_current !== '' && 
+               $committee_current !== 'retired' && 
+               $committee_current !== 'revoked' && 
+               $committee_current !== 'legacy' && 
+               $committee_current !== 'expired';
+    }
+    
     /**
      * Update trip participant information
      *
