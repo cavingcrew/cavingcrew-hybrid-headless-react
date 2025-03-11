@@ -4,6 +4,18 @@
 import type { TripParticipant } from "../types/api";
 
 /**
+ * Format participant count for display
+ * @param count The number of participants
+ * @param isLoggedIn Whether the user is logged in
+ * @returns A formatted string for display
+ */
+export const formatParticipantCount = (count: number, isLoggedIn: boolean): string => {
+	if (count === 0) return "No participants yet";
+	if (count === 1) return "1 participant";
+	return `${count} participants`;
+};
+
+/**
  * Determine signup status for a participant
  * @param participant The trip participant object
  * @returns A string representing the participant's status

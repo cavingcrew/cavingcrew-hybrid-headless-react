@@ -305,12 +305,26 @@ class Hybrid_Headless_Trip_Participants_Controller {
             return rest_ensure_response([
                 'participants' => [],
                 'access_level' => $access_level,
-                'trip_id' => $trip_id
+                'trip_id' => $trip_id,
+                'participant_count' => 0,
+                'is_logged_in' => ($user_id > 0)
             ]);
         }
 
         // Process participants based on access level
         $participants = [];
+        $participant_count = count($orders);
+
+        // If not logged in, only return the count of participants
+        if (!$user_id) {
+            return rest_ensure_response([
+                'participants' => [],
+                'access_level' => $access_level,
+                'trip_id' => $trip_id,
+                'participant_count' => $participant_count,
+                'is_logged_in' => false
+            ]);
+        }
 
         foreach ($orders as $order) {
             $participant_user_id = $order->get_customer_id();
@@ -353,7 +367,9 @@ class Hybrid_Headless_Trip_Participants_Controller {
             'participants' => $participants,
             'access_level' => $access_level,
             'trip_id' => $trip_id,
-            'can_update' => ($access_level === 'admin')
+            'can_update' => ($access_level === 'admin'),
+            'participant_count' => $participant_count,
+            'is_logged_in' => true
         ]);
     }
 
