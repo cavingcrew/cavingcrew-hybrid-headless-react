@@ -22,6 +22,7 @@ import { TripAccessDetails } from './TripAccessDetails';
 import { TripExperience } from './TripExperience';
 import { TripObjectionHandling } from './TripObjectionHandling';
 import { NeoClanVolunteeringWidget } from './NeoClanVolunteeringWidget';
+import { SensitiveAccessWarning } from './SensitiveAccessWarning';
 import { isWithinDays } from '../../utils/event-timing';
 import { useUser } from '@/lib/hooks/useUser';
 import { TripSignupWidget } from "./TripSignupWidget";
@@ -160,23 +161,9 @@ export function TripDetails({ trip }: TripDetailsProps) {
 			</Stack>
 
 			{/* Sensitive Access Warning */}
-			{trip.route?.acf?.route_entrance_location_id?.acf?.location_sensitive_access && (
-				<Paper withBorder p="md" radius="md" mb="md">
-					<Alert 
-						color="red" 
-						title="SENSITIVE ACCESS LOCATION" 
-						icon={<IconAlertTriangle size={24} />}
-						variant="filled"
-					>
-						<Text size="md" fw={500} mb="xs">
-							Access to this site is sensitive. Do not post the name, location, entrance, photos, or mention this location on Facebook or any social media in any way.
-						</Text>
-						<Text>
-							Doing so risks the whole caving community's access to this site, and is against the wishes of those who care for this site the most. Please respect this and respect the Crew. If you can't agree with this, please don't sign up for this trip.
-						</Text>
-					</Alert>
-				</Paper>
-			)}
+			<SensitiveAccessWarning 
+				isVisible={!!trip.route?.acf?.route_entrance_location_id?.acf?.location_sensitive_access} 
+			/>
 
 			{/* Key Details Section */}
 			<Grid>
