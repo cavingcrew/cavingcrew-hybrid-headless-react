@@ -558,22 +558,68 @@ class Hybrid_Headless_Products_Controller {
         if (!$post_ref) return null;
 
         $route_acf = get_fields($post_ref['ID']);
-
-        return [
+        
+        // Check if entrance location has sensitive access
+        $entrance_location_id = $route_acf['route_entrance_location_id'] ?? 0;
+        $entrance_location_acf = $entrance_location_id ? get_fields($entrance_location_id) : null;
+        $is_sensitive_access = (bool)($entrance_location_acf['location_sensitive_access'] ?? false);
+        
+        // Check user authentication and permissions
+        $user_id = get_current_user_id();
+        $is_logged_in = $user_id > 0;
+        $is_member = $is_logged_in ? (bool)get_user_meta($user_id, 'cc_member', true) : false;
+        
+        // Check if user is signed up for this trip and has appropriate role
+        $has_trip_leader_access = false;
+        if ($is_logged_in && $is_member) {
+            // Get the current product ID from the request
+            $product_id = 0;
+            if (isset($_REQUEST['id'])) {
+                $product_id = absint($_REQUEST['id']);
+            } elseif (isset($_REQUEST['slug'])) {
+                $product = get_page_by_path($_REQUEST['slug'], OBJECT, 'product');
+                if ($product) {
+                    $product_id = $product->ID;
+                }
+            }
+            
+            if ($product_id > 0) {
+                $orders = wc_get_orders([
+                    'customer_id' => $user_id,
+                    'limit' => -1,
+                    'status' => ['on-hold', 'processing', 'completed'],
+                ]);
+                
+                foreach ($orders as $order) {
+                    foreach ($order->get_items() as $item) {
+                        $item_product = $item->get_product();
+                        if ($item_product) {
+                            $item_product_id = $item_product->get_parent_id() ?: $item_product->get_id();
+                            if ($item_product_id == $product_id) {
+                                $cc_volunteer = $order->get_meta('cc_volunteer');
+                                if ($cc_volunteer && (
+                                    strpos($cc_volunteer, 'director') !== false || 
+                                    $cc_volunteer === 'Trip Leader' || 
+                                    $cc_volunteer === 'Trip Director' || 
+                                    $cc_volunteer === 'Trip Organiser'
+                                )) {
+                                    $has_trip_leader_access = true;
+                                    break 2;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Base route data that's always returned
+        $route_data = [
             'id' => $post_ref['ID'],
             'title' => $post_ref['post_title'],
             'acf' => [
                 'route_name' => $route_acf['route_name'] ?? '',
-                'route_blurb' => $route_acf['route_blurb'] ?? '',
                 'route_entrance_location_id' => $this->get_location_data($route_acf['route_entrance_location_id'] ?? 0),
-                'route_through_trip' => $route_acf['route_through_trip'] ?? false,
-                'route_exit_location_id' => $this->get_location_data($route_acf['route_exit_location_id'] ?? 0),
-                'route_time_for_eta' => $route_acf['route_time_for_eta'] ?? '',
-                'route_survey_image' => $this->get_image_data($route_acf['route_survey_image'] ?? 0),
-                'route_survey_link' => $route_acf['route_survey_link'] ?? null,
-                'route_route_description' => !empty($route_acf['route_route_description']) ?
-                    array_shift($route_acf['route_route_description']) :
-                    null,
                 'route_difficulty' => $this->map_grouped_fields($route_acf['route_difficulty'] ?? [], [
                     'route_difficulty_psychological_claustrophobia',
                     'route_difficulty_objective_tightness',
@@ -591,21 +637,44 @@ class Hybrid_Headless_Products_Controller {
                     'route_participants_skills_required_srt_level' => ['type' => 'post'],
                     'route_participants_skills_required_horizontal_level' => ['type' => 'post']
                 ]),
-                'route_group_tackle_required' => $route_acf['route_group_tackle_required'] ?? '',
                 'route_personal_gear_required' => $route_acf['route_personal_gear_required'] ?? [],
-                'route_leading_difficulty' => $this->map_grouped_fields($route_acf['route_leading_difficulty'] ?? [], [
+                'route_time_for_eta' => $route_acf['route_time_for_eta'] ?? '',
+            ]
+        ];
+        
+        // If it's not a sensitive location OR user has appropriate access, add more data
+        if (!$is_sensitive_access || $has_trip_leader_access) {
+            $route_data['acf']['route_blurb'] = $route_acf['route_blurb'] ?? '';
+            $route_data['acf']['route_through_trip'] = $route_acf['route_through_trip'] ?? false;
+            $route_data['acf']['route_exit_location_id'] = $this->get_location_data($route_acf['route_exit_location_id'] ?? 0);
+            $route_data['acf']['route_group_tackle_required'] = $route_acf['route_group_tackle_required'] ?? '';
+            
+            // Add sensitive data only for members or trip leaders
+            if (!$is_sensitive_access || $has_trip_leader_access || ($is_logged_in && $is_member)) {
+                $route_data['acf']['route_leading_difficulty'] = $this->map_grouped_fields($route_acf['route_leading_difficulty'] ?? [], [
                     'route_leading_difficulty_srt_leading_level_required' => ['type' => 'post'],
                     'route_leading_difficulty_srt_leading_skills_required',
                     'route_leading_difficulty_horizontal_leading_level_required' => ['type' => 'post'],
                     'route_leading_difficulty_horizontal_leading_skills_required',
                     'route_leading_difficulty_navigation_difficulty'
-                ]),
-                'route_additional_images' => is_array($route_acf['route_additional_images'] ?? false) ? 
+                ]);
+            }
+            
+            // Add the most sensitive data only for trip leaders
+            if (!$is_sensitive_access || $has_trip_leader_access) {
+                $route_data['acf']['route_survey_image'] = $this->get_image_data($route_acf['route_survey_image'] ?? 0);
+                $route_data['acf']['route_survey_link'] = $route_acf['route_survey_link'] ?? null;
+                $route_data['acf']['route_route_description'] = !empty($route_acf['route_route_description']) ?
+                    array_shift($route_acf['route_route_description']) :
+                    null;
+                $route_data['acf']['route_additional_images'] = is_array($route_acf['route_additional_images'] ?? false) ? 
                     array_map(function($img) {
                         return $this->get_image_data($img['image'] ?? 0);
-                    }, $route_acf['route_additional_images']) : []
-            ]
-        ];
+                    }, $route_acf['route_additional_images']) : [];
+            }
+        }
+        
+        return $route_data;
     }
 
     private function get_cave_as_route($cave_id) {
@@ -693,7 +762,59 @@ class Hybrid_Headless_Products_Controller {
 
         $location_id = $post_ref['ID'];
         $location_acf = get_fields($location_id);
-
+        
+        // Check if location has sensitive access
+        $is_sensitive_access = (bool)($location_acf['location_sensitive_access'] ?? false);
+        
+        // Check user authentication and permissions
+        $user_id = get_current_user_id();
+        $is_logged_in = $user_id > 0;
+        $is_member = $is_logged_in ? (bool)get_user_meta($user_id, 'cc_member', true) : false;
+        
+        // Check if user is signed up for this trip and has appropriate role
+        $has_trip_leader_access = false;
+        if ($is_logged_in && $is_member) {
+            // Get the current product ID from the request
+            $product_id = 0;
+            if (isset($_REQUEST['id'])) {
+                $product_id = absint($_REQUEST['id']);
+            } elseif (isset($_REQUEST['slug'])) {
+                $product = get_page_by_path($_REQUEST['slug'], OBJECT, 'product');
+                if ($product) {
+                    $product_id = $product->ID;
+                }
+            }
+            
+            if ($product_id > 0) {
+                $orders = wc_get_orders([
+                    'customer_id' => $user_id,
+                    'limit' => -1,
+                    'status' => ['on-hold', 'processing', 'completed'],
+                ]);
+                
+                foreach ($orders as $order) {
+                    foreach ($order->get_items() as $item) {
+                        $item_product = $item->get_product();
+                        if ($item_product) {
+                            $item_product_id = $item_product->get_parent_id() ?: $item_product->get_id();
+                            if ($item_product_id == $product_id) {
+                                $cc_volunteer = $order->get_meta('cc_volunteer');
+                                if ($cc_volunteer && (
+                                    strpos($cc_volunteer, 'director') !== false || 
+                                    $cc_volunteer === 'Trip Leader' || 
+                                    $cc_volunteer === 'Trip Director' || 
+                                    $cc_volunteer === 'Trip Organiser'
+                                )) {
+                                    $has_trip_leader_access = true;
+                                    break 2;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
         // Updated gallery processing
         $process_gallery = function($gallery) {
             if (!is_array($gallery)) return [];
@@ -703,38 +824,51 @@ class Hybrid_Headless_Products_Controller {
                 return $this->get_image_data($image_id);
             }, $gallery);
         };
-
-        return [
+        
+        // Base location data that's always returned
+        $location_data = [
             'id' => $location_id,
             'title' => $post_ref['post_title'],
             'slug' => $post_ref['post_name'],
             'acf' => [
-                'location_name' => $location_acf['location_name'] ?? '',
+                'location_sensitive_access' => $is_sensitive_access,
                 'location_caving_region' => $this->get_post_reference($location_acf['location_caving_region'] ?? 0),
-                'location_parking_latlong' => $location_acf['location_parking_latlong'] ?? [],
-                'location_parking_description' => $location_acf['location_parking_description'] ?? '',
-                'location_parking_photos' => $process_gallery($location_acf['location_parking_photos'] ?? []),
-                'location_parking_entrance_route_description' => $location_acf['location_parking_entrance_route_description'] ?? '',
-                'location_map_from_parking_to_entrance' => $this->get_image_data(
-                    is_array($location_acf['location_map_from_parking_to_entrance'] ?? 0) 
-                        ? ($location_acf['location_map_from_parking_to_entrance']['ID'] ?? 0)
-                        : $location_acf['location_map_from_parking_to_entrance'] ?? 0
-                ),
-                'location_entrance_latlong' => $location_acf['location_entrance_latlong'] ?? '',
-                'location_entrance_photos' => $process_gallery($location_acf['location_entrance_photos'] ?? []),
-                'location_info_url' => $location_acf['location_info_url'] ?? '',
-                'location_access_arrangement' => $location_acf['location_access_arrangement'] ?? [],
-                'location_access_url' => $location_acf['location_access_url'] ?? '',
-                'location_reference_links' => is_array($location_acf['location_reference_links'] ?? false) ? 
-                    array_map(function($link) {
-                        return [
-                            'link_title' => $link['location_reference_link_text'] ?? '',
-                            'link_url' => $link['location_reference_link_url'] ?? ''
-                        ];
-                    }, $location_acf['location_reference_links']) : [],
-                'location_sensitive_access' => (bool)($location_acf['location_sensitive_access'] ?? false)
             ]
         ];
+        
+        // If it's not a sensitive location OR user has appropriate access, return full data
+        if (!$is_sensitive_access || $has_trip_leader_access || ($is_logged_in && $is_member)) {
+            $location_data['acf']['location_name'] = $location_acf['location_name'] ?? '';
+            
+            // Add additional fields for members or trip leaders
+            if (!$is_sensitive_access || $has_trip_leader_access) {
+                $location_data['acf'] = array_merge($location_data['acf'], [
+                    'location_parking_latlong' => $location_acf['location_parking_latlong'] ?? [],
+                    'location_parking_description' => $location_acf['location_parking_description'] ?? '',
+                    'location_parking_photos' => $process_gallery($location_acf['location_parking_photos'] ?? []),
+                    'location_parking_entrance_route_description' => $location_acf['location_parking_entrance_route_description'] ?? '',
+                    'location_map_from_parking_to_entrance' => $this->get_image_data(
+                        is_array($location_acf['location_map_from_parking_to_entrance'] ?? 0) 
+                            ? ($location_acf['location_map_from_parking_to_entrance']['ID'] ?? 0)
+                            : $location_acf['location_map_from_parking_to_entrance'] ?? 0
+                    ),
+                    'location_entrance_latlong' => $location_acf['location_entrance_latlong'] ?? '',
+                    'location_entrance_photos' => $process_gallery($location_acf['location_entrance_photos'] ?? []),
+                    'location_info_url' => $location_acf['location_info_url'] ?? '',
+                    'location_access_arrangement' => $location_acf['location_access_arrangement'] ?? [],
+                    'location_access_url' => $location_acf['location_access_url'] ?? '',
+                    'location_reference_links' => is_array($location_acf['location_reference_links'] ?? false) ? 
+                        array_map(function($link) {
+                            return [
+                                'link_title' => $link['location_reference_link_text'] ?? '',
+                                'link_url' => $link['location_reference_link_url'] ?? ''
+                            ];
+                        }, $location_acf['location_reference_links']) : [],
+                ]);
+            }
+        }
+        
+        return $location_data;
     }
 
     private function get_image_data($image_id) {

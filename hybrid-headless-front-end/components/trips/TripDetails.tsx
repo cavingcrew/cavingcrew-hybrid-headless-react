@@ -70,7 +70,16 @@ export function TripDetails({ trip }: TripDetailsProps) {
 				 userRole === 'Trip Organiser');
 			
 			if (!hasAccessRole) {
-				return 'Sensitive Access Location';
+				// Get the city if available
+				let city = '';
+				if (trip.route?.acf?.route_entrance_location_id?.acf?.location_parking_latlong) {
+					const parkingLatLong = trip.route.acf.route_entrance_location_id.acf.location_parking_latlong;
+					if (typeof parkingLatLong === 'object' && 'city' in parkingLatLong) {
+						city = parkingLatLong.city || '';
+					}
+				}
+					
+				return city ? `A location near ${city}` : 'A sensitive access location';
 			}
 		}
 		
