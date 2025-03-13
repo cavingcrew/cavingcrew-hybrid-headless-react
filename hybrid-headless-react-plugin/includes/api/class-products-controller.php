@@ -595,15 +595,6 @@ class Hybrid_Headless_Products_Controller {
         $is_logged_in = !$is_cache_request && is_user_logged_in();
         $is_member = $is_logged_in && $this->is_member();
         
-        // Debug logging
-        error_log(sprintf(
-            '[Route Access Debug] Route: %d, Location: %d, Is Sensitive: %s, Is Logged In: %s, Is Member: %s',
-            $route_id,
-            $entrance_location_id,
-            $is_sensitive_access ? 'true' : 'false',
-            $is_logged_in ? 'true' : 'false',
-            $is_member ? 'true' : 'false'
-        ));
         
         // Check if user is signed up for this trip and has appropriate role
         $has_trip_leader_access = false;
@@ -812,14 +803,6 @@ class Hybrid_Headless_Products_Controller {
         $is_logged_in = !$is_cache_request && is_user_logged_in();
         $is_member = $is_logged_in && $this->is_member();
         
-        // Debug logging
-        error_log(sprintf(
-            '[Location Access Debug] Location: %d, Is Sensitive: %s, Is Logged In: %s, Is Member: %s',
-            $location_id,
-            $is_sensitive_access ? 'true' : 'false',
-            $is_logged_in ? 'true' : 'false',
-            $is_member ? 'true' : 'false'
-        ));
         
         // Check if user is signed up for this trip and has appropriate role
         $has_trip_leader_access = false;
@@ -1020,9 +1003,6 @@ class Hybrid_Headless_Products_Controller {
             $user_id = wp_validate_auth_cookie($_COOKIE[LOGGED_IN_COOKIE], 'logged_in');
             if ($user_id) {
                 wp_set_current_user($user_id);
-                error_log(sprintf('[Auth Debug] Manually set current user to: %d', $user_id));
-            } else {
-                error_log('[Auth Debug] Invalid auth cookie');
             }
         }
     }
