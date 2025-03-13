@@ -1001,12 +1001,25 @@ class Hybrid_Headless_Products_Controller {
             );
         }
 
-        return rest_ensure_response([
+        // TEMPORARY FIX: Force unauthenticated prices
+        // This ensures we always return the non-discounted prices regardless of user auth status
+        // We may want to revert this in the future to show personalized prices
+        $current_user_id = get_current_user_id();
+        wp_set_current_user(0); // Set to guest user temporarily
+        
+        $price_data = [
             'stock_quantity' => $product->get_stock_quantity(),
             'stock_status' => $product->get_stock_status(),
             'price' => $product->get_price(),
             'regular_price' => $product->get_regular_price(),
-        ]);
+        ];
+        
+        // Restore the original user
+        if ($current_user_id) {
+            wp_set_current_user($current_user_id);
+        }
+
+        return rest_ensure_response($price_data);
     }
 
 
