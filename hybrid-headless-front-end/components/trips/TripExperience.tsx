@@ -37,6 +37,7 @@ import {
 	IconAlertTriangle,
 	IconLock,
 } from "@tabler/icons-react";
+import { SensitiveAccessWarning } from './SensitiveAccessWarning';
 import React from "react";
 import type { Trip } from "../../types/api";
 import { extractChallengeMetrics } from "../../utils/difficulty-utils";
@@ -135,23 +136,7 @@ export function TripExperience({ trip }: TripExperienceProps) {
 
 	return (
 		<>
-			{isSensitiveAccess && (
-				<Paper withBorder p="md" radius="md" mt="md">
-					<Alert 
-						color="red" 
-						title="SENSITIVE ACCESS LOCATION" 
-						icon={<IconAlertTriangle size={24} />}
-						variant="filled"
-					>
-						<Text size="md" fw={500} mb="xs">
-							Access to this site is sensitive. Do not post the name, location, entrance, photos, or mention this location on Facebook or any social media in any way.
-						</Text>
-						<Text>
-							Doing so risks the whole caving community's access to this site, and is against the wishes of those who care for this site the most. Please respect this and respect the Crew. If you can't agree with this, please don't sign up for this trip.
-						</Text>
-					</Alert>
-				</Paper>
-			)}
+			<SensitiveAccessWarning isVisible={!!isSensitiveAccess} />
 		
 			{hasExperienceData && (
 				<Paper withBorder p="md" radius="md" mt="md">
