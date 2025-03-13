@@ -14,29 +14,31 @@ export function ErrorState({
 	delayFull = 10000, // Default 10 seconds
 }: ErrorStateProps) {
 	const [showFullError, setShowFullError] = useState(false);
-	
+
 	useEffect(() => {
 		// Set a timer to show the full error UI after the delay
 		const timer = setTimeout(() => {
 			setShowFullError(true);
 		}, delayFull);
-		
+
 		// Clean up the timer if the component unmounts
 		return () => clearTimeout(timer);
 	}, [delayFull]);
-	
+
 	// Show a subtle loading state initially
 	if (!showFullError) {
 		return (
 			<Center h={400}>
 				<Stack align="center" gap="md">
 					<Loader size="sm" color="gray" />
-					<Text size="sm" c="dimmed">Loading...</Text>
+					<Text size="sm" c="dimmed">
+						Loading...
+					</Text>
 				</Stack>
 			</Center>
 		);
 	}
-	
+
 	// Show the full error UI after delay
 	return (
 		<Center h={400}>
