@@ -60,9 +60,8 @@ export function TripDetails({ trip }: TripDetailsProps) {
 		// If sensitive access, only show to trip leaders/directors/organizers
 		if (isSensitiveAccess) {
 			// Check if user has appropriate role
-			const userRole = data?.data?.participants?.find(p => 
-				p.user_id === user?.id
-			)?.order_meta?.cc_volunteer;
+			const userRole = purchasedProducts.includes(trip.id) ? 
+				trip.variations.find(v => purchasedProducts.includes(v.id))?.attributes?.['cc_volunteer']?.value : null;
 			
 			const hasAccessRole = userRole && 
 				(userRole === 'director' || 
