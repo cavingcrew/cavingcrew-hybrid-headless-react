@@ -1028,6 +1028,11 @@ class Hybrid_Headless_Products_Controller {
             );
         }
 
+        // Force no caching for stock data
+        header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+        header('Pragma: no-cache');
+        header('Expires: 0');
+
         $stock_data = [
             'product_id' => $product_id,
             'stock_status' => $product->get_stock_status(),
@@ -1052,6 +1057,8 @@ class Hybrid_Headless_Products_Controller {
             }
         }
 
+        // Debug log
+        error_log('Stock API response: ' . json_encode($stock_data));
         return rest_ensure_response($stock_data);
     }
 
