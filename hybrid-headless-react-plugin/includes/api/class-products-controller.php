@@ -1032,6 +1032,9 @@ class Hybrid_Headless_Products_Controller {
             'product_id' => $product_id,
             'stock_status' => $product->get_stock_status(),
             'stock_quantity' => $product->get_stock_quantity(),
+            'price' => $product->get_price(),
+            'regular_price' => $product->get_regular_price(),
+            'sale_price' => $product->get_sale_price(),
             'variations' => []
         ];
 
@@ -1041,7 +1044,10 @@ class Hybrid_Headless_Products_Controller {
                 $stock_data['variations'][] = [
                     'id' => $variation['variation_id'],
                     'stock_quantity' => $variation_product->get_stock_quantity(),
-                    'stock_status' => $variation_product->get_stock_status()
+                    'stock_status' => $variation_product->get_stock_status(),
+                    'price' => $variation_product->get_price(),
+                    'regular_price' => $variation_product->get_regular_price(),
+                    'sale_price' => $variation_product->get_sale_price()
                 ];
             }
         }
