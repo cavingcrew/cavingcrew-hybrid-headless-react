@@ -286,6 +286,17 @@ class Hybrid_Headless_Products_Controller {
             $this->ensure_user_authenticated();
         }
         
+        // TEMPORARY FIX: Save current user and set to guest for price calculations
+        // This ensures we always return the non-discounted prices regardless of user auth status
+        // We may want to revert this in the future to show personalized prices
+        $current_user_id = get_current_user_id();
+        $temp_user_switch = false;
+        
+        if ($current_user_id) {
+            $temp_user_switch = true;
+            wp_set_current_user(0); // Set to guest user temporarily
+        }
+        
         $cache_key = 'product_stock_' . $product->get_id();
         $stock_info = wp_cache_get($cache_key);
 
@@ -459,6 +470,11 @@ class Hybrid_Headless_Products_Controller {
             $product_data['hut'] = $this->get_hut_data($acf_fields['hut_id']);
         }
 
+        // TEMPORARY FIX: Restore original user if we temporarily switched
+        if ($temp_user_switch && $current_user_id) {
+            wp_set_current_user($current_user_id);
+        }
+        
         return $product_data;
     }
 
@@ -1033,6 +1049,12 @@ class Hybrid_Headless_Products_Controller {
         header('Pragma: no-cache');
         header('Expires: 0');
 
+        // TEMPORARY FIX: Force unauthenticated prices
+        // This ensures we always return the non-discounted prices regardless of user auth status
+        // We may want to revert this in the future to show personalized prices
+        $current_user_id = get_current_user_id();
+        wp_set_current_user(0); // Set to guest user temporarily
+        
         $stock_data = [
             'product_id' => $product_id,
             'stock_status' => $product->get_stock_status(),
@@ -1055,6 +1077,11 @@ class Hybrid_Headless_Products_Controller {
                     'sale_price' => $variation_product->get_sale_price()
                 ];
             }
+        }
+        
+        // Restore the original user
+        if ($current_user_id) {
+            wp_set_current_user($current_user_id);
         }
 
         // Debug log
