@@ -592,19 +592,23 @@ class Hybrid_Headless_Products_Controller {
         // If it's a cache request, treat as not logged in
         $user_id = $is_cache_request ? 0 : get_current_user_id();
         $is_logged_in = $user_id > 0;
-        $is_member = $is_logged_in ? get_user_meta($user_id, 'cc_member', true) === 'yes' : false;
+        
+        // Get the raw member value for debugging
+        $member_value = $is_logged_in ? get_user_meta($user_id, 'cc_member', true) : '';
+        $is_member = $member_value === 'yes';
         
         // Debug logging
         error_log(sprintf(
-            '[Route Access Debug] Route: %d, Location: %d, Is Sensitive: %s, User ID: %d, Is Logged In: %s, Is Member: %s, Member Value: "%s", Current User: %d',
+            '[Route Access Debug] Route: %d, Location: %d, Is Sensitive: %s, User ID: %d, Is Logged In: %s, Is Member: %s, Member Value: "%s", Current User: %d, Raw Member Meta: "%s"',
             $route_id,
             $entrance_location_id,
             $is_sensitive_access ? 'true' : 'false',
             $user_id,
             $is_logged_in ? 'true' : 'false',
             $is_member ? 'true' : 'false',
-            $is_logged_in ? get_user_meta($user_id, 'cc_member', true) : 'n/a',
-            get_current_user_id()
+            $member_value,
+            get_current_user_id(),
+            $is_logged_in ? get_user_meta($user_id, 'cc_member', true) : 'n/a'
         ));
         
         // Check if user is signed up for this trip and has appropriate role
@@ -811,18 +815,22 @@ class Hybrid_Headless_Products_Controller {
         // If it's a cache request, treat as not logged in
         $user_id = $is_cache_request ? 0 : get_current_user_id();
         $is_logged_in = $user_id > 0;
-        $is_member = $is_logged_in ? get_user_meta($user_id, 'cc_member', true) === 'yes' : false;
+        
+        // Get the raw member value for debugging
+        $member_value = $is_logged_in ? get_user_meta($user_id, 'cc_member', true) : '';
+        $is_member = $member_value === 'yes';
         
         // Debug logging
         error_log(sprintf(
-            '[Location Access Debug] Location: %d, Is Sensitive: %s, User ID: %d, Is Logged In: %s, Is Member: %s, Member Value: "%s", Current User: %d',
+            '[Location Access Debug] Location: %d, Is Sensitive: %s, User ID: %d, Is Logged In: %s, Is Member: %s, Member Value: "%s", Current User: %d, Raw Member Meta: "%s"',
             $location_id,
             $is_sensitive_access ? 'true' : 'false',
             $user_id,
             $is_logged_in ? 'true' : 'false',
             $is_member ? 'true' : 'false',
-            $is_logged_in ? get_user_meta($user_id, 'cc_member', true) : 'n/a',
-            get_current_user_id()
+            $member_value,
+            get_current_user_id(),
+            $is_logged_in ? get_user_meta($user_id, 'cc_member', true) : 'n/a'
         ));
         
         // Check if user is signed up for this trip and has appropriate role
@@ -1019,8 +1027,8 @@ class Hybrid_Headless_Products_Controller {
      * Ensures the user is properly authenticated by checking the auth cookie
      */
     private function ensure_user_authenticated() {
-        // Only run this check if the user isn't already authenticated
-        if (get_current_user_id() === 0 && isset($_COOKIE[LOGGED_IN_COOKIE])) {
+        // Force authentication check on every call
+        if (isset($_COOKIE[LOGGED_IN_COOKIE])) {
             $user_id = wp_validate_auth_cookie($_COOKIE[LOGGED_IN_COOKIE], 'logged_in');
             if ($user_id) {
                 wp_set_current_user($user_id);
@@ -1028,7 +1036,13 @@ class Hybrid_Headless_Products_Controller {
             } else {
                 error_log('[Auth Debug] Invalid auth cookie');
             }
+        } else {
+            error_log('[Auth Debug] No auth cookie found');
         }
+        
+        // Double-check if we're authenticated now
+        $current_user_id = get_current_user_id();
+        error_log(sprintf('[Auth Debug] Current user after auth check: %d', $current_user_id));
     }
 
     private function is_member() {
@@ -1037,11 +1051,18 @@ class Hybrid_Headless_Products_Controller {
         
         if (!is_user_logged_in()) return false;
         $user_id = get_current_user_id();
-        $member_value = get_user_meta($user_id, 'cc_member', true);
+        
+        // Get the raw member value directly from the database for reliability
+        global $wpdb;
+        $member_value = $wpdb->get_var($wpdb->prepare(
+            "SELECT meta_value FROM $wpdb->usermeta WHERE user_id = %d AND meta_key = 'cc_member'",
+            $user_id
+        ));
+        
         $is_member = $member_value === 'yes';
         
         error_log(sprintf(
-            '[Member Check Debug] User ID: %d, Member Value: "%s", Is Member: %s',
+            '[Member Check Debug] User ID: %d, Member Value: "%s", Is Member: %s, Direct DB Query',
             $user_id,
             $member_value,
             $is_member ? 'true' : 'false'
