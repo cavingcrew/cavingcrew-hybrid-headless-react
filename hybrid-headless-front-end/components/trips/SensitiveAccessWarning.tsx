@@ -1,7 +1,6 @@
-import { Alert, Group, Paper, Text, ThemeIcon } from "@mantine/core";
+import { Alert, Group, Paper, Text, ThemeIcon, Tooltip, List } from "@mantine/core";
 import {
 	IconAlertTriangle,
-	IconBrandFacebook,
 	IconMapOff,
 	IconPhotoOff,
 	IconShareOff,
@@ -37,19 +36,30 @@ export function SensitiveAccessWarning({
 					please don't sign up for this trip.
 				</Text>
 
+				<Text fw={500} mt="md" mb="xs">Please avoid sharing:</Text>
+				<List spacing="xs" mb="md">
+					<List.Item>Photos of the site or entrance</List.Item>
+					<List.Item>Location details or maps</List.Item>
+					<List.Item>Site name on any social media</List.Item>
+					<List.Item>Any information that could identify the location</List.Item>
+				</List>
+
 				<Group gap="md" mt="md">
-					<ThemeIcon color="red" size="lg" variant="light">
-						<IconPhotoOff size={20} />
-					</ThemeIcon>
-					<ThemeIcon color="red" size="lg" variant="light">
-						<IconMapOff size={20} />
-					</ThemeIcon>
-					<ThemeIcon color="red" size="lg" variant="light">
-						<IconBrandFacebook size={20} />
-					</ThemeIcon>
-					<ThemeIcon color="red" size="lg" variant="light">
-						<IconShareOff size={20} />
-					</ThemeIcon>
+					<Tooltip label="Do not share photos">
+						<ThemeIcon color="red" size="lg" variant="light">
+							<IconPhotoOff size={20} />
+						</ThemeIcon>
+					</Tooltip>
+					<Tooltip label="Do not share location or maps">
+						<ThemeIcon color="red" size="lg" variant="light">
+							<IconMapOff size={20} />
+						</ThemeIcon>
+					</Tooltip>
+					<Tooltip label="Do not share on social media">
+						<ThemeIcon color="red" size="lg" variant="light">
+							<IconShareOff size={20} />
+						</ThemeIcon>
+					</Tooltip>
 				</Group>
 			</Alert>
 		</Paper>
