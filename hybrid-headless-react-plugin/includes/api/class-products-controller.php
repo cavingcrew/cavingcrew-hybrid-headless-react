@@ -586,6 +586,18 @@ class Hybrid_Headless_Products_Controller {
         $is_logged_in = $user_id > 0;
         $is_member = $is_logged_in ? get_user_meta($user_id, 'cc_member', true) === 'yes' : false;
         
+        // Debug logging
+        error_log(sprintf(
+            '[Route Access Debug] Route: %d, Location: %d, Is Sensitive: %s, User ID: %d, Is Logged In: %s, Is Member: %s, Member Value: "%s"',
+            $route_id,
+            $entrance_location_id,
+            $is_sensitive_access ? 'true' : 'false',
+            $user_id,
+            $is_logged_in ? 'true' : 'false',
+            $is_member ? 'true' : 'false',
+            $is_logged_in ? get_user_meta($user_id, 'cc_member', true) : 'n/a'
+        ));
+        
         // Check if user is signed up for this trip and has appropriate role
         $has_trip_leader_access = false;
         if ($is_logged_in && $is_member) {
@@ -787,7 +799,18 @@ class Hybrid_Headless_Products_Controller {
         // If it's a cache request, treat as not logged in
         $user_id = $is_cache_request ? 0 : get_current_user_id();
         $is_logged_in = $user_id > 0;
-        $is_member = $is_logged_in ? (bool)get_user_meta($user_id, 'cc_member', true) : false;
+        $is_member = $is_logged_in ? get_user_meta($user_id, 'cc_member', true) === 'yes' : false;
+        
+        // Debug logging
+        error_log(sprintf(
+            '[Location Access Debug] Location: %d, Is Sensitive: %s, User ID: %d, Is Logged In: %s, Is Member: %s, Member Value: "%s"',
+            $location_id,
+            $is_sensitive_access ? 'true' : 'false',
+            $user_id,
+            $is_logged_in ? 'true' : 'false',
+            $is_member ? 'true' : 'false',
+            $is_logged_in ? get_user_meta($user_id, 'cc_member', true) : 'n/a'
+        ));
         
         // Check if user is signed up for this trip and has appropriate role
         $has_trip_leader_access = false;
@@ -982,7 +1005,17 @@ class Hybrid_Headless_Products_Controller {
     private function is_member() {
         if (!is_user_logged_in()) return false;
         $user_id = get_current_user_id();
-        return get_user_meta($user_id, 'cc_member', true) === 'yes';
+        $member_value = get_user_meta($user_id, 'cc_member', true);
+        $is_member = $member_value === 'yes';
+        
+        error_log(sprintf(
+            '[Member Check Debug] User ID: %d, Member Value: "%s", Is Member: %s',
+            $user_id,
+            $member_value,
+            $is_member ? 'true' : 'false'
+        ));
+        
+        return $is_member;
     }
 
     public function get_product_stock($request) {
