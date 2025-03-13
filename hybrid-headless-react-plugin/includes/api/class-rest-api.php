@@ -40,12 +40,14 @@ class Hybrid_Headless_Rest_API {
         require_once HYBRID_HEADLESS_PLUGIN_DIR . 'includes/api/class-categories-controller.php';
         require_once HYBRID_HEADLESS_PLUGIN_DIR . 'includes/api/class-user-controller.php';
         require_once HYBRID_HEADLESS_PLUGIN_DIR . 'includes/api/class-trip-participants-controller.php';
+        require_once HYBRID_HEADLESS_PLUGIN_DIR . 'includes/api/class-trip-reports-controller.php';
 
         new Hybrid_Headless_Products_Controller();
         new Hybrid_Headless_Routes_Controller();
         new Hybrid_Headless_Categories_Controller();
         new Hybrid_Headless_User_Controller();
         new Hybrid_Headless_Trip_Participants_Controller();
+        new Hybrid_Headless_Trip_Reports_Controller();
     }
 
     /**
