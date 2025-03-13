@@ -54,35 +54,6 @@ export function TripDetails({ trip }: TripDetailsProps) {
 	const { purchasedProducts, isLoggedIn, user } = useUser();
 
 	const getLocationName = (trip: Trip) => {
-		// Check if location has sensitive access
-		const isSensitiveAccess = trip.route?.acf?.route_entrance_location_id?.acf?.location_sensitive_access;
-		
-		// If sensitive access, only show to trip leaders/directors/organizers
-		if (isSensitiveAccess) {
-			// Check if user has appropriate role
-			const userRole = purchasedProducts.includes(trip.id) ? 
-				trip.variations.find(v => purchasedProducts.includes(v.id))?.attributes?.['cc_volunteer']?.value : null;
-			
-			const hasAccessRole = userRole && 
-				(userRole === 'director' || 
-				 userRole === 'Trip Leader' || 
-				 userRole === 'Trip Director' || 
-				 userRole === 'Trip Organiser');
-			
-			if (!hasAccessRole) {
-				// Get the city if available
-				let city = '';
-				if (trip.route?.acf?.route_entrance_location_id?.acf?.location_parking_latlong) {
-					const parkingLatLong = trip.route.acf.route_entrance_location_id.acf.location_parking_latlong;
-					if (typeof parkingLatLong === 'object' && 'city' in parkingLatLong) {
-						city = parkingLatLong.city || '';
-					}
-				}
-					
-				return city ? `A location near ${city}` : 'A location';
-			}
-		}
-		
 		// For overnight trips, use the hut location
 		if (isOvernightTrip) {
 			if (trip.hut?.hut_location?.post_title) {
