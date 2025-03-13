@@ -584,7 +584,7 @@ class Hybrid_Headless_Products_Controller {
         // If it's a cache request, treat as not logged in
         $user_id = $is_cache_request ? 0 : get_current_user_id();
         $is_logged_in = $user_id > 0;
-        $is_member = $is_logged_in ? (bool)get_user_meta($user_id, 'cc_member', true) : false;
+        $is_member = $is_logged_in ? get_user_meta($user_id, 'cc_member', true) === 'yes' : false;
         
         // Check if user is signed up for this trip and has appropriate role
         $has_trip_leader_access = false;
@@ -982,7 +982,7 @@ class Hybrid_Headless_Products_Controller {
     private function is_member() {
         if (!is_user_logged_in()) return false;
         $user_id = get_current_user_id();
-        return (bool) get_user_meta($user_id, 'cc_member', true);
+        return get_user_meta($user_id, 'cc_member', true) === 'yes';
     }
 
     public function get_product_stock($request) {
