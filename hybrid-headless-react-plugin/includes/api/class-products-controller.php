@@ -633,9 +633,9 @@ class Hybrid_Headless_Products_Controller {
         // Base route data that's always returned
         $route_data = [
             'id' => $post_ref['ID'],
-            'title' => $post_ref['post_title'],
+            'title' => $is_sensitive_access && !($is_logged_in && $is_member) ? 'A sensitive access location' : $post_ref['post_title'],
             'acf' => [
-                'route_name' => $route_acf['route_name'] ?? '',
+                'route_name' => $is_sensitive_access && !($is_logged_in && $is_member) ? 'A sensitive access location' : ($route_acf['route_name'] ?? ''),
                 'route_entrance_location_id' => $this->get_location_data($route_acf['route_entrance_location_id'] ?? 0, $is_cache_request),
                 'route_difficulty' => $this->map_grouped_fields($route_acf['route_difficulty'] ?? [], [
                     'route_difficulty_psychological_claustrophobia',
@@ -846,8 +846,8 @@ class Hybrid_Headless_Products_Controller {
         // Base location data that's always returned
         $location_data = [
             'id' => $location_id,
-            'title' => $post_ref['post_title'],
-            'slug' => $post_ref['post_name'],
+            'title' => $is_sensitive_access && !($is_logged_in && $is_member) ? 'A sensitive access location' : $post_ref['post_title'],
+            'slug' => $is_sensitive_access && !($is_logged_in && $is_member) ? 'sensitive-access-location' : $post_ref['post_name'],
             'acf' => [
                 'location_sensitive_access' => $is_sensitive_access,
                 'location_caving_region' => $this->get_post_reference($location_acf['location_caving_region'] ?? 0),

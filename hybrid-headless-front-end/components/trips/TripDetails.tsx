@@ -79,7 +79,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
 					}
 				}
 					
-				return city ? `A location near ${city}` : 'A sensitive access location';
+				return city ? `A location near ${city}` : 'A location';
 			}
 		}
 		
