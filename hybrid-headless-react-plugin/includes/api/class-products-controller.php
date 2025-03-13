@@ -177,6 +177,16 @@ class Hybrid_Headless_Products_Controller {
      * @return WP_REST_Response
      */
     public function get_products( $request ) {
+        // Check if this is a cacheable request (frontend initial load)
+        $is_cache_request = isset($request['cachemeifyoucan']);
+        
+        // If it's a cache request, temporarily set the current user to 0 (not logged in)
+        $original_user_id = null;
+        if ($is_cache_request) {
+            $original_user_id = get_current_user_id();
+            wp_set_current_user(0);
+        }
+        
         $args = array(
             'post_type'      => 'product',
             'posts_per_page' => $request['per_page'],
@@ -220,11 +230,16 @@ class Hybrid_Headless_Products_Controller {
         foreach ( $query->posts as $post ) {
             $product = wc_get_product( $post );
             if ($product && $product->is_visible()) {
-                $prepared = $this->prepare_product_data( $product );
+                $prepared = $this->prepare_product_data( $product, $is_cache_request );
                 // Add variation count for listings
                 $prepared['variation_count'] = count($prepared['variations']);
                 $products[] = $prepared;
             }
+        }
+        
+        // Restore the original user if we changed it
+        if ($is_cache_request && $original_user_id !== null) {
+            wp_set_current_user($original_user_id);
         }
 
         return rest_ensure_response( array(
@@ -262,9 +277,10 @@ class Hybrid_Headless_Products_Controller {
      * Prepare product data
      *
      * @param WC_Product $product Product object.
+     * @param bool $is_cache_request Whether this is a cacheable request.
      * @return array
      */
-    private function prepare_product_data($product) {
+    private function prepare_product_data($product, $is_cache_request = false) {
         $cache_key = 'product_stock_' . $product->get_id();
         $stock_info = wp_cache_get($cache_key);
 
@@ -428,9 +444,9 @@ class Hybrid_Headless_Products_Controller {
 
         // Add route data if available
         if (!empty($acf_fields['event_route_id'])) {
-            $product_data['route'] = $this->get_route_data($acf_fields['event_route_id']);
+            $product_data['route'] = $this->get_route_data($acf_fields['event_route_id'], $is_cache_request);
         } elseif (!empty($acf_fields['event_cave_id'])) {
-            $product_data['route'] = $this->get_cave_as_route($acf_fields['event_cave_id']);
+            $product_data['route'] = $this->get_cave_as_route($acf_fields['event_cave_id'], $is_cache_request);
         }
 
         // Add hut data if available
@@ -553,7 +569,7 @@ class Hybrid_Headless_Products_Controller {
         ];
     }
 
-    private function get_route_data($route_id) {
+    private function get_route_data($route_id, $is_cache_request = false) {
         $post_ref = $this->get_post_reference($route_id);
         if (!$post_ref) return null;
 
@@ -565,7 +581,8 @@ class Hybrid_Headless_Products_Controller {
         $is_sensitive_access = (bool)($entrance_location_acf['location_sensitive_access'] ?? false);
         
         // Check user authentication and permissions
-        $user_id = get_current_user_id();
+        // If it's a cache request, treat as not logged in
+        $user_id = $is_cache_request ? 0 : get_current_user_id();
         $is_logged_in = $user_id > 0;
         $is_member = $is_logged_in ? (bool)get_user_meta($user_id, 'cc_member', true) : false;
         
@@ -619,7 +636,7 @@ class Hybrid_Headless_Products_Controller {
             'title' => $post_ref['post_title'],
             'acf' => [
                 'route_name' => $route_acf['route_name'] ?? '',
-                'route_entrance_location_id' => $this->get_location_data($route_acf['route_entrance_location_id'] ?? 0),
+                'route_entrance_location_id' => $this->get_location_data($route_acf['route_entrance_location_id'] ?? 0, $is_cache_request),
                 'route_difficulty' => $this->map_grouped_fields($route_acf['route_difficulty'] ?? [], [
                     'route_difficulty_psychological_claustrophobia',
                     'route_difficulty_objective_tightness',
@@ -646,7 +663,7 @@ class Hybrid_Headless_Products_Controller {
         if (!$is_sensitive_access || $has_trip_leader_access) {
             $route_data['acf']['route_blurb'] = $route_acf['route_blurb'] ?? '';
             $route_data['acf']['route_through_trip'] = $route_acf['route_through_trip'] ?? false;
-            $route_data['acf']['route_exit_location_id'] = $this->get_location_data($route_acf['route_exit_location_id'] ?? 0);
+            $route_data['acf']['route_exit_location_id'] = $this->get_location_data($route_acf['route_exit_location_id'] ?? 0, $is_cache_request);
             $route_data['acf']['route_group_tackle_required'] = $route_acf['route_group_tackle_required'] ?? '';
             
             // Add sensitive data only for members or trip leaders
@@ -677,7 +694,7 @@ class Hybrid_Headless_Products_Controller {
         return $route_data;
     }
 
-    private function get_cave_as_route($cave_id) {
+    private function get_cave_as_route($cave_id, $is_cache_request = false) {
         $cave_acf = get_fields($cave_id);
         $cave_post = get_post($cave_id);
 
@@ -756,7 +773,7 @@ class Hybrid_Headless_Products_Controller {
         ] : null;
     }
 
-    private function get_location_data($location) {
+    private function get_location_data($location, $is_cache_request = false) {
         $post_ref = $this->get_post_reference($location);
         if (!$post_ref) return null;
 
@@ -767,7 +784,8 @@ class Hybrid_Headless_Products_Controller {
         $is_sensitive_access = (bool)($location_acf['location_sensitive_access'] ?? false);
         
         // Check user authentication and permissions
-        $user_id = get_current_user_id();
+        // If it's a cache request, treat as not logged in
+        $user_id = $is_cache_request ? 0 : get_current_user_id();
         $is_logged_in = $user_id > 0;
         $is_member = $is_logged_in ? (bool)get_user_meta($user_id, 'cc_member', true) : false;
         
