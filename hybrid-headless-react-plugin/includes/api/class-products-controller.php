@@ -281,6 +281,11 @@ class Hybrid_Headless_Products_Controller {
      * @return array
      */
     private function prepare_product_data($product, $is_cache_request = false) {
+        // Ensure user is authenticated before processing
+        if (!$is_cache_request) {
+            $this->ensure_user_authenticated();
+        }
+        
         $cache_key = 'product_stock_' . $product->get_id();
         $stock_info = wp_cache_get($cache_key);
 
@@ -580,6 +585,9 @@ class Hybrid_Headless_Products_Controller {
         $entrance_location_acf = $entrance_location_id ? get_fields($entrance_location_id) : null;
         $is_sensitive_access = (bool)($entrance_location_acf['location_sensitive_access'] ?? false);
         
+        // Force authentication check - this ensures the user is properly loaded
+        $this->ensure_user_authenticated();
+        
         // Check user authentication and permissions
         // If it's a cache request, treat as not logged in
         $user_id = $is_cache_request ? 0 : get_current_user_id();
@@ -588,14 +596,15 @@ class Hybrid_Headless_Products_Controller {
         
         // Debug logging
         error_log(sprintf(
-            '[Route Access Debug] Route: %d, Location: %d, Is Sensitive: %s, User ID: %d, Is Logged In: %s, Is Member: %s, Member Value: "%s"',
+            '[Route Access Debug] Route: %d, Location: %d, Is Sensitive: %s, User ID: %d, Is Logged In: %s, Is Member: %s, Member Value: "%s", Current User: %d',
             $route_id,
             $entrance_location_id,
             $is_sensitive_access ? 'true' : 'false',
             $user_id,
             $is_logged_in ? 'true' : 'false',
             $is_member ? 'true' : 'false',
-            $is_logged_in ? get_user_meta($user_id, 'cc_member', true) : 'n/a'
+            $is_logged_in ? get_user_meta($user_id, 'cc_member', true) : 'n/a',
+            get_current_user_id()
         ));
         
         // Check if user is signed up for this trip and has appropriate role
@@ -795,6 +804,9 @@ class Hybrid_Headless_Products_Controller {
         // Check if location has sensitive access
         $is_sensitive_access = (bool)($location_acf['location_sensitive_access'] ?? false);
         
+        // Force authentication check - this ensures the user is properly loaded
+        $this->ensure_user_authenticated();
+        
         // Check user authentication and permissions
         // If it's a cache request, treat as not logged in
         $user_id = $is_cache_request ? 0 : get_current_user_id();
@@ -803,13 +815,14 @@ class Hybrid_Headless_Products_Controller {
         
         // Debug logging
         error_log(sprintf(
-            '[Location Access Debug] Location: %d, Is Sensitive: %s, User ID: %d, Is Logged In: %s, Is Member: %s, Member Value: "%s"',
+            '[Location Access Debug] Location: %d, Is Sensitive: %s, User ID: %d, Is Logged In: %s, Is Member: %s, Member Value: "%s", Current User: %d',
             $location_id,
             $is_sensitive_access ? 'true' : 'false',
             $user_id,
             $is_logged_in ? 'true' : 'false',
             $is_member ? 'true' : 'false',
-            $is_logged_in ? get_user_meta($user_id, 'cc_member', true) : 'n/a'
+            $is_logged_in ? get_user_meta($user_id, 'cc_member', true) : 'n/a',
+            get_current_user_id()
         ));
         
         // Check if user is signed up for this trip and has appropriate role
@@ -1002,7 +1015,26 @@ class Hybrid_Headless_Products_Controller {
     }
 
 
+    /**
+     * Ensures the user is properly authenticated by checking the auth cookie
+     */
+    private function ensure_user_authenticated() {
+        // Only run this check if the user isn't already authenticated
+        if (get_current_user_id() === 0 && isset($_COOKIE[LOGGED_IN_COOKIE])) {
+            $user_id = wp_validate_auth_cookie($_COOKIE[LOGGED_IN_COOKIE], 'logged_in');
+            if ($user_id) {
+                wp_set_current_user($user_id);
+                error_log(sprintf('[Auth Debug] Manually set current user to: %d', $user_id));
+            } else {
+                error_log('[Auth Debug] Invalid auth cookie');
+            }
+        }
+    }
+
     private function is_member() {
+        // Force authentication check
+        $this->ensure_user_authenticated();
+        
         if (!is_user_logged_in()) return false;
         $user_id = get_current_user_id();
         $member_value = get_user_meta($user_id, 'cc_member', true);
