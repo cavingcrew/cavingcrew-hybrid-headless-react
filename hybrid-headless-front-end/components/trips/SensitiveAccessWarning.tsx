@@ -1,6 +1,6 @@
 import React from "react";
 import { Paper, Alert, Text, Group, ThemeIcon } from "@mantine/core";
-import { IconAlertTriangle, IconPhotoOff, IconMapOff, IconBrandFacebook, IconShare2Off } from "@tabler/icons-react";
+import { IconAlertTriangle, IconPhotoOff, IconMapOff, IconBrandFacebook, IconShareOff } from "@tabler/icons-react";
 
 interface SensitiveAccessWarningProps {
   isVisible: boolean;
@@ -35,7 +35,7 @@ export function SensitiveAccessWarning({ isVisible }: SensitiveAccessWarningProp
             <IconBrandFacebook size={20} />
           </ThemeIcon>
           <ThemeIcon color="red" size="lg" variant="light">
-            <IconShare2Off size={20} />
+            <IconShareOff size={20} />
           </ThemeIcon>
         </Group>
       </Alert>
