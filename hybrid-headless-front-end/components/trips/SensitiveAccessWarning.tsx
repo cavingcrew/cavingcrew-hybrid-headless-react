@@ -1,4 +1,12 @@
-import { Alert, Group, Paper, Text, ThemeIcon, Tooltip, List } from "@mantine/core";
+import {
+	Alert,
+	Group,
+	List,
+	Paper,
+	Text,
+	ThemeIcon,
+	Tooltip,
+} from "@mantine/core";
 import {
 	IconAlertTriangle,
 	IconMapOff,
@@ -36,12 +44,16 @@ export function SensitiveAccessWarning({
 					please don't sign up for this trip.
 				</Text>
 
-				<Text fw={500} mt="md" mb="xs">Please avoid sharing:</Text>
+				<Text fw={500} mt="md" mb="xs">
+					Please avoid sharing:
+				</Text>
 				<List spacing="xs" mb="md">
 					<List.Item>Photos of the site or entrance</List.Item>
 					<List.Item>Location details or maps</List.Item>
 					<List.Item>Site name on any social media</List.Item>
-					<List.Item>Any information that could identify the location</List.Item>
+					<List.Item>
+						Any information that could identify the location
+					</List.Item>
 				</List>
 
 				<Group gap="md" mt="md">
