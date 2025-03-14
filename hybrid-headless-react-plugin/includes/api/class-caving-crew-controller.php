@@ -562,12 +562,21 @@ class Hybrid_Headless_Caving_Crew_Controller {
             $updated_orders[] = $order_id;
         }
         
-        // Set product to private
+        // Add trip-reports tag to the product instead of setting it to private
         $product = wc_get_product($product_id);
         if ($product) {
-            $product->set_status('private');
-            $product->update_meta_data('cc_post_set_private_set_by', $current_user->user_email);
-            $product->update_meta_data('cc_post_set_private_set_at', $current_time);
+            // Get current product tags
+            $current_tags = wp_get_post_terms($product_id, 'product_tag', ['fields' => 'ids']);
+            
+            // Add trip-reports tag (ID 61) if not already present
+            if (!in_array(61, $current_tags)) {
+                $current_tags[] = 61;
+                wp_set_object_terms($product_id, $current_tags, 'product_tag');
+            }
+            
+            // Still add metadata for tracking who marked it as completed
+            $product->update_meta_data('cc_post_completed_by', $current_user->user_email);
+            $product->update_meta_data('cc_post_completed_at', $current_time);
             $product->save();
         }
         

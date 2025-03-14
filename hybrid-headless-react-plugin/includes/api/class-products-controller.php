@@ -221,10 +221,17 @@ class Hybrid_Headless_Products_Controller {
                 )
             ),
             'tax_query'      => array(
+                'relation' => 'AND',
                 array(
                     'taxonomy' => 'product_visibility',
                     'field'    => 'name',
                     'terms'    => array('exclude-from-catalog', 'exclude-from-search'),
+                    'operator' => 'NOT IN',
+                ),
+                array(
+                    'taxonomy' => 'product_tag',
+                    'field'    => 'slug',
+                    'terms'    => 'trip-reports',
                     'operator' => 'NOT IN',
                 ),
             ),
