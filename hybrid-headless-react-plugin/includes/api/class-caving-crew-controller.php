@@ -531,6 +531,7 @@ class Hybrid_Headless_Caving_Crew_Controller {
      * @return WP_REST_Response|WP_Error
      */
     public function mark_all_attended($request) {
+        global $wpdb;
         $product_id = $request['id'];
         $current_user = wp_get_current_user();
         $current_time = time();
@@ -542,24 +543,51 @@ class Hybrid_Headless_Caving_Crew_Controller {
             return new WP_Error('no_orders', 'No pending orders found for this event', ['status' => 404]);
         }
         
-        $updated_orders = [];
+        // Bulk update order status directly in the database
+        $order_ids_csv = implode(',', array_map('intval', $orders));
         
-        // Update each order
-        foreach ($orders as $order_id) {
-            $order = wc_get_order($order_id);
+        // Update order status to completed
+        $wpdb->query("
+            UPDATE {$wpdb->posts}
+            SET post_status = 'wc-completed'
+            WHERE ID IN ($order_ids_csv)
+            AND post_type = 'shop_order'
+        ");
+        
+        // Update order meta in bulk
+        foreach (['cc_attendance' => 'attended', 
+                  'cc_attendance_set_by' => $current_user->user_email, 
+                  'cc_attendance_set_at' => $current_time] as $meta_key => $meta_value) {
             
-            if (!$order) {
-                continue;
+            // First, delete any existing meta with this key
+            $wpdb->query("
+                DELETE FROM {$wpdb->postmeta}
+                WHERE post_id IN ($order_ids_csv)
+                AND meta_key = '$meta_key'
+            ");
+            
+            // Then insert all the new meta values at once
+            $values = [];
+            foreach ($orders as $order_id) {
+                $values[] = $wpdb->prepare('(%d, %s, %s)', 
+                    $order_id, 
+                    $meta_key, 
+                    is_numeric($meta_value) ? $meta_value : $wpdb->_real_escape($meta_value)
+                );
             }
             
-            // Update order status and metadata
-            $order->update_status('completed');
-            $order->update_meta_data('cc_attendance', 'attended');
-            $order->update_meta_data('cc_attendance_set_by', $current_user->user_email);
-            $order->update_meta_data('cc_attendance_set_at', $current_time);
-            $order->save();
-            
-            $updated_orders[] = $order_id;
+            if (!empty($values)) {
+                $wpdb->query("
+                    INSERT INTO {$wpdb->postmeta} (post_id, meta_key, meta_value)
+                    VALUES " . implode(',', $values)
+                );
+            }
+        }
+        
+        // Clear WooCommerce caches for these orders
+        foreach ($orders as $order_id) {
+            clean_post_cache($order_id);
+            wc_delete_shop_order_transients($order_id);
         }
         
         // Add trip-reports tag to the product instead of setting it to private
@@ -580,10 +608,16 @@ class Hybrid_Headless_Caving_Crew_Controller {
             $product->save();
         }
         
+        // Trigger WooCommerce order status changed action for each order
+        foreach ($orders as $order_id) {
+            do_action('woocommerce_order_status_changed', $order_id, 'pending', 'completed', wc_get_order($order_id));
+        }
+        
         return rest_ensure_response([
             'success' => true,
-            'updated_orders' => $updated_orders,
-            'product_id' => $product_id
+            'updated_orders' => $orders,
+            'product_id' => $product_id,
+            'count' => count($orders)
         ]);
     }
 
