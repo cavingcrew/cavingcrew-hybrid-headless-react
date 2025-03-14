@@ -24,6 +24,7 @@ class Hybrid_Headless_Products_Controller {
      * Register routes
      */
     public function register_routes() {
+        // V1 endpoint (server-to-server with WooCommerce permissions)
         register_rest_route(
             'wc-hybrid-headless/v1',
             '/products/create-event',
@@ -32,6 +33,20 @@ class Hybrid_Headless_Products_Controller {
                     'methods'             => WP_REST_Server::CREATABLE,
                     'callback'            => array( $this, 'create_event_product' ),
                     'permission_callback' => array( $this, 'check_woocommerce_permissions' ),
+                    'args'               => $this->get_event_creation_args(),
+                ),
+            )
+        );
+        
+        // V2 endpoint (client-to-server with standard WP authentication)
+        register_rest_route(
+            Hybrid_Headless_Rest_API::API_NAMESPACE,
+            '/products/create-event',
+            array(
+                array(
+                    'methods'             => WP_REST_Server::CREATABLE,
+                    'callback'            => array( $this, 'create_event_product_v2' ),
+                    'permission_callback' => array( $this, 'check_event_creation_permissions' ),
                     'args'               => $this->get_event_creation_args(),
                 ),
             )
@@ -1151,8 +1166,84 @@ class Hybrid_Headless_Products_Controller {
         }
         return true;
     }
+    
+    /**
+     * Check if user has permission to create events
+     * 
+     * @return bool|WP_Error
+     */
+    public function check_event_creation_permissions() {
+        // Ensure user is authenticated
+        if (!is_user_logged_in()) {
+            return new WP_Error(
+                'rest_not_logged_in',
+                __('You must be logged in to create events.', 'hybrid-headless'),
+                array('status' => 401)
+            );
+        }
+        
+        $user_id = get_current_user_id();
+        
+        // Check if user is an admin or shop manager
+        if (current_user_can('manage_woocommerce') || current_user_can('administrator')) {
+            return true;
+        }
+        
+        // Check if user is a committee member
+        $committee_current = get_user_meta($user_id, 'committee_current', true);
+        $is_committee = $committee_current && 
+                        $committee_current !== '' && 
+                        $committee_current !== 'retired' && 
+                        $committee_current !== 'revoked' && 
+                        $committee_current !== 'legacy' && 
+                        $committee_current !== 'expired';
+        
+        if ($is_committee) {
+            return true;
+        }
+        
+        return new WP_Error(
+            'rest_forbidden',
+            __('You do not have permission to create events.', 'hybrid-headless'),
+            array('status' => 403)
+        );
+    }
 
+    /**
+     * Create event product (v2 implementation with standard WP auth)
+     * 
+     * @param WP_REST_Request $request Request object
+     * @return WP_REST_Response|WP_Error
+     */
+    public function create_event_product_v2(WP_REST_Request $request) {
+        // Log the request
+        error_log('[Event Creation V2] Request received from user ID: ' . get_current_user_id());
+        
+        // Process the request using the same core logic
+        return $this->create_event_product_core($request);
+    }
+    
+    /**
+     * Create event product (v1 implementation with WooCommerce auth)
+     * 
+     * @param WP_REST_Request $request Request object
+     * @return WP_REST_Response|WP_Error
+     */
     public function create_event_product(WP_REST_Request $request) {
+        // Log the request
+        error_log('[Event Creation V1] Request received');
+        
+        // Process the request using the shared core logic
+        return $this->create_event_product_core($request);
+    }
+    
+    /**
+     * Core implementation of event product creation
+     * 
+     * @param WP_REST_Request $request Request object
+     * @return WP_REST_Response|WP_Error
+     */
+    private function create_event_product_core(WP_REST_Request $request) {
         try {
             $template_map = [
                 'giggletrip' => 11579,
