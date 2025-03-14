@@ -1303,10 +1303,30 @@ class Hybrid_Headless_Products_Controller {
 
             // Copy membership discounts
             $this->copy_membership_discounts($template_id, $new_product_id);
+            
+            // Get the creator's user ID
+            $creator_id = get_current_user_id();
+            if ($creator_id) {
+                // Store the creator's ID as post meta
+                update_post_meta($new_product_id, '_event_created_by', $creator_id);
+                
+                // Log the creation
+                error_log(sprintf(
+                    '[Event Creation] User %d created event %d of type %s',
+                    $creator_id,
+                    $new_product_id,
+                    $event_type
+                ));
+            }
 
             return rest_ensure_response([
                 'product_id' => $new_product_id,
-                'edit_url' => get_edit_post_link($new_product_id, '')
+                'edit_url' => get_edit_post_link($new_product_id, ''),
+                'event_type' => $event_type,
+                'event_start_date_time' => $request['event_start_date_time'],
+                'event_name' => $request['event_name'],
+                'created_at' => current_time('mysql'),
+                'status' => 'draft'
             ]);
         } catch (Exception $e) {
             error_log('[Event Creation Critical] ' . $e->getMessage() . "\n" . $e->getTraceAsString());
