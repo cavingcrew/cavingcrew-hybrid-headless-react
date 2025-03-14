@@ -87,58 +87,7 @@ class Hybrid_Headless_Trip_Participants_Controller {
      * @return bool|WP_Error
      */
     public function check_admin_permissions($request) {
-        $trip_id = $request['trip_id'];
-        $user_id = get_current_user_id();
-
-        if (!$user_id) {
-            return new WP_Error(
-                'rest_forbidden',
-                __('You must be logged in to access this endpoint.', 'hybrid-headless'),
-                array('status' => 401)
-            );
-        }
-
-        // Check if user is an Administrator or Shop Manager
-        $user = get_userdata($user_id);
-        if ($user && ($user->has_cap('administrator') || $user->has_cap('manage_woocommerce'))) {
-            return true;
-        }
-        
-        // Check if user is a committee member
-        if ($this->is_committee_member($user_id)) {
-            if (WP_DEBUG) {
-                error_log(sprintf('[Trip Participants Admin] User %d is committee member - granting admin permissions', $user_id));
-            }
-            return true;
-        }
-
-        // Check if user is a trip director for this trip
-        $orders = wc_get_orders([
-            'customer_id' => $user_id,
-            'limit' => -1,
-            'status' => ['on-hold', 'processing', 'completed'],
-        ]);
-
-        foreach ($orders as $order) {
-            foreach ($order->get_items() as $item) {
-                $product = $item->get_product();
-                if ($product) {
-                    $product_id = $product->get_parent_id() ?: $product->get_id();
-                    if ($product_id == $trip_id) {
-                        $cc_volunteer = $order->get_meta('cc_volunteer');
-                        if (strpos($cc_volunteer, 'director') !== false || $cc_volunteer === 'cabbage1239zz') {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
-
-        return new WP_Error(
-            'rest_forbidden',
-            __('You do not have permission to update this trip.', 'hybrid-headless'),
-            array('status' => 403)
-        );
+        return Hybrid_Headless_Auth_Utils::check_trip_director_permissions($request);
     }
 
     /**
@@ -755,86 +704,53 @@ class Hybrid_Headless_Trip_Participants_Controller {
      * @return boolean
      */
     private function user_has_access_to_event($product_id) {
-        // Validate product ID
-        if (!$product_id || !wc_get_product($product_id)) {
-            if (WP_DEBUG) {
-                error_log(sprintf('[Event Access] Invalid product ID: %s', $product_id));
-            }
-            return false;
-        }
-
+        // Check if user is an admin, shop manager, or committee member
         $user_id = get_current_user_id();
         if (!$user_id) {
-            if (WP_DEBUG) {
-                error_log('[Event Access] No current user ID');
-            }
             return false;
         }
-
-        if (WP_DEBUG) {
-            error_log(sprintf('[Event Access] Checking access for User %d to Product %d', $user_id, $product_id));
-        }
-
-        // Check if user is an Administrator or Shop Manager
+        
+        // Check admin/shop manager permissions
         $user = get_userdata($user_id);
         if ($user && ($user->has_cap('administrator') || $user->has_cap('manage_woocommerce'))) {
-            if (WP_DEBUG) {
-                error_log(sprintf('[Event Access] User %d is admin/shop manager - granting access', $user_id));
-            }
             return true;
         }
         
-        // Check if user is a committee member
-        $committee_current = get_user_meta($user_id, 'committee_current', true);
-        if (WP_DEBUG) {
-            error_log(sprintf('[Event Access] User %d committee_current value: "%s"', $user_id, $committee_current));
-        }
-        
-        $is_committee = $committee_current && 
-                        $committee_current !== '' && 
-                        $committee_current !== 'retired' && 
-                        $committee_current !== 'revoked' && 
-                        $committee_current !== 'legacy' && 
-                        $committee_current !== 'expired';
-        
-        if ($is_committee) {
-            if (WP_DEBUG) {
-                error_log(sprintf('[Event Access] User %d is committee member with role: %s - granting access to event', $user_id, $committee_current));
-            }
+        // Check committee membership
+        if (Hybrid_Headless_Auth_Utils::is_committee_member($user_id)) {
             return true;
         }
-
-        // Define the arguments for retrieving the order IDs
-        $args = array(
+        
+        // Check if user is a trip director for this trip
+        if (Hybrid_Headless_Auth_Utils::is_trip_director($user_id, $product_id)) {
+            return true;
+        }
+        
+        // Check if user has a volunteer role for this trip
+        $orders = wc_get_orders([
             'customer_id' => $user_id,
             'limit' => -1,
-            'orderby' => 'date',
-            'order' => 'DESC',
-            'return' => 'ids',
-        );
-
-        // Get the order IDs associated with the user ID
-        $order_ids = wc_get_orders($args);
-
-        foreach ($order_ids as $order_id) {
-            $order = wc_get_order($order_id);
-
-            // Check order meta conditions
-            $order_meta = get_post_meta($order_id);
-
-            // Check if cc_volunteer is not "none"
-            if (isset($order_meta['cc_volunteer'][0]) && $order_meta['cc_volunteer'][0] !== 'none' &&
-                isset($order_meta['cc_attendance'][0]) && $order_meta['cc_attendance'][0] === 'pending') {
-                // Iterate through an order's items
-                foreach ($order->get_items() as $item) {
-                    if ($item->get_product_id() == $product_id) {
-                        return true;
+            'status' => ['on-hold', 'processing', 'completed'],
+        ]);
+        
+        foreach ($orders as $order) {
+            foreach ($order->get_items() as $item) {
+                $product = $item->get_product();
+                if ($product) {
+                    $product_id = $product->get_parent_id() ?: $product->get_id();
+                    if ($product_id == $product_id) {
+                        $cc_volunteer = $order->get_meta('cc_volunteer');
+                        $cc_attendance = $order->get_meta('cc_attendance');
+                        
+                        if ($cc_volunteer && $cc_volunteer !== 'none' && 
+                            (!$cc_attendance || $cc_attendance === 'pending')) {
+                            return true;
+                        }
                     }
                 }
             }
         }
-
-        // If no conditions are met, return false
+        
         return false;
     }
 
@@ -845,32 +761,7 @@ class Hybrid_Headless_Trip_Participants_Controller {
      * @return boolean
      */
     private function is_committee_member($user_id) {
-        if (!$user_id) {
-            if (WP_DEBUG) {
-                error_log(sprintf('[Committee Check] Invalid user ID: %s', $user_id));
-            }
-            return false;
-        }
-        
-        $committee_current = get_user_meta($user_id, 'committee_current', true);
-        if (WP_DEBUG) {
-            error_log(sprintf('[Committee Check] User %d committee_current value: "%s"', $user_id, $committee_current));
-        }
-        
-        $is_valid_committee = $committee_current && 
-                             $committee_current !== '' && 
-                             $committee_current !== 'retired' && 
-                             $committee_current !== 'revoked' && 
-                             $committee_current !== 'legacy' && 
-                             $committee_current !== 'expired';
-        
-        if (WP_DEBUG) {
-            error_log(sprintf('[Committee Check] User %d is_valid_committee: %s', 
-                             $user_id, 
-                             $is_valid_committee ? 'yes' : 'no'));
-        }
-        
-        return $is_valid_committee;
+        return Hybrid_Headless_Auth_Utils::is_committee_member($user_id);
     }
     
     /**

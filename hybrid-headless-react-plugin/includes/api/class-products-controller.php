@@ -1042,22 +1042,15 @@ class Hybrid_Headless_Products_Controller {
      * Ensures the user is properly authenticated by checking the auth cookie
      */
     private function ensure_user_authenticated() {
-        // Only run this check if the user isn't already authenticated
-        if (get_current_user_id() === 0 && isset($_COOKIE[LOGGED_IN_COOKIE])) {
-            $user_id = wp_validate_auth_cookie($_COOKIE[LOGGED_IN_COOKIE], 'logged_in');
-            if ($user_id) {
-                wp_set_current_user($user_id);
-            }
-        }
+        return Hybrid_Headless_Auth_Utils::ensure_user_authenticated();
     }
 
     /**
      * Check if user is a member
      */
     private function is_member() {
-        if (!is_user_logged_in()) return false;
         $user_id = get_current_user_id();
-        return get_user_meta($user_id, 'cc_member', true) === 'yes';
+        return Hybrid_Headless_Auth_Utils::is_member($user_id);
     }
 
     public function get_product_stock($request) {
@@ -1157,14 +1150,7 @@ class Hybrid_Headless_Products_Controller {
     }
 
     public function check_woocommerce_permissions() {
-        if (!current_user_can('manage_woocommerce')) {
-            return new WP_Error(
-                'woocommerce_rest_cannot_create',
-                __('Sorry, you cannot create resources.', 'hybrid-headless'),
-                array('status' => rest_authorization_required_code())
-            );
-        }
-        return true;
+        return Hybrid_Headless_Auth_Utils::check_woocommerce_permissions(null);
     }
     
     /**
@@ -1173,40 +1159,8 @@ class Hybrid_Headless_Products_Controller {
      * @return bool|WP_Error
      */
     public function check_event_creation_permissions() {
-        // Ensure user is authenticated
-        if (!is_user_logged_in()) {
-            return new WP_Error(
-                'rest_not_logged_in',
-                __('You must be logged in to create events.', 'hybrid-headless'),
-                array('status' => 401)
-            );
-        }
-        
-        $user_id = get_current_user_id();
-        
-        // Check if user is an admin or shop manager
-        if (current_user_can('manage_woocommerce') || current_user_can('administrator')) {
-            return true;
-        }
-        
-        // Check if user is a committee member
-        $committee_current = get_user_meta($user_id, 'committee_current', true);
-        $is_committee = $committee_current && 
-                        $committee_current !== '' && 
-                        $committee_current !== 'retired' && 
-                        $committee_current !== 'revoked' && 
-                        $committee_current !== 'legacy' && 
-                        $committee_current !== 'expired';
-        
-        if ($is_committee) {
-            return true;
-        }
-        
-        return new WP_Error(
-            'rest_forbidden',
-            __('You do not have permission to create events.', 'hybrid-headless'),
-            array('status' => 403)
-        );
+        // Committee members can create events
+        return Hybrid_Headless_Auth_Utils::check_committee_permissions(null);
     }
 
     /**

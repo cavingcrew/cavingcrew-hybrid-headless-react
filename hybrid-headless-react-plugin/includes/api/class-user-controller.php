@@ -269,7 +269,6 @@ class Hybrid_Headless_User_Controller {
      * Check if user is a member
      */
     private function is_member($user_id) {
-        if (!$user_id) return false;
-        return get_user_meta($user_id, 'cc_member', true) === 'yes';
+        return Hybrid_Headless_Auth_Utils::is_member($user_id);
     }
 }

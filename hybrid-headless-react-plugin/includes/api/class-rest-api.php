@@ -35,6 +35,10 @@ class Hybrid_Headless_Rest_API {
      * Load API Controllers
      */
     private function load_controllers() {
+        // Load utility classes first
+        require_once HYBRID_HEADLESS_PLUGIN_DIR . 'includes/api/class-auth-utils.php';
+        
+        // Load controllers
         require_once HYBRID_HEADLESS_PLUGIN_DIR . 'includes/api/class-products-controller.php';
         require_once HYBRID_HEADLESS_PLUGIN_DIR . 'includes/api/class-routes-controller.php';
         require_once HYBRID_HEADLESS_PLUGIN_DIR . 'includes/api/class-categories-controller.php';
@@ -48,6 +52,7 @@ class Hybrid_Headless_Rest_API {
         new Hybrid_Headless_User_Controller();
         new Hybrid_Headless_Trip_Participants_Controller();
         new Hybrid_Headless_Trip_Reports_Controller();
+        new Hybrid_Headless_Caving_Crew_Controller();
     }
 
     /**
