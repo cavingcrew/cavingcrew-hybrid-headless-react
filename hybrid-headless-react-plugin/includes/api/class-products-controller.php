@@ -324,6 +324,13 @@ class Hybrid_Headless_Products_Controller {
 
         // Get ACF fields
         $acf_fields = get_fields($product->get_id());
+        
+        // Get trip report fields
+        $trip_report = [
+            'report_author' => $acf_fields['report_author'] ?? '',
+            'report_content' => $acf_fields['report_content'] ?? '',
+            'report_gallery' => $this->prepare_gallery_data($acf_fields['report_gallery'] ?? [])
+        ];
 
         // Initialize variation data
         $variations = [];
@@ -477,7 +484,8 @@ class Hybrid_Headless_Products_Controller {
             'variations' => $stock_info['variations'],
             'has_variations' => $stock_info['has_variations'],
             'is_variable' => $stock_info['is_variable'],
-            'purchasable' => $stock_info['purchasable']
+            'purchasable' => $stock_info['purchasable'],
+            'trip_report' => $trip_report
         );
 
         // Add route data if available
@@ -955,6 +963,29 @@ class Hybrid_Headless_Products_Controller {
             'caption' => wp_get_attachment_caption($image_id),
             'sizes' => wp_get_attachment_metadata($image_id)['sizes'] ?? []
         ];
+    }
+
+    /**
+     * Prepare gallery data for API response
+     *
+     * @param array $gallery Array of image IDs
+     * @return array Processed gallery data
+     */
+    private function prepare_gallery_data($gallery) {
+        if (empty($gallery)) {
+            return [];
+        }
+        
+        $images = [];
+        
+        foreach ($gallery as $image_id) {
+            $image_data = $this->get_image_data($image_id);
+            if ($image_data) {
+                $images[] = $image_data;
+            }
+        }
+        
+        return $images;
     }
 
 
