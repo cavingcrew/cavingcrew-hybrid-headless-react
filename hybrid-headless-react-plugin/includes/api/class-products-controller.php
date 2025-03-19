@@ -182,7 +182,7 @@ class Hybrid_Headless_Products_Controller {
                 'default'           => 'ASC',
                 'sanitize_callback' => 'sanitize_text_field',
             ),
-            'reports' => array(
+            'get_reports' => array(
                 'default'           => false,
                 'sanitize_callback' => 'rest_sanitize_boolean',
             )
@@ -242,8 +242,8 @@ class Hybrid_Headless_Products_Controller {
             'post_status'    => 'publish',
         );
         
-        // If reports parameter is true, modify the query to get trip reports
-        if ($request['reports']) {
+        // If get_reports parameter is true, modify the query to get trip reports
+        if ($request['get_reports']) {
             // Change order to DESC to get most recent first
             $args['order'] = 'DESC';
             
@@ -357,10 +357,33 @@ class Hybrid_Headless_Products_Controller {
         $acf_fields = get_fields($product->get_id());
         
         // Get trip report fields
+        $has_report_content = !empty($acf_fields['report_content']);
+        
+        // Check if this is a sensitive location
+        $is_sensitive_location = false;
+        
+        // Check if route has sensitive access
+        if (!empty($acf_fields['event_route_id'])) {
+            $route_id = $acf_fields['event_route_id'];
+            $route_acf = get_fields($route_id);
+            
+            // Check if entrance location has sensitive access
+            $entrance_location_id = $route_acf['route_entrance_location_id'] ?? 0;
+            $entrance_location_acf = $entrance_location_id ? get_fields($entrance_location_id) : null;
+            $is_sensitive_location = (bool)($entrance_location_acf['location_sensitive_access'] ?? false);
+        }
+        
+        // Check if user is authenticated and is a member
+        $is_logged_in = !$is_cache_request && is_user_logged_in();
+        $is_member = $is_logged_in && $this->is_member();
+        
+        // Determine if we should hide the trip report content
+        $hide_report = $has_report_content && $is_sensitive_location && !($is_logged_in && $is_member);
+        
         $trip_report = [
-            'report_author' => $acf_fields['report_author'] ?? '',
-            'report_content' => $acf_fields['report_content'] ?? '',
-            'report_gallery' => $this->prepare_gallery_data($acf_fields['report_gallery'] ?? [])
+            'report_author' => $hide_report ? '' : ($acf_fields['report_author'] ?? ''),
+            'report_content' => $hide_report ? 'To see this trip report, you\'ll need to login with membership.' : ($acf_fields['report_content'] ?? ''),
+            'report_gallery' => $hide_report ? [] : $this->prepare_gallery_data($acf_fields['report_gallery'] ?? [])
         ];
 
         // Initialize variation data
