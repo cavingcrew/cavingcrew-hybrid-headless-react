@@ -181,6 +181,10 @@ class Hybrid_Headless_Products_Controller {
             'order' => array(
                 'default'           => 'ASC',
                 'sanitize_callback' => 'sanitize_text_field',
+            ),
+            'reports' => array(
+                'default'           => false,
+                'sanitize_callback' => 'rest_sanitize_boolean',
             )
         );
     }
@@ -237,6 +241,33 @@ class Hybrid_Headless_Products_Controller {
             ),
             'post_status'    => 'publish',
         );
+        
+        // If reports parameter is true, modify the query to get trip reports
+        if ($request['reports']) {
+            // Change order to DESC to get most recent first
+            $args['order'] = 'DESC';
+            
+            // Remove the tag exclusion for trip-reports
+            foreach ($args['tax_query'] as $key => $query) {
+                if (isset($query['terms']) && $query['terms'] === 'trip-reports') {
+                    unset($args['tax_query'][$key]);
+                }
+            }
+            
+            // Add meta query to only get products with non-empty report_content
+            $args['meta_query'] = array(
+                'relation' => 'AND',
+                array(
+                    'key'     => 'report_content',
+                    'value'   => '',
+                    'compare' => '!='
+                ),
+                array(
+                    'key'     => 'event_start_date_time',
+                    'compare' => 'EXISTS'
+                )
+            );
+        }
 
         if ( ! empty( $request['category'] ) ) {
             $args['tax_query'][] = array(
