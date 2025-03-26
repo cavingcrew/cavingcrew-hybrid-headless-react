@@ -868,7 +868,7 @@ const determineSignupStatus = (participant: any): string => {
 	const { order_status: orderStatus } = participant;
 
 	// Comprehensive status mapping
-	const statusMap: { [key: string]: string } = {
+	const statusMap: Record<string, string> = {
 		attended: "Attended",
 		noshow: "No Show",
 		cancelled: "Cancelled",
