@@ -412,12 +412,6 @@ export const generateLocationInfoText = (trip: any): string => {
 		const month = startDate.toLocaleDateString("en-GB", { month: "long" });
 		const region = trip.hut?.hut_location?.post_title || "Caving Weekend";
 		
-		// Format arrival time
-		const arrivalTime = startDate.toLocaleTimeString("en-GB", {
-			hour: "2-digit",
-			minute: "2-digit",
-		});
-		
 		// Extract coordinates for map link
 		const coordinates = trip.hut?.hut_lat_long || "";
 		const mapLink = coordinates ? `http://maps.apple.com/?address=${coordinates}` : "";
@@ -487,32 +481,29 @@ export const generateLocationInfoText = (trip: any): string => {
 		}
 		
 		// Build the overnight trip message template
-		return `✨ ${month} - ${region} ✨
+		return `✨ Final Information ✨
 
-We're looking forward to our caving weekend at ${trip.hut?.hut_name || trip.acf.event_location || "our destination"}!
+We're looking forward to seeing you for our ${trip.name}
 
 ${mapLink ? `📍 Where to Drive To:
 ${mapLink}
 
-` : ""}🏕️ Accommodation:  
-• ${trip.hut?.hut_name || "Our accommodation"}${trip.hut?.hut_club_name ? ` (managed by ${trip.hut?.hut_club_name})` : ""}  
-${trip.hut?.hut_address ? `• ${trip.hut?.hut_address}  \n` : ""}• Facilities: ${facilities}  
+` : ""}We're staying at:
+• ${trip.hut?.hut_name || "Our accommodation"}${trip.hut?.hut_club_name ? ` (managed by ${trip.hut?.hut_club_name})` : ""}${trip.hut?.hut_address ? `, ${trip.hut?.hut_address}` : ""}
+${facilities ? `• Facilities include: ${facilities}\n` : ""}
 
 🕒 Arrival Time:
-Please arrive by ${arrivalTime} - this is when we'll plan the next day's activities together. If delayed, message us with your ETA.
+We'll start arriving around 18:00. Please try and arrive in the evening so we can plan the next day's activities together in person. Once you set off, message us with your ETA.
 
 ${trip.hut?.hut_parking_instructions ? `🚗 Parking Info:  
-${trip.hut?.hut_parking_instructions.replace(/<[^>]*>/g, "").trim().split("\n").join("\n• ")}  
-${trip.hut?.hut_lat_long ? `• Coordinates: ${trip.hut?.hut_lat_long}  \n` : ""}` : ""}
+${trip.hut?.hut_parking_instructions.replace(/<[^>]*>/g, "").trim().split("\n").join("\n• ")}\n` : ""}
 🧳 What to Bring:  
 ${kitListItems}  
 
-${includedItems}  
-
-ℹ️ Full Trip Details:
+ℹ️ Full Trip Details including kitlists for caving, sleeping, etc:
 https://www.cavingcrew.com/trips/${trip.slug}
 
-See you at the hut! Please message if you have any questions before ${startDate.toLocaleDateString("en-GB", { weekday: "long" })}.`;
+See you there! Please feel free to message me directly with any "stupid questions" - always happy to help.`;
 	}
 
 	// Get trip date and time
