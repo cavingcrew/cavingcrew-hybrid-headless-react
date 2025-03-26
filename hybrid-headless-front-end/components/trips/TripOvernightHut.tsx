@@ -32,7 +32,7 @@ import {
   IconPlug,
   IconPets
 } from "@tabler/icons-react";
-import { useUser } from "@/lib/hooks/useUser";
+import { useUser } from "../../lib/hooks/useUser";
 import type { Trip } from "../../types/api";
 
 interface TripOvernightHutProps {
