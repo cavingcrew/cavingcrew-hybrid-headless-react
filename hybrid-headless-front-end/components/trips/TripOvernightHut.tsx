@@ -41,12 +41,12 @@ interface TripOvernightHutProps {
 }
 
 
-export function TripOvernightHut({ 
-  hut, 
-  tripId, 
-  location, 
-  facilities, 
-  photo 
+export function TripOvernightHut({
+  hut,
+  tripId,
+  location,
+  facilities,
+  photo
 }: TripOvernightHutProps) {
   const { isLoggedIn, isMember, purchasedProducts } = useUser();
   const hasPurchased = tripId ? purchasedProducts.includes(tripId) : false;
@@ -55,11 +55,11 @@ export function TripOvernightHut({
   const hutName = hut?.hut_name || location || "Accommodation";
   const hutImage = hut?.hut_image?.url || photo;
   const hutDescription = hut?.hut_sales_description || facilities;
-  
+
   // Helper function to extract locality from address
   const getVagueLocation = (address?: string) => {
     if (!address) return null;
-    
+
     // Split address by commas and clean up
     const parts = address.split(',')
       .map(part => part.trim())
@@ -74,8 +74,8 @@ export function TripOvernightHut({
     // Look for locality candidates
     const localityCandidates = parts
       .reverse() // Check from last part backwards
-      .filter(part => 
-        !counties.includes(part.toLowerCase()) && 
+      .filter(part =>
+        !counties.includes(part.toLowerCase()) &&
         !/\d/.test(part) && // Skip parts with numbers
         part.toLowerCase() !== 'uk');
 
@@ -84,14 +84,14 @@ export function TripOvernightHut({
   };
 
   // Get vague location details
-  const vagueLocation = getVagueLocation(hut?.hut_address) || 
-                      hut?.hut_location?.post_title || 
+  const vagueLocation = getVagueLocation(hut?.hut_address) ||
+                      hut?.hut_location?.post_title ||
                       location;
 
   return (
     <Paper withBorder p="md" radius="md">
       <Title order={2} mb="md">Where we'll be staying</Title>
-      
+
       <Grid gutter="xl">
         {hutImage && (
           <Grid.Col span={{ base: 12, md: 6 }}>
@@ -99,7 +99,7 @@ export function TripOvernightHut({
               src={hutImage}
               alt={`Accommodation at ${hutName}`}
               radius="md"
-              style={{ 
+              style={{
                 maxWidth: '100%',
                 border: '1px solid #e9ecef',
                 borderRadius: 8,
@@ -112,14 +112,21 @@ export function TripOvernightHut({
           <Stack gap="lg">
             <div>
               <Title order={3} mb="sm">{hutName}</Title>
-              
+
               {/* Vague location shown to everyone */}
               {vagueLocation && (
                 <Text size="sm" c="dimmed" mb="sm">
                   Location: {vagueLocation}
                 </Text>
               )}
-              
+
+              {/* Show club name for members */}
+              {isLoggedIn && isMember && hut && hut.hut_club_name && (
+                  <Text size="sm" c="dimmed" mb="md">
+                    Managed by: {hut.hut_club_name}
+                  </Text>
+              )}
+
               {hutDescription && (
                 <Text>{hutDescription}</Text>
               )}
@@ -130,12 +137,7 @@ export function TripOvernightHut({
               <HutFacilities facilities={hut.hut_facilities} />
             )}
 
-            {/* Show club name for members */}
-            {isLoggedIn && isMember && hut && hut.hut_club_name && (
-              <Text size="sm" c="dimmed" mb="md">
-                Managed by: {hut.hut_club_name}
-              </Text>
-            )}
+
 
             {/* General Information */}
             {hut && (hut.hut_dogs_allowed || hut.hut_capacity) && (
