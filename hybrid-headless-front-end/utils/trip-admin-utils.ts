@@ -403,6 +403,40 @@ export const generateTackleRequestText = (
  * @returns Formatted location info message
  */
 export const generateLocationInfoText = (trip: any): string => {
+	// For overnight trips
+	if (trip.acf.event_type === "overnight") {
+		// Overnight trip message template
+		return `✨ Overnight Trip Information ✨
+
+We're excited for our caving weekend at ${trip.hut?.hut_name || trip.acf.event_location || "our destination"}!  
+
+🏕️ Accommodation:  
+• ${trip.hut?.hut_name || "Our accommodation"}${trip.hut?.hut_club_name ? ` (managed by ${trip.hut?.hut_club_name})` : ""}  
+${trip.hut?.hut_address ? `• ${trip.hut?.hut_address}  \n` : ""}${trip.hut?.hut_facilities && trip.hut?.hut_facilities.length > 0 ? `• Facilities: ${(trip.hut?.hut_facilities || []).join(", ")}  \n` : ""}
+🕒 Planned Arrival:  
+Please aim to arrive by ${new Date(trip.acf.event_start_date_time).toLocaleTimeString("en-GB", {
+			hour: "2-digit",
+			minute: "2-digit",
+		})} - this gives everyone time to settle in before dinner.  
+
+${trip.hut?.hut_parking_instructions ? `🚗 Parking:  
+${trip.hut?.hut_parking_instructions.replace(/<[^>]*>/g, "").trim()}  
+${trip.hut?.hut_lat_long ? `Parking coordinates: ${trip.hut?.hut_lat_long}  \n` : ""}` : ""}
+🧳 What to Bring:  
+• Sleeping bag (unless specified otherwise)  
+• Personal toiletries  
+• Headtorch for evening/night navigation  
+• A sealed snack to take underground  
+• Any special dietary items (we accommodate most diets but check with organizers)  
+
+The Crew Provides:  
+✔️ All caving equipment  
+✔️ Bedding/facilities listed above  
+✔️ Meals as described in the trip details  
+
+See you there!`;
+	}
+
 	// Get trip date and time
 	const startDate = trip.acf.event_start_date_time
 		? new Date(trip.acf.event_start_date_time)
@@ -481,22 +515,12 @@ export const generateLocationInfoText = (trip: any): string => {
 		return standardGear;
 	};
 
-	// Build the message based on trip type
-	let message = "";
-
-	// For overnight trips
-	if (trip.acf.event_type === "overnight") {
-		message = `This is an overnight trip to ${trip.acf.event_location || "our destination"}.\n\n`;
-		message += `Please check the trip page for detailed information about accommodation, kit list, and plans for each day.\n\n`;
-		message += `If you have any questions, please contact the trip leader: ${trip.acf.event_trip_leader || "the trip leader"}.\n`;
-		return message;
-	}
-
 	// For giggletrips and other trips
 	const locationName = getLocationName();
 	const parkingCoords = getParkingCoordinates();
 	const requiredGear = getRequiredGear();
 
+	let message = "";
 	message += `🗓️ On the evening of ${formattedDate}, we're going caving.\n`;
 	message += `🕒 Let's meet at the ${locationName} parking around ${formattedTime}.\n\n`;
 	message += `⏱️ If you discover you're going to be late, please stay on route, and drop us a message with your adjusted ETA. Chances are it'll be absolutely fine. We'll see you when you arrive.\n\n`;

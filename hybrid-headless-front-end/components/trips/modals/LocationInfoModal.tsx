@@ -33,17 +33,24 @@ export function LocationInfoModal({
 		<Modal
 			opened={opened}
 			onClose={onClose}
-			title={<Title order={4}>Location Info Message</Title>}
+			title={<Title order={4}>
+				{trip.acf.event_type === "overnight" 
+					? "Overnight Trip Information" 
+					: "Location Info Message"}
+			</Title>}
 			size="lg"
 		>
 			<Alert
 				icon={<IconInfoCircle size={16} />}
 				color="blue"
-				title="Group Message"
+				title={trip.acf.event_type === "overnight" 
+					? "Weekend Trip Details" 
+					: "Group Message"}
 				mb="md"
 			>
-				This message provides participants with essential location and gear
-				information. You can share it with the group before the trip.
+				{trip.acf.event_type === "overnight" 
+					? "Complete information for our caving weekend. Share this with participants."
+					: "This message provides participants with essential location and gear information. You can share it with the group before the trip."}
 			</Alert>
 
 			<Textarea
