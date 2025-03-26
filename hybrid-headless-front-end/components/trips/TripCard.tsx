@@ -90,7 +90,11 @@ export default function TripCard({ trip }: TripCardProps) {
 				{trip.images?.[0] && (
 					<Card.Section>
 						<Image
-							src={trip.images[0].sizes?.medium_large?.file || trip.images[0].src}
+							src={
+								trip.images[0].sizes?.medium?.file || 
+								trip.images[0].sizes?.medium_large?.file || 
+								trip.images[0].src
+							}
 							alt={trip.images[0].alt || "Trip image"}
 							height={160}
 						/>
