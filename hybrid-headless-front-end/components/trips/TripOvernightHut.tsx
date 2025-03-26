@@ -63,23 +63,27 @@ export function TripOvernightHut({
       .map(part => part.trim())
       .filter(part => part.length > 0);
 
-    // Try to find the town/city - typically second to last element before postcode
-    if (parts.length >= 2) {
-      // Skip potential postcode (last element if it matches postcode format)
-      const postcodeRegex = /^[A-Z]{1,2}\d{1,2}[A-Z]?\s*\d[A-Z]{2}$/i;
-      const hasPostcode = postcodeRegex.test(parts[parts.length - 1]);
-      
-      // Get the element before potential postcode
-      const townIndex = hasPostcode ? parts.length - 2 : parts.length - 1;
-      return parts[townIndex];
-    }
-    
-    return null;
+    // Common county names to ignore
+    const counties = [
+      'derbyshire', 'yorkshire', 'cumbria', 'mid wales', 'wales',
+      'somerset', 'devon', 'cornwall', 'north wales', 'south wales'
+    ].map(c => c.toLowerCase());
+
+    // Look for locality candidates
+    const localityCandidates = parts
+      .reverse() // Check from last part backwards
+      .filter(part => 
+        !counties.includes(part.toLowerCase()) && 
+        !/\d/.test(part) && // Skip parts with numbers
+        part.toLowerCase() !== 'uk');
+
+    // Get first valid candidate
+    return localityCandidates.find(part => part.length > 3 && part.match(/[a-z]/i)) || null;
   };
 
   // Get vague location details
-  const vagueLocation = hut?.hut_location?.post_title || 
-                      getVagueLocation(hut?.hut_address) || 
+  const vagueLocation = getVagueLocation(hut?.hut_address) || 
+                      hut?.hut_location?.post_title || 
                       location;
 
   return (
