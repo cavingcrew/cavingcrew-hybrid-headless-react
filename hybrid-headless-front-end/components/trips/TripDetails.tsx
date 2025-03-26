@@ -71,18 +71,18 @@ export function TripDetails({ trip }: TripDetailsProps) {
 				const locationTitle = trip.route.acf.route_entrance_location_id.title;
 				const parkingLatLong = trip.route?.acf?.route_entrance_location_id?.acf?.location_parking_latlong;
 				let city = '';
-				
+
 				// Check if parkingLatLong is an object with city property
 				if (parkingLatLong && typeof parkingLatLong === 'object' && 'city' in parkingLatLong) {
 					city = parkingLatLong.city || '';
 				}
-				
+
 				if (city) {
 					return `${locationTitle} near ${city}`;
 				}
 				return locationTitle;
 			}
-			
+
 			// Fall back to cave name with possible location
 			if (trip.acf.event_cave_name) {
 				if (trip.acf.event_possible_location) {
@@ -90,32 +90,32 @@ export function TripDetails({ trip }: TripDetailsProps) {
 				}
 				return trip.acf.event_cave_name;
 			}
-			
+
 			// Skip if route title is "Cave Entrance Details"
 			if (trip.route?.title && trip.route.title !== "Cave Entrance Details") {
 				return trip.route.title;
 			}
 		}
-		
+
 		// For mystery trips or other types, just use what we have
 		if (trip.acf.event_cave_name) {
 			return trip.acf.event_cave_name;
 		}
-		
+
 		if (trip.acf.event_possible_location) {
 			return trip.acf.event_possible_location;
 		}
-		
+
 		if (trip.acf.event_location) {
 			return trip.acf.event_location;
 		}
-		
+
 		return '';
 	};
 	const startDate = acf?.event_start_date_time ? new Date(acf.event_start_date_time) : null;
 	const endDate = acf?.event_finish_date_time ? new Date(acf.event_finish_date_time) : null;
 	const isOvernightTrip = trip.categories.some(cat => cat.slug === 'overnight-trips');
-	
+
 	// Function to scroll to signup section
 	const scrollToSignup = () => {
 		const signupSection = document.getElementById('trip-signup-section');
@@ -123,13 +123,13 @@ export function TripDetails({ trip }: TripDetailsProps) {
 			signupSection.scrollIntoView({ behavior: 'smooth' });
 		}
 	};
-	
+
 	// Check if this is a giggletrip and user is not logged in and there are beginner spots available
-	const showSignupCTAs = !isLoggedIn && acf?.event_type === 'giggletrip' && 
-		trip.variations.some(v => 
-			v.attributes && 
-			v.attributes["what-describes-you-best"] && 
-			v.attributes["what-describes-you-best"].value.toLowerCase().includes('keen') && 
+	const showSignupCTAs = !isLoggedIn && acf?.event_type === 'giggletrip' &&
+		trip.variations.some(v =>
+			v.attributes &&
+			v.attributes["what-describes-you-best"] &&
+			v.attributes["what-describes-you-best"].value.toLowerCase().includes('keen') &&
 			v.stock_quantity !== null && v.stock_quantity > 0
 		);
 
@@ -162,17 +162,9 @@ export function TripDetails({ trip }: TripDetailsProps) {
 			</Stack>
 
 			{/* Sensitive Access Warning */}
-			<SensitiveAccessWarning 
-				isVisible={!!trip.route?.acf?.route_entrance_location_id?.acf?.location_sensitive_access} 
+			<SensitiveAccessWarning
+				isVisible={!!trip.route?.acf?.route_entrance_location_id?.acf?.location_sensitive_access}
 			/>
-
-			{/* Participant-specific information */}
-			{hasPurchased && isOvernightTrip && (
-				<TripParticipantInfo 
-					hut={trip.hut}
-					tripId={trip.id}
-				/>
-			)}
 
 			{/* Key Details Section */}
 			<Grid>
@@ -296,7 +288,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
 									</Text>
 								</Group>
 							)}
-							{acf?.event_non_members_welcome !== 'no' && trip.price && 
+							{acf?.event_non_members_welcome !== 'no' && trip.price &&
 							  // Only show non-member price if it's different from member price
 							  // Handle cases where member price might be a range like "3-6" or "3 - 6"
 							  String(acf?.event_cost || "").replace(/\s+/g, "") !== String(trip.price).replace(/\s+/g, "") && (
@@ -337,8 +329,8 @@ export function TripDetails({ trip }: TripDetailsProps) {
                     <div>
                       <Text fw={500}>Required Gear:</Text>
                       <Text>
-                        {trip.route?.acf?.route_personal_gear_required 
-                          ? (typeof trip.route.acf.route_personal_gear_required === 'string' 
+                        {trip.route?.acf?.route_personal_gear_required
+                          ? (typeof trip.route.acf.route_personal_gear_required === 'string'
                               ? trip.route.acf.route_personal_gear_required.replace(/<[^>]*>/g, '').trim().replace(/,/g, ', ')
                               : String(trip.route.acf.route_personal_gear_required).replace(/,/g, ', '))
                           : acf.event_gear_required}
@@ -447,7 +439,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
                         ? trip.route.acf.route_personal_gear_required.replace(/<[^>]*>/g, '').trim().replace(/,/g, ', ')
                         : String(trip.route.acf.route_personal_gear_required).replace(/,/g, ', ')}`;
                     }
-                    
+
                     // Otherwise fall back to the event gear required
                     switch(acf.event_gear_required) {
                       case 'Horizontal Caving Gear':
@@ -523,18 +515,26 @@ export function TripDetails({ trip }: TripDetailsProps) {
 
 			{/* Trip Experience Details */}
 			<TripExperience trip={trip} />
-			
+
 			{/* Signup CTA after Trip Experience */}
 			{showSignupCTAs && (
 				<Center mt="xl">
-					<Button 
-						size="lg" 
-						color="blue" 
+					<Button
+						size="lg"
+						color="blue"
 						onClick={scrollToSignup}
 					>
 						Sign Up For This Trip
 					</Button>
 				</Center>
+			)}
+
+			{/* Participant-specific information */}
+			{hasPurchased && isOvernightTrip && (
+				<TripParticipantInfo
+					hut={trip.hut}
+					tripId={trip.id}
+				/>
 			)}
 
 			{/* What does signing up pay for section */}
@@ -549,13 +549,13 @@ export function TripDetails({ trip }: TripDetailsProps) {
 							__html: trip.acf.event_paying_for ?? "",
 						}}
 					/>
-					
+
 					{/* Signup CTA after payment info */}
 					{showSignupCTAs && (
 						<Center mt="xl">
-							<Button 
-								size="lg" 
-								color="blue" 
+							<Button
+								size="lg"
+								color="blue"
 								onClick={scrollToSignup}
 							>
 								Ready to Join? Sign Up Now
@@ -607,13 +607,13 @@ export function TripDetails({ trip }: TripDetailsProps) {
 								</Accordion.Item>
 							))}
 					</Accordion>
-					
+
 					{/* Signup CTA after FAQ */}
 					{showSignupCTAs && (
 						<Center mt="xl">
-							<Button 
-								size="lg" 
-								color="blue" 
+							<Button
+								size="lg"
+								color="blue"
 								onClick={scrollToSignup}
 							>
 								Got Questions? Sign Up and Ask Us!
@@ -653,7 +653,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
 								</Accordion.Item>
 							))}
 					</Accordion>
-					
+
 				</Paper>
 			)}
 
@@ -691,7 +691,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
 								</Accordion.Item>
 							))}
 					</Accordion>
-					
+
 				</Paper>
 			)}
 		</Stack>
