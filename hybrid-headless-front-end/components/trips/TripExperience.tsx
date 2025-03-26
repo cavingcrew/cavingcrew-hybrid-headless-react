@@ -30,7 +30,7 @@ import {
 	IconClock,
 	IconMoodSmile,
 	IconMountainOff,
-	IconShoe, // Using IconShoe instead of IconBoot which doesn't exist
+	IconShoe,
 	IconHeadset,
 	IconBolt,
 	IconThumbUp,

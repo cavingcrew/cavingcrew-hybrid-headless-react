@@ -22,7 +22,9 @@ import {
   IconParking,
   IconInfoCircle,
   IconUsersGroup,
-  IconPets
+  IconPaw,
+  IconMapPinFilled,
+  IconHome
 } from "@tabler/icons-react";
 import { HutFacilities } from './HutFacilities';
 import { useUser } from "../../lib/hooks/useUser";
@@ -175,7 +177,7 @@ export function TripOvernightHut({
                   {hut.hut_dogs_allowed && (
                     <List.Item icon={
                       <ThemeIcon color="blue" variant="light" size="sm">
-                        <IconPets size={14} />
+                        <IconPaw size={14} />
                       </ThemeIcon>
                     }>
                       Dogs allowed: {hut.hut_dogs_allowed === 'yes' ? 'Yes' : 'No'}
