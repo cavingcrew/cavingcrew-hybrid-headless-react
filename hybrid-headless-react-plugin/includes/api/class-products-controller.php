@@ -37,7 +37,7 @@ class Hybrid_Headless_Products_Controller {
                 ),
             )
         );
-        
+
         // V2 endpoint (client-to-server with standard WP authentication)
         register_rest_route(
             Hybrid_Headless_Rest_API::API_NAMESPACE,
@@ -167,7 +167,7 @@ class Hybrid_Headless_Products_Controller {
                 'sanitize_callback' => 'absint',
             ),
             'per_page' => array(
-                'default'           => 30,
+                'default'           => 40,
                 'sanitize_callback' => 'absint',
             ),
             'category' => array(
@@ -198,14 +198,14 @@ class Hybrid_Headless_Products_Controller {
     public function get_products( $request ) {
         // Check if this is a cacheable request (frontend initial load)
         $is_cache_request = isset($request['cachemeifyoucan']);
-        
+
         // If it's a cache request, temporarily set the current user to 0 (not logged in)
         $original_user_id = null;
         if ($is_cache_request) {
             $original_user_id = get_current_user_id();
             wp_set_current_user(0);
         }
-        
+
         $args = array(
             'post_type'      => 'product',
             'posts_per_page' => $request['per_page'],
@@ -241,19 +241,19 @@ class Hybrid_Headless_Products_Controller {
             ),
             'post_status'    => 'publish',
         );
-        
+
         // If get_reports parameter is true, modify the query to get trip reports
         if ($request['get_reports']) {
             // Change order to DESC to get most recent first
             $args['order'] = 'DESC';
-            
+
             // Remove the tag exclusion for trip-reports
             foreach ($args['tax_query'] as $key => $query) {
                 if (isset($query['terms']) && $query['terms'] === 'trip-reports') {
                     unset($args['tax_query'][$key]);
                 }
             }
-            
+
             // Add meta query to only get products with non-empty report_content
             $args['meta_query'] = array(
                 'relation' => 'AND',
@@ -289,7 +289,7 @@ class Hybrid_Headless_Products_Controller {
                 $products[] = $prepared;
             }
         }
-        
+
         // Restore the original user if we changed it
         if ($is_cache_request && $original_user_id !== null) {
             wp_set_current_user($original_user_id);
@@ -338,48 +338,48 @@ class Hybrid_Headless_Products_Controller {
         if (!$is_cache_request) {
             $this->ensure_user_authenticated();
         }
-        
+
         // TEMPORARY FIX: Save current user and set to guest for price calculations
         // This ensures we always return the non-discounted prices regardless of user auth status
         // We may want to revert this in the future to show personalized prices
         $current_user_id = get_current_user_id();
         $temp_user_switch = false;
-        
+
         if ($current_user_id) {
             $temp_user_switch = true;
             wp_set_current_user(0); // Set to guest user temporarily
         }
-        
+
         $cache_key = 'product_stock_' . $product->get_id();
         $stock_info = wp_cache_get($cache_key);
 
         // Get ACF fields
         $acf_fields = get_fields($product->get_id());
-        
+
         // Get trip report fields
         $has_report_content = !empty($acf_fields['report_content']);
-        
+
         // Check if this is a sensitive location
         $is_sensitive_location = false;
-        
+
         // Check if route has sensitive access
         if (!empty($acf_fields['event_route_id'])) {
             $route_id = $acf_fields['event_route_id'];
             $route_acf = get_fields($route_id);
-            
+
             // Check if entrance location has sensitive access
             $entrance_location_id = $route_acf['route_entrance_location_id'] ?? 0;
             $entrance_location_acf = $entrance_location_id ? get_fields($entrance_location_id) : null;
             $is_sensitive_location = (bool)($entrance_location_acf['location_sensitive_access'] ?? false);
         }
-        
+
         // Check if user is authenticated and is a member
         $is_logged_in = !$is_cache_request && is_user_logged_in();
         $is_member = $is_logged_in && $this->is_member();
-        
+
         // Determine if we should hide the trip report content
         $hide_report = $has_report_content && $is_sensitive_location && !($is_logged_in && $is_member);
-        
+
         $trip_report = [
             'report_author' => $hide_report ? '' : ($acf_fields['report_author'] ?? ''),
             'report_content' => $hide_report ? 'To see this trip report, you\'ll need to login with membership.' : ($acf_fields['report_content'] ?? ''),
@@ -558,7 +558,7 @@ class Hybrid_Headless_Products_Controller {
         if ($temp_user_switch && $current_user_id) {
             wp_set_current_user($current_user_id);
         }
-        
+
         return $product_data;
     }
 
@@ -679,23 +679,23 @@ class Hybrid_Headless_Products_Controller {
         if (!$post_ref) return null;
 
         $route_acf = get_fields($post_ref['ID']);
-        
+
         // Check if entrance location has sensitive access
         $entrance_location_id = $route_acf['route_entrance_location_id'] ?? 0;
         $entrance_location_acf = $entrance_location_id ? get_fields($entrance_location_id) : null;
         $is_sensitive_access = (bool)($entrance_location_acf['location_sensitive_access'] ?? false);
-        
+
         // Ensure user is authenticated before checking permissions
         if (!$is_cache_request) {
             $this->ensure_user_authenticated();
         }
-        
+
         // Check user authentication and permissions
         // If it's a cache request, treat as not logged in
         $is_logged_in = !$is_cache_request && is_user_logged_in();
         $is_member = $is_logged_in && $this->is_member();
-        
-        
+
+
         // Check if user is signed up for this trip and has appropriate role
         $has_trip_leader_access = false;
         if ($is_logged_in && $is_member) {
@@ -709,14 +709,14 @@ class Hybrid_Headless_Products_Controller {
                     $product_id = $product->ID;
                 }
             }
-            
+
             if ($product_id > 0) {
                 $orders = wc_get_orders([
                     'customer_id' => $user_id,
                     'limit' => -1,
                     'status' => ['on-hold', 'processing', 'completed'],
                 ]);
-                
+
                 foreach ($orders as $order) {
                     foreach ($order->get_items() as $item) {
                         $item_product = $item->get_product();
@@ -725,9 +725,9 @@ class Hybrid_Headless_Products_Controller {
                             if ($item_product_id == $product_id) {
                                 $cc_volunteer = $order->get_meta('cc_volunteer');
                                 if ($cc_volunteer && (
-                                    strpos($cc_volunteer, 'director') !== false || 
-                                    $cc_volunteer === 'Trip Leader' || 
-                                    $cc_volunteer === 'Trip Director' || 
+                                    strpos($cc_volunteer, 'director') !== false ||
+                                    $cc_volunteer === 'Trip Leader' ||
+                                    $cc_volunteer === 'Trip Director' ||
                                     $cc_volunteer === 'Trip Organiser'
                                 )) {
                                     $has_trip_leader_access = true;
@@ -739,7 +739,7 @@ class Hybrid_Headless_Products_Controller {
                 }
             }
         }
-        
+
         // Base route data that's always returned
         $route_data = [
             'id' => $post_ref['ID'],
@@ -768,14 +768,14 @@ class Hybrid_Headless_Products_Controller {
                 'route_time_for_eta' => $route_acf['route_time_for_eta'] ?? '',
             ]
         ];
-        
+
         // If it's not a sensitive location OR user has appropriate access, add more data
         if (!$is_sensitive_access || $has_trip_leader_access) {
             $route_data['acf']['route_blurb'] = $route_acf['route_blurb'] ?? '';
             $route_data['acf']['route_through_trip'] = $route_acf['route_through_trip'] ?? false;
             $route_data['acf']['route_exit_location_id'] = $this->get_location_data($route_acf['route_exit_location_id'] ?? 0, $is_cache_request);
             $route_data['acf']['route_group_tackle_required'] = $route_acf['route_group_tackle_required'] ?? '';
-            
+
             // Add sensitive data only for members or trip leaders
             if (!$is_sensitive_access || $has_trip_leader_access || ($is_logged_in && $is_member)) {
                 $route_data['acf']['route_leading_difficulty'] = $this->map_grouped_fields($route_acf['route_leading_difficulty'] ?? [], [
@@ -786,7 +786,7 @@ class Hybrid_Headless_Products_Controller {
                     'route_leading_difficulty_navigation_difficulty'
                 ]);
             }
-            
+
             // Add the most sensitive data only for trip leaders
             if (!$is_sensitive_access || $has_trip_leader_access) {
                 $route_data['acf']['route_survey_image'] = $this->get_image_data($route_acf['route_survey_image'] ?? 0);
@@ -794,13 +794,13 @@ class Hybrid_Headless_Products_Controller {
                 $route_data['acf']['route_route_description'] = !empty($route_acf['route_route_description']) ?
                     array_shift($route_acf['route_route_description']) :
                     null;
-                $route_data['acf']['route_additional_images'] = is_array($route_acf['route_additional_images'] ?? false) ? 
+                $route_data['acf']['route_additional_images'] = is_array($route_acf['route_additional_images'] ?? false) ?
                     array_map(function($img) {
                         return $this->get_image_data($img['image'] ?? 0);
                     }, $route_acf['route_additional_images']) : [];
             }
         }
-        
+
         return $route_data;
     }
 
@@ -889,21 +889,21 @@ class Hybrid_Headless_Products_Controller {
 
         $location_id = $post_ref['ID'];
         $location_acf = get_fields($location_id);
-        
+
         // Check if location has sensitive access
         $is_sensitive_access = (bool)($location_acf['location_sensitive_access'] ?? false);
-        
+
         // Ensure user is authenticated before checking permissions
         if (!$is_cache_request) {
             $this->ensure_user_authenticated();
         }
-        
+
         // Check user authentication and permissions
         // If it's a cache request, treat as not logged in
         $is_logged_in = !$is_cache_request && is_user_logged_in();
         $is_member = $is_logged_in && $this->is_member();
-        
-        
+
+
         // Check if user is signed up for this trip and has appropriate role
         $has_trip_leader_access = false;
         if ($is_logged_in && $is_member) {
@@ -917,14 +917,14 @@ class Hybrid_Headless_Products_Controller {
                     $product_id = $product->ID;
                 }
             }
-            
+
             if ($product_id > 0) {
                 $orders = wc_get_orders([
                     'customer_id' => $user_id,
                     'limit' => -1,
                     'status' => ['on-hold', 'processing', 'completed'],
                 ]);
-                
+
                 foreach ($orders as $order) {
                     foreach ($order->get_items() as $item) {
                         $item_product = $item->get_product();
@@ -933,9 +933,9 @@ class Hybrid_Headless_Products_Controller {
                             if ($item_product_id == $product_id) {
                                 $cc_volunteer = $order->get_meta('cc_volunteer');
                                 if ($cc_volunteer && (
-                                    strpos($cc_volunteer, 'director') !== false || 
-                                    $cc_volunteer === 'Trip Leader' || 
-                                    $cc_volunteer === 'Trip Director' || 
+                                    strpos($cc_volunteer, 'director') !== false ||
+                                    $cc_volunteer === 'Trip Leader' ||
+                                    $cc_volunteer === 'Trip Director' ||
                                     $cc_volunteer === 'Trip Organiser'
                                 )) {
                                     $has_trip_leader_access = true;
@@ -947,7 +947,7 @@ class Hybrid_Headless_Products_Controller {
                 }
             }
         }
-        
+
         // Updated gallery processing
         $process_gallery = function($gallery) {
             if (!is_array($gallery)) return [];
@@ -957,7 +957,7 @@ class Hybrid_Headless_Products_Controller {
                 return $this->get_image_data($image_id);
             }, $gallery);
         };
-        
+
         // Base location data that's always returned
         $location_data = [
             'id' => $location_id,
@@ -968,11 +968,11 @@ class Hybrid_Headless_Products_Controller {
                 'location_caving_region' => $this->get_post_reference($location_acf['location_caving_region'] ?? 0),
             ]
         ];
-        
+
         // If it's not a sensitive location OR user has appropriate access, return full data
         if (!$is_sensitive_access || $has_trip_leader_access || ($is_logged_in && $is_member)) {
             $location_data['acf']['location_name'] = $location_acf['location_name'] ?? '';
-            
+
             // Add additional fields for members or trip leaders
             if (!$is_sensitive_access || $has_trip_leader_access) {
                 $location_data['acf'] = array_merge($location_data['acf'], [
@@ -981,7 +981,7 @@ class Hybrid_Headless_Products_Controller {
                     'location_parking_photos' => $process_gallery($location_acf['location_parking_photos'] ?? []),
                     'location_parking_entrance_route_description' => $location_acf['location_parking_entrance_route_description'] ?? '',
                     'location_map_from_parking_to_entrance' => $this->get_image_data(
-                        is_array($location_acf['location_map_from_parking_to_entrance'] ?? 0) 
+                        is_array($location_acf['location_map_from_parking_to_entrance'] ?? 0)
                             ? ($location_acf['location_map_from_parking_to_entrance']['ID'] ?? 0)
                             : $location_acf['location_map_from_parking_to_entrance'] ?? 0
                     ),
@@ -990,7 +990,7 @@ class Hybrid_Headless_Products_Controller {
                     'location_info_url' => $location_acf['location_info_url'] ?? '',
                     'location_access_arrangement' => $location_acf['location_access_arrangement'] ?? [],
                     'location_access_url' => $location_acf['location_access_url'] ?? '',
-                    'location_reference_links' => is_array($location_acf['location_reference_links'] ?? false) ? 
+                    'location_reference_links' => is_array($location_acf['location_reference_links'] ?? false) ?
                         array_map(function($link) {
                             return [
                                 'link_title' => $link['location_reference_link_text'] ?? '',
@@ -1000,13 +1000,13 @@ class Hybrid_Headless_Products_Controller {
                 ]);
             }
         }
-        
+
         return $location_data;
     }
 
     private function get_image_data($image_id) {
         if (!$image_id) return null;
-        
+
         $image_post = get_post($image_id);
         if (!$image_post) return null;
 
@@ -1029,16 +1029,16 @@ class Hybrid_Headless_Products_Controller {
         if (empty($gallery)) {
             return [];
         }
-        
+
         $images = [];
-        
+
         foreach ($gallery as $image_id) {
             $image_data = $this->get_image_data($image_id);
             if ($image_data) {
                 $images[] = $image_data;
             }
         }
-        
+
         return $images;
     }
 
@@ -1113,14 +1113,14 @@ class Hybrid_Headless_Products_Controller {
         // We may want to revert this in the future to show personalized prices
         $current_user_id = get_current_user_id();
         wp_set_current_user(0); // Set to guest user temporarily
-        
+
         $price_data = [
             'stock_quantity' => $product->get_stock_quantity(),
             'stock_status' => $product->get_stock_status(),
             'price' => $product->get_price(),
             'regular_price' => $product->get_regular_price(),
         ];
-        
+
         // Restore the original user
         if ($current_user_id) {
             wp_set_current_user($current_user_id);
@@ -1167,7 +1167,7 @@ class Hybrid_Headless_Products_Controller {
         // We may want to revert this in the future to show personalized prices
         $current_user_id = get_current_user_id();
         wp_set_current_user(0); // Set to guest user temporarily
-        
+
         $stock_data = [
             'product_id' => $product_id,
             'stock_status' => $product->get_stock_status(),
@@ -1191,7 +1191,7 @@ class Hybrid_Headless_Products_Controller {
                 ];
             }
         }
-        
+
         // Restore the original user
         if ($current_user_id) {
             wp_set_current_user($current_user_id);
@@ -1244,10 +1244,10 @@ class Hybrid_Headless_Products_Controller {
     public function check_woocommerce_permissions() {
         return Hybrid_Headless_Auth_Utils::check_woocommerce_permissions(null);
     }
-    
+
     /**
      * Check if user has permission to create events
-     * 
+     *
      * @return bool|WP_Error
      */
     public function check_event_creation_permissions() {
@@ -1257,35 +1257,35 @@ class Hybrid_Headless_Products_Controller {
 
     /**
      * Create event product (v2 implementation with standard WP auth)
-     * 
+     *
      * @param WP_REST_Request $request Request object
      * @return WP_REST_Response|WP_Error
      */
     public function create_event_product_v2(WP_REST_Request $request) {
         // Log the request
         error_log('[Event Creation V2] Request received from user ID: ' . get_current_user_id());
-        
+
         // Process the request using the same core logic
         return $this->create_event_product_core($request);
     }
-    
+
     /**
      * Create event product (v1 implementation with WooCommerce auth)
-     * 
+     *
      * @param WP_REST_Request $request Request object
      * @return WP_REST_Response|WP_Error
      */
     public function create_event_product(WP_REST_Request $request) {
         // Log the request
         error_log('[Event Creation V1] Request received');
-        
+
         // Process the request using the shared core logic
         return $this->create_event_product_core($request);
     }
-    
+
     /**
      * Core implementation of event product creation
-     * 
+     *
      * @param WP_REST_Request $request Request object
      * @return WP_REST_Response|WP_Error
      */
@@ -1349,13 +1349,13 @@ class Hybrid_Headless_Products_Controller {
 
             // Copy membership discounts
             $this->copy_membership_discounts($template_id, $new_product_id);
-            
+
             // Get the creator's user ID
             $creator_id = get_current_user_id();
             if ($creator_id) {
                 // Store the creator's ID as post meta
                 update_post_meta($new_product_id, '_event_created_by', $creator_id);
-                
+
                 // Log the creation
                 error_log(sprintf(
                     '[Event Creation] User %d created event %d of type %s',
