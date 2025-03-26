@@ -55,6 +55,33 @@ export function TripDetails({ trip }: TripDetailsProps) {
 	const acf = trip.acf;
 	const { purchasedProducts, isLoggedIn, user } = useUser();
 
+	// Helper function to extract locality from address
+	const getVagueLocation = (address?: string) => {
+		if (!address) return null;
+
+		// Split address by commas and clean up
+		const parts = address.split(',')
+			.map(part => part.trim())
+			.filter(part => part.length > 0);
+
+		// Common county names to ignore
+		const counties = [
+			'derbyshire', 'yorkshire', 'cumbria', 'mid wales', 'wales',
+			'somerset', 'devon', 'cornwall', 'north wales', 'south wales'
+		].map(c => c.toLowerCase());
+
+		// Look for locality candidates
+		const localityCandidates = parts
+			.reverse() // Check from last part backwards
+			.filter(part =>
+				!counties.includes(part.toLowerCase()) &&
+				!/\d/.test(part) && // Skip parts with numbers
+				part.toLowerCase() !== 'uk');
+
+		// Get first valid candidate
+		return localityCandidates.find(part => part.length > 3 && part.match(/[a-z]/i)) || null;
+	};
+
 	const getLocationName = (trip: Trip) => {
 		// For overnight trips, use the hut location
 		if (isOvernightTrip) {
@@ -237,13 +264,32 @@ export function TripDetails({ trip }: TripDetailsProps) {
               )}
 
               {/* Location Display */}
-              {(getLocationName(trip)) && (
+              {isOvernightTrip ? (
                 <Group gap="xs" wrap="nowrap" align="flex-start">
                   <IconMapPin size={20} style={{ marginTop: 3 }} />
                   <Text>
-                    Location: {getLocationName(trip)}
+                    {hasPurchased && trip.hut?.hut_lat_long ? (
+                      <Anchor
+                        href={`http://maps.apple.com/?q=${trip.hut.hut_lat_long}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Location Pin
+                      </Anchor>
+                    ) : (
+                      `Region: ${trip.hut?.hut_location?.post_title || 
+                        getVagueLocation(trip.hut?.hut_address) || 
+                        trip.acf.event_location}`
+                    )}
                   </Text>
                 </Group>
+              ) : (
+                getLocationName(trip) && (
+                  <Group gap="xs" wrap="nowrap" align="flex-start">
+                    <IconMapPin size={20} style={{ marginTop: 3 }} />
+                    <Text>Location: {getLocationName(trip)}</Text>
+                  </Group>
+                )
               )}
 							{acf?.event_trip_leader && (
 								<Group gap="xs" wrap="nowrap" align="flex-start">
