@@ -175,6 +175,9 @@ export interface TripParticipant {
 			| "skillsharer"
 			| "announcements"
 			| "checkin"
+			| "Trip Leader"
+			| "Trip Director"
+			| "Trip Organiser"
 			| "pairing"
 			| string;
 		cc_volunteer_attendance?: string;
