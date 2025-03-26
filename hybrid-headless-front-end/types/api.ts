@@ -478,10 +478,10 @@ export interface Trip {
 		hut_facilities?: string[];
 		hut_arrival_and_directions?: string;
 		hut_image?: {
-			ID: string;
-			url: boolean | string;
-			alt: boolean | string;
-			caption: boolean | string;
+			ID: number;
+			url: string;
+			alt: string;
+			caption: string;
 			sizes?: {
 				[key: string]: {
 					file: string;

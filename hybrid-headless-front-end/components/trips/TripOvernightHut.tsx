@@ -53,11 +53,7 @@ export function TripOvernightHut({
 
   // Support both new hut object and legacy props
   const hutName = hut?.hut_name || location || "Accommodation";
-  const hutImage = (
-    (typeof hut?.hut_image?.url === 'string' && hut.hut_image.url) || 
-    hut?.hut_image?.ID || // Fallback to ID if url is boolean
-    photo
-  );
+  const hutImage = hut?.hut_image || photo;
   const hutDescription = hut?.hut_sales_description || facilities;
 
   // Helper function to extract locality from address
@@ -101,11 +97,12 @@ export function TripOvernightHut({
           <Grid.Col span={{ base: 12, md: 6 }}>
             <Image
               src={
-                (typeof hutImage === 'object' && hutImage?.sizes?.large?.file) || 
-                (typeof hutImage === 'object' && hutImage?.sizes?.medium_large?.file) || 
+                (typeof hutImage === 'object' && hutImage.sizes?.large?.file) || 
+                (typeof hutImage === 'object' && hutImage.sizes?.medium_large?.file) || 
+                (typeof hutImage === 'object' && hutImage.url) || 
                 (typeof hutImage === 'string' ? hutImage : '')
               }
-              alt={`Accommodation at ${hutName}`}
+              alt={typeof hutImage === 'object' && hutImage.alt ? hutImage.alt : `Accommodation at ${hutName}`}
               radius="md"
               style={{
                 maxWidth: '100%',
