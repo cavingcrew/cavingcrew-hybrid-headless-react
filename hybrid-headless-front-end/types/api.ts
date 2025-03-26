@@ -476,6 +476,8 @@ export interface Trip {
 			caption: boolean | string;
 		};
 		hut_dogs_allowed?: "yes" | "no" | string;
+		hut_capacity?: string;
+		hut_booking_notes?: string;
 	};
 	acf: {
 		// Event Type
