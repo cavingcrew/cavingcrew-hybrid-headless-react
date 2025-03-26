@@ -66,10 +66,12 @@ export function TripParticipantInfo({ hut, tripId }: TripParticipantInfoProps) {
 
           {hut.hut_arrival_and_directions && (
             <Group gap="sm" align="flex-start">
-              <ThemeIcon variant="light" color="blue" size="md">
+              <ThemeIcon variant="light" color="blue" size="md" mt={3}>
                 <IconWalk size={16} />
               </ThemeIcon>
-              <Text>{hut.hut_arrival_and_directions}</Text>
+              <Text style={{ flex: 1 }} component="div">
+                <div dangerouslySetInnerHTML={{__html: hut.hut_arrival_and_directions.replace(/\n/g, '<br />')}} />
+              </Text>
             </Group>
           )}
         </Stack>
@@ -85,10 +87,12 @@ export function TripParticipantInfo({ hut, tripId }: TripParticipantInfoProps) {
           </Group>
           
           <Group gap="sm" align="flex-start">
-            <ThemeIcon variant="light" color="green" size="md">
+            <ThemeIcon variant="light" color="green" size="md" mt={4}>
               <IconParking size={16} />
             </ThemeIcon>
-            <Text>{hut.hut_parking_instructions}</Text>
+            <Text style={{ flex: 1 }} component="div">
+              <div dangerouslySetInnerHTML={{__html: hut.hut_parking_instructions.replace(/\n/g, '<br />')}} />
+            </Text>
           </Group>
         </Paper>
       )}
