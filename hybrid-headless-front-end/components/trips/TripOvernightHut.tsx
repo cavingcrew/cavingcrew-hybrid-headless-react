@@ -103,7 +103,7 @@ export function TripOvernightHut({
               src={
                 (typeof hutImage === 'object' && hutImage?.sizes?.large?.file) || 
                 (typeof hutImage === 'object' && hutImage?.sizes?.medium_large?.file) || 
-                hutImage
+                (typeof hutImage === 'string' ? hutImage : '')
               }
               alt={`Accommodation at ${hutName}`}
               radius="md"

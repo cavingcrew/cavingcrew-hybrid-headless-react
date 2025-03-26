@@ -509,7 +509,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
 					{trip.images?.[0] && (
 						<Image
 							src={trip.images[0].sizes?.medium_large?.file || trip.images[0].src}
-							alt={trip.images[0].alt}
+							alt={trip.images[0].alt || "Trip image"}
 							radius="md"
 						/>
 					)}

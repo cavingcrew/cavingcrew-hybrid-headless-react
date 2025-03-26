@@ -581,7 +581,14 @@ class Hybrid_Headless_Products_Controller {
                 'id'    => $attachment_id,
                 'src'   => wp_get_attachment_url( $attachment_id ),
                 'alt'   => get_post_meta( $attachment_id, '_wp_attachment_image_alt', true ),
-                'sizes' => $meta['sizes'] ?? []
+                'sizes' => $meta['sizes'] ? array_map(function($size) {
+                    return [
+                        'file' => $size['file'],
+                        'width' => $size['width'],
+                        'height' => $size['height'],
+                        'mime_type' => $size['mime-type'] ?? null
+                    ];
+                }, $meta['sizes']) : []
             );
         }
 

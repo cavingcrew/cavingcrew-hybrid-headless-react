@@ -449,7 +449,7 @@ export interface Trip {
 				file: string;
 				width: number;
 				height: number;
-				'mime-type'?: string;
+				mime_type?: string;
 			}
 		};
 	}[];
@@ -487,7 +487,7 @@ export interface Trip {
 					file: string;
 					width: number;
 					height: number;
-					'mime-type'?: string;
+					mime_type?: string;
 				}
 			};
 		};
