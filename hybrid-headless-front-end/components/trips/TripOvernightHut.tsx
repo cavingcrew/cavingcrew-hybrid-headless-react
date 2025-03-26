@@ -129,8 +129,8 @@ export function TripOvernightHut({
                 </>
               )}
 
-              {/* Managed by - shown to everyone */}
-              {hut?.hut_club_name && (
+              {/* Managed by - shown to members/signed-up users */}
+              {(isMember || hasPurchased) && hut?.hut_club_name && (
                 <Text size="sm" c="dimmed" mb="md">
                   Managed by: {hut.hut_club_name}
                 </Text>
