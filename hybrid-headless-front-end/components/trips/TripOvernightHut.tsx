@@ -31,52 +31,6 @@ import { HutFacilities } from './HutFacilities';
 import { useUser } from "../../lib/hooks/useUser";
 import type { Trip } from "../../types/api";
 
-function ArrivalInfo({ hut }: { hut: Trip["hut"] }) {
-  if (!hut) return null;
-
-  return (
-    <Paper withBorder p="md" bg="var(--mantine-color-green-light)" mb="md">
-      <Group gap="xs" mb="sm">
-        <IconMapPinFilled size={20} />
-        <Text fw={500}>Arrival Information</Text>
-        <Badge variant="light">Participants Only</Badge>
-      </Group>
-      
-      <Stack gap="sm">
-        {hut.hut_address && (
-          <Group gap="sm">
-            <ThemeIcon variant="light" color="green" size="md">
-              <IconHome size={16} />
-            </ThemeIcon>
-            <Text>{hut.hut_address}</Text>
-          </Group>
-        )}
-
-        {hut.hut_lat_long && (
-          <Button
-            variant="filled"
-            color="green"
-            leftSection={<IconMapPinFilled size={16} />}
-            component="a"
-            href={`http://maps.apple.com/?q=${hut.hut_lat_long}`}
-            target="_blank"
-          >
-            View Hut Location on Map
-          </Button>
-        )}
-
-        {hut.hut_arrival_and_directions && (
-          <Group gap="sm" align="flex-start">
-            <ThemeIcon variant="light" color="blue" size="md">
-              <IconWalk size={16} />
-            </ThemeIcon>
-            <Text>{hut.hut_arrival_and_directions}</Text>
-          </Group>
-        )}
-      </Stack>
-    </Paper>
-  );
-}
 
 interface TripOvernightHutProps {
   hut?: Trip["hut"];
@@ -176,63 +130,11 @@ export function TripOvernightHut({
               <HutFacilities facilities={hut.hut_facilities} />
             )}
 
-            {/* Member-only Information */}
-            {isLoggedIn && isMember && hut && (
-              <Paper withBorder p="md" bg="var(--mantine-color-blue-light)">
-                <Group gap="xs" mb="sm">
-                  <IconInfoCircle size={20} />
-                  <Text fw={500}>Hut Information</Text>
-                  <Badge variant="light">Members Only</Badge>
-                </Group>
-                
-                <Stack gap="sm">
-                  <Group gap="sm">
-                    <ThemeIcon variant="light" color="blue" size="md">
-                      <IconHome size={16} />
-                    </ThemeIcon>
-                    <Text>{hut.hut_name}</Text>
-                  </Group>
-
-                  {hut.hut_location?.post_title && (
-                    <Group gap="sm">
-                      <ThemeIcon variant="light" color="orange" size="md">
-                        <IconMapPin size={16} />
-                      </ThemeIcon>
-                      <Text>Region: {hut.hut_location.post_title}</Text>
-                    </Group>
-                  )}
-
-                  {hut.hut_club_name && (
-                    <Group gap="sm">
-                      <ThemeIcon variant="light" color="violet" size="md">
-                        <IconBuildingCommunity size={16} />
-                      </ThemeIcon>
-                      <Text>Managed by: {hut.hut_club_name}</Text>
-                    </Group>
-                  )}
-                </Stack>
-              </Paper>
-            )}
-
-            {/* Signed-up Participants Information */}
-            {hasPurchased && hut && <ArrivalInfo hut={hut} />}
-
-            {/* Parking Instructions for Participants */}
-            {hasPurchased && hut && hut.hut_parking_instructions && (
-              <Paper withBorder p="md" bg="var(--mantine-color-green-light)">
-                <Group gap="xs" mb="sm">
-                  <IconParking size={20} />
-                  <Text fw={500}>Parking Information</Text>
-                  <Badge variant="light">Participants Only</Badge>
-                </Group>
-                
-                <Group gap="sm" align="flex-start">
-                  <ThemeIcon variant="light" color="green" size="md">
-                    <IconParking size={16} />
-                  </ThemeIcon>
-                  <Text>{hut.hut_parking_instructions}</Text>
-                </Group>
-              </Paper>
+            {/* Show club name for members */}
+            {isLoggedIn && isMember && hut && hut.hut_club_name && (
+              <Text size="sm" c="dimmed" mb="md">
+                Managed by: {hut.hut_club_name}
+              </Text>
             )}
 
             {/* General Information */}

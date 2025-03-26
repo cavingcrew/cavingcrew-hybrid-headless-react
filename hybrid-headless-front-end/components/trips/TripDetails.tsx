@@ -23,6 +23,7 @@ import { TripExperience } from './TripExperience';
 import { TripObjectionHandling } from './TripObjectionHandling';
 import { NeoClanVolunteeringWidget } from './NeoClanVolunteeringWidget';
 import { SensitiveAccessWarning } from './SensitiveAccessWarning';
+import { TripParticipantInfo } from './TripParticipantInfo';
 import { isWithinDays } from '../../utils/event-timing';
 import { useUser } from '@/lib/hooks/useUser';
 import { TripSignupWidget } from "./TripSignupWidget";
@@ -164,6 +165,14 @@ export function TripDetails({ trip }: TripDetailsProps) {
 			<SensitiveAccessWarning 
 				isVisible={!!trip.route?.acf?.route_entrance_location_id?.acf?.location_sensitive_access} 
 			/>
+
+			{/* Participant-specific information */}
+			{hasPurchased && isOvernightTrip && (
+				<TripParticipantInfo 
+					hut={trip.hut}
+					tripId={trip.id}
+				/>
+			)}
 
 			{/* Key Details Section */}
 			<Grid>
