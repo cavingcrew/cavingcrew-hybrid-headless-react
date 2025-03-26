@@ -1,6 +1,7 @@
 /**
  * Utility functions for trip administration
  */
+import type { Trip, TripParticipant } from "../types/api";
 
 /**
  * Generate callout text for a trip
@@ -8,7 +9,7 @@
  * @param participants List of trip participants
  * @returns Formatted callout text
  */
-export const generateCalloutText = (trip: any, participants: any[]): string => {
+export const generateCalloutText = (trip: Trip, participants: TripParticipant[]): string => {
 	// Get current time
 	const now = new Date();
 
@@ -187,8 +188,8 @@ export const generateCalloutText = (trip: any, participants: any[]): string => {
  * @returns Formatted tackle request text
  */
 export const generateTackleRequestText = (
-	trip: any,
-	participants: any[],
+	trip: Trip,
+	participants: TripParticipant[],
 ): string => {
 	// Get trip date and time
 	const startDate = trip.acf.event_start_date_time
@@ -402,7 +403,7 @@ export const generateTackleRequestText = (
  * @param trip The trip object
  * @returns Formatted location info message
  */
-export const generateLocationInfoText = (trip: any): string => {
+export const generateLocationInfoText = (trip: Trip): string => {
 	// For overnight trips
 	if (trip.acf.event_type === "overnight") {
 		// Extract month and region for title
@@ -695,8 +696,8 @@ See you there! Please feel free to message me directly with any "stupid question
  * @returns Formatted gear check message
  */
 export const generateGearTripCheckText = (
-	trip: any,
-	participants: any[],
+	trip: Trip,
+	participants: TripParticipant[],
 ): string => {
 	// Get signed up participants
 	const signedUpParticipants = participants.filter((p) => {
@@ -863,7 +864,7 @@ export const generateGearTripCheckText = (
  * Helper function for determineSignupStatus
  * Imported from trip-participant-utils to avoid circular dependencies
  */
-const determineSignupStatus = (participant: any): string => {
+const determineSignupStatus = (participant: TripParticipant): string => {
 	const { cc_attendance: attendance } = participant.order_meta || {};
 	const { order_status: orderStatus } = participant;
 
