@@ -8,7 +8,8 @@ import {
   Badge,
   Button,
   Stack,
-  Alert
+  Alert,
+  Image
 } from "@mantine/core";
 import {
   IconMapPinFilled,
