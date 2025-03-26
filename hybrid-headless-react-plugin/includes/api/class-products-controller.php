@@ -577,18 +577,28 @@ class Hybrid_Headless_Products_Controller {
 
         foreach ( $attachment_ids as $attachment_id ) {
             $meta = wp_get_attachment_metadata($attachment_id);
+            $sizes_data = [];
+            
+            // Process each size to get the full URL
+            if (!empty($meta['sizes'])) {
+                foreach ($meta['sizes'] as $size_name => $size_info) {
+                    $src = wp_get_attachment_image_src($attachment_id, $size_name);
+                    if ($src) {
+                        $sizes_data[$size_name] = [
+                            'file' => $src[0], // Full URL to the resized image
+                            'width' => $src[1],
+                            'height' => $src[2],
+                            'mime_type' => $size_info['mime-type'] ?? null
+                        ];
+                    }
+                }
+            }
+            
             $images[] = array(
                 'id'    => $attachment_id,
                 'src'   => wp_get_attachment_url( $attachment_id ),
                 'alt'   => get_post_meta( $attachment_id, '_wp_attachment_image_alt', true ),
-                'sizes' => $meta['sizes'] ? array_map(function($size) {
-                    return [
-                        'file' => $size['file'],
-                        'width' => $size['width'],
-                        'height' => $size['height'],
-                        'mime_type' => $size['mime-type'] ?? null
-                    ];
-                }, $meta['sizes']) : []
+                'sizes' => $sizes_data
             );
         }
 
@@ -676,13 +686,29 @@ class Hybrid_Headless_Products_Controller {
         if (!$image_id) return null;
         
         $meta = wp_get_attachment_metadata($image_id);
+        $sizes_data = [];
+        
+        // Process each size to get the full URL
+        if (!empty($meta['sizes'])) {
+            foreach ($meta['sizes'] as $size_name => $size_info) {
+                $src = wp_get_attachment_image_src($image_id, $size_name);
+                if ($src) {
+                    $sizes_data[$size_name] = [
+                        'file' => $src[0], // Full URL to the resized image
+                        'width' => $src[1],
+                        'height' => $src[2],
+                        'mime_type' => $size_info['mime-type'] ?? null
+                    ];
+                }
+            }
+        }
         
         return [
             'ID' => $image_id,
             'url' => wp_get_attachment_url($image_id),
             'alt' => get_post_meta($image_id, '_wp_attachment_image_alt', true),
             'caption' => wp_get_attachment_caption($image_id),
-            'sizes' => $meta['sizes'] ?? []
+            'sizes' => $sizes_data
         ];
     }
 
@@ -1022,12 +1048,30 @@ class Hybrid_Headless_Products_Controller {
         $image_post = get_post($image_id);
         if (!$image_post) return null;
 
+        $meta = wp_get_attachment_metadata($image_id);
+        $sizes_data = [];
+        
+        // Process each size to get the full URL
+        if (!empty($meta['sizes'])) {
+            foreach ($meta['sizes'] as $size_name => $size_info) {
+                $src = wp_get_attachment_image_src($image_id, $size_name);
+                if ($src) {
+                    $sizes_data[$size_name] = [
+                        'file' => $src[0], // Full URL to the resized image
+                        'width' => $src[1],
+                        'height' => $src[2],
+                        'mime_type' => $size_info['mime-type'] ?? null
+                    ];
+                }
+            }
+        }
+
         return [
             'ID' => $image_id,
             'url' => wp_get_attachment_url($image_id),
             'alt' => get_post_meta($image_id, '_wp_attachment_image_alt', true),
             'caption' => wp_get_attachment_caption($image_id),
-            'sizes' => wp_get_attachment_metadata($image_id)['sizes'] ?? []
+            'sizes' => $sizes_data
         ];
     }
 
