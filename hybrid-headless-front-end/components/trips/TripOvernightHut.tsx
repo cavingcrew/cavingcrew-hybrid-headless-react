@@ -24,11 +24,59 @@ import {
   IconUsersGroup,
   IconPaw,
   IconMapPinFilled,
-  IconHome
+  IconHome,
+  IconWalk
 } from "@tabler/icons-react";
 import { HutFacilities } from './HutFacilities';
 import { useUser } from "../../lib/hooks/useUser";
 import type { Trip } from "../../types/api";
+
+function ArrivalInfo({ hut }: { hut: Trip["hut"] }) {
+  if (!hut) return null;
+
+  return (
+    <Paper withBorder p="md" bg="var(--mantine-color-green-light)" mb="md">
+      <Group gap="xs" mb="sm">
+        <IconMapPinFilled size={20} />
+        <Text fw={500}>Arrival Information</Text>
+        <Badge variant="light">Participants Only</Badge>
+      </Group>
+      
+      <Stack gap="sm">
+        {hut.hut_address && (
+          <Group gap="sm">
+            <ThemeIcon variant="light" color="green" size="md">
+              <IconHome size={16} />
+            </ThemeIcon>
+            <Text>{hut.hut_address}</Text>
+          </Group>
+        )}
+
+        {hut.hut_lat_long && (
+          <Button
+            variant="filled"
+            color="green"
+            leftSection={<IconMapPinFilled size={16} />}
+            component="a"
+            href={`http://maps.apple.com/?q=${hut.hut_lat_long}`}
+            target="_blank"
+          >
+            View Hut Location on Map
+          </Button>
+        )}
+
+        {hut.hut_arrival_and_directions && (
+          <Group gap="sm" align="flex-start">
+            <ThemeIcon variant="light" color="blue" size="md">
+              <IconWalk size={16} />
+            </ThemeIcon>
+            <Text>{hut.hut_arrival_and_directions}</Text>
+          </Group>
+        )}
+      </Stack>
+    </Paper>
+  );
+}
 
 interface TripOvernightHutProps {
   hut?: Trip["hut"];
@@ -132,80 +180,58 @@ export function TripOvernightHut({
             {isLoggedIn && isMember && hut && (
               <Paper withBorder p="md" bg="var(--mantine-color-blue-light)">
                 <Group gap="xs" mb="sm">
-                  <IconBuildingCommunity size={20} />
-                  <Text fw={500}>Club Information</Text>
+                  <IconInfoCircle size={20} />
+                  <Text fw={500}>Hut Information</Text>
                   <Badge variant="light">Members Only</Badge>
                 </Group>
-                <List>
-                  {hut.hut_club_name && (
-                    <List.Item>Club: {hut.hut_club_name}</List.Item>
-                  )}
+                
+                <Stack gap="sm">
+                  <Group gap="sm">
+                    <ThemeIcon variant="light" color="blue" size="md">
+                      <IconHome size={16} />
+                    </ThemeIcon>
+                    <Text>{hut.hut_name}</Text>
+                  </Group>
+
                   {hut.hut_location?.post_title && (
-                    <List.Item>Region: {hut.hut_location.post_title}</List.Item>
+                    <Group gap="sm">
+                      <ThemeIcon variant="light" color="orange" size="md">
+                        <IconMapPin size={16} />
+                      </ThemeIcon>
+                      <Text>Region: {hut.hut_location.post_title}</Text>
+                    </Group>
                   )}
-                  {hut.hut_address && (
-                    <List.Item>
-                      Address: {hut.hut_address}
-                      {hut.hut_lat_long && (
-                        <Button
-                          variant="subtle"
-                          size="xs"
-                          component="a"
-                          href={`http://maps.apple.com/?q=${hut.hut_lat_long}`}
-                          target="_blank"
-                          leftSection={<IconMapPin size={14} />}
-                          ml="xs"
-                        >
-                          View Map
-                        </Button>
-                      )}
-                    </List.Item>
+
+                  {hut.hut_club_name && (
+                    <Group gap="sm">
+                      <ThemeIcon variant="light" color="violet" size="md">
+                        <IconBuildingCommunity size={16} />
+                      </ThemeIcon>
+                      <Text>Managed by: {hut.hut_club_name}</Text>
+                    </Group>
                   )}
-                </List>
+                </Stack>
               </Paper>
             )}
 
             {/* Signed-up Participants Information */}
-            {hasPurchased && hut && (
+            {hasPurchased && hut && <ArrivalInfo hut={hut} />}
+
+            {/* Parking Instructions for Participants */}
+            {hasPurchased && hut && hut.hut_parking_instructions && (
               <Paper withBorder p="md" bg="var(--mantine-color-green-light)">
                 <Group gap="xs" mb="sm">
-                  <IconKey size={20} />
-                  <Text fw={500}>Access Details</Text>
+                  <IconParking size={20} />
+                  <Text fw={500}>Parking Information</Text>
                   <Badge variant="light">Participants Only</Badge>
                 </Group>
-                <List>
-                  {hut.hut_parking_instructions && (
-                    <List.Item>
-                      <Group gap="xs" align="flex-start">
-                        <IconParking size={18} style={{ marginTop: 3 }} />
-                        <div>
-                          <Text>Parking: {hut.hut_parking_instructions}</Text>
-                          {hut.hut_lat_long && (
-                            <Button
-                              variant="subtle"
-                              size="xs"
-                              component="a"
-                              href={`http://maps.apple.com/?q=${hut.hut_lat_long}`}
-                              target="_blank"
-                              leftSection={<IconMapPin size={14} />}
-                              mt="xs"
-                            >
-                              Parking Coordinates
-                            </Button>
-                          )}
-                        </div>
-                      </Group>
-                    </List.Item>
-                  )}
-                  {hut.hut_arrival_and_directions && (
-                    <List.Item>
-                      <Group gap="xs" align="flex-start">
-                        <IconUsersGroup size={18} style={{ marginTop: 3 }} />
-                        <Text>{hut.hut_arrival_and_directions}</Text>
-                      </Group>
-                    </List.Item>
-                  )}
-                </List>
+                
+                <Group gap="sm" align="flex-start">
+                  <ThemeIcon variant="light" color="green" size="md">
+                    <IconParking size={16} />
+                  </ThemeIcon>
+                  <Text>{hut.hut_parking_instructions}</Text>
+                </Group>
               </Paper>
             )}
 
