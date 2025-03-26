@@ -53,7 +53,11 @@ export function TripOvernightHut({
 
   // Support both new hut object and legacy props
   const hutName = hut?.hut_name || location || "Accommodation";
-  const hutImage = hut?.hut_image?.url || photo;
+  const hutImage = (
+    (typeof hut?.hut_image?.url === 'string' && hut.hut_image.url) || 
+    hut?.hut_image?.ID || // Fallback to ID if url is boolean
+    photo
+  );
   const hutDescription = hut?.hut_sales_description || facilities;
 
   // Helper function to extract locality from address
