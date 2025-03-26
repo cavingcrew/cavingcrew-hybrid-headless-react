@@ -405,36 +405,114 @@ export const generateTackleRequestText = (
 export const generateLocationInfoText = (trip: any): string => {
 	// For overnight trips
 	if (trip.acf.event_type === "overnight") {
-		// Overnight trip message template
-		return `✨ Overnight Trip Information ✨
-
-We're excited for our caving weekend at ${trip.hut?.hut_name || trip.acf.event_location || "our destination"}!  
-
-🏕️ Accommodation:  
-• ${trip.hut?.hut_name || "Our accommodation"}${trip.hut?.hut_club_name ? ` (managed by ${trip.hut?.hut_club_name})` : ""}  
-${trip.hut?.hut_address ? `• ${trip.hut?.hut_address}  \n` : ""}${trip.hut?.hut_facilities && trip.hut?.hut_facilities.length > 0 ? `• Facilities: ${(trip.hut?.hut_facilities || []).join(", ")}  \n` : ""}
-🕒 Planned Arrival:  
-Please aim to arrive by ${new Date(trip.acf.event_start_date_time).toLocaleTimeString("en-GB", {
+		// Extract month and region for title
+		const startDate = trip.acf.event_start_date_time
+			? new Date(trip.acf.event_start_date_time)
+			: new Date();
+		const month = startDate.toLocaleDateString("en-GB", { month: "long" });
+		const region = trip.hut?.hut_location?.post_title || "Caving Weekend";
+		
+		// Format arrival time
+		const arrivalTime = startDate.toLocaleTimeString("en-GB", {
 			hour: "2-digit",
 			minute: "2-digit",
-		})} - this gives everyone time to settle in before dinner.  
-
-${trip.hut?.hut_parking_instructions ? `🚗 Parking:  
-${trip.hut?.hut_parking_instructions.replace(/<[^>]*>/g, "").trim()}  
-${trip.hut?.hut_lat_long ? `Parking coordinates: ${trip.hut?.hut_lat_long}  \n` : ""}` : ""}
-🧳 What to Bring:  
-• Sleeping bag (unless specified otherwise)  
-• Personal toiletries  
-• Headtorch for evening/night navigation  
-• A sealed snack to take underground  
-• Any special dietary items (we accommodate most diets but check with organizers)  
-
-The Crew Provides:  
-✔️ All caving equipment  
+		});
+		
+		// Extract coordinates for map link
+		const coordinates = trip.hut?.hut_lat_long || "";
+		const mapLink = coordinates ? `http://maps.apple.com/?address=${coordinates}` : "";
+		
+		// Extract facilities as a readable string
+		const facilities = trip.hut?.hut_facilities && trip.hut?.hut_facilities.length > 0 
+			? trip.hut?.hut_facilities
+				.map((f: string) => f.replace(/_/g, ' '))
+				.join(", ")
+			: "basic facilities";
+		
+		// Get kit list items if available
+		let kitListItems = "";
+		if (trip.acf.overnight_kitlist && Array.isArray(trip.acf.overnight_kitlist)) {
+			const personalItems = trip.acf.overnight_kitlist.find((k: any) => 
+				k.overnight_kit_list_type?.toLowerCase().includes('personal') || 
+				k.overnight_kit_list_type?.toLowerCase().includes('bring')
+			);
+			
+			if (personalItems && personalItems.overnight_kit_list) {
+				// Extract list items from HTML
+				const itemsHtml = personalItems.overnight_kit_list;
+				const itemsText = itemsHtml
+					.replace(/<li>/gi, "• ")
+					.replace(/<\/li>/gi, "\n")
+					.replace(/<[^>]*>/g, "")
+					.replace(/\n{3,}/g, "\n")
+					.trim();
+				
+				// Get first few items (up to 5)
+				const itemsList = itemsText.split("\n").filter(Boolean);
+				kitListItems = itemsList.slice(0, 5).join("\n");
+			}
+		}
+		
+		// If no kit list found, use default items
+		if (!kitListItems) {
+			kitListItems = `• Sleeping bag & pillow
+• Multiple changes of underwear/thermals
+• Old warm base layers (fleece/leggings)
+• Personal toiletries
+• Headtorch + spare batteries
+• Sealed underground snack
+• Any special dietary items`;
+		}
+		
+		// Extract what's included from event_paying_for if available
+		let includedItems = `✔️ All caving equipment  
 ✔️ Bedding/facilities listed above  
-✔️ Meals as described in the trip details  
+✔️ Meals as described in the trip details`;
+		
+		if (trip.acf.event_paying_for) {
+			// Try to extract bullet points from HTML
+			const payingForHtml = trip.acf.event_paying_for;
+			if (payingForHtml.includes("<li>")) {
+				const payingForText = payingForHtml
+					.replace(/<li>/gi, "✔️ ")
+					.replace(/<\/li>/gi, "  \n")
+					.replace(/<[^>]*>/g, "")
+					.replace(/\n{3,}/g, "\n")
+					.trim();
+				
+				if (payingForText) {
+					includedItems = payingForText;
+				}
+			}
+		}
+		
+		// Build the overnight trip message template
+		return `✨ ${month} - ${region} ✨
 
-See you there!`;
+We're looking forward to our caving weekend at ${trip.hut?.hut_name || trip.acf.event_location || "our destination"}!
+
+${mapLink ? `📍 Where to Drive To:
+${mapLink}
+
+` : ""}🏕️ Accommodation:  
+• ${trip.hut?.hut_name || "Our accommodation"}${trip.hut?.hut_club_name ? ` (managed by ${trip.hut?.hut_club_name})` : ""}  
+${trip.hut?.hut_address ? `• ${trip.hut?.hut_address}  \n` : ""}• Facilities: ${facilities}  
+
+🕒 Arrival Time:
+Please arrive by ${arrivalTime} - this is when we'll plan the next day's activities together. If delayed, message us with your ETA.
+
+${trip.hut?.hut_parking_instructions ? `🚗 Parking Info:  
+${trip.hut?.hut_parking_instructions.replace(/<[^>]*>/g, "").trim().split("\n").join("\n• ")}  
+${trip.hut?.hut_lat_long ? `• Coordinates: ${trip.hut?.hut_lat_long}  \n` : ""}` : ""}
+🧳 What to Bring:  
+${kitListItems}  
+
+${includedItems}  
+
+ℹ️ Full Trip Details:
+https://www.cavingcrew.com/trips/${trip.slug}
+
+See you at the hut! Please message if you have any questions before ${startDate.toLocaleDateString("en-GB", { weekday: "long" })}.`;
 	}
 
 	// Get trip date and time
