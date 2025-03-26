@@ -16,22 +16,15 @@ import {
   Button
 } from "@mantine/core";
 import {
-  IconShower,
-  IconToiletPaper,
-  IconToolsKitchen2,
-  IconWifi,
-  IconCar,
   IconMapPin,
   IconBuildingCommunity,
   IconKey,
   IconParking,
-  IconSnowflake,
-  IconFlame,
   IconInfoCircle,
   IconUsersGroup,
-  IconPlug,
   IconPets
 } from "@tabler/icons-react";
+import { HutFacilities } from './HutFacilities';
 import { useUser } from "../../lib/hooks/useUser";
 import type { Trip } from "../../types/api";
 
@@ -43,17 +36,6 @@ interface TripOvernightHutProps {
   photo?: string;
 }
 
-const facilityIcons: Record<string, React.ReactNode> = {
-  showers: <IconShower size={20} />,
-  toilets: <IconToiletPaper size={20} />,
-  hobs: <IconToolsKitchen2 size={20} />,
-  microwave: <IconToolsKitchen2 size={20} />,
-  phone_signal: <IconWifi size={20} />,
-  heating: <IconFlame size={20} />,
-  electricity: <IconPlug size={20} />,
-  parking: <IconCar size={20} />,
-  refrigeration: <IconSnowflake size={20} />
-};
 
 export function TripOvernightHut({ 
   hut, 
@@ -101,21 +83,7 @@ export function TripOvernightHut({
 
             {/* Facilities Grid */}
             {hut?.hut_facilities && hut.hut_facilities.length > 0 && (
-              <div>
-                <Text fw={500} mb="sm">Hut Facilities</Text>
-                <Grid gutter="md">
-                  {hut.hut_facilities.map((facility) => (
-                    <Grid.Col span={6} key={facility}>
-                      <Group gap="sm">
-                        <ThemeIcon variant="light" color="blue" size="md">
-                          {facilityIcons[facility] || <IconInfoCircle size={20} />}
-                        </ThemeIcon>
-                        <Text tt="capitalize">{facility.replace(/_/g, ' ')}</Text>
-                      </Group>
-                    </Grid.Col>
-                  ))}
-                </Grid>
-              </div>
+              <HutFacilities facilities={hut.hut_facilities} />
             )}
 
             {/* Member-only Information */}
