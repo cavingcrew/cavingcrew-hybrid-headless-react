@@ -35,13 +35,21 @@ export function TripParticipantInfo({ hut, tripId }: TripParticipantInfoProps) {
     <Stack gap="md">
       {/* Arrival Information */}
       <Paper withBorder p="md" bg="var(--mantine-color-green-light)">
-        <Group gap="xs" mb="sm">
-          <IconMapPinFilled size={20} />
-          <Text fw={500}>Arrival Information</Text>
-          <Badge variant="light">Participants Only</Badge>
-        </Group>
-        
         <Stack gap="sm">
+          {hut?.hut_image?.url && typeof hut.hut_image.url === 'string' && (
+            <Image
+              src={hut.hut_image.url}
+              alt={`Accommodation at ${hut.hut_name || 'the hut'}`}
+              radius="md"
+              mb="md"
+            />
+          )}
+          
+          <Group gap="xs" mb="sm">
+            <IconMapPinFilled size={20} />
+            <Text fw={500}>Arrival Information</Text>
+            <Badge variant="light">Participants Only</Badge>
+          </Group>
           {hut.hut_address && (
             <Group gap="sm">
               <ThemeIcon variant="light" color="green" size="md">
