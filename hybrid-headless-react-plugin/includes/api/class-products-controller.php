@@ -576,10 +576,12 @@ class Hybrid_Headless_Products_Controller {
         );
 
         foreach ( $attachment_ids as $attachment_id ) {
+            $meta = wp_get_attachment_metadata($attachment_id);
             $images[] = array(
-                'id'  => $attachment_id,
-                'src' => wp_get_attachment_url( $attachment_id ),
-                'alt' => get_post_meta( $attachment_id, '_wp_attachment_image_alt', true ),
+                'id'    => $attachment_id,
+                'src'   => wp_get_attachment_url( $attachment_id ),
+                'alt'   => get_post_meta( $attachment_id, '_wp_attachment_image_alt', true ),
+                'sizes' => $meta['sizes'] ?? []
             );
         }
 
@@ -665,12 +667,15 @@ class Hybrid_Headless_Products_Controller {
 
     private function get_hut_image_data($image_id) {
         if (!$image_id) return null;
-
+        
+        $meta = wp_get_attachment_metadata($image_id);
+        
         return [
             'ID' => $image_id,
             'url' => wp_get_attachment_url($image_id),
             'alt' => get_post_meta($image_id, '_wp_attachment_image_alt', true),
-            'caption' => wp_get_attachment_caption($image_id)
+            'caption' => wp_get_attachment_caption($image_id),
+            'sizes' => $meta['sizes'] ?? []
         ];
     }
 

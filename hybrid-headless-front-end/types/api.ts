@@ -444,6 +444,14 @@ export interface Trip {
 		id: string;
 		src: string;
 		alt: string;
+		sizes?: {
+			[key: string]: {
+				file: string;
+				width: number;
+				height: number;
+				mime-type?: string;
+			}
+		};
 	}[];
 	categories: BasicCategory[];
 	has_purchased: boolean;
@@ -474,6 +482,14 @@ export interface Trip {
 			url: boolean | string;
 			alt: boolean | string;
 			caption: boolean | string;
+			sizes?: {
+				[key: string]: {
+					file: string;
+					width: number;
+					height: number;
+					mime-type?: string;
+				}
+			};
 		};
 		hut_dogs_allowed?: "yes" | "no" | string;
 		hut_capacity?: string;

@@ -100,7 +100,11 @@ export function TripOvernightHut({
         {hutImage && (
           <Grid.Col span={{ base: 12, md: 6 }}>
             <Image
-              src={hutImage}
+              src={
+                (typeof hutImage === 'object' && hutImage?.sizes?.large?.file) || 
+                (typeof hutImage === 'object' && hutImage?.sizes?.medium_large?.file) || 
+                hutImage
+              }
               alt={`Accommodation at ${hutName}`}
               radius="md"
               style={{
