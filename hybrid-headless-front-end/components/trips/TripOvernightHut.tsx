@@ -113,18 +113,27 @@ export function TripOvernightHut({
             <div>
               <Title order={3} mb="sm">{hutName}</Title>
 
-              {/* Vague location shown to everyone */}
-              {vagueLocation && (
-                <Text size="sm" c="dimmed" mb="sm">
-                  Location: {vagueLocation}
-                </Text>
+              {/* Location details for non-signed-up users */}
+              {!hasPurchased && (
+                <>
+                  {vagueLocation && (
+                    <Text size="sm" c="dimmed" mb="xs">
+                      Location: {vagueLocation}
+                    </Text>
+                  )}
+                  {hut?.hut_location?.post_title && (
+                    <Text size="sm" c="dimmed" mb="xs">
+                      Region: {hut.hut_location.post_title}
+                    </Text>
+                  )}
+                </>
               )}
 
-              {/* Show club name for members */}
-              {isLoggedIn && isMember && hut && hut.hut_club_name && (
-                  <Text size="sm" c="dimmed" mb="md">
-                    Managed by: {hut.hut_club_name}
-                  </Text>
+              {/* Managed by - shown to everyone */}
+              {hut?.hut_club_name && (
+                <Text size="sm" c="dimmed" mb="md">
+                  Managed by: {hut.hut_club_name}
+                </Text>
               )}
 
               {hutDescription && (
@@ -166,10 +175,9 @@ export function TripOvernightHut({
               </div>
             )}
 
-            {hut && !isLoggedIn && (
+            {hut && !hasPurchased && (
               <Alert variant="light" color="blue" icon={<IconInfoCircle size={16} />}>
-                Sign up or log in to view member-only details like exact location
-                and club information
+                Sign up for this trip to view exact location details and arrival information
               </Alert>
             )}
           </Stack>
