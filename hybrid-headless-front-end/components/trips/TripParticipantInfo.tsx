@@ -65,12 +65,19 @@ export function TripParticipantInfo({ hut, tripId }: TripParticipantInfoProps) {
           )}
 
           {hut.hut_arrival_and_directions && (
-            <Group gap="sm" align="flex-start">
+            <Group gap="sm" align="flex-start" wrap="nowrap">
               <ThemeIcon variant="light" color="blue" size="md" mt={3}>
                 <IconWalk size={16} />
               </ThemeIcon>
               <Text style={{ flex: 1 }} component="div">
-                <div dangerouslySetInnerHTML={{__html: hut.hut_arrival_and_directions.replace(/\n/g, '<br />')}} />
+                <div 
+                  style={{ 
+                    display: 'inline-block',
+                    verticalAlign: 'top',
+                    lineHeight: 1.3 
+                  }}
+                  dangerouslySetInnerHTML={{__html: hut.hut_arrival_and_directions.replace(/\n/g, '<br />')}} 
+                />
               </Text>
             </Group>
           )}
@@ -86,12 +93,19 @@ export function TripParticipantInfo({ hut, tripId }: TripParticipantInfoProps) {
             <Badge variant="light">Participants Only</Badge>
           </Group>
           
-          <Group gap="sm" align="flex-start">
+          <Group gap="sm" align="flex-start" wrap="nowrap">
             <ThemeIcon variant="light" color="green" size="md" mt={4}>
               <IconParking size={16} />
             </ThemeIcon>
             <Text style={{ flex: 1 }} component="div">
-              <div dangerouslySetInnerHTML={{__html: hut.hut_parking_instructions.replace(/\n/g, '<br />')}} />
+              <div 
+                style={{ 
+                  display: 'inline-block',
+                  verticalAlign: 'top',
+                  lineHeight: 1.3 
+                }}
+                dangerouslySetInnerHTML={{__html: hut.hut_parking_instructions.replace(/\n/g, '<br />')}} 
+              />
             </Text>
           </Group>
         </Paper>
