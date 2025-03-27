@@ -92,7 +92,7 @@ export default function TripCard({ trip }: TripCardProps) {
 						<Image
 							src={
 								trip.images[0].sizes?.medium_large?.file || 
-								trip.images[0].sizes?.medium?.file || 
+								trip.images[0].sizes?.large?.file || 
 								trip.images[0].src
 							}
 							alt={trip.images[0].alt || "Trip image"}

@@ -97,8 +97,8 @@ export function TripOvernightHut({
           <Grid.Col span={{ base: 12, md: 6 }}>
             <Image
               src={
-                (typeof hutImage === 'object' && hutImage.sizes?.large?.file) || 
                 (typeof hutImage === 'object' && hutImage.sizes?.medium_large?.file) || 
+                (typeof hutImage === 'object' && hutImage.sizes?.large?.file) || 
                 (typeof hutImage === 'object' && hutImage.url) || 
                 (typeof hutImage === 'string' ? hutImage : '')
               }
