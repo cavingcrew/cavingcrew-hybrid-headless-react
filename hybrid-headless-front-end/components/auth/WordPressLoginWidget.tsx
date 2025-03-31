@@ -83,7 +83,7 @@ export function WordPressLoginWidget({
         )}
 
         <TextInput
-          label="Username"
+          label="Email"
           value={username}
           onChange={(e) => setUsername(e.currentTarget.value)}
           required
