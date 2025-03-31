@@ -372,7 +372,10 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 			</Group>
 			{/* Updated Route Description Section */}
 			{hasRouteDescription && (
-				<TripRouteDescription routeDescription={routeDescription} />
+				<TripRouteDescription 
+					routeDescription={routeDescription}
+					hasPurchased={trip.has_purchased} 
+				/>
 			)}
 		</Paper>
 	);
