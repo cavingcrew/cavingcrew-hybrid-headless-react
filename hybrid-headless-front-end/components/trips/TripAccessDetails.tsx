@@ -16,8 +16,8 @@ import {
 	ThemeIcon,
 	Title,
 } from "@mantine/core";
-import { TripRouteDescription } from './TripRouteDescription';
 import { useDisclosure } from "@mantine/hooks";
+import { useTripAccess } from "@/lib/hooks/useTripAccess";
 import {
 	IconInfoCircle,
 	IconKey,
@@ -35,6 +35,7 @@ interface TripAccessDetailsProps {
 }
 
 export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
+	const { canViewSensitiveInfo } = useTripAccess(trip);
 	const locationData = trip.route?.acf.route_entrance_location_id?.acf;
 	const accessNotes = locationData?.location_access_arrangement
 		? typeof locationData.location_access_arrangement === "string"
@@ -97,14 +98,22 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 					mb="xl"
 					title="Sensitive Access Location"
 				>
-					<Text size="sm">
-						This location has sensitive access arrangements. Please:
-					</Text>
-					<List size="sm" mt={4}>
-						<List.Item>Follow all access guidelines carefully</List.Item>
-						<List.Item>Do not share exact location details publicly</List.Item>
-						<List.Item>Avoid naming the location on social media</List.Item>
-					</List>
+					{canViewSensitiveInfo ? (
+						<>
+							<Text size="sm">
+								This location has sensitive access arrangements. Please:
+							</Text>
+							<List size="sm" mt={4}>
+								<List.Item>Follow all access guidelines carefully</List.Item>
+								<List.Item>Do not share exact location details publicly</List.Item>
+								<List.Item>Avoid naming the location on social media</List.Item>
+							</List>
+						</>
+					) : (
+						<Text size="sm">
+							This location has sensitive access arrangements. Sign up to view detailed access information.
+						</Text>
+					)}
 				</Alert>
 			)}
 
@@ -370,13 +379,6 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 					</Button>
 				))}
 			</Group>
-			{/* Updated Route Description Section */}
-			{hasRouteDescription && (
-				<TripRouteDescription 
-					routeDescription={routeDescription}
-					hasPurchased={trip.has_purchased} 
-				/>
-			)}
 		</Paper>
 	);
 }

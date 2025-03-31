@@ -24,8 +24,10 @@ import { TripObjectionHandling } from './TripObjectionHandling';
 import { NeoClanVolunteeringWidget } from './NeoClanVolunteeringWidget';
 import { SensitiveAccessWarning } from './SensitiveAccessWarning';
 import { TripParticipantInfo } from './TripParticipantInfo';
+import { TripRouteDescription } from './TripRouteDescription';
 import { isWithinDays } from '../../utils/event-timing';
 import { useUser } from '@/lib/hooks/useUser';
+import { useTripAccess } from '@/lib/hooks/useTripAccess';
 import { TripSignupWidget } from "./TripSignupWidget";
 import {
 	IconCalendar,
@@ -53,7 +55,8 @@ interface TripDetailsProps {
 
 export function TripDetails({ trip }: TripDetailsProps) {
 	const acf = trip.acf;
-	const { purchasedProducts, isLoggedIn, user } = useUser();
+	const { isLoggedIn, user } = useUser();
+	const { hasPurchased } = useTripAccess(trip);
 
 	// Helper function to extract locality from address
 	const getVagueLocation = (address?: string) => {
@@ -166,13 +169,9 @@ export function TripDetails({ trip }: TripDetailsProps) {
 		!isLoggedIn
 	);
 
-	const hasPurchased = purchasedProducts.includes(trip.id) ||
-		trip.variations.some(v => purchasedProducts.includes(v.id));
-
 	console.log('[TripDetails] Rendering', {
 		tripId: trip.id,
 		variations: trip.variations.map(v => v.id),
-		purchasedProducts,
 		hasPurchased
 	});
 
@@ -558,6 +557,19 @@ export function TripDetails({ trip }: TripDetailsProps) {
 			{hasPurchased && !isOvernightTrip ? (
 				<TripAccessDetails trip={trip} />
 			) : "" }
+
+			{/* Route Description Section */}
+			{trip.route?.acf?.route_route_description && (
+				<Paper withBorder p="md" radius="md">
+					<Title order={2} mb="md">
+						Route Description
+					</Title>
+					<TripRouteDescription 
+						routeDescription={trip.route.acf.route_route_description}
+						hasPurchased={hasPurchased} 
+					/>
+				</Paper>
+			)}
 
 			{/* Trip Experience Details */}
 			<TripExperience trip={trip} />

@@ -1,8 +1,8 @@
 "use client";
 
 import { Carousel } from "@mantine/carousel";
-import { Group, Image, Stack, Text, ThemeIcon } from "@mantine/core";
-import { IconMapPin } from "@tabler/icons-react";
+import { Alert, Group, Image, Stack, Text, ThemeIcon } from "@mantine/core";
+import { IconLock, IconMapPin } from "@tabler/icons-react";
 import React from "react";
 import type { Route } from "../../types/api";
 
@@ -38,7 +38,7 @@ export function TripRouteDescription({
   };
 
   return (
-    <Stack gap="md" mb="xl">
+    <Stack gap="md">
       <Group gap="xs">
         <ThemeIcon variant="light" color="green">
           <IconMapPin size={18} />
@@ -47,13 +47,32 @@ export function TripRouteDescription({
       </Group>
 
       <div style={{ position: "relative" }}>
+        {!hasPurchased && (
+          <div style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "rgba(255,255,255,0.7)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 10,
+            borderRadius: 8
+          }}>
+            <Alert color="blue" icon={<IconLock size={16} />}>
+              Sign up to view full route details
+            </Alert>
+          </div>
+        )}
+        
         <div style={{
           overflow: "hidden",
           position: "relative",
           ...(!hasPurchased && {
             maxHeight: 200,
-            maskImage: "linear-gradient(to bottom, black 50%, transparent 100%)",
-            WebkitMaskImage: "linear-gradient(to bottom, black 50%, transparent 100%)"
+            filter: "blur(3px)",
           })
         }}>
           {typeof routeDescription === "object" &&
@@ -132,35 +151,6 @@ export function TripRouteDescription({
             </Text>
           )}
         </div>
-
-        {!hasPurchased && (
-          <div style={{
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: "100%",
-            background: "linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,1) 100%)",
-            display: "flex",
-            alignItems: "flex-end",
-            justifyContent: "center",
-            pointerEvents: "none",
-          }}>
-            <Text
-              size="sm"
-              c="dimmed"
-              ta="center"
-              p="md"
-              style={{
-                backgroundColor: "rgba(255,255,255,0.9)",
-                borderRadius: 8,
-                width: "100%",
-              }}
-            >
-              Sign up to view full route details including maps and photos
-            </Text>
-          </div>
-        )}
       </div>
     </Stack>
   );
