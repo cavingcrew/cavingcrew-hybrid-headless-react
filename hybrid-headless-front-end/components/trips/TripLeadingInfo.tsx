@@ -74,11 +74,16 @@ export function TripLeadingInfo({ trip }: TripLeadingInfoProps) {
                   <Badge size="lg" color="red" variant="filled">
                     SRT Leading Level:{" "}
                     {typeof trip.route.acf.route_leading_difficulty.route_leading_difficulty_srt_leading_level_required === 'object' 
-                      ? trip.route.acf.route_leading_difficulty.route_leading_difficulty_srt_leading_level_required.post_title
+                      ? (trip.route.acf.route_leading_difficulty.route_leading_difficulty_srt_leading_level_required && 
+                         'post_title' in trip.route.acf.route_leading_difficulty.route_leading_difficulty_srt_leading_level_required 
+                         ? trip.route.acf.route_leading_difficulty.route_leading_difficulty_srt_leading_level_required.post_title 
+                         : 'Unknown')
                       : `Level ${trip.route.acf.route_leading_difficulty.route_leading_difficulty_srt_leading_level_required}`}
                   </Badge>
                   
                   {typeof trip.route.acf.route_leading_difficulty.route_leading_difficulty_srt_leading_level_required === 'object' && 
+                   trip.route.acf.route_leading_difficulty.route_leading_difficulty_srt_leading_level_required && 
+                   'permalink' in trip.route.acf.route_leading_difficulty.route_leading_difficulty_srt_leading_level_required && 
                    trip.route.acf.route_leading_difficulty.route_leading_difficulty_srt_leading_level_required.permalink && (
                     <Anchor
                       href={trip.route.acf.route_leading_difficulty.route_leading_difficulty_srt_leading_level_required.permalink}
