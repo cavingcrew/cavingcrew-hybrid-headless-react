@@ -92,11 +92,11 @@ export function TripLeadingInfo({ trip }: TripLeadingInfoProps) {
               )}
 
               {/* Leading Skills Lists */}
-              {trip.route.acf.route_leading_difficulty.route_leading_difficulty_horizontal_leading_skills_required?.length > 0 && (
+              {(trip.route.acf.route_leading_difficulty.route_leading_difficulty_horizontal_leading_skills_required ?? []).length > 0 && (
                 <div>
                   <Text fw={500}>Suggested Horizontal Leading Skills:</Text>
                   <List>
-                    {trip.route.acf.route_leading_difficulty.route_leading_difficulty_horizontal_leading_skills_required.map(
+                    {trip.route.acf.route_leading_difficulty.route_leading_difficulty_horizontal_leading_skills_required?.map(
                       (skill, i) => (
                         <List.Item
                           key={`skill-${skill.substring(0, 10)}-${i}`}
@@ -114,11 +114,11 @@ export function TripLeadingInfo({ trip }: TripLeadingInfoProps) {
                 </div>
               )}
 
-              {trip.route.acf.route_leading_difficulty.route_leading_difficulty_srt_leading_skills_required?.length > 0 && (
+              {(trip.route.acf.route_leading_difficulty.route_leading_difficulty_srt_leading_skills_required ?? []).length > 0 && (
                 <div>
                   <Text fw={500}>Suggested SRT Leading Skills:</Text>
                   <List>
-                    {trip.route.acf.route_leading_difficulty.route_leading_difficulty_srt_leading_skills_required.map(
+                    {trip.route.acf.route_leading_difficulty.route_leading_difficulty_srt_leading_skills_required?.map(
                       (skill, i) => (
                         <List.Item
                           key={`srt-skill-${skill.substring(0, 10)}-${i}`}
