@@ -426,7 +426,12 @@ export interface Route {
 		route_group_tackle_required?: string;
 		route_personal_gear_required?: string; // Stored as JSON string
 		route_leading_difficulty?: {
-			route_leading_difficulty_srt_leading_level_required?: number | null;
+			route_leading_difficulty_srt_leading_level_required?: number | {
+				ID: number;
+				post_title: string;
+				post_name: string;
+				permalink: string;
+			} | null;
 			route_leading_difficulty_srt_leading_skills_required?: string[];
 			route_leading_difficulty_horizontal_leading_level_required?: {
 				ID: number;
