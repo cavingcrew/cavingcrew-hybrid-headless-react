@@ -750,6 +750,16 @@ class Hybrid_Headless_Products_Controller {
                 if ($product) {
                     $product_id = $product->ID;
                 }
+            } elseif (isset($_SERVER['HTTP_REFERER'])) {
+                // Extract product ID from referrer URL if available
+                $referrer = parse_url($_SERVER['HTTP_REFERER']);
+                if (isset($referrer['path']) && strpos($referrer['path'], '/trip/') !== false) {
+                    $slug = basename($referrer['path']);
+                    $product = get_page_by_path($slug, OBJECT, 'product');
+                    if ($product) {
+                        $product_id = $product->ID;
+                    }
+                }
             }
                 
             error_log('Current product ID: ' . $product_id);
@@ -787,10 +797,11 @@ class Hybrid_Headless_Products_Controller {
                                     
                                 if ($cc_volunteer && (
                                     strpos($cc_volunteer, 'director') !== false ||
+                                    strpos($cc_volunteer, 'leader') !== false || 
                                     in_array($cc_volunteer, $leader_roles)
                                 )) {
                                     $has_trip_leader_access = true;
-                                    error_log('TRIP LEADER ACCESS GRANTED');
+                                    error_log('TRIP LEADER ACCESS GRANTED for role: ' . $cc_volunteer);
                                     break 2;
                                 } else {
                                     error_log('No trip leader access - cc_volunteer was: ' . ($cc_volunteer ?: 'not set'));
@@ -857,9 +868,16 @@ class Hybrid_Headless_Products_Controller {
             if (!$is_sensitive_access || $has_trip_leader_access) {
                 $route_data['acf']['route_survey_image'] = $this->get_image_data($route_acf['route_survey_image'] ?? 0);
                 $route_data['acf']['route_survey_link'] = $route_acf['route_survey_link'] ?? null;
-                $route_data['acf']['route_route_description'] = !empty($route_acf['route_route_description']) ?
-                    array_shift($route_acf['route_route_description']) :
-                    null;
+                $route_data['acf']['route_route_description'] = [];
+                if (!empty($route_acf['route_route_description'])) {
+                    foreach ($route_acf['route_route_description'] as $segment) {
+                        $route_data['acf']['route_route_description'][] = [
+                            'title' => $segment['route_description_segment_title'] ?? '',
+                            'content' => $segment['route_description_segment_html'] ?? '',
+                            'image' => $this->get_image_data($segment['route_description_segment_photo'] ?? 0)
+                        ];
+                    }
+                }
                 $route_data['acf']['route_additional_images'] = is_array($route_acf['route_additional_images'] ?? false) ?
                     array_map(function($img) {
                         return $this->get_image_data($img['image'] ?? 0);
@@ -1023,10 +1041,11 @@ class Hybrid_Headless_Products_Controller {
                                     
                                 if ($cc_volunteer && (
                                     strpos($cc_volunteer, 'director') !== false ||
+                                    strpos($cc_volunteer, 'leader') !== false || 
                                     in_array($cc_volunteer, $leader_roles)
                                 )) {
                                     $has_trip_leader_access = true;
-                                    error_log('TRIP LEADER ACCESS GRANTED');
+                                    error_log('TRIP LEADER ACCESS GRANTED for role: ' . $cc_volunteer);
                                     break 2;
                                 } else {
                                     error_log('No trip leader access - cc_volunteer was: ' . ($cc_volunteer ?: 'not set'));
