@@ -581,6 +581,8 @@ export function TripDetails({ trip }: TripDetailsProps) {
 					<TripRouteDescription
 						routeDescription={trip.route.acf.route_route_description}
 						hasPurchased={hasPurchased}
+						surveyImage={trip.route.acf.route_survey_image}
+						surveyLink={trip.route.acf.route_survey_link?.url}
 					/>
 				</Paper>
 			)}

@@ -28,8 +28,16 @@ interface TripRouteDescriptionProps {
   routeDescription: RouteDescriptionSegment[] | Record<string, RouteDescriptionSegment> | null | undefined;
   hasPurchased: boolean;
   surveyImage?: {
-    url: string;
+    ID?: number;
+    url?: string;
     alt?: string;
+    sizes?: {
+      [key: string]: {
+        file: string;
+        width: number;
+        height: number;
+      };
+    };
   } | null;
   surveyLink?: string;
 }
