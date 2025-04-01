@@ -36,6 +36,7 @@ interface TripRouteDescriptionProps {
         file: string;
         width: number;
         height: number;
+        mime_type?: string;
       };
     };
   } | null;
