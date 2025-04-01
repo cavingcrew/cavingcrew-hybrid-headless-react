@@ -17,7 +17,7 @@ interface TripLeadingInfoProps {
     route_leading_difficulty_srt_leading_level_required?: {
       post_title?: string;
       permalink?: string;
-    } | null; // Allow null
+    } | number | null; // Allow numeric ID or post object or null
     route_leading_difficulty_srt_leading_skills_required?: string[];
   };
   isLoggedIn: boolean;
@@ -79,10 +79,33 @@ export function TripLeadingInfo({
                 )}
               </Group>
 
+              {/* SRT Leading Level */}
+              {leadingDifficulty.route_leading_difficulty_srt_leading_level_required && (
+                <Group align="center" mb="xs">
+                  <Badge size="lg" color="red" variant="filled">
+                    SRT Leading Level:{" "}
+                    {typeof leadingDifficulty.route_leading_difficulty_srt_leading_level_required === 'object' 
+                      ? leadingDifficulty.route_leading_difficulty_srt_leading_level_required.post_title
+                      : `Level ${leadingDifficulty.route_leading_difficulty_srt_leading_level_required}`}
+                  </Badge>
+                  
+                  {typeof leadingDifficulty.route_leading_difficulty_srt_leading_level_required === 'object' && 
+                   leadingDifficulty.route_leading_difficulty_srt_leading_level_required.permalink && (
+                    <Anchor
+                      href={leadingDifficulty.route_leading_difficulty_srt_leading_level_required.permalink}
+                      target="_blank"
+                      size="sm"
+                    >
+                      View SRT Leading Level
+                    </Anchor>
+                  )}
+                </Group>
+              )}
+
               {leadingDifficulty.route_leading_difficulty_horizontal_leading_skills_required &&
                 leadingDifficulty.route_leading_difficulty_horizontal_leading_skills_required.length > 0 && (
                   <div>
-                    <Text fw={500}>Suggested Leading Skills:</Text>
+                    <Text fw={500}>Suggested Horizontal Leading Skills:</Text>
                     <List>
                       {leadingDifficulty.route_leading_difficulty_horizontal_leading_skills_required.map(
                         (skill: string, i: number) => (
@@ -90,6 +113,30 @@ export function TripLeadingInfo({
                             key={`skill-${skill.substring(0, 10)}-${i}`}
                             icon={
                               <ThemeIcon color="orange" size={24} radius="xl">
+                                <IconStar size={16} />
+                              </ThemeIcon>
+                            }
+                          >
+                            {skill}
+                          </List.Item>
+                        ),
+                      )}
+                    </List>
+                  </div>
+                )}
+              
+              {/* SRT Leading Skills */}
+              {leadingDifficulty.route_leading_difficulty_srt_leading_skills_required &&
+                leadingDifficulty.route_leading_difficulty_srt_leading_skills_required.length > 0 && (
+                  <div>
+                    <Text fw={500}>Suggested SRT Leading Skills:</Text>
+                    <List>
+                      {leadingDifficulty.route_leading_difficulty_srt_leading_skills_required.map(
+                        (skill: string, i: number) => (
+                          <List.Item
+                            key={`srt-skill-${skill.substring(0, 10)}-${i}`}
+                            icon={
+                              <ThemeIcon color="red" size={24} radius="xl">
                                 <IconStar size={16} />
                               </ThemeIcon>
                             }
