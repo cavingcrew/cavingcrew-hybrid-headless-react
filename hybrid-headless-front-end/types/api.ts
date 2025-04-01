@@ -392,14 +392,14 @@ export interface Route {
 			url: string;
 			target?: string;
 		};
-		route_route_description?:
-			| {
-					route_description_segment_html?: string;
-			  }
-			| Array<{
-					section_title: string;
-					section_content: string;
-			  }>;
+		route_route_description?: Array<{
+			route_description_segment_title: string;
+			route_description_segment_html: string;
+			route_description_segment_photo?: {
+				url: string;
+				alt?: string;
+			};
+		}>;
 		route_difficulty?: {
 			technical: number;
 			physical: number;

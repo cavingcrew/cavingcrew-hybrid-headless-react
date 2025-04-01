@@ -5,19 +5,6 @@ import { IconLock, IconMapPin } from "@tabler/icons-react";
 import React from "react";
 import type { Route } from "../../types/api";
 
-// Define the segment type
-interface RouteDescriptionSegment {
-  route_description_segment_title?: string;
-  route_description_segment_html?: string;
-  route_description_segment_photo?: {
-    url: string;
-    alt?: string;
-  };
-  // Fallback for older format
-  section_title?: string;
-  section_content?: string;
-}
-
 interface TripRouteDescriptionProps {
   routeDescription: Route["acf"]["route_route_description"];
   hasPurchased: boolean;
@@ -27,26 +14,11 @@ export function TripRouteDescription({
   routeDescription,
   hasPurchased
 }: TripRouteDescriptionProps) {
-  // Extract segments from the route description
-  const getSegments = (): RouteDescriptionSegment[] => {
-    if (!routeDescription) return [];
-    
-    if (Array.isArray(routeDescription)) {
-      return routeDescription;
-    }
-    
-    // Handle single object case by wrapping in array
-    if (typeof routeDescription === "object") {
-      return [routeDescription];
-    }
-    
-    return [];
-  };
+  if (!routeDescription || !Array.isArray(routeDescription)) return null;
 
-  const segments = getSegments();
-  const visibleSegments = hasPurchased ? segments : segments.slice(0, 1);
-
-  if (segments.length === 0) return null;
+  const visibleSegments = hasPurchased 
+    ? routeDescription 
+    : routeDescription.slice(0, 1);
 
   return (
     <Stack gap="xl">
@@ -62,56 +34,46 @@ export function TripRouteDescription({
         )}
       </Group>
 
-      {visibleSegments.map((segment, index) => {
-        // Handle both old and new segment formats
-        const title = segment.route_description_segment_title || segment.section_title || `Section ${index + 1}`;
-        const content = segment.route_description_segment_html || segment.section_content || "";
-        const photo = segment.route_description_segment_photo;
+      {visibleSegments.map((segment, index) => (
+        <Box key={`segment-${index}`}>
+          <Text fw={600} size="lg" mb="md">
+            {index + 1}. {segment.route_description_segment_title}
+          </Text>
 
-        return (
-          <Box key={`segment-${index}`} style={{ position: "relative" }}>
-            {/* Section Header with Number */}
-            <Text fw={600} size="lg" mb="md">
-              {index + 1}. {title}
-            </Text>
+          <Box
+            style={{
+              display: "grid",
+              gridTemplateColumns: segment.route_description_segment_photo?.url 
+                ? "1fr 1fr" 
+                : "1fr",
+              gap: "1.5rem",
+              alignItems: "start",
+            }}
+          >
+            <div
+              dangerouslySetInnerHTML={{ __html: segment.route_description_segment_html }}
+              style={{ lineHeight: 1.6 }}
+            />
 
-            {/* Content with alternating image layout */}
-            <Box
-              style={{
-                display: "grid",
-                gridTemplateColumns: photo?.url ? "1fr 1fr" : "1fr",
-                gap: "1.5rem",
-                alignItems: "start",
-              }}
-            >
-              {/* Text content */}
-              <div
-                dangerouslySetInnerHTML={{ __html: content }}
-                style={{ lineHeight: 1.6 }}
+            {segment.route_description_segment_photo?.url && (
+              <Image
+                src={segment.route_description_segment_photo.url}
+                alt={segment.route_description_segment_photo.alt || `Route section ${index + 1}`}
+                radius="sm"
+                style={{
+                  gridColumn: index % 2 === 0 ? "2" : "1",
+                  gridRow: "1",
+                  height: "auto",
+                  maxHeight: "400px",
+                  objectFit: "cover",
+                }}
               />
-
-              {/* Image - alternate sides for each section */}
-              {photo?.url && (
-                <Image
-                  src={photo.url}
-                  alt={photo.alt || `Route section ${index + 1}`}
-                  radius="sm"
-                  style={{
-                    gridColumn: index % 2 === 0 ? "2" : "1",
-                    gridRow: "1",
-                    height: "auto",
-                    maxHeight: "400px",
-                    objectFit: "cover",
-                  }}
-                />
-              )}
-            </Box>
+            )}
           </Box>
-        );
-      })}
+        </Box>
+      ))}
 
-      {/* Blur overlay for non-purchased users */}
-      {!hasPurchased && segments.length > 1 && (
+      {!hasPurchased && routeDescription.length > 1 && (
         <Box
           style={{
             position: "relative",

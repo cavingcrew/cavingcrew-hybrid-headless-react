@@ -43,18 +43,15 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 			: locationData.location_access_arrangement
 		: [];
 
-	// New route description data
+	// Route description data
 	const routeDescription = trip.route?.acf.route_route_description;
 	const hasRouteDescription =
 		routeDescription &&
-		((typeof routeDescription === "object" &&
-			!Array.isArray(routeDescription) &&
-			routeDescription.route_description_segment_html?.trim()) ||
-			(Array.isArray(routeDescription) &&
-				routeDescription.some(
-					(section) =>
-						section.section_title?.trim() || section.section_content?.trim(),
-				)));
+		Array.isArray(routeDescription) &&
+		routeDescription.length > 0 &&
+		routeDescription.some(
+			(segment) => segment.route_description_segment_title?.trim() && segment.route_description_segment_html?.trim()
+		);
 	const parkingInstructions = locationData?.location_parking_description;
 	const entranceCoords = locationData?.location_entrance_latlong;
 	const parkingCoords = locationData?.location_parking_latlong;
