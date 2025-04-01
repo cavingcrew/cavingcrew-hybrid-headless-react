@@ -12,14 +12,13 @@ interface TripLeadingInfoProps {
 
 export function TripLeadingInfo({ trip }: TripLeadingInfoProps) {
   const { isLoggedIn } = useUser();
-  const routeAcf = trip.route?.acf;
-  const leadingNotesHtml = routeAcf?.route_leading_notes;
-  const waterImpactHtml = routeAcf?.route_water_impact;
-  const leadingDifficulty = routeAcf?.route_leading_difficulty;
-
-  const hasLeadingContent = leadingNotesHtml || waterImpactHtml ||
-    (leadingDifficulty?.route_leading_difficulty_navigation_difficulty ||
-     leadingDifficulty?.route_leading_difficulty_horizontal_leading_level_required);
+  
+  // Directly access nested properties with optional chaining
+  const hasLeadingContent = 
+    trip.route?.acf?.route_leading_notes ||
+    trip.route?.acf?.route_water_impact ||
+    trip.route?.acf?.route_leading_difficulty?.route_leading_difficulty_navigation_difficulty ||
+    trip.route?.acf?.route_leading_difficulty?.route_leading_difficulty_horizontal_leading_level_required;
 
   if (!hasLeadingContent || !isLoggedIn) return null;
 
@@ -27,38 +26,40 @@ export function TripLeadingInfo({ trip }: TripLeadingInfoProps) {
     <Paper withBorder p="md" radius="md" mt="md">
       <Title order={2} mb="md">Leading This Trip</Title>
 
-      {/* Leading Difficulty */}
-      {leadingDifficulty && (
+      {/* Leading Difficulty Section */}
+      {trip.route?.acf?.route_leading_difficulty && (
         <Stack gap="md" mb="xl">
-          {leadingDifficulty.route_leading_difficulty_navigation_difficulty && (
+          {/* Navigation Difficulty */}
+          {trip.route.acf.route_leading_difficulty.route_leading_difficulty_navigation_difficulty && (
             <Group mt="md">
               <Text fw={500}>Navigation Difficulty:</Text>
               <Badge
                 size="lg"
                 color={
-                  parseInt(leadingDifficulty.route_leading_difficulty_navigation_difficulty, 10) <= 2.5
+                  parseInt(trip.route.acf.route_leading_difficulty.route_leading_difficulty_navigation_difficulty, 10) <= 2.5
                     ? "green"
-                    : parseInt(leadingDifficulty.route_leading_difficulty_navigation_difficulty, 10) <= 6.5
+                    : parseInt(trip.route.acf.route_leading_difficulty.route_leading_difficulty_navigation_difficulty, 10) <= 6.5
                       ? "yellow"
                       : "red"
                 }
               >
-                {leadingDifficulty.route_leading_difficulty_navigation_difficulty}/10
+                {trip.route.acf.route_leading_difficulty.route_leading_difficulty_navigation_difficulty}/10
               </Badge>
             </Group>
           )}
 
-          {leadingDifficulty.route_leading_difficulty_horizontal_leading_level_required?.post_title && (
+          {/* Horizontal Leading Level */}
+          {trip.route.acf.route_leading_difficulty.route_leading_difficulty_horizontal_leading_level_required?.post_title && (
             <>
               <Group align="center" mb="xs">
                 <Badge size="lg" color="orange" variant="filled">
                   Suggested Leading Level:{" "}
-                  {leadingDifficulty.route_leading_difficulty_horizontal_leading_level_required.post_title}
+                  {trip.route.acf.route_leading_difficulty.route_leading_difficulty_horizontal_leading_level_required.post_title}
                 </Badge>
                 
-                {leadingDifficulty.route_leading_difficulty_horizontal_leading_level_required.permalink && (
+                {trip.route.acf.route_leading_difficulty.route_leading_difficulty_horizontal_leading_level_required.permalink && (
                   <Anchor
-                    href={leadingDifficulty.route_leading_difficulty_horizontal_leading_level_required.permalink}
+                    href={trip.route.acf.route_leading_difficulty.route_leading_difficulty_horizontal_leading_level_required.permalink}
                     target="_blank"
                     size="sm"
                   >
@@ -68,19 +69,19 @@ export function TripLeadingInfo({ trip }: TripLeadingInfoProps) {
               </Group>
 
               {/* SRT Leading Level */}
-              {leadingDifficulty.route_leading_difficulty_srt_leading_level_required && (
+              {trip.route.acf.route_leading_difficulty.route_leading_difficulty_srt_leading_level_required && (
                 <Group align="center" mb="xs">
                   <Badge size="lg" color="red" variant="filled">
                     SRT Leading Level:{" "}
-                    {typeof leadingDifficulty.route_leading_difficulty_srt_leading_level_required === 'object' 
-                      ? leadingDifficulty.route_leading_difficulty_srt_leading_level_required.post_title
-                      : `Level ${leadingDifficulty.route_leading_difficulty_srt_leading_level_required}`}
+                    {typeof trip.route.acf.route_leading_difficulty.route_leading_difficulty_srt_leading_level_required === 'object' 
+                      ? trip.route.acf.route_leading_difficulty.route_leading_difficulty_srt_leading_level_required.post_title
+                      : `Level ${trip.route.acf.route_leading_difficulty.route_leading_difficulty_srt_leading_level_required}`}
                   </Badge>
                   
-                  {typeof leadingDifficulty.route_leading_difficulty_srt_leading_level_required === 'object' && 
-                   leadingDifficulty.route_leading_difficulty_srt_leading_level_required.permalink && (
+                  {typeof trip.route.acf.route_leading_difficulty.route_leading_difficulty_srt_leading_level_required === 'object' && 
+                   trip.route.acf.route_leading_difficulty.route_leading_difficulty_srt_leading_level_required.permalink && (
                     <Anchor
-                      href={leadingDifficulty.route_leading_difficulty_srt_leading_level_required.permalink}
+                      href={trip.route.acf.route_leading_difficulty.route_leading_difficulty_srt_leading_level_required.permalink}
                       target="_blank"
                       size="sm"
                     >
@@ -90,59 +91,57 @@ export function TripLeadingInfo({ trip }: TripLeadingInfoProps) {
                 </Group>
               )}
 
-              {leadingDifficulty.route_leading_difficulty_horizontal_leading_skills_required &&
-                leadingDifficulty.route_leading_difficulty_horizontal_leading_skills_required.length > 0 && (
-                  <div>
-                    <Text fw={500}>Suggested Horizontal Leading Skills:</Text>
-                    <List>
-                      {leadingDifficulty.route_leading_difficulty_horizontal_leading_skills_required.map(
-                        (skill: string, i: number) => (
-                          <List.Item
-                            key={`skill-${skill.substring(0, 10)}-${i}`}
-                            icon={
-                              <ThemeIcon color="orange" size={24} radius="xl">
-                                <IconStar size={16} />
-                              </ThemeIcon>
-                            }
-                          >
-                            {skill}
-                          </List.Item>
-                        ),
-                      )}
-                    </List>
-                  </div>
-                )}
-              
-              {/* SRT Leading Skills */}
-              {leadingDifficulty.route_leading_difficulty_srt_leading_skills_required &&
-                leadingDifficulty.route_leading_difficulty_srt_leading_skills_required.length > 0 && (
-                  <div>
-                    <Text fw={500}>Suggested SRT Leading Skills:</Text>
-                    <List>
-                      {leadingDifficulty.route_leading_difficulty_srt_leading_skills_required.map(
-                        (skill: string, i: number) => (
-                          <List.Item
-                            key={`srt-skill-${skill.substring(0, 10)}-${i}`}
-                            icon={
-                              <ThemeIcon color="red" size={24} radius="xl">
-                                <IconStar size={16} />
-                              </ThemeIcon>
-                            }
-                          >
-                            {skill}
-                          </List.Item>
-                        ),
-                      )}
-                    </List>
-                  </div>
-                )}
+              {/* Leading Skills Lists */}
+              {trip.route.acf.route_leading_difficulty.route_leading_difficulty_horizontal_leading_skills_required?.length > 0 && (
+                <div>
+                  <Text fw={500}>Suggested Horizontal Leading Skills:</Text>
+                  <List>
+                    {trip.route.acf.route_leading_difficulty.route_leading_difficulty_horizontal_leading_skills_required.map(
+                      (skill, i) => (
+                        <List.Item
+                          key={`skill-${skill.substring(0, 10)}-${i}`}
+                          icon={
+                            <ThemeIcon color="orange" size={24} radius="xl">
+                              <IconStar size={16} />
+                            </ThemeIcon>
+                          }
+                        >
+                          {skill}
+                        </List.Item>
+                      )
+                    )}
+                  </List>
+                </div>
+              )}
+
+              {trip.route.acf.route_leading_difficulty.route_leading_difficulty_srt_leading_skills_required?.length > 0 && (
+                <div>
+                  <Text fw={500}>Suggested SRT Leading Skills:</Text>
+                  <List>
+                    {trip.route.acf.route_leading_difficulty.route_leading_difficulty_srt_leading_skills_required.map(
+                      (skill, i) => (
+                        <List.Item
+                          key={`srt-skill-${skill.substring(0, 10)}-${i}`}
+                          icon={
+                            <ThemeIcon color="red" size={24} radius="xl">
+                              <IconStar size={16} />
+                            </ThemeIcon>
+                          }
+                        >
+                          {skill}
+                        </List.Item>
+                      )
+                    )}
+                  </List>
+                </div>
+              )}
             </>
           )}
         </Stack>
       )}
 
       {/* Leading Notes */}
-      {leadingNotesHtml && (
+      {trip.route?.acf?.route_leading_notes && (
         <Stack gap="md" mb="xl">
           <Group gap="xs">
             <ThemeIcon variant="light" color="blue">
@@ -150,12 +149,12 @@ export function TripLeadingInfo({ trip }: TripLeadingInfoProps) {
             </ThemeIcon>
             <Text fw={500}>Leadership Notes</Text>
           </Group>
-          <div dangerouslySetInnerHTML={{ __html: leadingNotesHtml }} />
+          <div dangerouslySetInnerHTML={{ __html: trip.route.acf.route_leading_notes }} />
         </Stack>
       )}
 
       {/* Water Impact */}
-      {waterImpactHtml && (
+      {trip.route?.acf?.route_water_impact && (
         <Stack gap="md">
           <Group gap="xs">
             <ThemeIcon variant="light" color="cyan">
@@ -163,7 +162,7 @@ export function TripLeadingInfo({ trip }: TripLeadingInfoProps) {
             </ThemeIcon>
             <Text fw={500}>Water Impact</Text>
           </Group>
-          <div dangerouslySetInnerHTML={{ __html: waterImpactHtml }} />
+          <div dangerouslySetInnerHTML={{ __html: trip.route.acf.route_water_impact }} />
         </Stack>
       )}
     </Paper>
