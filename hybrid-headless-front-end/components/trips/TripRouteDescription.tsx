@@ -6,9 +6,9 @@ import React from "react";
 import type { Route } from "../../types/api";
 
 interface RouteDescriptionSegment {
-  route_description_segment_title: string;
-  route_description_segment_html: string;
-  route_description_segment_photo?: {
+  title: string;
+  content: string;
+  image?: {
     url: string;
     alt?: string;
   } | null;
@@ -51,13 +51,13 @@ export function TripRouteDescription({
       {visibleSegments.map((segment, index) => (
         <Box key={`segment-${index}`}>
           <Text fw={600} size="lg" mb="md">
-            {index + 1}. {segment.route_description_segment_title}
+            {index + 1}. {segment.title}
           </Text>
 
           <Box
             style={{
               display: "grid",
-              gridTemplateColumns: segment.route_description_segment_photo?.url 
+              gridTemplateColumns: segment.image?.url 
                 ? "1fr 1fr" 
                 : "1fr",
               gap: "1.5rem",
@@ -65,14 +65,14 @@ export function TripRouteDescription({
             }}
           >
             <div
-              dangerouslySetInnerHTML={{ __html: segment.route_description_segment_html }}
+              dangerouslySetInnerHTML={{ __html: segment.content }}
               style={{ lineHeight: 1.6 }}
             />
 
-            {segment.route_description_segment_photo?.url && (
+            {segment.image?.url && (
               <Image
-                src={segment.route_description_segment_photo.url}
-                alt={segment.route_description_segment_photo.alt || `Route section ${index + 1}`}
+                src={segment.image.url}
+                alt={segment.image.alt || `Route section ${index + 1}`}
                 radius="sm"
                 style={{
                   gridColumn: index % 2 === 0 ? "2" : "1",
