@@ -880,6 +880,8 @@ class Hybrid_Headless_Products_Controller {
                     'route_leading_difficulty_horizontal_leading_skills_required',
                     'route_leading_difficulty_navigation_difficulty'
                 ]);
+                $route_data['acf']['route_leading_notes'] = $route_acf['route_leading_notes'] ?? '';
+                $route_data['acf']['route_water_impact'] = $route_acf['route_water_impact'] ?? '';
             }
 
             // Add the most sensitive data only for trip leaders
