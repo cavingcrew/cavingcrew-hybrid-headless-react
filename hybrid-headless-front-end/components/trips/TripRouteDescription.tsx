@@ -11,11 +11,11 @@ interface RouteDescriptionSegment {
   route_description_segment_photo?: {
     url: string;
     alt?: string;
-  };
+  } | null;
 }
 
 interface TripRouteDescriptionProps {
-  routeDescription: RouteDescriptionSegment[] | null | undefined;
+  routeDescription: RouteDescriptionSegment[] | Record<string, RouteDescriptionSegment> | null | undefined;
   hasPurchased: boolean;
 }
 
@@ -26,7 +26,9 @@ export function TripRouteDescription({
   // Convert to array if not already
   const segments: RouteDescriptionSegment[] = Array.isArray(routeDescription) 
     ? routeDescription 
-    : [];
+    : routeDescription && typeof routeDescription === 'object' 
+      ? Object.values(routeDescription).filter(Boolean) as RouteDescriptionSegment[]
+      : [];
 
   const visibleSegments = hasPurchased ? segments : segments.slice(0, 1);
 
