@@ -205,6 +205,31 @@ class Hybrid_Headless_Products_Controller {
             $original_user_id = get_current_user_id();
             wp_set_current_user(0);
         }
+        
+        // Get user's trip participation if logged in
+        $user_trip_participation = [];
+        if (!$is_cache_request && is_user_logged_in()) {
+            $user_id = get_current_user_id();
+            $orders = wc_get_orders([
+                'customer_id' => $user_id,
+                'limit' => -1,
+                'status' => ['pending', 'on-hold', 'processing', 'completed'],
+            ]);
+            
+            foreach ($orders as $order) {
+                $cc_volunteer = $order->get_meta('cc_volunteer');
+                foreach ($order->get_items() as $item) {
+                    $product = $item->get_product();
+                    if ($product) {
+                        $product_id = $product->get_parent_id() ?: $product->get_id();
+                        $user_trip_participation[$product_id] = [
+                            'order_id' => $order->get_id(),
+                            'cc_volunteer' => $cc_volunteer
+                        ];
+                    }
+                }
+            }
+        }
 
         $args = array(
             'post_type'      => 'product',
@@ -544,9 +569,17 @@ class Hybrid_Headless_Products_Controller {
 
         // Add route data if available
         if (!empty($acf_fields['event_route_id'])) {
-            $product_data['route'] = $this->get_route_data($acf_fields['event_route_id'], $is_cache_request);
+            $product_data['route'] = $this->get_route_data(
+                $acf_fields['event_route_id'], 
+                $is_cache_request,
+                $product->get_id() // Pass current product ID
+            );
         } elseif (!empty($acf_fields['event_cave_id'])) {
-            $product_data['route'] = $this->get_cave_as_route($acf_fields['event_cave_id'], $is_cache_request);
+            $product_data['route'] = $this->get_cave_as_route(
+                $acf_fields['event_cave_id'], 
+                $is_cache_request,
+                $product->get_id() // Pass current product ID
+            );
         }
 
         // Add hut data if available
@@ -712,7 +745,7 @@ class Hybrid_Headless_Products_Controller {
         ];
     }
 
-    private function get_route_data($route_id, $is_cache_request = false) {
+    private function get_route_data($route_id, $is_cache_request = false, $current_product_id = 0) {
         $post_ref = $this->get_post_reference($route_id);
         if (!$post_ref) return null;
 
@@ -736,65 +769,52 @@ class Hybrid_Headless_Products_Controller {
 
         // Check if user is signed up for this trip and has appropriate role
         $has_trip_leader_access = false;
-        if ($is_logged_in && $is_member) {
+        if ($is_logged_in && $is_member && $current_product_id > 0) {
             $user_id = get_current_user_id();
-            // DEBUG: Log all order meta for the current user
-            error_log('Checking orders for user: ' . $user_id);
-                
-            // Get the current product ID from the request
-            $product_id = 0;
-            if (isset($_REQUEST['id'])) {
-                $product_id = absint($_REQUEST['id']);
-            } elseif (isset($_REQUEST['slug'])) {
-                $product = get_page_by_path($_REQUEST['slug'], OBJECT, 'product');
-                if ($product) {
-                    $product_id = $product->ID;
-                }
-            } elseif (isset($_SERVER['HTTP_REFERER'])) {
-                // Extract product ID from referrer URL if available
-                $referrer = parse_url($_SERVER['HTTP_REFERER']);
-                if (isset($referrer['path']) && strpos($referrer['path'], '/trip/') !== false) {
-                    $slug = basename($referrer['path']);
-                    $product = get_page_by_path($slug, OBJECT, 'product');
-                    if ($product) {
-                        $product_id = $product->ID;
-                    }
-                }
+            error_log('Checking trip leader access for user: ' . $user_id . ' on product: ' . $current_product_id);
+            
+            // Get user participation from global variable
+            global $user_trip_participation;
+            
+            // If global variable not set, try to get from function scope
+            if (!isset($user_trip_participation) && function_exists('get_user_trip_participation')) {
+                $user_trip_participation = get_user_trip_participation();
             }
+            
+            // If we have participation data for this product
+            if (isset($user_trip_participation) && isset($user_trip_participation[$current_product_id])) {
+                $participation = $user_trip_participation[$current_product_id];
+                $cc_volunteer = strtolower((string)$participation['cc_volunteer']);
+                $leader_roles = ['trip leader', 'trip director', 'trip organiser', 'director'];
                 
-            error_log('Current product ID: ' . $product_id);
+                error_log('Role check: ' . $cc_volunteer);
                 
-            if ($product_id > 0) {
-                // Clear any cached order data
-                wc_delete_shop_order_transients();
-                    
+                if ($cc_volunteer && (
+                    strpos($cc_volunteer, 'director') !== false ||
+                    strpos($cc_volunteer, 'leader') !== false || 
+                    in_array($cc_volunteer, $leader_roles)
+                )) {
+                    $has_trip_leader_access = true;
+                    error_log('TRIP LEADER ACCESS GRANTED for role: ' . $cc_volunteer);
+                }
+            } else {
+                // Fallback to direct order check if pre-fetched data not available
                 $orders = wc_get_orders([
                     'customer_id' => $user_id,
                     'limit' => -1,
                     'status' => ['pending', 'on-hold', 'processing', 'completed'],
                 ]);
-                    
-                error_log('Found ' . count($orders) . ' orders for user');
-                    
+                
                 foreach ($orders as $order) {
-                    error_log('Order #' . $order->get_id() . ' cc_volunteer: ' . $order->get_meta('cc_volunteer'));
                     foreach ($order->get_items() as $item) {
                         $item_product = $item->get_product();
                         if ($item_product) {
-                            $parent_id = $item_product->get_parent_id();
-                            $item_id = $item_product->get_id();
-                            $item_product_id = $parent_id ?: $item_id;
-                                
-                            error_log('-- Product: ' . $item_product->get_name() . ' (ID: ' . $item_id . ', Parent: ' . $parent_id . ')');
-                            error_log('Comparing order product ' . $item_product_id . ' vs current trip ' . $product_id);
-                                
-                            if ($item_product_id == $product_id) {
-                                error_log('MATCH FOUND - checking volunteer role');
+                            $item_product_id = $item_product->get_parent_id() ?: $item_product->get_id();
+                            
+                            if ($item_product_id == $current_product_id) {
                                 $cc_volunteer = strtolower((string)$order->get_meta('cc_volunteer'));
                                 $leader_roles = ['trip leader', 'trip director', 'trip organiser', 'director'];
-                                    
-                                error_log('Role check: ' . $cc_volunteer);
-                                    
+                                
                                 if ($cc_volunteer && (
                                     strpos($cc_volunteer, 'director') !== false ||
                                     strpos($cc_volunteer, 'leader') !== false || 
@@ -803,17 +823,15 @@ class Hybrid_Headless_Products_Controller {
                                     $has_trip_leader_access = true;
                                     error_log('TRIP LEADER ACCESS GRANTED for role: ' . $cc_volunteer);
                                     break 2;
-                                } else {
-                                    error_log('No trip leader access - cc_volunteer was: ' . ($cc_volunteer ?: 'not set'));
                                 }
                             }
                         }
                     }
                 }
-                    
-                if (!$has_trip_leader_access) {
-                    error_log('No trip leader access granted after checking all orders');
-                }
+            }
+            
+            if (!$has_trip_leader_access) {
+                error_log('No trip leader access granted for user ' . $user_id . ' on product ' . $current_product_id);
             }
         }
 
@@ -823,7 +841,7 @@ class Hybrid_Headless_Products_Controller {
             'title' => $is_sensitive_access && !($is_logged_in && $is_member) ? 'A sensitive access location' : $post_ref['post_title'],
             'acf' => [
                 'route_name' => $is_sensitive_access && !($is_logged_in && $is_member) ? 'A sensitive access location' : ($route_acf['route_name'] ?? ''),
-                'route_entrance_location_id' => $this->get_location_data($route_acf['route_entrance_location_id'] ?? 0, $is_cache_request),
+                'route_entrance_location_id' => $this->get_location_data($route_acf['route_entrance_location_id'] ?? 0, $is_cache_request, $current_product_id),
                 'route_difficulty' => $this->map_grouped_fields($route_acf['route_difficulty'] ?? [], [
                     'route_difficulty_psychological_claustrophobia',
                     'route_difficulty_objective_tightness',
@@ -850,7 +868,7 @@ class Hybrid_Headless_Products_Controller {
         if (!$is_sensitive_access || $has_trip_leader_access) {
             $route_data['acf']['route_blurb'] = $route_acf['route_blurb'] ?? '';
             $route_data['acf']['route_through_trip'] = $route_acf['route_through_trip'] ?? false;
-            $route_data['acf']['route_exit_location_id'] = $this->get_location_data($route_acf['route_exit_location_id'] ?? 0, $is_cache_request);
+            $route_data['acf']['route_exit_location_id'] = $this->get_location_data($route_acf['route_exit_location_id'] ?? 0, $is_cache_request, $current_product_id);
             $route_data['acf']['route_group_tackle_required'] = $route_acf['route_group_tackle_required'] ?? '';
 
             // Add sensitive data only for members or trip leaders
@@ -888,7 +906,7 @@ class Hybrid_Headless_Products_Controller {
         return $route_data;
     }
 
-    private function get_cave_as_route($cave_id, $is_cache_request = false) {
+    private function get_cave_as_route($cave_id, $is_cache_request = false, $current_product_id = 0) {
         $cave_acf = get_fields($cave_id);
         $cave_post = get_post($cave_id);
 
@@ -967,7 +985,7 @@ class Hybrid_Headless_Products_Controller {
         ] : null;
     }
 
-    private function get_location_data($location, $is_cache_request = false) {
+    private function get_location_data($location, $is_cache_request = false, $current_product_id = 0) {
         $post_ref = $this->get_post_reference($location);
         if (!$post_ref) return null;
 
@@ -990,55 +1008,52 @@ class Hybrid_Headless_Products_Controller {
 
         // Check if user is signed up for this trip and has appropriate role
         $has_trip_leader_access = false;
-        if ($is_logged_in && $is_member) {
+        if ($is_logged_in && $is_member && $current_product_id > 0) {
             $user_id = get_current_user_id();
-            // DEBUG: Log all order meta for the current user
-            error_log('Checking orders for user: ' . $user_id);
-                
-            // Get the current product ID from the request
-            $product_id = 0;
-            if (isset($_REQUEST['id'])) {
-                $product_id = absint($_REQUEST['id']);
-            } elseif (isset($_REQUEST['slug'])) {
-                $product = get_page_by_path($_REQUEST['slug'], OBJECT, 'product');
-                if ($product) {
-                    $product_id = $product->ID;
-                }
+            error_log('Checking trip leader access for user: ' . $user_id . ' on product: ' . $current_product_id);
+            
+            // Get user participation from global variable
+            global $user_trip_participation;
+            
+            // If global variable not set, try to get from function scope
+            if (!isset($user_trip_participation) && function_exists('get_user_trip_participation')) {
+                $user_trip_participation = get_user_trip_participation();
             }
+            
+            // If we have participation data for this product
+            if (isset($user_trip_participation) && isset($user_trip_participation[$current_product_id])) {
+                $participation = $user_trip_participation[$current_product_id];
+                $cc_volunteer = strtolower((string)$participation['cc_volunteer']);
+                $leader_roles = ['trip leader', 'trip director', 'trip organiser', 'director'];
                 
-            error_log('Current product ID: ' . $product_id);
+                error_log('Role check: ' . $cc_volunteer);
                 
-            if ($product_id > 0) {
-                // Clear any cached order data
-                wc_delete_shop_order_transients();
-                    
+                if ($cc_volunteer && (
+                    strpos($cc_volunteer, 'director') !== false ||
+                    strpos($cc_volunteer, 'leader') !== false || 
+                    in_array($cc_volunteer, $leader_roles)
+                )) {
+                    $has_trip_leader_access = true;
+                    error_log('TRIP LEADER ACCESS GRANTED for role: ' . $cc_volunteer);
+                }
+            } else {
+                // Fallback to direct order check if pre-fetched data not available
                 $orders = wc_get_orders([
                     'customer_id' => $user_id,
                     'limit' => -1,
                     'status' => ['pending', 'on-hold', 'processing', 'completed'],
                 ]);
-                    
-                error_log('Found ' . count($orders) . ' orders for user');
-                    
+                
                 foreach ($orders as $order) {
-                    error_log('Order #' . $order->get_id() . ' cc_volunteer: ' . $order->get_meta('cc_volunteer'));
                     foreach ($order->get_items() as $item) {
                         $item_product = $item->get_product();
                         if ($item_product) {
-                            $parent_id = $item_product->get_parent_id();
-                            $item_id = $item_product->get_id();
-                            $item_product_id = $parent_id ?: $item_id;
-                                
-                            error_log('-- Product: ' . $item_product->get_name() . ' (ID: ' . $item_id . ', Parent: ' . $parent_id . ')');
-                            error_log('Comparing order product ' . $item_product_id . ' vs current trip ' . $product_id);
-                                
-                            if ($item_product_id == $product_id) {
-                                error_log('MATCH FOUND - checking volunteer role');
+                            $item_product_id = $item_product->get_parent_id() ?: $item_product->get_id();
+                            
+                            if ($item_product_id == $current_product_id) {
                                 $cc_volunteer = strtolower((string)$order->get_meta('cc_volunteer'));
                                 $leader_roles = ['trip leader', 'trip director', 'trip organiser', 'director'];
-                                    
-                                error_log('Role check: ' . $cc_volunteer);
-                                    
+                                
                                 if ($cc_volunteer && (
                                     strpos($cc_volunteer, 'director') !== false ||
                                     strpos($cc_volunteer, 'leader') !== false || 
@@ -1047,17 +1062,15 @@ class Hybrid_Headless_Products_Controller {
                                     $has_trip_leader_access = true;
                                     error_log('TRIP LEADER ACCESS GRANTED for role: ' . $cc_volunteer);
                                     break 2;
-                                } else {
-                                    error_log('No trip leader access - cc_volunteer was: ' . ($cc_volunteer ?: 'not set'));
                                 }
                             }
                         }
                     }
                 }
-                    
-                if (!$has_trip_leader_access) {
-                    error_log('No trip leader access granted after checking all orders');
-                }
+            }
+            
+            if (!$has_trip_leader_access) {
+                error_log('No trip leader access granted for user ' . $user_id . ' on product ' . $current_product_id);
             }
         }
 
