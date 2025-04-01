@@ -6,8 +6,7 @@ import { IconLink, IconLock, IconMapPin } from "@tabler/icons-react";
 import React from "react";
 import type { Route } from "../../types/api";
 
-interface RouteDescriptionSegment {
-  // New fields
+export interface RouteDescriptionSegment {
   title?: string;
   content?: string;
   image?: {
@@ -126,14 +125,13 @@ export function TripRouteDescription({
         </Box>
       )}
 
-
       {visibleSegments.map((segment, index) => {
         const title = segment.title || segment.route_description_segment_title || "";
         const content = segment.content || segment.route_description_segment_html || "";
         const image = segment.image || segment.route_description_segment_photo;
         
         // Ensure image is properly formatted
-        const imageUrl = image?.url || (image && typeof image === 'object' && 'ID' in image ? image.url : null);
+        const imageUrl = image?.url;
 
         return (
           <Box key={`segment-${index}`}>
