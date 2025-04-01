@@ -27,19 +27,7 @@ interface RouteDescriptionSegment {
 interface TripRouteDescriptionProps {
   routeDescription: RouteDescriptionSegment[] | Record<string, RouteDescriptionSegment> | null | undefined;
   hasPurchased: boolean;
-  surveyImage?: {
-    ID?: number;
-    url?: string;
-    alt?: string;
-    sizes?: {
-      [key: string]: {
-        file: string;
-        width: number;
-        height: number;
-        mime_type?: string;
-      };
-    };
-  } | null;
+  surveyImage?: Route["acf"]["route_survey_image"] | null;
   surveyLink?: string;
 }
 

@@ -387,7 +387,19 @@ export interface Route {
 			acf: Location["acf"];
 		};
 		route_time_for_eta?: string;
-		route_survey_image?: string;
+		route_survey_image?: {
+			ID: number;
+			url: string;
+			alt?: string;
+			sizes?: {
+				[key: string]: {
+					file: string;
+					width: number;
+					height: number;
+					mime_type?: string;
+				};
+			};
+		};
 		route_survey_link?: {
 			url: string;
 			target?: string;
