@@ -1,7 +1,6 @@
 "use client";
 
-import { Carousel } from "@mantine/carousel";
-import { Alert, Group, Image, Stack, Text, ThemeIcon } from "@mantine/core";
+import { Alert, Box, Group, Image, Stack, Text, ThemeIcon } from "@mantine/core";
 import { IconLock, IconMapPin } from "@tabler/icons-react";
 import React from "react";
 import type { Route } from "../../types/api";
@@ -15,143 +14,99 @@ export function TripRouteDescription({
   routeDescription,
   hasPurchased
 }: TripRouteDescriptionProps) {
-  const hasContent = routeDescription &&
-    ((typeof routeDescription === "object" &&
-      !Array.isArray(routeDescription) &&
-      routeDescription.route_description_segment_html?.trim()) ||
-      (Array.isArray(routeDescription) &&
-        routeDescription.some(
-          (section) =>
-            section.section_title?.trim() || section.section_content?.trim(),
-        )));
-
-  if (!hasContent) return null;
-
-  // Extract images from HTML content
-  const extractImages = (html: string) => {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
-    return Array.from(doc.images).map(img => ({
-      src: img.src,
-      alt: img.alt,
-    }));
+  // Extract segments from the route description
+  const getSegments = () => {
+    if (!routeDescription) return [];
+    
+    if (Array.isArray(routeDescription)) {
+      return routeDescription;
+    }
+    
+    // Handle single object case by wrapping in array
+    if (typeof routeDescription === "object") {
+      return [routeDescription];
+    }
+    
+    return [];
   };
 
+  const segments = getSegments();
+  const visibleSegments = hasPurchased ? segments : segments.slice(0, 1);
+
+  if (segments.length === 0) return null;
+
   return (
-    <Stack gap="md">
+    <Stack gap="xl">
       <Group gap="xs">
         <ThemeIcon variant="light" color="green">
           <IconMapPin size={18} />
         </ThemeIcon>
         <Text fw={500}>Route Description</Text>
+        {!hasPurchased && (
+          <Alert color="blue" icon={<IconLock size={16} />} ml="auto">
+            Sign up to view full route details
+          </Alert>
+        )}
       </Group>
 
-      <div style={{ position: "relative" }}>
-        {!hasPurchased && (
-          <div style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: "rgba(255,255,255,0.7)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 10,
-            borderRadius: 8
-          }}>
-            <Alert color="blue" icon={<IconLock size={16} />}>
-              Sign up to view full route details
-            </Alert>
-          </div>
-        )}
-        
-        <div style={{
-          overflow: "hidden",
-          position: "relative",
-          ...(!hasPurchased && {
-            maxHeight: 200,
-            filter: "blur(3px)",
-          })
-        }}>
-          {typeof routeDescription === "object" &&
-          !Array.isArray(routeDescription) &&
-          routeDescription.route_description_segment_html ? (
-            <div style={{ lineHeight: 1.5 }}>
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: routeDescription.route_description_segment_html,
+      {visibleSegments.map((segment, index) => (
+        <Box key={`segment-${index}`} style={{ position: "relative" }}>
+          {/* Section Header with Number */}
+          <Text fw={600} size="lg" mb="md">
+            {index + 1}. {segment.route_description_segment_title || `Section ${index + 1}`}
+          </Text>
+
+          {/* Content with alternating image layout */}
+          <Box
+            style={{
+              display: "grid",
+              gridTemplateColumns: segment.route_description_segment_photo?.url 
+                ? "1fr 1fr" 
+                : "1fr",
+              gap: "1.5rem",
+              alignItems: "start",
+            }}
+          >
+            {/* Text content */}
+            <div
+              dangerouslySetInnerHTML={{
+                __html: segment.route_description_segment_html || "",
+              }}
+              style={{ lineHeight: 1.6 }}
+            />
+
+            {/* Image - alternate sides for each section */}
+            {segment.route_description_segment_photo?.url && (
+              <Image
+                src={segment.route_description_segment_photo.url}
+                alt={segment.route_description_segment_photo.alt || `Route section ${index + 1}`}
+                radius="sm"
+                style={{
+                  gridColumn: index % 2 === 0 ? "2" : "1",
+                  gridRow: "1",
+                  height: "auto",
+                  maxHeight: "400px",
+                  objectFit: "cover",
                 }}
               />
-              {hasPurchased && extractImages(routeDescription.route_description_segment_html).length > 0 && (
-                <Carousel
-                  slideSize="70%"
-                  height={300}
-                  slideGap="md"
-                  controlsOffset="xs"
-                  dragFree
-                  withIndicators
-                  mt="md"
-                >
-                  {extractImages(routeDescription.route_description_segment_html).map((img, i) => (
-                    <Carousel.Slide key={i}>
-                      <Image
-                        src={img.src}
-                        alt={img.alt || `Route image ${i + 1}`}
-                        height={300}
-                        style={{ objectFit: "cover" }}
-                      />
-                    </Carousel.Slide>
-                  ))}
-                </Carousel>
-              )}
-            </div>
-          ) : Array.isArray(routeDescription) && routeDescription.length > 0 ? (
-            <Stack gap="xl">
-              {routeDescription.map((section) => (
-                <div key={`route-section-${section.section_title || section.section_content?.substring(0, 20)}`}>
-                  {section.section_title && (
-                    <Text fw={500} size="lg" mb="sm">
-                      {section.section_title}
-                    </Text>
-                  )}
-                  {section.section_content && (
-                    <>
-                      <div
-                        dangerouslySetInnerHTML={{ __html: section.section_content }}
-                        style={{ lineHeight: 1.6 }}
-                      />
-                      {hasPurchased && extractImages(section.section_content).length > 0 && (
-                        <div style={{
-                          display: 'grid',
-                          gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
-                          gap: '1rem',
-                          margin: '1rem 0'
-                        }}>
-                          {extractImages(section.section_content).map((img, i) => (
-                            <Image
-                              key={i}
-                              src={img.src}
-                              alt={img.alt || `Section image ${i + 1}`}
-                              radius="sm"
-                              style={{ height: 200, objectFit: 'cover' }}
-                            />
-                          ))}
-                        </div>
-                      )}
-                    </>
-                  )}
-                </div>
-              ))}
-            </Stack>
-          ) : (
-            <Text size="sm" c="dimmed">
-              Route description not available
-            </Text>
-          )}
-        </div>
-      </div>
+            )}
+          </Box>
+        </Box>
+      ))}
+
+      {/* Blur overlay for non-purchased users */}
+      {!hasPurchased && segments.length > 1 && (
+        <Box
+          style={{
+            position: "relative",
+            height: "100px",
+            marginTop: "-100px",
+            background: "linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 50%, rgba(255,255,255,1) 100%)",
+            zIndex: 1,
+            pointerEvents: "none",
+          }}
+        />
+      )}
     </Stack>
   );
 }
