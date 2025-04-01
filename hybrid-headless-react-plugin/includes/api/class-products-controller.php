@@ -892,17 +892,13 @@ class Hybrid_Headless_Products_Controller {
                         $route_data['acf']['route_route_description'][] = [
                             'title' => $segment['route_description_segment_title'] ?? '',
                             'content' => $segment['route_description_segment_html'] ?? '',
-                            'image' => $this->get_image_data(
-                                is_array($segment['route_description_segment_photo'] ?? null) 
-                                    ? ($segment['route_description_segment_photo']['ID'] ?? 0)
-                                    : ($segment['route_description_segment_photo'] ?? 0)
-                            )
+                            'image' => $this->process_acf_image_field($segment['route_description_segment_photo'] ?? null)
                         ];
                     }
                 }
                 $route_data['acf']['route_additional_images'] = is_array($route_acf['route_additional_images'] ?? false) ?
                     array_map(function($img) {
-                        return $this->get_image_data($img['image'] ?? 0);
+                        return $this->process_acf_image_field($img['image'] ?? null);
                     }, $route_acf['route_additional_images']) : [];
             }
         }
@@ -1110,10 +1106,8 @@ class Hybrid_Headless_Products_Controller {
                     'location_parking_description' => $location_acf['location_parking_description'] ?? '',
                     'location_parking_photos' => $process_gallery($location_acf['location_parking_photos'] ?? []),
                     'location_parking_entrance_route_description' => $location_acf['location_parking_entrance_route_description'] ?? '',
-                    'location_map_from_parking_to_entrance' => $this->get_image_data(
-                        is_array($location_acf['location_map_from_parking_to_entrance'] ?? 0)
-                            ? ($location_acf['location_map_from_parking_to_entrance']['ID'] ?? 0)
-                            : $location_acf['location_map_from_parking_to_entrance'] ?? 0
+                    'location_map_from_parking_to_entrance' => $this->process_acf_image_field(
+                        $location_acf['location_map_from_parking_to_entrance'] ?? null
                     ),
                     'location_entrance_latlong' => $location_acf['location_entrance_latlong'] ?? '',
                     'location_entrance_photos' => $process_gallery($location_acf['location_entrance_photos'] ?? []),
@@ -1165,6 +1159,33 @@ class Hybrid_Headless_Products_Controller {
             'caption' => wp_get_attachment_caption($image_id),
             'sizes' => $sizes_data
         ];
+    }
+    
+    /**
+     * Process ACF image field in various formats
+     *
+     * @param mixed $image_field ACF image field which could be ID, array with ID, or array with nested data
+     * @return array|null Processed image data or null if invalid
+     */
+    private function process_acf_image_field($image_field) {
+        // Handle array format (full ACF image array)
+        if (is_array($image_field)) {
+            // If we have a nested array from ACF group fields
+            if (isset($image_field['ID'])) {
+                return $this->get_image_data($image_field['ID']);
+            }
+            // Direct image ID may sometimes come as array value
+            elseif (isset($image_field['id'])) {
+                return $this->get_image_data($image_field['id']);
+            }
+        }
+        // Handle numeric ID format
+        elseif (is_numeric($image_field)) {
+            return $this->get_image_data((int)$image_field);
+        }
+        
+        // Default to empty image data
+        return null;
     }
 
     /**
