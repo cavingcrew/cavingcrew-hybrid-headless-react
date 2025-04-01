@@ -14,11 +14,28 @@ export function TripRouteDescription({
   routeDescription,
   hasPurchased
 }: TripRouteDescriptionProps) {
-  if (!routeDescription || !Array.isArray(routeDescription)) return null;
+  // Handle both array and object formats from API
+  const getSegments = () => {
+    if (!routeDescription) return [];
+    
+    if (Array.isArray(routeDescription)) {
+      return routeDescription;
+    }
+    
+    // Handle object format where keys are numbers
+    if (typeof routeDescription === 'object' && routeDescription !== null) {
+      return Object.values(routeDescription).filter(segment => 
+        segment && typeof segment === 'object'
+      );
+    }
+    
+    return [];
+  };
 
-  const visibleSegments = hasPurchased 
-    ? routeDescription 
-    : routeDescription.slice(0, 1);
+  const segments = getSegments();
+  const visibleSegments = hasPurchased ? segments : segments.slice(0, 1);
+
+  if (segments.length === 0) return null;
 
   return (
     <Stack gap="xl">
@@ -34,46 +51,53 @@ export function TripRouteDescription({
         )}
       </Group>
 
-      {visibleSegments.map((segment, index) => (
-        <Box key={`segment-${index}`}>
-          <Text fw={600} size="lg" mb="md">
-            {index + 1}. {segment.route_description_segment_title}
-          </Text>
+      {visibleSegments.map((segment, index) => {
+        // Handle both title formats
+        const title = segment.route_description_segment_title || segment.title;
+        const content = segment.route_description_segment_html || segment.content;
+        const image = segment.route_description_segment_photo || segment.image;
 
-          <Box
-            style={{
-              display: "grid",
-              gridTemplateColumns: segment.route_description_segment_photo?.url 
-                ? "1fr 1fr" 
-                : "1fr",
-              gap: "1.5rem",
-              alignItems: "start",
-            }}
-          >
-            <div
-              dangerouslySetInnerHTML={{ __html: segment.route_description_segment_html }}
-              style={{ lineHeight: 1.6 }}
-            />
+        if (!title && !content) return null;
 
-            {segment.route_description_segment_photo?.url && (
-              <Image
-                src={segment.route_description_segment_photo.url}
-                alt={segment.route_description_segment_photo.alt || `Route section ${index + 1}`}
-                radius="sm"
-                style={{
-                  gridColumn: index % 2 === 0 ? "2" : "1",
-                  gridRow: "1",
-                  height: "auto",
-                  maxHeight: "400px",
-                  objectFit: "cover",
-                }}
+        return (
+          <Box key={`segment-${index}`}>
+            <Text fw={600} size="lg" mb="md">
+              {index + 1}. {title}
+            </Text>
+
+            <Box
+              style={{
+                display: "grid",
+                gridTemplateColumns: image?.url ? "1fr 1fr" : "1fr",
+                gap: "1.5rem",
+                alignItems: "start",
+              }}
+            >
+              <div
+                dangerouslySetInnerHTML={{ __html: content }}
+                style={{ lineHeight: 1.6 }}
               />
-            )}
-          </Box>
-        </Box>
-      ))}
 
-      {!hasPurchased && routeDescription.length > 1 && (
+              {image?.url && (
+                <Image
+                  src={image.url}
+                  alt={image.alt || `Route section ${index + 1}`}
+                  radius="sm"
+                  style={{
+                    gridColumn: index % 2 === 0 ? "2" : "1",
+                    gridRow: "1",
+                    height: "auto",
+                    maxHeight: "400px",
+                    objectFit: "cover",
+                  }}
+                />
+              )}
+            </Box>
+          </Box>
+        );
+      })}
+
+      {!hasPurchased && segments.length > 1 && (
         <Box
           style={{
             position: "relative",
