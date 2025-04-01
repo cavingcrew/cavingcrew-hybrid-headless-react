@@ -1,6 +1,7 @@
 "use client";
 
-import { Alert, Box, Button, Group, Image, Stack, Text, ThemeIcon } from "@mantine/core";
+import { Alert, Box, Button, Group, Image, Modal, Stack, Text, ThemeIcon } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 import { IconLink, IconLock, IconMapPin } from "@tabler/icons-react";
 import React from "react";
 import type { Route } from "../../types/api";
@@ -39,6 +40,7 @@ export function TripRouteDescription({
   surveyImage,
   surveyLink
 }: TripRouteDescriptionProps) {
+  const [surveyModalOpened, { open: openSurveyModal, close: closeSurveyModal }] = useDisclosure(false);
   // Convert to array if not already
   const segments: RouteDescriptionSegment[] = Array.isArray(routeDescription) 
     ? routeDescription 
@@ -70,12 +72,49 @@ export function TripRouteDescription({
           <Text fw={600} size="lg" mb="md">
             Cave Survey
           </Text>
-          <Image
-            src={surveyImage.url}
-            alt={surveyImage.alt || "Cave survey diagram"}
-            radius="sm"
-            mb="md"
-          />
+          <Box 
+            onClick={openSurveyModal} 
+            style={{ cursor: 'pointer', position: 'relative' }}
+          >
+            <Image
+              src={surveyImage.url}
+              alt={surveyImage.alt || "Cave survey diagram"}
+              radius="sm"
+              mb="md"
+              style={{ 
+                border: '2px solid var(--mantine-color-gray-3)',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+              }}
+            />
+            <Box
+              style={{
+                position: 'absolute',
+                bottom: 16,
+                right: 16,
+                backgroundColor: 'rgba(0,0,0,0.7)',
+                color: 'white',
+                padding: '4px 8px',
+                borderRadius: 4,
+                fontSize: 14
+              }}
+            >
+              Click to enlarge
+            </Box>
+          </Box>
+
+          <Modal 
+            opened={surveyModalOpened} 
+            onClose={closeSurveyModal} 
+            size="xl"
+            title="Cave Survey Diagram"
+          >
+            <Image
+              src={surveyImage.url}
+              alt={surveyImage.alt || "Cave survey diagram"}
+              style={{ width: '100%', height: 'auto' }}
+            />
+          </Modal>
+
           {surveyLink && (
             <Button
               component="a"
@@ -84,7 +123,7 @@ export function TripRouteDescription({
               variant="outline"
               leftSection={<IconLink size={16} />}
             >
-              View Full Survey
+              View Full Survey Document
             </Button>
           )}
         </Box>
