@@ -8,19 +8,17 @@ interface TripLeadingInfoProps {
   leadingNotesHtml?: string;
   waterImpactHtml?: string;
   leadingDifficulty?: {
+    route_leading_difficulty_navigation_difficulty?: string;
+    route_leading_difficulty_horizontal_leading_level_required?: {
+      post_title?: string;
+      permalink?: string;
+    } | null; // Allow null
+    route_leading_difficulty_horizontal_leading_skills_required?: string[];
     route_leading_difficulty_srt_leading_level_required?: {
       post_title?: string;
       permalink?: string;
-    };
+    } | null; // Allow null
     route_leading_difficulty_srt_leading_skills_required?: string[];
-    route_leading_difficulty_horizontal_leading_level_required?: {
-      ID?: number;
-      post_title?: string;
-      post_name?: string;
-      permalink?: string;
-    };
-    route_leading_difficulty_horizontal_leading_skills_required?: string[];
-    route_leading_difficulty_navigation_difficulty?: string;
   };
   isLoggedIn: boolean;
 }
