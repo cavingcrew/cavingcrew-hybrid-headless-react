@@ -892,7 +892,11 @@ class Hybrid_Headless_Products_Controller {
                         $route_data['acf']['route_route_description'][] = [
                             'title' => $segment['route_description_segment_title'] ?? '',
                             'content' => $segment['route_description_segment_html'] ?? '',
-                            'image' => $this->get_image_data($segment['route_description_segment_photo'] ?? 0)
+                            'image' => $this->get_image_data(
+                                is_array($segment['route_description_segment_photo'] ?? null) 
+                                    ? ($segment['route_description_segment_photo']['ID'] ?? 0)
+                                    : ($segment['route_description_segment_photo'] ?? 0)
+                            )
                         ];
                     }
                 }
