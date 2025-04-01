@@ -205,7 +205,7 @@ class Hybrid_Headless_Products_Controller {
             $original_user_id = get_current_user_id();
             wp_set_current_user(0);
         }
-        
+
         // Get user's trip participation if logged in
         $user_trip_participation = [];
         if (!$is_cache_request && is_user_logged_in()) {
@@ -215,7 +215,7 @@ class Hybrid_Headless_Products_Controller {
                 'limit' => -1,
                 'status' => ['pending', 'on-hold', 'processing', 'completed'],
             ]);
-            
+
             foreach ($orders as $order) {
                 $cc_volunteer = $order->get_meta('cc_volunteer');
                 foreach ($order->get_items() as $item) {
@@ -570,13 +570,13 @@ class Hybrid_Headless_Products_Controller {
         // Add route data if available
         if (!empty($acf_fields['event_route_id'])) {
             $product_data['route'] = $this->get_route_data(
-                $acf_fields['event_route_id'], 
+                $acf_fields['event_route_id'],
                 $is_cache_request,
                 $product->get_id() // Pass current product ID
             );
         } elseif (!empty($acf_fields['event_cave_id'])) {
             $product_data['route'] = $this->get_cave_as_route(
-                $acf_fields['event_cave_id'], 
+                $acf_fields['event_cave_id'],
                 $is_cache_request,
                 $product->get_id() // Pass current product ID
             );
@@ -611,7 +611,7 @@ class Hybrid_Headless_Products_Controller {
         foreach ( $attachment_ids as $attachment_id ) {
             $meta = wp_get_attachment_metadata($attachment_id);
             $sizes_data = [];
-            
+
             // Process each size to get the full URL
             if (!empty($meta['sizes'])) {
                 foreach ($meta['sizes'] as $size_name => $size_info) {
@@ -626,7 +626,7 @@ class Hybrid_Headless_Products_Controller {
                     }
                 }
             }
-            
+
             $images[] = array(
                 'id'    => $attachment_id,
                 'src'   => wp_get_attachment_url( $attachment_id ),
@@ -717,10 +717,10 @@ class Hybrid_Headless_Products_Controller {
 
     private function get_hut_image_data($image_id) {
         if (!$image_id) return null;
-        
+
         $meta = wp_get_attachment_metadata($image_id);
         $sizes_data = [];
-        
+
         // Process each size to get the full URL
         if (!empty($meta['sizes'])) {
             foreach ($meta['sizes'] as $size_name => $size_info) {
@@ -735,7 +735,7 @@ class Hybrid_Headless_Products_Controller {
                 }
             }
         }
-        
+
         return [
             'ID' => $image_id,
             'url' => wp_get_attachment_url($image_id),
@@ -772,26 +772,26 @@ class Hybrid_Headless_Products_Controller {
         if ($is_logged_in && $is_member && $current_product_id > 0) {
             $user_id = get_current_user_id();
             error_log('Checking trip leader access for user: ' . $user_id . ' on product: ' . $current_product_id);
-            
+
             // Get user participation from global variable
             global $user_trip_participation;
-            
+
             // If global variable not set, try to get from function scope
             if (!isset($user_trip_participation) && function_exists('get_user_trip_participation')) {
                 $user_trip_participation = get_user_trip_participation();
             }
-            
+
             // If we have participation data for this product
             if (isset($user_trip_participation) && isset($user_trip_participation[$current_product_id])) {
                 $participation = $user_trip_participation[$current_product_id];
                 $cc_volunteer = strtolower((string)$participation['cc_volunteer']);
                 $leader_roles = ['trip leader', 'trip director', 'trip organiser', 'director'];
-                
+
                 error_log('Role check: ' . $cc_volunteer);
-                
+
                 if ($cc_volunteer && (
                     strpos($cc_volunteer, 'director') !== false ||
-                    strpos($cc_volunteer, 'leader') !== false || 
+                    strpos($cc_volunteer, 'leader') !== false ||
                     in_array($cc_volunteer, $leader_roles)
                 )) {
                     $has_trip_leader_access = true;
@@ -804,20 +804,20 @@ class Hybrid_Headless_Products_Controller {
                     'limit' => -1,
                     'status' => ['pending', 'on-hold', 'processing', 'completed'],
                 ]);
-                
+
                 foreach ($orders as $order) {
                     foreach ($order->get_items() as $item) {
                         $item_product = $item->get_product();
                         if ($item_product) {
                             $item_product_id = $item_product->get_parent_id() ?: $item_product->get_id();
-                            
+
                             if ($item_product_id == $current_product_id) {
                                 $cc_volunteer = strtolower((string)$order->get_meta('cc_volunteer'));
                                 $leader_roles = ['trip leader', 'trip director', 'trip organiser', 'director'];
-                                
+
                                 if ($cc_volunteer && (
                                     strpos($cc_volunteer, 'director') !== false ||
-                                    strpos($cc_volunteer, 'leader') !== false || 
+                                    strpos($cc_volunteer, 'leader') !== false ||
                                     in_array($cc_volunteer, $leader_roles)
                                 )) {
                                     $has_trip_leader_access = true;
@@ -829,7 +829,7 @@ class Hybrid_Headless_Products_Controller {
                     }
                 }
             }
-            
+
             if (!$has_trip_leader_access) {
                 error_log('No trip leader access granted for user ' . $user_id . ' on product ' . $current_product_id);
             }
@@ -884,8 +884,7 @@ class Hybrid_Headless_Products_Controller {
 
             // Add the most sensitive data only for trip leaders
             if (!$is_sensitive_access || $has_trip_leader_access) {
-                $route_data['acf']['route_survey_image'] = $this->get_image_data($route_acf['route_survey_image'] ?? 0);
-                $route_data['acf']['route_survey_link'] = $route_acf['route_survey_link'] ?? null;
+                $route_data['acf']['route_survey_image'] = $this->process_acf_image_field($route_acf['route_survey_image'] ?? null);                    $route_data['acf']['route_survey_link'] = $route_acf['route_survey_link'] ?? null;
                 $route_data['acf']['route_route_description'] = [];
                 if (!empty($route_acf['route_route_description'])) {
                     foreach ($route_acf['route_route_description'] as $segment) {
@@ -1011,26 +1010,26 @@ class Hybrid_Headless_Products_Controller {
         if ($is_logged_in && $is_member && $current_product_id > 0) {
             $user_id = get_current_user_id();
             error_log('Checking trip leader access for user: ' . $user_id . ' on product: ' . $current_product_id);
-            
+
             // Get user participation from global variable
             global $user_trip_participation;
-            
+
             // If global variable not set, try to get from function scope
             if (!isset($user_trip_participation) && function_exists('get_user_trip_participation')) {
                 $user_trip_participation = get_user_trip_participation();
             }
-            
+
             // If we have participation data for this product
             if (isset($user_trip_participation) && isset($user_trip_participation[$current_product_id])) {
                 $participation = $user_trip_participation[$current_product_id];
                 $cc_volunteer = strtolower((string)$participation['cc_volunteer']);
                 $leader_roles = ['trip leader', 'trip director', 'trip organiser', 'director'];
-                
+
                 error_log('Role check: ' . $cc_volunteer);
-                
+
                 if ($cc_volunteer && (
                     strpos($cc_volunteer, 'director') !== false ||
-                    strpos($cc_volunteer, 'leader') !== false || 
+                    strpos($cc_volunteer, 'leader') !== false ||
                     in_array($cc_volunteer, $leader_roles)
                 )) {
                     $has_trip_leader_access = true;
@@ -1043,20 +1042,20 @@ class Hybrid_Headless_Products_Controller {
                     'limit' => -1,
                     'status' => ['pending', 'on-hold', 'processing', 'completed'],
                 ]);
-                
+
                 foreach ($orders as $order) {
                     foreach ($order->get_items() as $item) {
                         $item_product = $item->get_product();
                         if ($item_product) {
                             $item_product_id = $item_product->get_parent_id() ?: $item_product->get_id();
-                            
+
                             if ($item_product_id == $current_product_id) {
                                 $cc_volunteer = strtolower((string)$order->get_meta('cc_volunteer'));
                                 $leader_roles = ['trip leader', 'trip director', 'trip organiser', 'director'];
-                                
+
                                 if ($cc_volunteer && (
                                     strpos($cc_volunteer, 'director') !== false ||
-                                    strpos($cc_volunteer, 'leader') !== false || 
+                                    strpos($cc_volunteer, 'leader') !== false ||
                                     in_array($cc_volunteer, $leader_roles)
                                 )) {
                                     $has_trip_leader_access = true;
@@ -1068,7 +1067,7 @@ class Hybrid_Headless_Products_Controller {
                     }
                 }
             }
-            
+
             if (!$has_trip_leader_access) {
                 error_log('No trip leader access granted for user ' . $user_id . ' on product ' . $current_product_id);
             }
@@ -1136,7 +1135,7 @@ class Hybrid_Headless_Products_Controller {
 
         $meta = wp_get_attachment_metadata($image_id);
         $sizes_data = [];
-        
+
         // Process each size to get the full URL
         if (!empty($meta['sizes'])) {
             foreach ($meta['sizes'] as $size_name => $size_info) {
@@ -1160,7 +1159,7 @@ class Hybrid_Headless_Products_Controller {
             'sizes' => $sizes_data
         ];
     }
-    
+
     /**
      * Process ACF image field in various formats
      *
@@ -1183,7 +1182,7 @@ class Hybrid_Headless_Products_Controller {
         elseif (is_numeric($image_field)) {
             return $this->get_image_data((int)$image_field);
         }
-        
+
         // Default to empty image data
         return null;
     }
