@@ -1,4 +1,4 @@
-import type { UserResponse, Trip, TripParticipantsResponse } from "../types/api";
+import type { UserResponse, Trip } from "../types/api";
 import type { SkillCategory } from "./skill-definitions";
 import { getSkillDefinition } from "./skill-definitions";
 
