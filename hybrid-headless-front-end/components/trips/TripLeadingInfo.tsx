@@ -12,11 +12,9 @@ interface TripLeadingInfoProps {
 
 export function TripLeadingInfo({ trip }: TripLeadingInfoProps) {
   const { isLoggedIn } = useUser();
-  
+
   // Directly access nested properties with optional chaining
-  const hasLeadingContent = 
-    (trip.route?.acf?.route_leading_notes && trip.route.acf.route_leading_notes.trim() !== '') ||
-    (trip.route?.acf?.route_water_impact && trip.route.acf.route_water_impact.trim() !== '') ||
+  const hasLeadingContent =
     trip.route?.acf?.route_leading_difficulty?.route_leading_difficulty_navigation_difficulty ||
     trip.route?.acf?.route_leading_difficulty?.route_leading_difficulty_horizontal_leading_level_required;
 
@@ -56,7 +54,7 @@ export function TripLeadingInfo({ trip }: TripLeadingInfoProps) {
                   Suggested Leading Level:{" "}
                   {trip.route.acf.route_leading_difficulty.route_leading_difficulty_horizontal_leading_level_required.post_title}
                 </Badge>
-                
+
                 {trip.route.acf.route_leading_difficulty.route_leading_difficulty_horizontal_leading_level_required.permalink && (
                   <Anchor
                     href={trip.route.acf.route_leading_difficulty.route_leading_difficulty_horizontal_leading_level_required.permalink}
@@ -73,17 +71,17 @@ export function TripLeadingInfo({ trip }: TripLeadingInfoProps) {
                 <Group align="center" mb="xs">
                   <Badge size="lg" color="red" variant="filled">
                     SRT Leading Level:{" "}
-                    {typeof trip.route.acf.route_leading_difficulty.route_leading_difficulty_srt_leading_level_required === 'object' 
-                      ? (trip.route.acf.route_leading_difficulty.route_leading_difficulty_srt_leading_level_required && 
-                         'post_title' in trip.route.acf.route_leading_difficulty.route_leading_difficulty_srt_leading_level_required 
-                         ? trip.route.acf.route_leading_difficulty.route_leading_difficulty_srt_leading_level_required.post_title 
+                    {typeof trip.route.acf.route_leading_difficulty.route_leading_difficulty_srt_leading_level_required === 'object'
+                      ? (trip.route.acf.route_leading_difficulty.route_leading_difficulty_srt_leading_level_required &&
+                         'post_title' in trip.route.acf.route_leading_difficulty.route_leading_difficulty_srt_leading_level_required
+                         ? trip.route.acf.route_leading_difficulty.route_leading_difficulty_srt_leading_level_required.post_title
                          : 'Unknown')
                       : `Level ${trip.route.acf.route_leading_difficulty.route_leading_difficulty_srt_leading_level_required}`}
                   </Badge>
-                  
-                  {typeof trip.route.acf.route_leading_difficulty.route_leading_difficulty_srt_leading_level_required === 'object' && 
-                   trip.route.acf.route_leading_difficulty.route_leading_difficulty_srt_leading_level_required && 
-                   'permalink' in trip.route.acf.route_leading_difficulty.route_leading_difficulty_srt_leading_level_required && 
+
+                  {typeof trip.route.acf.route_leading_difficulty.route_leading_difficulty_srt_leading_level_required === 'object' &&
+                   trip.route.acf.route_leading_difficulty.route_leading_difficulty_srt_leading_level_required &&
+                   'permalink' in trip.route.acf.route_leading_difficulty.route_leading_difficulty_srt_leading_level_required &&
                    trip.route.acf.route_leading_difficulty.route_leading_difficulty_srt_leading_level_required.permalink && (
                     <Anchor
                       href={trip.route.acf.route_leading_difficulty.route_leading_difficulty_srt_leading_level_required.permalink}
