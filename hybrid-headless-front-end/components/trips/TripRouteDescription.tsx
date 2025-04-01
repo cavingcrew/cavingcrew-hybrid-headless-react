@@ -85,7 +85,7 @@ export function TripRouteDescription({
             style={{ cursor: 'pointer', position: 'relative' }}
           >
             <Image
-              src={surveyImage.url}
+              src={surveyImage.url || (surveyImage.sizes?.large?.file || surveyImage.sizes?.medium?.file)}
               alt={surveyImage.alt || "Cave survey diagram"}
               radius="sm"
               mb="md"
@@ -117,7 +117,7 @@ export function TripRouteDescription({
             title="Cave Survey Diagram"
           >
             <Image
-              src={surveyImage.url}
+              src={surveyImage.url || (surveyImage.sizes?.large?.file || surveyImage.sizes?.medium?.file)}
               alt={surveyImage.alt || "Cave survey diagram"}
               style={{ width: '100%', height: 'auto' }}
             />
