@@ -6,9 +6,18 @@ import React from "react";
 import type { Route } from "../../types/api";
 
 interface RouteDescriptionSegment {
-  title: string;
-  content: string;
+  // New fields
+  title?: string;
+  content?: string;
   image?: {
+    url: string;
+    alt?: string;
+  } | null;
+  
+  // Legacy fields
+  route_description_segment_title?: string;
+  route_description_segment_html?: string;
+  route_description_segment_photo?: {
     url: string;
     alt?: string;
   } | null;
@@ -48,44 +57,50 @@ export function TripRouteDescription({
         )}
       </Group>
 
-      {visibleSegments.map((segment, index) => (
-        <Box key={`segment-${index}`}>
-          <Text fw={600} size="lg" mb="md">
-            {index + 1}. {segment.title}
-          </Text>
+      {visibleSegments.map((segment, index) => {
+        const title = segment.title || segment.route_description_segment_title || "";
+        const content = segment.content || segment.route_description_segment_html || "";
+        const image = segment.image || segment.route_description_segment_photo;
 
-          <Box
-            style={{
-              display: "grid",
-              gridTemplateColumns: segment.image?.url 
-                ? "1fr 1fr" 
-                : "1fr",
-              gap: "1.5rem",
-              alignItems: "start",
-            }}
-          >
-            <div
-              dangerouslySetInnerHTML={{ __html: segment.content }}
-              style={{ lineHeight: 1.6 }}
-            />
+        return (
+          <Box key={`segment-${index}`}>
+            <Text fw={600} size="lg" mb="md">
+              {index + 1}. {title}
+            </Text>
 
-            {segment.image?.url && (
-              <Image
-                src={segment.image.url}
-                alt={segment.image.alt || `Route section ${index + 1}`}
-                radius="sm"
-                style={{
-                  gridColumn: index % 2 === 0 ? "2" : "1",
-                  gridRow: "1",
-                  height: "auto",
-                  maxHeight: "400px",
-                  objectFit: "cover",
-                }}
+            <Box
+              style={{
+                display: "grid",
+                gridTemplateColumns: image?.url 
+                  ? "1fr 1fr" 
+                  : "1fr",
+                gap: "1.5rem",
+                alignItems: "start",
+              }}
+            >
+              <div
+                dangerouslySetInnerHTML={{ __html: content }}
+                style={{ lineHeight: 1.6 }}
               />
-            )}
+
+              {image?.url && (
+                <Image
+                  src={image.url}
+                  alt={image.alt || `Route section ${index + 1}`}
+                  radius="sm"
+                  style={{
+                    gridColumn: index % 2 === 0 ? "2" : "1",
+                    gridRow: "1",
+                    height: "auto",
+                    maxHeight: "400px",
+                    objectFit: "cover",
+                  }}
+                />
+              )}
+            </Box>
           </Box>
-        </Box>
-      ))}
+        );
+      })}
 
       {!hasPurchased && segments.length > 1 && (
         <Box
