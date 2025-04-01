@@ -1,7 +1,7 @@
 "use client";
 
-import { Alert, Box, Group, Image, Stack, Text, ThemeIcon } from "@mantine/core";
-import { IconLock, IconMapPin } from "@tabler/icons-react";
+import { Alert, Box, Button, Group, Image, Stack, Text, ThemeIcon } from "@mantine/core";
+import { IconLink, IconLock, IconMapPin } from "@tabler/icons-react";
 import React from "react";
 import type { Route } from "../../types/api";
 
@@ -26,11 +26,22 @@ interface RouteDescriptionSegment {
 interface TripRouteDescriptionProps {
   routeDescription: RouteDescriptionSegment[] | Record<string, RouteDescriptionSegment> | null | undefined;
   hasPurchased: boolean;
+  surveyImage?: {
+    url: string;
+    alt?: string;
+  } | null;
+  surveyLink?: string;
+  leadingNotes?: string;
+  waterImpact?: string;
 }
 
 export function TripRouteDescription({ 
   routeDescription,
-  hasPurchased
+  hasPurchased,
+  surveyImage,
+  surveyLink,
+  leadingNotes,
+  waterImpact
 }: TripRouteDescriptionProps) {
   // Convert to array if not already
   const segments: RouteDescriptionSegment[] = Array.isArray(routeDescription) 
@@ -41,7 +52,7 @@ export function TripRouteDescription({
 
   const visibleSegments = hasPurchased ? segments : segments.slice(0, 1);
 
-  if (segments.length === 0) return null;
+  if (segments.length === 0 && !surveyImage && !leadingNotes && !waterImpact) return null;
 
   return (
     <Stack gap="xl">
@@ -56,6 +67,58 @@ export function TripRouteDescription({
           </Alert>
         )}
       </Group>
+
+      {/* Survey Section */}
+      {hasPurchased && surveyImage && (
+        <Box>
+          <Text fw={600} size="lg" mb="md">
+            Cave Survey
+          </Text>
+          <Image
+            src={surveyImage.url}
+            alt={surveyImage.alt || "Cave survey diagram"}
+            radius="sm"
+            mb="md"
+          />
+          {surveyLink && (
+            <Button
+              component="a"
+              href={surveyLink}
+              target="_blank"
+              variant="outline"
+              leftSection={<IconLink size={16} />}
+            >
+              View Full Survey
+            </Button>
+          )}
+        </Box>
+      )}
+
+      {/* Leading Notes */}
+      {hasPurchased && leadingNotes && (
+        <Box>
+          <Text fw={600} size="lg" mb="md">
+            Leading Notes
+          </Text>
+          <div
+            dangerouslySetInnerHTML={{ __html: leadingNotes }}
+            style={{ lineHeight: 1.6 }}
+          />
+        </Box>
+      )}
+
+      {/* Water Impact */}
+      {hasPurchased && waterImpact && (
+        <Box>
+          <Text fw={600} size="lg" mb="md">
+            Water Impact
+          </Text>
+          <div
+            dangerouslySetInnerHTML={{ __html: waterImpact }}
+            style={{ lineHeight: 1.6 }}
+          />
+        </Box>
+      )}
 
       {visibleSegments.map((segment, index) => {
         const title = segment.title || segment.route_description_segment_title || "";
