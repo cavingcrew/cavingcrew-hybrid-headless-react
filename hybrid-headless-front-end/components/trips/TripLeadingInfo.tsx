@@ -3,32 +3,20 @@
 import { Alert, Box, Group, List, Paper, Stack, Text, ThemeIcon, Title, Badge, Anchor } from "@mantine/core";
 import { IconMountain, IconInfoCircle, IconStar, IconDroplet } from "@tabler/icons-react";
 import React from "react";
+import type { Trip } from "../../types/api";
+import { useUser } from "@/lib/hooks/useUser";
 
 interface TripLeadingInfoProps {
-  leadingNotesHtml?: string;
-  waterImpactHtml?: string;
-  leadingDifficulty?: {
-    route_leading_difficulty_navigation_difficulty?: string;
-    route_leading_difficulty_horizontal_leading_level_required?: {
-      post_title?: string;
-      permalink?: string;
-    } | null; // Allow null
-    route_leading_difficulty_horizontal_leading_skills_required?: string[];
-    route_leading_difficulty_srt_leading_level_required?: {
-      post_title?: string;
-      permalink?: string;
-    } | number | null; // Allow numeric ID or post object or null
-    route_leading_difficulty_srt_leading_skills_required?: string[];
-  };
-  isLoggedIn: boolean;
+  trip: Trip;
 }
 
-export function TripLeadingInfo({ 
-  leadingNotesHtml, 
-  waterImpactHtml,
-  leadingDifficulty,
-  isLoggedIn 
-}: TripLeadingInfoProps) {
+export function TripLeadingInfo({ trip }: TripLeadingInfoProps) {
+  const { isLoggedIn } = useUser();
+  const routeAcf = trip.route?.acf;
+  const leadingNotesHtml = routeAcf?.route_leading_notes;
+  const waterImpactHtml = routeAcf?.route_water_impact;
+  const leadingDifficulty = routeAcf?.route_leading_difficulty;
+
   const hasLeadingContent = leadingNotesHtml || waterImpactHtml ||
     (leadingDifficulty?.route_leading_difficulty_navigation_difficulty ||
      leadingDifficulty?.route_leading_difficulty_horizontal_leading_level_required);

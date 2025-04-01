@@ -565,12 +565,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
 			<TripExperience trip={trip} />
 
 			{/* Trip Leading Info */}
-			<TripLeadingInfo
-				leadingNotesHtml={trip.route?.acf?.route_leading_notes}
-				waterImpactHtml={trip.route?.acf?.route_water_impact}
-				leadingDifficulty={trip.route?.acf?.route_leading_difficulty}
-				isLoggedIn={isLoggedIn}
-			/>
+			<TripLeadingInfo trip={trip} />
 
 			{/* Route Description Section */}
 			{trip.route?.acf?.route_route_description && (
