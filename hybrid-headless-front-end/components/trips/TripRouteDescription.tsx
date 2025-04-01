@@ -15,7 +15,7 @@ interface RouteDescriptionSegment {
 }
 
 interface TripRouteDescriptionProps {
-  routeDescription: Route["acf"]["route_route_description"];
+  routeDescription: RouteDescriptionSegment[] | null | undefined;
   hasPurchased: boolean;
 }
 
