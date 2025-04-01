@@ -137,29 +137,34 @@ export function TripRouteDescription({
             <Box
               style={{
                 display: "grid",
-                gridTemplateColumns: image?.url 
-                  ? "1fr 1fr" 
-                  : "1fr",
-                gap: "1.5rem",
-                alignItems: "start",
+                gridTemplateColumns: imageUrl ? "1fr 1fr" : "1fr",
+                gap: "2rem",
+                alignItems: "center", // Add vertical centering
+                minHeight: "300px", // Ensure minimum height for better alignment
               }}
             >
               <div
                 dangerouslySetInnerHTML={{ __html: content }}
-                style={{ lineHeight: 1.6 }}
+                style={{ 
+                  lineHeight: 1.6,
+                  padding: "1rem",
+                  // Add background and border for better separation
+                  backgroundColor: "var(--mantine-color-gray-0)",
+                  borderRadius: "var(--mantine-radius-md)",
+                }}
               />
 
               {imageUrl && (
                 <Image
                   src={imageUrl}
                   alt={image?.alt || `Route section ${index + 1}`}
-                  radius="sm"
+                  radius="md"
                   style={{
-                    gridColumn: index % 2 === 0 ? "2" : "1",
-                    gridRow: "1",
-                    height: "auto",
+                    height: "100%",
                     maxHeight: "400px",
                     objectFit: "cover",
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.1)", // Add subtle shadow
+                    border: "1px solid var(--mantine-color-gray-3)",
                   }}
                 />
               )}
