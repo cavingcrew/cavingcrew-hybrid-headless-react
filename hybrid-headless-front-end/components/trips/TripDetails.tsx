@@ -559,18 +559,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
 				<TripAccessDetails trip={trip} />
 			) : "" }
 
-			{/* Route Description Section */}
-			{trip.route?.acf?.route_route_description && (
-				<Paper withBorder p="md" radius="md">
-					<Title order={2} mb="md">
-						Route Description
-					</Title>
-					<TripRouteDescription 
-						routeDescription={trip.route.acf.route_route_description}
-						hasPurchased={hasPurchased} 
-					/>
-				</Paper>
-			)}
+
 
 			{/* Trip Experience Details */}
 			<TripExperience trip={trip} />
@@ -582,6 +571,19 @@ export function TripDetails({ trip }: TripDetailsProps) {
 				leadingDifficulty={trip.route?.acf.route_leading_difficulty}
 				isLoggedIn={isLoggedIn}
 			/>
+
+			{/* Route Description Section */}
+			{trip.route?.acf?.route_route_description && (
+				<Paper withBorder p="md" radius="md">
+					<Title order={2} mb="md">
+						Route Description
+					</Title>
+					<TripRouteDescription
+						routeDescription={trip.route.acf.route_route_description}
+						hasPurchased={hasPurchased}
+					/>
+				</Paper>
+			)}
 
 			{/* Signup CTA after Trip Experience */}
 			{showSignupCTAs && (
