@@ -31,17 +31,13 @@ interface TripRouteDescriptionProps {
     alt?: string;
   } | null;
   surveyLink?: string;
-  leadingNotes?: string;
-  waterImpact?: string;
 }
 
 export function TripRouteDescription({ 
   routeDescription,
   hasPurchased,
   surveyImage,
-  surveyLink,
-  leadingNotes,
-  waterImpact
+  surveyLink
 }: TripRouteDescriptionProps) {
   // Convert to array if not already
   const segments: RouteDescriptionSegment[] = Array.isArray(routeDescription) 
@@ -52,7 +48,7 @@ export function TripRouteDescription({
 
   const visibleSegments = hasPurchased ? segments : segments.slice(0, 1);
 
-  if (segments.length === 0 && !surveyImage && !leadingNotes && !waterImpact) return null;
+  if (segments.length === 0 && !surveyImage) return null;
 
   return (
     <Stack gap="xl">
@@ -94,31 +90,6 @@ export function TripRouteDescription({
         </Box>
       )}
 
-      {/* Leading Notes */}
-      {hasPurchased && leadingNotes && (
-        <Box>
-          <Text fw={600} size="lg" mb="md">
-            Leading Notes
-          </Text>
-          <div
-            dangerouslySetInnerHTML={{ __html: leadingNotes }}
-            style={{ lineHeight: 1.6 }}
-          />
-        </Box>
-      )}
-
-      {/* Water Impact */}
-      {hasPurchased && waterImpact && (
-        <Box>
-          <Text fw={600} size="lg" mb="md">
-            Water Impact
-          </Text>
-          <div
-            dangerouslySetInnerHTML={{ __html: waterImpact }}
-            style={{ lineHeight: 1.6 }}
-          />
-        </Box>
-      )}
 
       {visibleSegments.map((segment, index) => {
         const title = segment.title || segment.route_description_segment_title || "";

@@ -25,6 +25,7 @@ import { NeoClanVolunteeringWidget } from './NeoClanVolunteeringWidget';
 import { SensitiveAccessWarning } from './SensitiveAccessWarning';
 import { TripParticipantInfo } from './TripParticipantInfo';
 import { TripRouteDescription } from './TripRouteDescription';
+import { TripLeadingInfo } from './TripLeadingInfo';
 import { isWithinDays } from '../../utils/event-timing';
 import { useUser } from '@/lib/hooks/useUser';
 import { useTripAccess } from '@/lib/hooks/useTripAccess';
@@ -573,6 +574,14 @@ export function TripDetails({ trip }: TripDetailsProps) {
 
 			{/* Trip Experience Details */}
 			<TripExperience trip={trip} />
+
+			{/* Trip Leading Info */}
+			<TripLeadingInfo
+				leadingNotesHtml={trip.route?.acf.route_leading_notes}
+				waterImpactHtml={trip.route?.acf.route_water_impact}
+				leadingDifficulty={trip.route?.acf.route_leading_difficulty}
+				isLoggedIn={isLoggedIn}
+			/>
 
 			{/* Signup CTA after Trip Experience */}
 			{showSignupCTAs && (
