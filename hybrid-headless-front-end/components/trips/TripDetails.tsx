@@ -566,9 +566,9 @@ export function TripDetails({ trip }: TripDetailsProps) {
 
 			{/* Trip Leading Info */}
 			<TripLeadingInfo
-				leadingNotesHtml={trip.route?.acf.route_leading_notes}
-				waterImpactHtml={trip.route?.acf.route_water_impact}
-				leadingDifficulty={trip.route?.acf.route_leading_difficulty}
+				leadingNotesHtml={trip.route?.acf?.route_leading_notes}
+				waterImpactHtml={trip.route?.acf?.route_water_impact}
+				leadingDifficulty={trip.route?.acf?.route_leading_difficulty}
 				isLoggedIn={isLoggedIn}
 			/>
 

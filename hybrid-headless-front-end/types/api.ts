@@ -426,6 +426,8 @@ export interface Route {
 			route_leading_difficulty_navigation_difficulty?: string;
 		};
 		route_additional_images?: string; // Stored as JSON string
+		route_leading_notes?: string;
+		route_water_impact?: string;
 	};
 }
 
