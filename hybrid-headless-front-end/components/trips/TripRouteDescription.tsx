@@ -39,6 +39,7 @@ export function TripRouteDescription({
   routeName
 }: TripRouteDescriptionProps) {
   const [surveyModalOpened, { open: openSurveyModal, close: closeSurveyModal }] = useDisclosure(false);
+  const [isExpanded, { toggle: toggleExpand }] = useDisclosure(false);
   const printRef = useRef<HTMLDivElement>(null);
   
   // Convert to array if not already
@@ -48,7 +49,9 @@ export function TripRouteDescription({
       ? Object.values(routeDescription).filter(Boolean as unknown as (value: unknown) => value is RouteDescriptionSegment)
       : [];
 
-  const visibleSegments = hasPurchased ? segments : segments.slice(0, 1);
+  const visibleSegments = hasPurchased 
+    ? (isExpanded ? segments : segments.slice(0, 1))
+    : segments.slice(0, 1);
 
   const handlePrint = () => {
     if (!printRef.current) return;
@@ -183,6 +186,27 @@ export function TripRouteDescription({
       {/* Survey Section */}
       {hasPurchased && surveyImage && (
         <Box>
+          <Group mb="md">
+            <Button
+              onClick={handlePrint}
+              variant="outline"
+              leftSection={<IconPrinter size={16} />}
+            >
+              Print Route Description
+            </Button>
+            {surveyLink && (
+              <Button
+                component="a"
+                href={surveyLink}
+                target="_blank"
+                variant="outline"
+                leftSection={<IconLink size={16} />}
+              >
+                View Full Survey Document
+              </Button>
+            )}
+          </Group>
+
           <Text fw={600} size="lg" mb="md">
             Cave Survey
           </Text>
@@ -228,31 +252,11 @@ export function TripRouteDescription({
               style={{ width: '100%', height: 'auto' }}
             />
           </Modal>
-
-          <Group>
-            {surveyLink && (
-              <Button
-                component="a"
-                href={surveyLink}
-                target="_blank"
-                variant="outline"
-                leftSection={<IconLink size={16} />}
-              >
-                View Full Survey Document
-              </Button>
-            )}
-            <Button
-              onClick={handlePrint}
-              variant="outline"
-              leftSection={<IconPrinter size={16} />}
-            >
-              Print Route Description
-            </Button>
-          </Group>
         </Box>
       )}
 
-      {visibleSegments.map((segment, index) => {
+      <Box style={{ position: 'relative' }}>
+        {visibleSegments.map((segment, index) => {
         const title = segment.title || segment.route_description_segment_title || "";
         const content = segment.content || segment.route_description_segment_html || "";
         const image = segment.image || segment.route_description_segment_photo;
@@ -303,6 +307,7 @@ export function TripRouteDescription({
           </Box>
         );
       })}
+      </Box>
 
       {!hasPurchased && segments.length > 1 && (
         <Box
@@ -315,6 +320,36 @@ export function TripRouteDescription({
             pointerEvents: "none",
           }}
         />
+      )}
+      
+      {segments.length > 1 && hasPurchased && (
+        <Box style={{ position: 'relative' }}>
+          {!isExpanded && (
+            <div
+              style={{
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                height: '100px',
+                marginTop: '-100px',
+                background: 'linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 50%, rgba(255,255,255,1) 100%)',
+                pointerEvents: 'none',
+                zIndex: 1
+              }}
+            />
+          )}
+          
+          <Button
+            fullWidth
+            variant="outline"
+            onClick={toggleExpand}
+            mt="md"
+            style={{ position: 'relative', zIndex: 2 }}
+          >
+            {isExpanded ? 'Show less' : 'Read full route description'}
+          </Button>
+        </Box>
       )}
     </Stack>
   );
