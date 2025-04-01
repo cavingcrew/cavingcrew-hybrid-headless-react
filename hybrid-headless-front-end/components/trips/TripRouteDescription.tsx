@@ -61,6 +61,9 @@ export function TripRouteDescription({
         const title = segment.title || segment.route_description_segment_title || "";
         const content = segment.content || segment.route_description_segment_html || "";
         const image = segment.image || segment.route_description_segment_photo;
+        
+        // Ensure image is properly formatted
+        const imageUrl = image?.url || (image && typeof image === 'object' && 'ID' in image ? image.url : null);
 
         return (
           <Box key={`segment-${index}`}>
@@ -83,10 +86,10 @@ export function TripRouteDescription({
                 style={{ lineHeight: 1.6 }}
               />
 
-              {image?.url && (
+              {imageUrl && (
                 <Image
-                  src={image.url}
-                  alt={image.alt || `Route section ${index + 1}`}
+                  src={imageUrl}
+                  alt={image?.alt || `Route section ${index + 1}`}
                   radius="sm"
                   style={{
                     gridColumn: index % 2 === 0 ? "2" : "1",
