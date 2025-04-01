@@ -2,8 +2,8 @@
 
 import { Alert, Box, Button, Group, Image, Modal, Stack, Text, ThemeIcon } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { IconLink, IconLock, IconMapPin } from "@tabler/icons-react";
-import React from "react";
+import { IconLink, IconLock, IconMapPin, IconPrinter } from "@tabler/icons-react";
+import React, { useRef } from "react";
 import type { Route } from "../../types/api";
 
 export interface RouteDescriptionSegment {
@@ -37,6 +37,8 @@ export function TripRouteDescription({
   surveyLink
 }: TripRouteDescriptionProps) {
   const [surveyModalOpened, { open: openSurveyModal, close: closeSurveyModal }] = useDisclosure(false);
+  const printRef = useRef<HTMLDivElement>(null);
+  
   // Convert to array if not already
   const segments: RouteDescriptionSegment[] = Array.isArray(routeDescription) 
     ? routeDescription 
@@ -46,10 +48,106 @@ export function TripRouteDescription({
 
   const visibleSegments = hasPurchased ? segments : segments.slice(0, 1);
 
+  const handlePrint = () => {
+    if (!printRef.current) return;
+    
+    const printContent = printRef.current.innerHTML;
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Route Description</title>
+          <style>
+            @media print {
+              @page {
+                margin: 1cm;
+                size: A4;
+              }
+              .print-header {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                text-align: center;
+                font-size: 12px;
+                padding-bottom: 10px;
+                border-bottom: 1px solid #000;
+              }
+              .segment-image {
+                max-width: 100%;
+                height: auto;
+                margin-bottom: 1em;
+              }
+              body {
+                margin-top: 20px;
+              }
+            }
+          </style>
+        </head>
+        <body>
+          ${printContent}
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+    printWindow.print();
+  };
+
   if (segments.length === 0 && !surveyImage) return null;
 
   return (
     <Stack gap="xl">
+      {/* Hidden print content */}
+      <div style={{ display: 'none' }}>
+        <div ref={printRef}>
+          <div className="print-header">
+            This is a Caving Crew Route Description for our Members use
+          </div>
+          {hasPurchased && surveyImage && (
+            <div>
+              <Text fw={600} size="lg" mb="md">
+                Cave Survey
+              </Text>
+              <Image
+                src={surveyImage.url || (surveyImage.sizes?.large?.file || surveyImage.sizes?.medium?.file)}
+                alt={surveyImage.alt || "Cave survey diagram"}
+                radius="sm"
+                mb="md"
+              />
+              {surveyLink && (
+                <Text component="a" href={surveyLink} target="_blank">
+                  View Full Survey Document
+                </Text>
+              )}
+            </div>
+          )}
+          {segments.map((segment, index) => {
+            const title = segment.title || segment.route_description_segment_title || "";
+            const content = segment.content || segment.route_description_segment_html || "";
+            const image = segment.image || segment.route_description_segment_photo;
+            const imageUrl = image?.url;
+
+            return (
+              <div key={`print-segment-${index}`}>
+                <Text fw={600} size="lg" mb="md">
+                  {index + 1}. {title}
+                </Text>
+                <div dangerouslySetInnerHTML={{ __html: content }} />
+                {imageUrl && (
+                  <Image
+                    src={imageUrl}
+                    alt={image?.alt || `Route section ${index + 1}`}
+                    radius="md"
+                  />
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
       <Group gap="xs">
         <ThemeIcon variant="light" color="green">
           <IconMapPin size={18} />
@@ -111,17 +209,26 @@ export function TripRouteDescription({
             />
           </Modal>
 
-          {surveyLink && (
+          <Group>
+            {surveyLink && (
+              <Button
+                component="a"
+                href={surveyLink}
+                target="_blank"
+                variant="outline"
+                leftSection={<IconLink size={16} />}
+              >
+                View Full Survey Document
+              </Button>
+            )}
             <Button
-              component="a"
-              href={surveyLink}
-              target="_blank"
+              onClick={handlePrint}
               variant="outline"
-              leftSection={<IconLink size={16} />}
+              leftSection={<IconPrinter size={16} />}
             >
-              View Full Survey Document
+              Print Route Description
             </Button>
-          )}
+          </Group>
         </Box>
       )}
 
@@ -144,8 +251,8 @@ export function TripRouteDescription({
                 display: "grid",
                 gridTemplateColumns: imageUrl ? "1fr 1fr" : "1fr",
                 gap: "2rem",
-                alignItems: "center", // Add vertical centering
-                minHeight: "300px", // Ensure minimum height for better alignment
+                alignItems: "center",
+                minHeight: "300px",
               }}
             >
               <div
@@ -153,7 +260,6 @@ export function TripRouteDescription({
                 style={{ 
                   lineHeight: 1.6,
                   padding: "1rem",
-                  // Add background and border for better separation
                   backgroundColor: "var(--mantine-color-gray-0)",
                   borderRadius: "var(--mantine-radius-md)",
                 }}
@@ -168,7 +274,7 @@ export function TripRouteDescription({
                     height: "100%",
                     maxHeight: "400px",
                     objectFit: "cover",
-                    boxShadow: "0 2px 8px rgba(0,0,0,0.1)", // Add subtle shadow
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
                     border: "1px solid var(--mantine-color-gray-3)",
                   }}
                 />
