@@ -47,7 +47,7 @@ export function TripRouteDescription({
   const segments: RouteDescriptionSegment[] = Array.isArray(routeDescription) 
     ? routeDescription 
     : routeDescription && typeof routeDescription === 'object' 
-      ? Object.values(routeDescription).filter(Boolean) as RouteDescriptionSegment[]
+      ? Object.values(routeDescription).filter(Boolean as unknown as (value: unknown) => value is RouteDescriptionSegment)
       : [];
 
   const visibleSegments = hasPurchased ? segments : segments.slice(0, 1);
