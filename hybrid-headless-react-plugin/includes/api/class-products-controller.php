@@ -737,6 +737,10 @@ class Hybrid_Headless_Products_Controller {
         // Check if user is signed up for this trip and has appropriate role
         $has_trip_leader_access = false;
         if ($is_logged_in && $is_member) {
+            $user_id = get_current_user_id();
+            // DEBUG: Log all order meta for the current user
+            error_log('Checking orders for user: ' . $user_id);
+                
             // Get the current product ID from the request
             $product_id = 0;
             if (isset($_REQUEST['id'])) {
@@ -747,33 +751,57 @@ class Hybrid_Headless_Products_Controller {
                     $product_id = $product->ID;
                 }
             }
-
+                
+            error_log('Current product ID: ' . $product_id);
+                
             if ($product_id > 0) {
+                // Clear any cached order data
+                wc_delete_shop_order_transients();
+                    
                 $orders = wc_get_orders([
                     'customer_id' => $user_id,
                     'limit' => -1,
-                    'status' => ['on-hold', 'processing', 'completed'],
+                    'status' => ['pending', 'on-hold', 'processing', 'completed'],
                 ]);
-
+                    
+                error_log('Found ' . count($orders) . ' orders for user');
+                    
                 foreach ($orders as $order) {
+                    error_log('Order #' . $order->get_id() . ' cc_volunteer: ' . $order->get_meta('cc_volunteer'));
                     foreach ($order->get_items() as $item) {
                         $item_product = $item->get_product();
                         if ($item_product) {
-                            $item_product_id = $item_product->get_parent_id() ?: $item_product->get_id();
+                            $parent_id = $item_product->get_parent_id();
+                            $item_id = $item_product->get_id();
+                            $item_product_id = $parent_id ?: $item_id;
+                                
+                            error_log('-- Product: ' . $item_product->get_name() . ' (ID: ' . $item_id . ', Parent: ' . $parent_id . ')');
+                            error_log('Comparing order product ' . $item_product_id . ' vs current trip ' . $product_id);
+                                
                             if ($item_product_id == $product_id) {
-                                $cc_volunteer = $order->get_meta('cc_volunteer');
+                                error_log('MATCH FOUND - checking volunteer role');
+                                $cc_volunteer = strtolower((string)$order->get_meta('cc_volunteer'));
+                                $leader_roles = ['trip leader', 'trip director', 'trip organiser', 'director'];
+                                    
+                                error_log('Role check: ' . $cc_volunteer);
+                                    
                                 if ($cc_volunteer && (
                                     strpos($cc_volunteer, 'director') !== false ||
-                                    $cc_volunteer === 'Trip Leader' ||
-                                    $cc_volunteer === 'Trip Director' ||
-                                    $cc_volunteer === 'Trip Organiser'
+                                    in_array($cc_volunteer, $leader_roles)
                                 )) {
                                     $has_trip_leader_access = true;
+                                    error_log('TRIP LEADER ACCESS GRANTED');
                                     break 2;
+                                } else {
+                                    error_log('No trip leader access - cc_volunteer was: ' . ($cc_volunteer ?: 'not set'));
                                 }
                             }
                         }
                     }
+                }
+                    
+                if (!$has_trip_leader_access) {
+                    error_log('No trip leader access granted after checking all orders');
                 }
             }
         }
@@ -945,6 +973,10 @@ class Hybrid_Headless_Products_Controller {
         // Check if user is signed up for this trip and has appropriate role
         $has_trip_leader_access = false;
         if ($is_logged_in && $is_member) {
+            $user_id = get_current_user_id();
+            // DEBUG: Log all order meta for the current user
+            error_log('Checking orders for user: ' . $user_id);
+                
             // Get the current product ID from the request
             $product_id = 0;
             if (isset($_REQUEST['id'])) {
@@ -955,33 +987,57 @@ class Hybrid_Headless_Products_Controller {
                     $product_id = $product->ID;
                 }
             }
-
+                
+            error_log('Current product ID: ' . $product_id);
+                
             if ($product_id > 0) {
+                // Clear any cached order data
+                wc_delete_shop_order_transients();
+                    
                 $orders = wc_get_orders([
                     'customer_id' => $user_id,
                     'limit' => -1,
-                    'status' => ['on-hold', 'processing', 'completed'],
+                    'status' => ['pending', 'on-hold', 'processing', 'completed'],
                 ]);
-
+                    
+                error_log('Found ' . count($orders) . ' orders for user');
+                    
                 foreach ($orders as $order) {
+                    error_log('Order #' . $order->get_id() . ' cc_volunteer: ' . $order->get_meta('cc_volunteer'));
                     foreach ($order->get_items() as $item) {
                         $item_product = $item->get_product();
                         if ($item_product) {
-                            $item_product_id = $item_product->get_parent_id() ?: $item_product->get_id();
+                            $parent_id = $item_product->get_parent_id();
+                            $item_id = $item_product->get_id();
+                            $item_product_id = $parent_id ?: $item_id;
+                                
+                            error_log('-- Product: ' . $item_product->get_name() . ' (ID: ' . $item_id . ', Parent: ' . $parent_id . ')');
+                            error_log('Comparing order product ' . $item_product_id . ' vs current trip ' . $product_id);
+                                
                             if ($item_product_id == $product_id) {
-                                $cc_volunteer = $order->get_meta('cc_volunteer');
+                                error_log('MATCH FOUND - checking volunteer role');
+                                $cc_volunteer = strtolower((string)$order->get_meta('cc_volunteer'));
+                                $leader_roles = ['trip leader', 'trip director', 'trip organiser', 'director'];
+                                    
+                                error_log('Role check: ' . $cc_volunteer);
+                                    
                                 if ($cc_volunteer && (
                                     strpos($cc_volunteer, 'director') !== false ||
-                                    $cc_volunteer === 'Trip Leader' ||
-                                    $cc_volunteer === 'Trip Director' ||
-                                    $cc_volunteer === 'Trip Organiser'
+                                    in_array($cc_volunteer, $leader_roles)
                                 )) {
                                     $has_trip_leader_access = true;
+                                    error_log('TRIP LEADER ACCESS GRANTED');
                                     break 2;
+                                } else {
+                                    error_log('No trip leader access - cc_volunteer was: ' . ($cc_volunteer ?: 'not set'));
                                 }
                             }
                         }
                     }
+                }
+                    
+                if (!$has_trip_leader_access) {
+                    error_log('No trip leader access granted after checking all orders');
                 }
             }
         }
