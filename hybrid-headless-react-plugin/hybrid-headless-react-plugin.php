@@ -94,6 +94,11 @@ final class Hybrid_Headless_Plugin {
         // Load triggers
         require_once HYBRID_HEADLESS_PLUGIN_DIR . 'includes/triggers/class-order-event-date-trigger.php';
         add_filter( 'automatewoo/triggers', [ $this, 'register_triggers' ] );
+        
+        // Enable logging 
+        if ( ! defined( 'AUTOMATEWOO_LOG_DIR' ) ) {
+            define( 'AUTOMATEWOO_LOG_DIR', WP_CONTENT_DIR . '/logs/automatewoo/' );
+        }
     }
 
     public function register_triggers( $triggers ) {

@@ -65,6 +65,24 @@ class OrderEventDateTrigger extends AbstractBatchedDailyTrigger {
         global $wpdb;
 
         $target_date = date( 'Y-m-d H:i:s', $target_timestamp );
+        
+        // Validate we have a proper timestamp  
+        if ( ! $target_timestamp ) {
+            AutomateWoo\Logger::error(
+                'order-event-date-trigger',
+                'Invalid target timestamp',
+                [
+                    'timestamp' => $target_timestamp,
+                    'offset' => $offset,
+                    'limit' => $limit  
+                ]
+            );
+            return [];
+        }
+
+        // Ensure we're working with valid SQL dates
+        $from_date = date( 'Y-m-d H:i:s', $target_timestamp - HOUR_IN_SECONDS );
+        $to_date = date( 'Y-m-d H:i:s', $target_timestamp + HOUR_IN_SECONDS );
         $meta_key = 'event_start_date_time';
 
         $order_ids = $wpdb->get_col(
