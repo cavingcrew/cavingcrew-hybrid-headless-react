@@ -2,8 +2,8 @@
 
 
 import { useQuery, useQueryClient, type UseQueryResult } from '@tanstack/react-query';
-import { apiService } from '../api-service';
-import type { Trip, ApiResponse, CategoryResponse } from '../../types/api';
+import { apiService } from '@/lib/api-service';
+import type { Trip, ApiResponse, CategoryResponse } from '@/types/api';
 
 const membershipPlaceholder: Trip = {
   id: 1272,

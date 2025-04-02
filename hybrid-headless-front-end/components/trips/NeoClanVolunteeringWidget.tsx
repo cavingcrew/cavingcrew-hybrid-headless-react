@@ -38,35 +38,35 @@ import {
 	IconX,
 } from "@tabler/icons-react";
 import React, { useState } from "react";
-import { cleanHtmlEntities } from "../../utils/string-utils";
-import { WordPressLoginWidget } from "../auth/WordPressLoginWidget";
+import { cleanHtmlEntities } from "@/utils/string-utils";
+import { WordPressLoginWidget } from "@/components/auth/WordPressLoginWidget";
 import { NeoClanVolunteeringRoles } from "./NeoClanVolunteeringRoles";
 
 // Import custom hooks and types
-import { useTripParticipants } from "../../lib/hooks/useTripParticipants";
-import { useUser } from "../../lib/hooks/useUser";
-import type { Trip, TripParticipant } from "../../types/api";
-import { Auth } from "../../utils/user-utils";
-import type { AccessLevel } from "../../utils/user-utils";
+import { useTripParticipants } from "@/lib/hooks/useTripParticipants";
+import { useUser } from "@/lib/hooks/useUser";
+import type { Trip, TripParticipant } from "@/types/api";
+import { Auth } from "@/utils/user-utils";
+import type { AccessLevel } from "@/utils/user-utils";
 
 // Define props interface for the component
 interface NeoClanVolunteeringWidgetProps {
 	trip: Trip;
 }
 
-import { formatRelativeTime } from "../../utils/date-utils";
+import { formatRelativeTime } from "@/utils/date-utils";
 import {
 	getSkillDefinition,
 	getSkillDescription,
 	getSkillInfoUrl,
 	getSkillLabel,
-} from "../../utils/skill-definitions";
+} from "@/utils/skill-definitions";
 import {
 	generateCalloutText,
 	generateGearTripCheckText,
 	generateLocationInfoText,
 	generateTackleRequestText,
-} from "../../utils/trip-admin-utils";
+} from "@/utils/trip-admin-utils";
 import {
 	cleanTackle,
 	determineSignupStatus,
@@ -75,7 +75,7 @@ import {
 	getStatusColor,
 	isFirstTimeCaver,
 	requiresMembership,
-} from "../../utils/trip-participant-utils";
+} from "@/utils/trip-participant-utils";
 import {
 	CalloutModal,
 	EmergencyAccessModal,

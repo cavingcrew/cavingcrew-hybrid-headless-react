@@ -28,14 +28,14 @@ import {
 import React, { useState } from "react";
 
 // Import custom hooks and types
-import { useTripParticipants } from "../../lib/hooks/useTripParticipants";
-import { useUser } from "../../lib/hooks/useUser";
-import type { Trip, TripParticipant } from "../../types/api";
+import { useTripParticipants } from "@/lib/hooks/useTripParticipants";
+import { useUser } from "@/lib/hooks/useUser";
+import type { Trip, TripParticipant } from "@/types/api";
 import {
 	determineSignupStatus,
 	getStatusColor,
-} from "../../utils/trip-participant-utils";
-import { Auth } from "../../utils/user-utils";
+} from "@/utils/trip-participant-utils";
+import { Auth } from "@/utils/user-utils";
 
 // Define props interface for the component
 interface NeoClanVolunteeringRolesProps {

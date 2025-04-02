@@ -1,10 +1,10 @@
 'use client';
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { apiService } from '../api-service';
-import { userKeys } from './useUser';
-import { tripKeys } from './useTrips';
-import type { ApiResponse, TripParticipant, TripParticipantsResponse } from '../../types/api';
+import { apiService } from '@/lib/api-service';
+import { userKeys } from '@/lib/hooks/useUser';
+import { tripKeys } from '@/lib/hooks/useTrips';
+import type { ApiResponse, TripParticipant, TripParticipantsResponse } from '@/types/api';
 
 export const participantKeys = {
   all: ['participants'] as const,

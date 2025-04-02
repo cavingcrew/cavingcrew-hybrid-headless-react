@@ -1,9 +1,9 @@
 'use client';
 
-import { useUser } from "./useUser";
-import { useTripParticipants } from "./useTripParticipants";
-import { Auth } from "../../utils/user-utils";
-import type { Trip } from "../../types/api";
+import { useUser } from "@/lib/hooks/useUser";
+import { useTripParticipants } from "@/lib/hooks/useTripParticipants";
+import { Auth } from "@/utils/user-utils";
+import type { Trip } from "@/types/api";
 
 /**
  * Hook to check user access levels for a trip

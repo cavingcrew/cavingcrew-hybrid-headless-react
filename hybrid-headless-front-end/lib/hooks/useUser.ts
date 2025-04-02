@@ -1,8 +1,8 @@
 'use client';
 
-import { Auth } from '../../utils/user-utils';
-import type { Trip } from '../../types/api';
-import type { AccessLevel } from '../../utils/user-utils';
+import { Auth } from '@/utils/user-utils';
+import type { Trip } from '@/types/api';
+import type { AccessLevel } from '@/utils/user-utils';
 
 export const userKeys = {
   all: ['user'] as const,
@@ -11,8 +11,8 @@ export const userKeys = {
 
 import { useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { apiService } from '../api-service';
-import type { ApiResponse, UserResponse } from '../../types/api';
+import { apiService } from '@/lib/api-service';
+import type { ApiResponse, UserResponse } from '@/types/api';
 
 export function useUser() {
   const queryClient = useQueryClient();
