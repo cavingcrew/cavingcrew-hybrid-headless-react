@@ -56,13 +56,13 @@ interface NeoClanVolunteeringWidgetProps {
 }
 
 import { formatRelativeTime } from "@/utils/date-utils";
+import { getRoleLabel } from "@/utils/roles-definitions";
 import {
 	getSkillDefinition,
 	getSkillDescription,
 	getSkillInfoUrl,
 	getSkillLabel,
 } from "@/utils/skill-definitions";
-import { getRoleLabel } from "@/utils/roles-definitions";
 import {
 	generateCalloutText,
 	generateGearTripCheckText,
@@ -616,7 +616,9 @@ export function NeoClanVolunteeringWidget({
 													{participant.order_meta?.cc_volunteer &&
 													participant.order_meta.cc_volunteer !== "none" ? (
 														<Badge color="green">
-															{getRoleLabel(participant.order_meta.cc_volunteer)}
+															{getRoleLabel(
+																participant.order_meta.cc_volunteer,
+															)}
 														</Badge>
 													) : (
 														"None"
