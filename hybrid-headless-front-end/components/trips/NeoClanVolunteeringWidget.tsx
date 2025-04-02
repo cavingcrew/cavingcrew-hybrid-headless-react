@@ -205,28 +205,28 @@ export function NeoClanVolunteeringWidget({
 			const response = await fetch(
 				`/hybrid-headless/v1/caving-crew/events/${trip.id}/mark-all-attended`,
 				{
-					method: 'POST',
-					credentials: 'include'
-				}
+					method: "POST",
+					credentials: "include",
+				},
 			);
 
-			if (!response.ok) throw new Error('Failed to mark all attended');
-			
+			if (!response.ok) throw new Error("Failed to mark all attended");
+
 			notifications.show({
-				title: 'Success!',
+				title: "Success!",
 				message: `Marked ${participants.length} participants as attended`,
-				color: 'green',
-				icon: <IconCheck size={16} />
+				color: "green",
+				icon: <IconCheck size={16} />,
 			});
-			
+
 			refetch(); // Refresh participant data
 			setMarkAllModalOpen(false);
 		} catch (error) {
 			notifications.show({
-				title: 'Error',
-				message: 'Failed to mark all attended',
-				color: 'red',
-				icon: <IconX size={16} />
+				title: "Error",
+				message: "Failed to mark all attended",
+				color: "red",
+				icon: <IconX size={16} />,
 			});
 		} finally {
 			setIsMarkingAll(false);
@@ -237,7 +237,7 @@ export function NeoClanVolunteeringWidget({
 	const shouldShowMarkAllAttended = (trip: Trip) => {
 		const tripStart = trip.acf.event_start_date_time;
 		if (!tripStart) return false;
-		
+
 		const startDate = new Date(tripStart);
 		const oneHourAfter = new Date(startDate.getTime() + 60 * 60 * 1000);
 		return new Date() > oneHourAfter;
@@ -2250,16 +2250,23 @@ export function NeoClanVolunteeringWidget({
 					>
 						<Stack>
 							<Alert color="red" icon={<IconAlertCircle size={16} />}>
-								This action will mark ALL participants as attended and CANNOT BE UNDONE!
+								This action will mark ALL participants as attended and CANNOT BE
+								UNDONE!
 							</Alert>
-							<Text>Are you sure you want to mark all {participants.length} participants as attended?</Text>
-							
+							<Text>
+								Are you sure you want to mark all {participants.length}{" "}
+								participants as attended?
+							</Text>
+
 							<Group justify="flex-end">
-								<Button variant="default" onClick={() => setMarkAllModalOpen(false)}>
+								<Button
+									variant="default"
+									onClick={() => setMarkAllModalOpen(false)}
+								>
 									Cancel
 								</Button>
-								<Button 
-									color="red" 
+								<Button
+									color="red"
 									onClick={handleMarkAllAttended}
 									loading={isMarkingAll}
 								>
