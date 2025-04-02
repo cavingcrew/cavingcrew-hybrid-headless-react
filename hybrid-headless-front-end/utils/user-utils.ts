@@ -92,7 +92,14 @@ export const Auth = {
 	},
 
 	isCommittee(user: UserResponse | null): boolean {
-		return user?.user?.meta?.cc_committee_member === "yes";
+		if (!user?.user?.meta) return false;
+		
+		const status = user.user.meta.committee_current?.toLowerCase();
+		const invalidStatuses = ['retired', 'revoked', 'legacy', 'expired', ''];
+		
+		return !!status && 
+			!invalidStatuses.includes(status) &&
+			this.isMember(user);
 	},
 
 	isSuperAdmin(accessLevel?: AccessLevel | string): boolean {
@@ -128,6 +135,30 @@ export const Auth = {
 			Auth.isAdmin(user, accessLevel) ||
 			(!!trip && Auth.isTripLeader(user, trip))
 		);
+	},
+	
+	/**
+	 * Mirror of PHP is_trip_director functionality
+	 * Checks if user is a trip director for a specific trip
+	 */
+	isTripDirector(user: UserResponse | null, tripId?: number): boolean {
+		if (!user?.user?.id || !tripId) return false;
+		
+		// Admin and committee members always have trip director permissions
+		if (this.isAdmin(user) || this.isCommittee(user)) return true;
+		
+		// Check if user has purchased the trip and is a trip director
+		return !!user.purchases?.includes(tripId) && 
+			(user.user.meta?.competency_evening_trip_director === 'yes' ||
+			 user.user.meta?.competency_overnight_trip_director === 'yes');
+	},
+	
+	/**
+	 * Mirror of PHP is_signed_up_for_trip
+	 * Checks if user has active participation in trip
+	 */
+	isTripParticipant(user: UserResponse | null, tripId?: number): boolean {
+		return !!user?.purchases?.includes(tripId as number);
 	},
 
 	canEditTrip(
@@ -179,6 +210,19 @@ export const Auth = {
 		] as CompetencyLevel;
 
 		return levelOrder[definitionLevel] >= levelOrder[requiredLevel];
+	},
+	
+	/**
+	 * Check if user has a specific competency permission
+	 * Mirrors PHP check_competency_permissions
+	 */
+	hasCompetencyPermission(
+		user: UserResponse | null,
+		requiredCompetency: string
+	): boolean {
+		const competencies = this.getCompetencies(user);
+		const key = requiredCompetency.replace(/^competency_/, '').replace(/_/g, '');
+		return !!competencies[key as keyof typeof competencies];
 	},
 
 	/**

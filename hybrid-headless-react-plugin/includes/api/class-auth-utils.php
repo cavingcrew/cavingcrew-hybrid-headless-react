@@ -362,6 +362,254 @@ class Hybrid_Headless_Auth_Utils {
     }
     
     /**
+     * Check if user has a specific competency
+     * 
+     * @param int $user_id User ID
+     * @param string $competency_key Meta key for the competency
+     * @return bool True if user has the competency, false otherwise
+     */
+    public static function is_competent_role($user_id, $competency_key) {
+        if (!$user_id) {
+            return false;
+        }
+        
+        $value = get_user_meta($user_id, $competency_key, true);
+        return !empty($value) && !in_array(strtolower($value), ['no', 'none', 'false', ''], true);
+    }
+    
+    /**
+     * Check if user is a competent evening trip director
+     * 
+     * @param int $user_id User ID
+     * @return bool True if competent, false otherwise
+     */
+    public static function is_competent_evening_trip_director($user_id) {
+        return self::is_competent_role($user_id, 'competency_evening_trip_director');
+    }
+    
+    /**
+     * Check if user is a competent horizontal trip leader
+     * 
+     * @param int $user_id User ID
+     * @return bool True if competent, false otherwise
+     */
+    public static function is_competent_horizontal_trip_leader($user_id) {
+        return self::is_competent_role($user_id, 'competency_horizontal_trip_leader');
+    }
+    
+    /**
+     * Check if user is a competent evening trip tackle manager
+     * 
+     * @param int $user_id User ID
+     * @return bool True if competent, false otherwise
+     */
+    public static function is_competent_evening_trip_tacklemanager($user_id) {
+        return self::is_competent_role($user_id, 'competency_evening_trip_tacklemanager');
+    }
+    
+    /**
+     * Check if user is a competent evening trip lift coordinator
+     * 
+     * @param int $user_id User ID
+     * @return bool True if competent, false otherwise
+     */
+    public static function is_competent_evening_trip_lift_coordinator($user_id) {
+        return self::is_competent_role($user_id, 'competency_evening_trip_lift_coordinator');
+    }
+    
+    /**
+     * Check if user is a competent vertical trip leader
+     * 
+     * @param int $user_id User ID
+     * @return bool True if competent, false otherwise
+     */
+    public static function is_competent_vertical_trip_leader($user_id) {
+        return self::is_competent_role($user_id, 'competency_vertical_trip_leader');
+    }
+    
+    /**
+     * Check if user is a competent trip buddy/friend
+     * 
+     * @param int $user_id User ID
+     * @return bool True if competent, false otherwise
+     */
+    public static function is_competent_trip_buddy_friend($user_id) {
+        return self::is_competent_role($user_id, 'competency_trip_buddy_friend');
+    }
+    
+    /**
+     * Check if user is a competent overnight trip director
+     * 
+     * @param int $user_id User ID
+     * @return bool True if competent, false otherwise
+     */
+    public static function is_competent_overnight_trip_director($user_id) {
+        return self::is_competent_role($user_id, 'competency_overnight_trip_director');
+    }
+    
+    /**
+     * Check if user is a competent overnight evening meal coordinator
+     * 
+     * @param int $user_id User ID
+     * @return bool True if competent, false otherwise
+     */
+    public static function is_competent_overnight_evening_meal($user_id) {
+        return self::is_competent_role($user_id, 'competency_overnight_evening_meal');
+    }
+    
+    /**
+     * Check if user is a competent overnight caving coordinator
+     * 
+     * @param int $user_id User ID
+     * @return bool True if competent, false otherwise
+     */
+    public static function is_competent_overnight_caving_coordinator($user_id) {
+        return self::is_competent_role($user_id, 'competency_overnight_caving_coordinator');
+    }
+    
+    /**
+     * Check if user is a competent overnight lift coordinator
+     * 
+     * @param int $user_id User ID
+     * @return bool True if competent, false otherwise
+     */
+    public static function is_competent_overnight_lift_coordinator($user_id) {
+        return self::is_competent_role($user_id, 'competency_overnight_lift_coordinator');
+    }
+    
+    /**
+     * Check if user is a competent overnight breakfast coordinator
+     * 
+     * @param int $user_id User ID
+     * @return bool True if competent, false otherwise
+     */
+    public static function is_competent_overnight_breakfast_coordinator($user_id) {
+        return self::is_competent_role($user_id, 'competency_overnight_breakfast_coordinator');
+    }
+    
+    /**
+     * Check if user is a competent training organiser
+     * 
+     * @param int $user_id User ID
+     * @return bool True if competent, false otherwise
+     */
+    public static function is_competent_training_organiser($user_id) {
+        return self::is_competent_role($user_id, 'competency_training_training_organiser');
+    }
+    
+    /**
+     * Check if user is a competent skillsharer
+     * 
+     * @param int $user_id User ID
+     * @return bool True if competent, false otherwise
+     */
+    public static function is_competent_skillsharer($user_id) {
+        return self::is_competent_role($user_id, 'competency_training_skillsharer');
+    }
+    
+    /**
+     * Check if user is a competent social organiser
+     * 
+     * @param int $user_id User ID
+     * @return bool True if competent, false otherwise
+     */
+    public static function is_competent_social_organiser($user_id) {
+        return self::is_competent_role($user_id, 'competency_social_social_organiser');
+    }
+    
+    /**
+     * Get all competencies for a user
+     * 
+     * @param int $user_id User ID
+     * @return array Array of competencies with boolean values
+     */
+    public static function get_competencies($user_id) {
+        return [
+            'evening_trip_director' => self::is_competent_evening_trip_director($user_id),
+            'horizontal_trip_leader' => self::is_competent_horizontal_trip_leader($user_id),
+            'evening_trip_tacklemanager' => self::is_competent_evening_trip_tacklemanager($user_id),
+            'evening_trip_lift_coordinator' => self::is_competent_evening_trip_lift_coordinator($user_id),
+            'vertical_trip_leader' => self::is_competent_vertical_trip_leader($user_id),
+            'trip_buddy_friend' => self::is_competent_trip_buddy_friend($user_id),
+            'overnight_trip_director' => self::is_competent_overnight_trip_director($user_id),
+            'overnight_evening_meal' => self::is_competent_overnight_evening_meal($user_id),
+            'overnight_caving_coordinator' => self::is_competent_overnight_caving_coordinator($user_id),
+            'overnight_lift_coordinator' => self::is_competent_overnight_lift_coordinator($user_id),
+            'overnight_breakfast_coordinator' => self::is_competent_overnight_breakfast_coordinator($user_id),
+            'training_organiser' => self::is_competent_training_organiser($user_id),
+            'skillsharer' => self::is_competent_skillsharer($user_id),
+            'social_organiser' => self::is_competent_social_organiser($user_id),
+        ];
+    }
+    
+    /**
+     * Check if user has a specific competency
+     * 
+     * @param int $user_id User ID
+     * @param string $competency_key Competency key
+     * @return bool True if user has the competency, false otherwise
+     */
+    public static function check_competency_permissions($user_id, $required_competency) {
+        $competencies = self::get_competencies($user_id);
+        return isset($competencies[$required_competency]) && $competencies[$required_competency];
+    }
+    
+    /**
+     * Get skill meta key from skill category
+     * 
+     * @param string $skill_category Skill category
+     * @return string Meta key
+     */
+    private static function get_skill_meta_key($skill_category) {
+        $map = [
+            'horizontalSkills' => 'skills-horizontal',
+            'srtSkills' => 'skills-srt',
+            'leadingHorizontalSkills' => 'skills-leading-horizontal',
+            'leadingSrtSkills' => 'skills-leading-srt',
+            'leadingCoachingSkills' => 'skills-leading-coaching'
+        ];
+        return isset($map[$skill_category]) ? $map[$skill_category] : '';
+    }
+    
+    /**
+     * Check if user has a specific caving competency level
+     * 
+     * @param int $user_id User ID
+     * @param string $skill_category Skill category
+     * @param string $required_level Required competency level
+     * @return bool True if user has the required competency level, false otherwise
+     */
+    public static function has_competency($user_id, $skill_category, $required_level) {
+        $meta_key = self::get_skill_meta_key($skill_category);
+        if (empty($meta_key)) {
+            return false;
+        }
+        
+        $user_skill = get_user_meta($user_id, $meta_key, true);
+        if (empty($user_skill)) {
+            return false;
+        }
+        
+        $levels = ['none' => 0, 'basic' => 1, 'intermediate' => 2, 'advanced' => 3, 'leader' => 4];
+        
+        // Extract level from skill description
+        $user_level = strtolower($user_skill);
+        $user_level_value = 0;
+        
+        foreach ($levels as $level => $value) {
+            if (strpos($user_level, $level) !== false) {
+                $user_level_value = $value;
+                break;
+            }
+        }
+        
+        $required_level = strtolower($required_level);
+        $required_level_value = isset($levels[$required_level]) ? $levels[$required_level] : 0;
+        
+        return $user_level_value >= $required_level_value;
+    }
+    
+    /**
      * Get pending orders for a product
      * 
      * @param int $product_id Product ID
