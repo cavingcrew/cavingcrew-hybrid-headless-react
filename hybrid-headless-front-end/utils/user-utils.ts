@@ -1,6 +1,6 @@
 /**
  * User Authentication and Authorization Utilities
- * 
+ *
  * Provides type-safe authentication checks and competency validation that mirrors
  * the PHP authentication utilities. Handles:
  * - User role determination (guest, member, committee, admin)
@@ -8,7 +8,7 @@
  * - Caving skill competency validation
  * - Purchase eligibility checks
  * - Volunteer role identification
- * 
+ *
  * All methods are available via the `Auth` object export.
  */
 
@@ -48,7 +48,7 @@ export type CompetencyLevel =
 export const Auth = {
 	/**
 	 * Core role determination
-	 * 
+	 *
 	 * @param user - Current user context
 	 * @param accessLevel - Access level from API response
 	 * @returns UserRole - Calculated role based on access and metadata
@@ -67,7 +67,7 @@ export const Auth = {
 
 	/**
 	 * Check authentication status
-	 * 
+	 *
 	 * @param user - Current user context
 	 * @returns boolean - True if user is logged in
 	 */
@@ -77,7 +77,7 @@ export const Auth = {
 
 	/**
 	 * Validate club membership
-	 * 
+	 *
 	 * @param user - Current user context
 	 * @returns boolean - True if user has active membership
 	 */
@@ -87,7 +87,7 @@ export const Auth = {
 
 	/**
 	 * Check committee member status
-	 * 
+	 *
 	 * @param user - Current user context
 	 * @returns boolean - True if active committee member
 	 */
@@ -102,7 +102,7 @@ export const Auth = {
 
 	/**
 	 * Check for super admin access level
-	 * 
+	 *
 	 * @param accessLevel - Access level from API response
 	 * @returns boolean - True if super admin access
 	 */
@@ -112,7 +112,7 @@ export const Auth = {
 
 	/**
 	 * Check for admin or super admin access
-	 * 
+	 *
 	 * @param user - Current user context
 	 * @param accessLevel - Access level from API response
 	 * @returns boolean - True if admin or super admin access
@@ -130,7 +130,7 @@ export const Auth = {
 
 	/**
 	 * Verify trip leadership status
-	 * 
+	 *
 	 * @param user - Current user context
 	 * @param trip - Trip object to check
 	 * @returns boolean - True if user is listed as trip leader
@@ -147,7 +147,7 @@ export const Auth = {
 
 	/**
 	 * Check admin/leader access to trip
-	 * 
+	 *
 	 * @param user - Current user context
 	 * @param trip - Trip object to check
 	 * @param accessLevel - Access level from API
@@ -167,7 +167,7 @@ export const Auth = {
 	/**
 	 * Mirror of PHP is_trip_director functionality
 	 * Checks if user is a trip director for a specific trip
-	 * 
+	 *
 	 * @param user - Current user context
 	 * @param tripId - Trip/product ID to check
 	 * @returns boolean - True if user is trip director for this trip
@@ -189,7 +189,7 @@ export const Auth = {
 	/**
 	 * Mirror of PHP is_signed_up_for_trip
 	 * Checks if user has active participation in trip
-	 * 
+	 *
 	 * @param user - Current user context
 	 * @param tripId - Trip/product ID to check
 	 * @returns boolean - True if user has purchased/registered for this trip
@@ -200,7 +200,7 @@ export const Auth = {
 
 	/**
 	 * Check edit permissions for trip
-	 * 
+	 *
 	 * @param user - Current user context
 	 * @param trip - Trip object to check
 	 * @param accessLevel - Access level from API
@@ -222,7 +222,7 @@ export const Auth = {
 
 	/**
 	 * Validate caving skill level against requirements
-	 * 
+	 *
 	 * @param user - Current user context
 	 * @param category - Skill category to check
 	 * @param requiredLevel - Minimum required competency level
@@ -269,7 +269,7 @@ export const Auth = {
 	/**
 	 * Check specific competency permission
 	 * Mirrors PHP check_competency_permissions
-	 * 
+	 *
 	 * @param user - Current user context
 	 * @param requiredCompetency - Competency key from getCompetencies()
 	 * @returns boolean - True if user has required competency
@@ -291,7 +291,7 @@ export const Auth = {
 
 	/**
 	 * Check permission for sensitive information
-	 * 
+	 *
 	 * @param user - Current user context
 	 * @param trip - Trip object to check
 	 * @param accessLevel - Access level from API
@@ -316,7 +316,7 @@ export const Auth = {
 
 	/**
 	 * Validate trip purchase eligibility
-	 * 
+	 *
 	 * @param user - Current user context
 	 * @param trip - Trip object to check
 	 * @param accessLevel - Access level from API
@@ -338,7 +338,7 @@ export const Auth = {
 
 	/**
 	 * Identify trip reporter volunteer
-	 * 
+	 *
 	 * @param participant - Trip participant to check
 	 * @returns boolean - True if participant has reporter role
 	 */
@@ -348,7 +348,7 @@ export const Auth = {
 
 	/**
 	 * Identify transport coordinator volunteer
-	 * 
+	 *
 	 * @param participant - Trip participant to check
 	 * @returns boolean - True if participant has transport coordinator role
 	 */
@@ -358,7 +358,7 @@ export const Auth = {
 
 	/**
 	 * Identify seconder volunteer
-	 * 
+	 *
 	 * @param participant - Trip participant to check
 	 * @returns boolean - True if participant has seconder role
 	 */
@@ -372,7 +372,7 @@ export const Auth = {
 
 	/**
 	 * Check evening trip director competency
-	 * 
+	 *
 	 * @param user - Current user context
 	 * @returns boolean - True if user has this competency
 	 */
@@ -382,7 +382,7 @@ export const Auth = {
 
 	/**
 	 * Check horizontal trip leader competency
-	 * 
+	 *
 	 * @param user - Current user context
 	 * @returns boolean - True if user has this competency
 	 */
@@ -392,7 +392,7 @@ export const Auth = {
 
 	/**
 	 * Check evening trip tackle manager competency
-	 * 
+	 *
 	 * @param user - Current user context
 	 * @returns boolean - True if user has this competency
 	 */
@@ -405,7 +405,7 @@ export const Auth = {
 
 	/**
 	 * Check evening trip lift coordinator competency
-	 * 
+	 *
 	 * @param user - Current user context
 	 * @returns boolean - True if user has this competency
 	 */
@@ -418,7 +418,7 @@ export const Auth = {
 
 	/**
 	 * Check vertical trip leader competency
-	 * 
+	 *
 	 * @param user - Current user context
 	 * @returns boolean - True if user has this competency
 	 */
@@ -428,7 +428,7 @@ export const Auth = {
 
 	/**
 	 * Check trip buddy friend competency
-	 * 
+	 *
 	 * @param user - Current user context
 	 * @returns boolean - True if user has this competency
 	 */
@@ -438,7 +438,7 @@ export const Auth = {
 
 	/**
 	 * Check overnight trip director competency
-	 * 
+	 *
 	 * @param user - Current user context
 	 * @returns boolean - True if user has this competency
 	 */
@@ -448,7 +448,7 @@ export const Auth = {
 
 	/**
 	 * Check overnight evening meal coordinator competency
-	 * 
+	 *
 	 * @param user - Current user context
 	 * @returns boolean - True if user has this competency
 	 */
@@ -458,7 +458,7 @@ export const Auth = {
 
 	/**
 	 * Check overnight caving coordinator competency
-	 * 
+	 *
 	 * @param user - Current user context
 	 * @returns boolean - True if user has this competency
 	 */
@@ -471,7 +471,7 @@ export const Auth = {
 
 	/**
 	 * Check overnight lift coordinator competency
-	 * 
+	 *
 	 * @param user - Current user context
 	 * @returns boolean - True if user has this competency
 	 */
@@ -484,7 +484,7 @@ export const Auth = {
 
 	/**
 	 * Check overnight breakfast coordinator competency
-	 * 
+	 *
 	 * @param user - Current user context
 	 * @returns boolean - True if user has this competency
 	 */
@@ -497,7 +497,7 @@ export const Auth = {
 
 	/**
 	 * Check training organiser competency
-	 * 
+	 *
 	 * @param user - Current user context
 	 * @returns boolean - True if user has this competency
 	 */
@@ -510,7 +510,7 @@ export const Auth = {
 
 	/**
 	 * Check skillsharer competency
-	 * 
+	 *
 	 * @param user - Current user context
 	 * @returns boolean - True if user has this competency
 	 */
@@ -520,7 +520,7 @@ export const Auth = {
 
 	/**
 	 * Check social organiser competency
-	 * 
+	 *
 	 * @param user - Current user context
 	 * @returns boolean - True if user has this competency
 	 */
@@ -530,7 +530,7 @@ export const Auth = {
 
 	/**
 	 * Get all competency statuses for a user
-	 * 
+	 *
 	 * @param user - Current user context
 	 * @returns Record<string, boolean> - Map of competency checks
 	 */
@@ -558,7 +558,7 @@ export const Auth = {
 
 	/**
 	 * Generic competency checker
-	 * 
+	 *
 	 * @param user - Current user context
 	 * @param metaKey - Meta key to check for competency
 	 * @returns boolean - True if user has this competency
@@ -570,7 +570,7 @@ export const Auth = {
 
 	/**
 	 * Determine if user can view participant details
-	 * 
+	 *
 	 * @param user - Current user context
 	 * @param trip - Trip object to check
 	 * @param accessLevel - Access level from API
