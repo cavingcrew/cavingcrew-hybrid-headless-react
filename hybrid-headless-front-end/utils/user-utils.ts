@@ -1,37 +1,15 @@
 /**
  * User Authentication and Authorization Utilities
- *
- * Available checks:
- * - isLoggedIn: Checks if user is authenticated
- * - isMember: Checks if user has membership
- * - isCommittee: Checks if user is committee member
- * - isSuperAdmin: Checks for super admin access level
- * - isAdmin: Checks for admin or super admin access
- * - isTripLeader: Checks if user is listed as trip leader
- * - hasTripAccess: Checks admin/leader access to trip
- * - canEditTrip: Checks edit permissions for trip
- * - hasCompetency: Validates user's caving skill level
- * - canViewSensitive: Checks permission for sensitive info
- * - canPurchase: Validates trip purchase eligibility
- * - isTripReporter: Checks if participant is trip reporter volunteer
- * - isTransportCoordinator: Checks transport coordinator role
- * - isSeconder: Checks if participant is seconder volunteer
- * - canViewParticipants: Checks participant list view permissions
- * - isCompetentEveningTripDirector: Checks evening trip director competency
- * - isCompetentHorizontalTripLeader: Checks horizontal trip leader competency
- * - isCompetentEveningTripTackleManager: Checks evening tackle manager competency
- * - isCompetentEveningTripLiftCoordinator: Checks evening lift coordinator competency
- * - isCompetentVerticalTripLeader: Checks vertical trip leader competency
- * - isCompetentTripBuddyFriend: Checks trip buddy friend competency
- * - isCompetentOvernightTripDirector: Checks overnight trip director competency
- * - isCompetentOvernightEveningMeal: Checks overnight meal coordinator competency
- * - isCompetentOvernightCavingCoordinator: Checks overnight caving coordinator competency
- * - isCompetentOvernightLiftCoordinator: Checks overnight lift coordinator competency
- * - isCompetentOvernightBreakfastCoordinator: Checks overnight breakfast coordinator competency
- * - isCompetentTrainingOrganiser: Checks training organiser competency
- * - isCompetentSkillsharer: Checks skillsharer competency
- * - isCompetentSocialOrganiser: Checks social organiser competency
- * - getCompetencies: Returns object with all competency statuses
+ * 
+ * Provides type-safe authentication checks and competency validation that mirrors
+ * the PHP authentication utilities. Handles:
+ * - User role determination (guest, member, committee, admin)
+ * - Trip permissions and access levels
+ * - Caving skill competency validation
+ * - Purchase eligibility checks
+ * - Volunteer role identification
+ * 
+ * All methods are available via the `Auth` object export.
  */
 
 import type { Trip, TripParticipant, UserResponse } from "../types/api";
@@ -69,7 +47,11 @@ export type CompetencyLevel =
  */
 export const Auth = {
 	/**
-	 * Core user role verification functions
+	 * Core role determination
+	 * 
+	 * @param user - Current user context
+	 * @param accessLevel - Access level from API response
+	 * @returns UserRole - Calculated role based on access and metadata
 	 */
 	getRole(
 		user: UserResponse | null,
@@ -83,14 +65,32 @@ export const Auth = {
 		return user.isMember ? "member" : "guest";
 	},
 
+	/**
+	 * Check authentication status
+	 * 
+	 * @param user - Current user context
+	 * @returns boolean - True if user is logged in
+	 */
 	isLoggedIn(user: UserResponse | null): boolean {
 		return !!user?.isLoggedIn;
 	},
 
+	/**
+	 * Validate club membership
+	 * 
+	 * @param user - Current user context
+	 * @returns boolean - True if user has active membership
+	 */
 	isMember(user: UserResponse | null): boolean {
 		return !!user?.isMember;
 	},
 
+	/**
+	 * Check committee member status
+	 * 
+	 * @param user - Current user context
+	 * @returns boolean - True if active committee member
+	 */
 	isCommittee(user: UserResponse | null): boolean {
 		if (!user?.user?.meta) return false;
 
@@ -100,10 +100,23 @@ export const Auth = {
 		return !!status && !invalidStatuses.includes(status) && this.isMember(user);
 	},
 
+	/**
+	 * Check for super admin access level
+	 * 
+	 * @param accessLevel - Access level from API response
+	 * @returns boolean - True if super admin access
+	 */
 	isSuperAdmin(accessLevel?: AccessLevel | string): boolean {
 		return accessLevel === "super_admin";
 	},
 
+	/**
+	 * Check for admin or super admin access
+	 * 
+	 * @param user - Current user context
+	 * @param accessLevel - Access level from API response
+	 * @returns boolean - True if admin or super admin access
+	 */
 	isAdmin(
 		user: UserResponse | null,
 		accessLevel?: AccessLevel | string,
@@ -113,6 +126,14 @@ export const Auth = {
 
 	/**
 	 * Trip-specific permissions
+	 */
+
+	/**
+	 * Verify trip leadership status
+	 * 
+	 * @param user - Current user context
+	 * @param trip - Trip object to check
+	 * @returns boolean - True if user is listed as trip leader
 	 */
 	isTripLeader(user: UserResponse | null, trip?: Trip): boolean {
 		if (!user?.user || !trip) return false;
@@ -124,6 +145,14 @@ export const Auth = {
 		);
 	},
 
+	/**
+	 * Check admin/leader access to trip
+	 * 
+	 * @param user - Current user context
+	 * @param trip - Trip object to check
+	 * @param accessLevel - Access level from API
+	 * @returns boolean - True if user has admin privileges or is trip leader
+	 */
 	hasTripAccess(
 		user: UserResponse | null,
 		trip?: Trip,
@@ -138,6 +167,10 @@ export const Auth = {
 	/**
 	 * Mirror of PHP is_trip_director functionality
 	 * Checks if user is a trip director for a specific trip
+	 * 
+	 * @param user - Current user context
+	 * @param tripId - Trip/product ID to check
+	 * @returns boolean - True if user is trip director for this trip
 	 */
 	isTripDirector(user: UserResponse | null, tripId?: number): boolean {
 		if (!user?.user?.id || !tripId) return false;
@@ -156,11 +189,23 @@ export const Auth = {
 	/**
 	 * Mirror of PHP is_signed_up_for_trip
 	 * Checks if user has active participation in trip
+	 * 
+	 * @param user - Current user context
+	 * @param tripId - Trip/product ID to check
+	 * @returns boolean - True if user has purchased/registered for this trip
 	 */
 	isTripParticipant(user: UserResponse | null, tripId?: number): boolean {
 		return !!user?.purchases?.includes(tripId as number);
 	},
 
+	/**
+	 * Check edit permissions for trip
+	 * 
+	 * @param user - Current user context
+	 * @param trip - Trip object to check
+	 * @param accessLevel - Access level from API
+	 * @returns boolean - True if user can edit trip details
+	 */
 	canEditTrip(
 		user: UserResponse | null,
 		trip?: Trip,
@@ -173,6 +218,15 @@ export const Auth = {
 
 	/**
 	 * Competency checks
+	 */
+
+	/**
+	 * Validate caving skill level against requirements
+	 * 
+	 * @param user - Current user context
+	 * @param category - Skill category to check
+	 * @param requiredLevel - Minimum required competency level
+	 * @returns boolean - True if user meets/exceeds requirement
 	 */
 	hasCompetency(
 		user: UserResponse | null,
@@ -213,8 +267,12 @@ export const Auth = {
 	},
 
 	/**
-	 * Check if user has a specific competency permission
+	 * Check specific competency permission
 	 * Mirrors PHP check_competency_permissions
+	 * 
+	 * @param user - Current user context
+	 * @param requiredCompetency - Competency key from getCompetencies()
+	 * @returns boolean - True if user has required competency
 	 */
 	hasCompetencyPermission(
 		user: UserResponse | null,
@@ -229,6 +287,15 @@ export const Auth = {
 
 	/**
 	 * Special access permissions
+	 */
+
+	/**
+	 * Check permission for sensitive information
+	 * 
+	 * @param user - Current user context
+	 * @param trip - Trip object to check
+	 * @param accessLevel - Access level from API
+	 * @returns boolean - True if user can view sensitive information
 	 */
 	canViewSensitive(
 		user: UserResponse | null,
@@ -246,6 +313,15 @@ export const Auth = {
 	/**
 	 * Purchase/registration permissions
 	 */
+
+	/**
+	 * Validate trip purchase eligibility
+	 * 
+	 * @param user - Current user context
+	 * @param trip - Trip object to check
+	 * @param accessLevel - Access level from API
+	 * @returns boolean - True if user can purchase/register for trip
+	 */
 	canPurchase(
 		user: UserResponse | null,
 		trip?: Trip,
@@ -259,14 +335,33 @@ export const Auth = {
 	/**
 	 * Trip volunteer role checks
 	 */
+
+	/**
+	 * Identify trip reporter volunteer
+	 * 
+	 * @param participant - Trip participant to check
+	 * @returns boolean - True if participant has reporter role
+	 */
 	isTripReporter(participant?: TripParticipant | null): boolean {
 		return participant?.order_meta?.cc_volunteer === "Trip Reporter";
 	},
 
+	/**
+	 * Identify transport coordinator volunteer
+	 * 
+	 * @param participant - Trip participant to check
+	 * @returns boolean - True if participant has transport coordinator role
+	 */
 	isTransportCoordinator(participant?: TripParticipant | null): boolean {
 		return participant?.order_meta?.cc_volunteer === "Transport Coordinator";
 	},
 
+	/**
+	 * Identify seconder volunteer
+	 * 
+	 * @param participant - Trip participant to check
+	 * @returns boolean - True if participant has seconder role
+	 */
 	isSeconder(participant?: TripParticipant | null): boolean {
 		return participant?.order_meta?.cc_volunteer === "Seconder";
 	},
@@ -274,14 +369,33 @@ export const Auth = {
 	/**
 	 * Competency role checks
 	 */
+
+	/**
+	 * Check evening trip director competency
+	 * 
+	 * @param user - Current user context
+	 * @returns boolean - True if user has this competency
+	 */
 	isCompetentEveningTripDirector(user: UserResponse | null): boolean {
 		return this.hasCompetencyRole(user, "competency_evening_trip_director");
 	},
 
+	/**
+	 * Check horizontal trip leader competency
+	 * 
+	 * @param user - Current user context
+	 * @returns boolean - True if user has this competency
+	 */
 	isCompetentHorizontalTripLeader(user: UserResponse | null): boolean {
 		return this.hasCompetencyRole(user, "competency_horizontal_trip_leader");
 	},
 
+	/**
+	 * Check evening trip tackle manager competency
+	 * 
+	 * @param user - Current user context
+	 * @returns boolean - True if user has this competency
+	 */
 	isCompetentEveningTripTackleManager(user: UserResponse | null): boolean {
 		return this.hasCompetencyRole(
 			user,
@@ -289,6 +403,12 @@ export const Auth = {
 		);
 	},
 
+	/**
+	 * Check evening trip lift coordinator competency
+	 * 
+	 * @param user - Current user context
+	 * @returns boolean - True if user has this competency
+	 */
 	isCompetentEveningTripLiftCoordinator(user: UserResponse | null): boolean {
 		return this.hasCompetencyRole(
 			user,
@@ -296,22 +416,52 @@ export const Auth = {
 		);
 	},
 
+	/**
+	 * Check vertical trip leader competency
+	 * 
+	 * @param user - Current user context
+	 * @returns boolean - True if user has this competency
+	 */
 	isCompetentVerticalTripLeader(user: UserResponse | null): boolean {
 		return this.hasCompetencyRole(user, "competency_vertical_trip_leader");
 	},
 
+	/**
+	 * Check trip buddy friend competency
+	 * 
+	 * @param user - Current user context
+	 * @returns boolean - True if user has this competency
+	 */
 	isCompetentTripBuddyFriend(user: UserResponse | null): boolean {
 		return this.hasCompetencyRole(user, "competency_trip_buddy_friend");
 	},
 
+	/**
+	 * Check overnight trip director competency
+	 * 
+	 * @param user - Current user context
+	 * @returns boolean - True if user has this competency
+	 */
 	isCompetentOvernightTripDirector(user: UserResponse | null): boolean {
 		return this.hasCompetencyRole(user, "competency_overnight_trip_director");
 	},
 
+	/**
+	 * Check overnight evening meal coordinator competency
+	 * 
+	 * @param user - Current user context
+	 * @returns boolean - True if user has this competency
+	 */
 	isCompetentOvernightEveningMeal(user: UserResponse | null): boolean {
 		return this.hasCompetencyRole(user, "competency_overnight_evening_meal");
 	},
 
+	/**
+	 * Check overnight caving coordinator competency
+	 * 
+	 * @param user - Current user context
+	 * @returns boolean - True if user has this competency
+	 */
 	isCompetentOvernightCavingCoordinator(user: UserResponse | null): boolean {
 		return this.hasCompetencyRole(
 			user,
@@ -319,6 +469,12 @@ export const Auth = {
 		);
 	},
 
+	/**
+	 * Check overnight lift coordinator competency
+	 * 
+	 * @param user - Current user context
+	 * @returns boolean - True if user has this competency
+	 */
 	isCompetentOvernightLiftCoordinator(user: UserResponse | null): boolean {
 		return this.hasCompetencyRole(
 			user,
@@ -326,6 +482,12 @@ export const Auth = {
 		);
 	},
 
+	/**
+	 * Check overnight breakfast coordinator competency
+	 * 
+	 * @param user - Current user context
+	 * @returns boolean - True if user has this competency
+	 */
 	isCompetentOvernightBreakfastCoordinator(user: UserResponse | null): boolean {
 		return this.hasCompetencyRole(
 			user,
@@ -333,6 +495,12 @@ export const Auth = {
 		);
 	},
 
+	/**
+	 * Check training organiser competency
+	 * 
+	 * @param user - Current user context
+	 * @returns boolean - True if user has this competency
+	 */
 	isCompetentTrainingOrganiser(user: UserResponse | null): boolean {
 		return this.hasCompetencyRole(
 			user,
@@ -340,16 +508,31 @@ export const Auth = {
 		);
 	},
 
+	/**
+	 * Check skillsharer competency
+	 * 
+	 * @param user - Current user context
+	 * @returns boolean - True if user has this competency
+	 */
 	isCompetentSkillsharer(user: UserResponse | null): boolean {
 		return this.hasCompetencyRole(user, "competency_training_skillsharer");
 	},
 
+	/**
+	 * Check social organiser competency
+	 * 
+	 * @param user - Current user context
+	 * @returns boolean - True if user has this competency
+	 */
 	isCompetentSocialOrganiser(user: UserResponse | null): boolean {
 		return this.hasCompetencyRole(user, "competency_social_social_organiser");
 	},
 
 	/**
 	 * Get all competency statuses for a user
+	 * 
+	 * @param user - Current user context
+	 * @returns Record<string, boolean> - Map of competency checks
 	 */
 	getCompetencies(user: UserResponse | null): Record<string, boolean> {
 		return {
@@ -375,6 +558,10 @@ export const Auth = {
 
 	/**
 	 * Generic competency checker
+	 * 
+	 * @param user - Current user context
+	 * @param metaKey - Meta key to check for competency
+	 * @returns boolean - True if user has this competency
 	 */
 	hasCompetencyRole(user: UserResponse | null, metaKey: string): boolean {
 		const value = user?.user?.meta?.[metaKey];
@@ -383,6 +570,11 @@ export const Auth = {
 
 	/**
 	 * Determine if user can view participant details
+	 * 
+	 * @param user - Current user context
+	 * @param trip - Trip object to check
+	 * @param accessLevel - Access level from API
+	 * @returns boolean - True if user can view participant list
 	 */
 	canViewParticipants(
 		user: UserResponse | null,
@@ -401,7 +593,10 @@ export const Auth = {
 
 /**
  * Legacy functions for backward compatibility
- * @deprecated Use Auth object instead
+ * @deprecated Use Auth object methods instead
+ */
+/**
+ * @deprecated Use Auth.getRole() instead
  */
 export function getUserRole(
 	user: UserResponse | null,
@@ -410,30 +605,51 @@ export function getUserRole(
 	return Auth.getRole(user, accessLevel);
 }
 
+/**
+ * @deprecated Use Auth.isLoggedIn() instead
+ */
 export function isLoggedIn(user: UserResponse | null): boolean {
 	return Auth.isLoggedIn(user);
 }
 
+/**
+ * @deprecated Use Auth.isMember() instead
+ */
 export function isMember(user: UserResponse | null): boolean {
 	return Auth.isMember(user);
 }
 
+/**
+ * @deprecated Use Auth.isCommittee() instead
+ */
 export function isCommitteeMember(user: UserResponse | null): boolean {
 	return Auth.isCommittee(user);
 }
 
+/**
+ * @deprecated Use Auth.isSuperAdmin() instead
+ */
 export function isSuperAdmin(accessLevel?: string): boolean {
 	return Auth.isSuperAdmin(accessLevel);
 }
 
+/**
+ * @deprecated Use Auth.isAdmin() instead
+ */
 export function isAdmin(accessLevel?: string): boolean {
 	return accessLevel === "admin" || accessLevel === "super_admin";
 }
 
+/**
+ * @deprecated Use Auth.isTripLeader() instead
+ */
 export function isTripLeader(user: UserResponse | null, trip?: Trip): boolean {
 	return Auth.isTripLeader(user, trip);
 }
 
+/**
+ * @deprecated Use Auth.hasTripAccess() instead
+ */
 export function hasTripAdminAccess(
 	user: UserResponse | null,
 	trip?: Trip,
@@ -442,6 +658,9 @@ export function hasTripAdminAccess(
 	return Auth.hasTripAccess(user, trip, accessLevel);
 }
 
+/**
+ * @deprecated Use Auth.canEditTrip() instead
+ */
 export function canEditTrip(
 	user: UserResponse | null,
 	trip?: Trip,
@@ -450,6 +669,9 @@ export function canEditTrip(
 	return Auth.canEditTrip(user, trip, accessLevel);
 }
 
+/**
+ * @deprecated Use Auth.hasCompetency() instead
+ */
 export function hasCavingCompetency(
 	user: UserResponse | null,
 	category: SkillCategory,
@@ -458,6 +680,9 @@ export function hasCavingCompetency(
 	return Auth.hasCompetency(user, category, requiredLevel);
 }
 
+/**
+ * @deprecated Use Auth.canViewSensitive() instead
+ */
 export function hasSensitiveAccess(
 	user: UserResponse | null,
 	trip?: Trip,
@@ -466,6 +691,9 @@ export function hasSensitiveAccess(
 	return Auth.canViewSensitive(user, trip, accessLevel);
 }
 
+/**
+ * @deprecated Use Auth.canPurchase() instead
+ */
 export function canPurchaseTrip(
 	user: UserResponse | null,
 	trip?: Trip,
@@ -474,6 +702,9 @@ export function canPurchaseTrip(
 	return Auth.canPurchase(user, trip, accessLevel);
 }
 
+/**
+ * @deprecated Use Auth.canViewParticipants() instead
+ */
 export function canViewParticipantDetails(
 	user: UserResponse | null,
 	trip?: Trip,
@@ -482,98 +713,152 @@ export function canViewParticipantDetails(
 	return Auth.canViewParticipants(user, trip, accessLevel);
 }
 
+/**
+ * @deprecated Use Auth.isTripReporter() instead
+ */
 export function isTripReporter(participant?: TripParticipant | null): boolean {
 	return Auth.isTripReporter(participant);
 }
 
+/**
+ * @deprecated Use Auth.isTransportCoordinator() instead
+ */
 export function isTransportCoordinator(
 	participant?: TripParticipant | null,
 ): boolean {
 	return Auth.isTransportCoordinator(participant);
 }
 
+/**
+ * @deprecated Use Auth.isSeconder() instead
+ */
 export function isSeconder(participant?: TripParticipant | null): boolean {
 	return Auth.isSeconder(participant);
 }
 
+/**
+ * @deprecated Use Auth.isCompetentEveningTripDirector() instead
+ */
 export function isCompetentEveningTripDirector(
 	user: UserResponse | null,
 ): boolean {
 	return Auth.isCompetentEveningTripDirector(user);
 }
 
+/**
+ * @deprecated Use Auth.isCompetentHorizontalTripLeader() instead
+ */
 export function isCompetentHorizontalTripLeader(
 	user: UserResponse | null,
 ): boolean {
 	return Auth.isCompetentHorizontalTripLeader(user);
 }
 
+/**
+ * @deprecated Use Auth.isCompetentEveningTripTackleManager() instead
+ */
 export function isCompetentEveningTripTackleManager(
 	user: UserResponse | null,
 ): boolean {
 	return Auth.isCompetentEveningTripTackleManager(user);
 }
 
+/**
+ * @deprecated Use Auth.isCompetentEveningTripLiftCoordinator() instead
+ */
 export function isCompetentEveningTripLiftCoordinator(
 	user: UserResponse | null,
 ): boolean {
 	return Auth.isCompetentEveningTripLiftCoordinator(user);
 }
 
+/**
+ * @deprecated Use Auth.isCompetentVerticalTripLeader() instead
+ */
 export function isCompetentVerticalTripLeader(
 	user: UserResponse | null,
 ): boolean {
 	return Auth.isCompetentVerticalTripLeader(user);
 }
 
+/**
+ * @deprecated Use Auth.isCompetentTripBuddyFriend() instead
+ */
 export function isCompetentTripBuddyFriend(user: UserResponse | null): boolean {
 	return Auth.isCompetentTripBuddyFriend(user);
 }
 
+/**
+ * @deprecated Use Auth.isCompetentOvernightTripDirector() instead
+ */
 export function isCompetentOvernightTripDirector(
 	user: UserResponse | null,
 ): boolean {
 	return Auth.isCompetentOvernightTripDirector(user);
 }
 
+/**
+ * @deprecated Use Auth.isCompetentOvernightEveningMeal() instead
+ */
 export function isCompetentOvernightEveningMeal(
 	user: UserResponse | null,
 ): boolean {
 	return Auth.isCompetentOvernightEveningMeal(user);
 }
 
+/**
+ * @deprecated Use Auth.isCompetentOvernightCavingCoordinator() instead
+ */
 export function isCompetentOvernightCavingCoordinator(
 	user: UserResponse | null,
 ): boolean {
 	return Auth.isCompetentOvernightCavingCoordinator(user);
 }
 
+/**
+ * @deprecated Use Auth.isCompetentOvernightLiftCoordinator() instead
+ */
 export function isCompetentOvernightLiftCoordinator(
 	user: UserResponse | null,
 ): boolean {
 	return Auth.isCompetentOvernightLiftCoordinator(user);
 }
 
+/**
+ * @deprecated Use Auth.isCompetentOvernightBreakfastCoordinator() instead
+ */
 export function isCompetentOvernightBreakfastCoordinator(
 	user: UserResponse | null,
 ): boolean {
 	return Auth.isCompetentOvernightBreakfastCoordinator(user);
 }
 
+/**
+ * @deprecated Use Auth.isCompetentTrainingOrganiser() instead
+ */
 export function isCompetentTrainingOrganiser(
 	user: UserResponse | null,
 ): boolean {
 	return Auth.isCompetentTrainingOrganiser(user);
 }
 
+/**
+ * @deprecated Use Auth.isCompetentSkillsharer() instead
+ */
 export function isCompetentSkillsharer(user: UserResponse | null): boolean {
 	return Auth.isCompetentSkillsharer(user);
 }
 
+/**
+ * @deprecated Use Auth.isCompetentSocialOrganiser() instead
+ */
 export function isCompetentSocialOrganiser(user: UserResponse | null): boolean {
 	return Auth.isCompetentSocialOrganiser(user);
 }
 
+/**
+ * @deprecated Use Auth.getCompetencies() instead
+ */
 export function getCompetencies(
 	user: UserResponse | null,
 ): Record<string, boolean> {

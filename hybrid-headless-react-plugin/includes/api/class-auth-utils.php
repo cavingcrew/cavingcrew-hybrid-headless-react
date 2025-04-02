@@ -1,6 +1,14 @@
 <?php
 /**
- * Authentication Utilities
+ * Authentication and Authorization Utilities
+ * 
+ * Provides comprehensive authentication checks and competency validation for:
+ * - User roles (member, committee, admin)
+ * - Trip permissions (director, participant, volunteer roles)
+ * - Caving skill competencies
+ * - Purchase and attendance validation
+ * 
+ * All methods are static for utility access across the plugin.
  *
  * @package HybridHeadless
  */
@@ -14,9 +22,10 @@ if (!defined('ABSPATH')) {
  */
 class Hybrid_Headless_Auth_Utils {
     /**
-     * Ensure user is authenticated by checking the auth cookie
+     * Authenticate user via WordPress auth cookie and initialize WooCommerce customer
      * 
-     * @return int User ID or 0 if not authenticated
+     * @return int Authenticated user ID or 0 if not logged in
+     * @throws WP_Error If cookie validation fails
      */
     public static function ensure_user_authenticated() {
         // Only run this check if the user isn't already authenticated
@@ -38,10 +47,10 @@ class Hybrid_Headless_Auth_Utils {
     }
     
     /**
-     * Check if user is logged in
+     * Validate user login status for API endpoints
      * 
-     * @param WP_REST_Request $request Request object
-     * @return bool|WP_Error True if logged in, WP_Error otherwise
+     * @param WP_REST_Request $request Incoming REST request
+     * @return true|WP_Error WP_Error with 401 if unauthenticated
      */
     public static function check_logged_in($request) {
         self::ensure_user_authenticated();
@@ -58,10 +67,10 @@ class Hybrid_Headless_Auth_Utils {
     }
     
     /**
-     * Check if user has WooCommerce admin permissions
+     * Verify WooCommerce management capabilities
      * 
-     * @param WP_REST_Request $request Request object
-     * @return bool|WP_Error True if has permissions, WP_Error otherwise
+     * @param WP_REST_Request $request Incoming REST request
+     * @return true|WP_Error WP_Error with 403 if unauthorized
      */
     public static function check_woocommerce_permissions($request) {
         self::ensure_user_authenticated();
@@ -86,10 +95,10 @@ class Hybrid_Headless_Auth_Utils {
     }
     
     /**
-     * Check if user is a committee member
+     * Validate committee member status
      * 
-     * @param WP_REST_Request $request Request object
-     * @return bool|WP_Error True if committee member, WP_Error otherwise
+     * @param WP_REST_Request $request Incoming REST request
+     * @return true|WP_Error WP_Error with 403 if not committee/admin
      */
     public static function check_committee_permissions($request) {
         self::ensure_user_authenticated();
@@ -121,10 +130,10 @@ class Hybrid_Headless_Auth_Utils {
     }
     
     /**
-     * Check if user is a trip director for a specific trip
+     * Verify trip director permissions for specific trip
      * 
-     * @param WP_REST_Request $request Request object
-     * @return bool|WP_Error True if trip director, WP_Error otherwise
+     * @param WP_REST_Request $request Should contain 'id' or 'trip_id' parameter
+     * @return true|WP_Error WP_Error with 403 if not authorized
      */
     public static function check_trip_director_permissions($request) {
         self::ensure_user_authenticated();
@@ -175,10 +184,10 @@ class Hybrid_Headless_Auth_Utils {
     }
     
     /**
-     * Check if user is a member
+     * Check valid club membership status
      * 
-     * @param WP_REST_Request $request Request object
-     * @return bool|WP_Error True if member, WP_Error otherwise
+     * @param WP_REST_Request $request Incoming REST request
+     * @return true|WP_Error WP_Error with 403 if not a member
      */
     public static function check_member_permissions($request) {
         self::ensure_user_authenticated();
@@ -204,10 +213,10 @@ class Hybrid_Headless_Auth_Utils {
     }
     
     /**
-     * Check if user is signed up for a trip
+     * Validate trip participation status
      * 
-     * @param WP_REST_Request $request Request object
-     * @return bool|WP_Error True if signed up, WP_Error otherwise
+     * @param WP_REST_Request $request Should contain trip ID parameter
+     * @return true|WP_Error WP_Error with 403 if not participating
      */
     public static function check_if_signed_up_for_trip($request) {
         self::ensure_user_authenticated();
@@ -254,10 +263,10 @@ class Hybrid_Headless_Auth_Utils {
     }
     
     /**
-     * Check if user is a committee member
+     * Determine committee member status
      * 
-     * @param int $user_id User ID
-     * @return bool True if committee member, false otherwise
+     * @param int $user_id WordPress user ID
+     * @return bool True if active committee member
      */
     public static function is_committee_member($user_id) {
         if (!$user_id) {
@@ -277,10 +286,10 @@ class Hybrid_Headless_Auth_Utils {
     }
     
     /**
-     * Check if user is a member
+     * Verify club membership status
      * 
-     * @param int $user_id User ID
-     * @return bool True if member, false otherwise
+     * @param int $user_id WordPress user ID
+     * @return bool True if active member (cc_member meta = 'yes')
      */
     public static function is_member($user_id) {
         if (!$user_id) {
@@ -291,11 +300,11 @@ class Hybrid_Headless_Auth_Utils {
     }
     
     /**
-     * Check if user is a trip director for a specific trip
+     * Check trip director status through order metadata
      * 
-     * @param int $user_id User ID
-     * @param int $trip_id Trip ID
-     * @return bool True if trip director, false otherwise
+     * @param int $user_id WordPress user ID
+     * @param int $trip_id WooCommerce product ID
+     * @return bool True if user has director role for trip
      */
     public static function is_trip_director($user_id, $trip_id) {
         if (!$user_id || !$trip_id) {
@@ -329,11 +338,11 @@ class Hybrid_Headless_Auth_Utils {
     }
     
     /**
-     * Check if user is signed up for a trip
+     * Validate trip participation through order history
      * 
-     * @param int $user_id User ID
-     * @param int $trip_id Trip ID
-     * @return bool True if signed up, false otherwise
+     * @param int $user_id WordPress user ID
+     * @param int $trip_id WooCommerce product ID
+     * @return bool True if user has active order for trip
      */
     public static function is_signed_up_for_trip($user_id, $trip_id) {
         if (!$user_id || !$trip_id) {
@@ -362,11 +371,11 @@ class Hybrid_Headless_Auth_Utils {
     }
     
     /**
-     * Check if user has a specific competency
+     * Check competency role status from user meta
      * 
-     * @param int $user_id User ID
-     * @param string $competency_key Meta key for the competency
-     * @return bool True if user has the competency, false otherwise
+     * @param int $user_id WordPress user ID
+     * @param string $competency_key Meta key to check
+     * @return bool True if meta value indicates competency
      */
     public static function is_competent_role($user_id, $competency_key) {
         if (!$user_id) {
@@ -378,150 +387,150 @@ class Hybrid_Headless_Auth_Utils {
     }
     
     /**
-     * Check if user is a competent evening trip director
+     * Check competency for evening trip director
      * 
-     * @param int $user_id User ID
-     * @return bool True if competent, false otherwise
+     * @param int $user_id WordPress user ID
+     * @return bool True if user has this competency
      */
     public static function is_competent_evening_trip_director($user_id) {
         return self::is_competent_role($user_id, 'competency_evening_trip_director');
     }
     
     /**
-     * Check if user is a competent horizontal trip leader
+     * Check competency for horizontal trip leader
      * 
-     * @param int $user_id User ID
-     * @return bool True if competent, false otherwise
+     * @param int $user_id WordPress user ID
+     * @return bool True if user has this competency
      */
     public static function is_competent_horizontal_trip_leader($user_id) {
         return self::is_competent_role($user_id, 'competency_horizontal_trip_leader');
     }
     
     /**
-     * Check if user is a competent evening trip tackle manager
+     * Check competency for evening trip tackle manager
      * 
-     * @param int $user_id User ID
-     * @return bool True if competent, false otherwise
+     * @param int $user_id WordPress user ID
+     * @return bool True if user has this competency
      */
     public static function is_competent_evening_trip_tacklemanager($user_id) {
         return self::is_competent_role($user_id, 'competency_evening_trip_tacklemanager');
     }
     
     /**
-     * Check if user is a competent evening trip lift coordinator
+     * Check competency for evening trip lift coordinator
      * 
-     * @param int $user_id User ID
-     * @return bool True if competent, false otherwise
+     * @param int $user_id WordPress user ID
+     * @return bool True if user has this competency
      */
     public static function is_competent_evening_trip_lift_coordinator($user_id) {
         return self::is_competent_role($user_id, 'competency_evening_trip_lift_coordinator');
     }
     
     /**
-     * Check if user is a competent vertical trip leader
+     * Check competency for vertical trip leader
      * 
-     * @param int $user_id User ID
-     * @return bool True if competent, false otherwise
+     * @param int $user_id WordPress user ID
+     * @return bool True if user has this competency
      */
     public static function is_competent_vertical_trip_leader($user_id) {
         return self::is_competent_role($user_id, 'competency_vertical_trip_leader');
     }
     
     /**
-     * Check if user is a competent trip buddy/friend
+     * Check competency for trip buddy/friend
      * 
-     * @param int $user_id User ID
-     * @return bool True if competent, false otherwise
+     * @param int $user_id WordPress user ID
+     * @return bool True if user has this competency
      */
     public static function is_competent_trip_buddy_friend($user_id) {
         return self::is_competent_role($user_id, 'competency_trip_buddy_friend');
     }
     
     /**
-     * Check if user is a competent overnight trip director
+     * Check competency for overnight trip director
      * 
-     * @param int $user_id User ID
-     * @return bool True if competent, false otherwise
+     * @param int $user_id WordPress user ID
+     * @return bool True if user has this competency
      */
     public static function is_competent_overnight_trip_director($user_id) {
         return self::is_competent_role($user_id, 'competency_overnight_trip_director');
     }
     
     /**
-     * Check if user is a competent overnight evening meal coordinator
+     * Check competency for overnight evening meal coordinator
      * 
-     * @param int $user_id User ID
-     * @return bool True if competent, false otherwise
+     * @param int $user_id WordPress user ID
+     * @return bool True if user has this competency
      */
     public static function is_competent_overnight_evening_meal($user_id) {
         return self::is_competent_role($user_id, 'competency_overnight_evening_meal');
     }
     
     /**
-     * Check if user is a competent overnight caving coordinator
+     * Check competency for overnight caving coordinator
      * 
-     * @param int $user_id User ID
-     * @return bool True if competent, false otherwise
+     * @param int $user_id WordPress user ID
+     * @return bool True if user has this competency
      */
     public static function is_competent_overnight_caving_coordinator($user_id) {
         return self::is_competent_role($user_id, 'competency_overnight_caving_coordinator');
     }
     
     /**
-     * Check if user is a competent overnight lift coordinator
+     * Check competency for overnight lift coordinator
      * 
-     * @param int $user_id User ID
-     * @return bool True if competent, false otherwise
+     * @param int $user_id WordPress user ID
+     * @return bool True if user has this competency
      */
     public static function is_competent_overnight_lift_coordinator($user_id) {
         return self::is_competent_role($user_id, 'competency_overnight_lift_coordinator');
     }
     
     /**
-     * Check if user is a competent overnight breakfast coordinator
+     * Check competency for overnight breakfast coordinator
      * 
-     * @param int $user_id User ID
-     * @return bool True if competent, false otherwise
+     * @param int $user_id WordPress user ID
+     * @return bool True if user has this competency
      */
     public static function is_competent_overnight_breakfast_coordinator($user_id) {
         return self::is_competent_role($user_id, 'competency_overnight_breakfast_coordinator');
     }
     
     /**
-     * Check if user is a competent training organiser
+     * Check competency for training organiser
      * 
-     * @param int $user_id User ID
-     * @return bool True if competent, false otherwise
+     * @param int $user_id WordPress user ID
+     * @return bool True if user has this competency
      */
     public static function is_competent_training_organiser($user_id) {
         return self::is_competent_role($user_id, 'competency_training_training_organiser');
     }
     
     /**
-     * Check if user is a competent skillsharer
+     * Check competency for skillsharer
      * 
-     * @param int $user_id User ID
-     * @return bool True if competent, false otherwise
+     * @param int $user_id WordPress user ID
+     * @return bool True if user has this competency
      */
     public static function is_competent_skillsharer($user_id) {
         return self::is_competent_role($user_id, 'competency_training_skillsharer');
     }
     
     /**
-     * Check if user is a competent social organiser
+     * Check competency for social organiser
      * 
-     * @param int $user_id User ID
-     * @return bool True if competent, false otherwise
+     * @param int $user_id WordPress user ID
+     * @return bool True if user has this competency
      */
     public static function is_competent_social_organiser($user_id) {
         return self::is_competent_role($user_id, 'competency_social_social_organiser');
     }
     
     /**
-     * Get all competencies for a user
+     * Get all competency statuses for a user
      * 
-     * @param int $user_id User ID
-     * @return array Array of competencies with boolean values
+     * @param int $user_id WordPress user ID
+     * @return array Key-value pairs of competency checks
      */
     public static function get_competencies($user_id) {
         return [
@@ -543,11 +552,11 @@ class Hybrid_Headless_Auth_Utils {
     }
     
     /**
-     * Check if user has a specific competency
+     * Validate specific competency permission
      * 
-     * @param int $user_id User ID
-     * @param string $competency_key Competency key
-     * @return bool True if user has the competency, false otherwise
+     * @param int $user_id WordPress user ID
+     * @param string $required_competency Competency key from get_competencies()
+     * @return bool True if user has required competency
      */
     public static function check_competency_permissions($user_id, $required_competency) {
         $competencies = self::get_competencies($user_id);
@@ -555,10 +564,10 @@ class Hybrid_Headless_Auth_Utils {
     }
     
     /**
-     * Get skill meta key from skill category
+     * Map skill categories to user meta keys
      * 
-     * @param string $skill_category Skill category
-     * @return string Meta key
+     * @param string $skill_category From SkillCategory type
+     * @return string Corresponding WordPress meta key
      */
     private static function get_skill_meta_key($skill_category) {
         $map = [
@@ -572,12 +581,12 @@ class Hybrid_Headless_Auth_Utils {
     }
     
     /**
-     * Check if user has a specific caving competency level
+     * Validate caving skill level against requirements
      * 
-     * @param int $user_id User ID
-     * @param string $skill_category Skill category
-     * @param string $required_level Required competency level
-     * @return bool True if user has the required competency level, false otherwise
+     * @param int $user_id WordPress user ID
+     * @param string $skill_category Skill category from SkillCategory
+     * @param string $required_level Minimum required competency level
+     * @return bool True if user meets or exceeds requirement
      */
     public static function has_competency($user_id, $skill_category, $required_level) {
         $meta_key = self::get_skill_meta_key($skill_category);
@@ -612,8 +621,8 @@ class Hybrid_Headless_Auth_Utils {
     /**
      * Get pending orders for a product
      * 
-     * @param int $product_id Product ID
-     * @return array Array of order IDs
+     * @param int $product_id WooCommerce product ID
+     * @return array Array of order IDs with pending status
      */
     public static function get_pending_orders_for_product($product_id) {
         global $wpdb;
