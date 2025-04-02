@@ -12,6 +12,7 @@ import {
 	Title,
 	Tooltip,
 } from "@mantine/core";
+import { useDebouncedCallback } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import {
 	IconAlertCircle,
@@ -20,7 +21,6 @@ import {
 	IconInfoCircle,
 	IconX,
 } from "@tabler/icons-react";
-import { useDebouncedCallback } from "@mantine/hooks";
 
 // Import custom hooks and types
 import { apiService } from "@/lib/api-service";
@@ -82,7 +82,8 @@ export function NeoClanVolunteeringRoles({
 		| "event_role"
 		| "admin"
 		| "super_admin";
-	const eventClosed = !!(data?.data as TripParticipantsResponse | undefined)?.event_closed;
+	const eventClosed = !!(data?.data as TripParticipantsResponse | undefined)
+		?.event_closed;
 
 	// Check if user has permission to assign roles
 	const canAssignRoles =
@@ -97,7 +98,7 @@ export function NeoClanVolunteeringRoles({
 			try {
 				const response = await apiService.updateVolunteerRole(
 					participant.order_id,
-					newRole
+					newRole,
 				);
 
 				if (!response.success) throw new Error(response.message);
@@ -125,7 +126,7 @@ export function NeoClanVolunteeringRoles({
 				});
 			}
 		},
-		500
+		500,
 	);
 
 	// Loading state rendering
@@ -212,7 +213,9 @@ export function NeoClanVolunteeringRoles({
 										<Select
 											data={VOLUNTEER_ROLES}
 											value={currentRole}
-											onChange={(value) => value && debouncedRoleUpdate(participant, value)}
+											onChange={(value) =>
+												value && debouncedRoleUpdate(participant, value)
+											}
 											placeholder="Select role"
 											size="xs"
 											allowDeselect={false}
@@ -220,9 +223,14 @@ export function NeoClanVolunteeringRoles({
 									) : (
 										<Badge
 											color={currentRole === "none" ? "gray" : "green"}
-											leftSection={currentRole !== "none" ? <IconHeartHandshake size={14} /> : null}
+											leftSection={
+												currentRole !== "none" ? (
+													<IconHeartHandshake size={14} />
+												) : null
+											}
 										>
-											{VOLUNTEER_ROLES.find((r) => r.value === currentRole)?.label || currentRole}
+											{VOLUNTEER_ROLES.find((r) => r.value === currentRole)
+												?.label || currentRole}
 										</Badge>
 									)}
 								</Table.Td>
