@@ -228,59 +228,77 @@ export const Auth = {
 	 * Competency role checks
 	 */
 	isCompetentEveningTripDirector(user: UserResponse | null): boolean {
-		return this.hasCompetencyRole(user, 'competency_evening_trip_director');
+		return this.hasCompetencyRole(user, "competency_evening_trip_director");
 	},
 
 	isCompetentHorizontalTripLeader(user: UserResponse | null): boolean {
-		return this.hasCompetencyRole(user, 'competency_horizontal_trip_leader');
+		return this.hasCompetencyRole(user, "competency_horizontal_trip_leader");
 	},
 
 	isCompetentEveningTripTackleManager(user: UserResponse | null): boolean {
-		return this.hasCompetencyRole(user, 'competency_evening_trip_tacklemanager');
+		return this.hasCompetencyRole(
+			user,
+			"competency_evening_trip_tacklemanager",
+		);
 	},
 
 	isCompetentEveningTripLiftCoordinator(user: UserResponse | null): boolean {
-		return this.hasCompetencyRole(user, 'competency_evening_trip_lift_coordinator');
+		return this.hasCompetencyRole(
+			user,
+			"competency_evening_trip_lift_coordinator",
+		);
 	},
 
 	isCompetentVerticalTripLeader(user: UserResponse | null): boolean {
-		return this.hasCompetencyRole(user, 'competency_vertical_trip_leader');
+		return this.hasCompetencyRole(user, "competency_vertical_trip_leader");
 	},
 
 	isCompetentTripBuddyFriend(user: UserResponse | null): boolean {
-		return this.hasCompetencyRole(user, 'competency_trip_buddy_friend');
+		return this.hasCompetencyRole(user, "competency_trip_buddy_friend");
 	},
 
 	isCompetentOvernightTripDirector(user: UserResponse | null): boolean {
-		return this.hasCompetencyRole(user, 'competency_overnight_trip_director');
+		return this.hasCompetencyRole(user, "competency_overnight_trip_director");
 	},
 
 	isCompetentOvernightEveningMeal(user: UserResponse | null): boolean {
-		return this.hasCompetencyRole(user, 'competency_overnight_evening_meal');
+		return this.hasCompetencyRole(user, "competency_overnight_evening_meal");
 	},
 
 	isCompetentOvernightCavingCoordinator(user: UserResponse | null): boolean {
-		return this.hasCompetencyRole(user, 'competency_overnight_caving_coordinator');
+		return this.hasCompetencyRole(
+			user,
+			"competency_overnight_caving_coordinator",
+		);
 	},
 
 	isCompetentOvernightLiftCoordinator(user: UserResponse | null): boolean {
-		return this.hasCompetencyRole(user, 'competency_overnight_lift_coordinator');
+		return this.hasCompetencyRole(
+			user,
+			"competency_overnight_lift_coordinator",
+		);
 	},
 
 	isCompetentOvernightBreakfastCoordinator(user: UserResponse | null): boolean {
-		return this.hasCompetencyRole(user, 'competency_overnight_breakfast_coordinator');
+		return this.hasCompetencyRole(
+			user,
+			"competency_overnight_breakfast_coordinator",
+		);
 	},
 
 	isCompetentTrainingOrganiser(user: UserResponse | null): boolean {
-		return this.hasCompetencyRole(user, 'competency_training_training_organiser');
+		return this.hasCompetencyRole(
+			user,
+			"competency_training_training_organiser",
+		);
 	},
 
 	isCompetentSkillsharer(user: UserResponse | null): boolean {
-		return this.hasCompetencyRole(user, 'competency_training_skillsharer');
+		return this.hasCompetencyRole(user, "competency_training_skillsharer");
 	},
 
 	isCompetentSocialOrganiser(user: UserResponse | null): boolean {
-		return this.hasCompetencyRole(user, 'competency_social_social_organiser');
+		return this.hasCompetencyRole(user, "competency_social_social_organiser");
 	},
 
 	/**
@@ -288,7 +306,7 @@ export const Auth = {
 	 */
 	hasCompetencyRole(user: UserResponse | null, metaKey: string): boolean {
 		const value = user?.user?.meta?.[metaKey];
-		return !!value && value !== 'none' && value !== 'No competency';
+		return !!value && value !== "none" && value !== "No competency";
 	},
 
 	/**
@@ -406,23 +424,33 @@ export function isSeconder(participant?: TripParticipant | null): boolean {
 	return Auth.isSeconder(participant);
 }
 
-export function isCompetentEveningTripDirector(user: UserResponse | null): boolean {
+export function isCompetentEveningTripDirector(
+	user: UserResponse | null,
+): boolean {
 	return Auth.isCompetentEveningTripDirector(user);
 }
 
-export function isCompetentHorizontalTripLeader(user: UserResponse | null): boolean {
+export function isCompetentHorizontalTripLeader(
+	user: UserResponse | null,
+): boolean {
 	return Auth.isCompetentHorizontalTripLeader(user);
 }
 
-export function isCompetentEveningTripTackleManager(user: UserResponse | null): boolean {
+export function isCompetentEveningTripTackleManager(
+	user: UserResponse | null,
+): boolean {
 	return Auth.isCompetentEveningTripTackleManager(user);
 }
 
-export function isCompetentEveningTripLiftCoordinator(user: UserResponse | null): boolean {
+export function isCompetentEveningTripLiftCoordinator(
+	user: UserResponse | null,
+): boolean {
 	return Auth.isCompetentEveningTripLiftCoordinator(user);
 }
 
-export function isCompetentVerticalTripLeader(user: UserResponse | null): boolean {
+export function isCompetentVerticalTripLeader(
+	user: UserResponse | null,
+): boolean {
 	return Auth.isCompetentVerticalTripLeader(user);
 }
 
@@ -430,27 +458,39 @@ export function isCompetentTripBuddyFriend(user: UserResponse | null): boolean {
 	return Auth.isCompetentTripBuddyFriend(user);
 }
 
-export function isCompetentOvernightTripDirector(user: UserResponse | null): boolean {
+export function isCompetentOvernightTripDirector(
+	user: UserResponse | null,
+): boolean {
 	return Auth.isCompetentOvernightTripDirector(user);
 }
 
-export function isCompetentOvernightEveningMeal(user: UserResponse | null): boolean {
+export function isCompetentOvernightEveningMeal(
+	user: UserResponse | null,
+): boolean {
 	return Auth.isCompetentOvernightEveningMeal(user);
 }
 
-export function isCompetentOvernightCavingCoordinator(user: UserResponse | null): boolean {
+export function isCompetentOvernightCavingCoordinator(
+	user: UserResponse | null,
+): boolean {
 	return Auth.isCompetentOvernightCavingCoordinator(user);
 }
 
-export function isCompetentOvernightLiftCoordinator(user: UserResponse | null): boolean {
+export function isCompetentOvernightLiftCoordinator(
+	user: UserResponse | null,
+): boolean {
 	return Auth.isCompetentOvernightLiftCoordinator(user);
 }
 
-export function isCompetentOvernightBreakfastCoordinator(user: UserResponse | null): boolean {
+export function isCompetentOvernightBreakfastCoordinator(
+	user: UserResponse | null,
+): boolean {
 	return Auth.isCompetentOvernightBreakfastCoordinator(user);
 }
 
-export function isCompetentTrainingOrganiser(user: UserResponse | null): boolean {
+export function isCompetentTrainingOrganiser(
+	user: UserResponse | null,
+): boolean {
 	return Auth.isCompetentTrainingOrganiser(user);
 }
 
