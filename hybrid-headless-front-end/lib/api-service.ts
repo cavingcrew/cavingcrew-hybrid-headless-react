@@ -207,6 +207,35 @@ export const apiService = {
 		}
 	},
 
+	async updateVolunteerRole(
+		orderId: number,
+		role: string,
+	): Promise<ApiResponse<any>> {
+		try {
+			const response = await fetch(
+				`${API_BASE_URL}/hybrid-headless/v1/caving-crew/orders/${orderId}/volunteer`,
+				{
+					method: "PUT",
+					credentials: "include",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({ role }),
+				},
+			);
+
+			if (!response.ok) throw new Error("Failed to update volunteer role");
+			const data = await response.json();
+			return { data, success: true };
+		} catch (error) {
+			return {
+				success: false,
+				data: null,
+				message: error instanceof Error ? error.message : "Failed to update role",
+			};
+		}
+	},
+
 	async getTripsByCategory(
 		categorySlug: string,
 		page = 1,

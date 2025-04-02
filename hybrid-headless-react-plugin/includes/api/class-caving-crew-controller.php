@@ -702,16 +702,32 @@ class Hybrid_Headless_Caving_Crew_Controller {
             return new WP_Error('invalid_order', 'Order not found', ['status' => 404]);
         }
         
+        $current_user = wp_get_current_user();
+        
         // Update order metadata and status
         $order->update_meta_data('cc_volunteer', $role);
         $order->update_status($valid_roles[$role]);
+        
+        // Add audit note
+        $order_note = sprintf(
+            'NeoClan: Assigned role "%s" by %s (%s)',
+            $role,
+            $current_user->display_name,
+            $current_user->user_email
+        );
+        $order->add_order_note($order_note);
+        
         $order->save();
         
         return rest_ensure_response([
             'success' => true,
             'order_id' => $order_id,
             'role' => $role,
-            'status' => $valid_roles[$role]
+            'status' => $valid_roles[$role],
+            'assigned_by' => [
+                'name' => $current_user->display_name,
+                'email' => $current_user->user_email
+            ]
         ]);
     }
 

@@ -29,6 +29,7 @@ import React from "react";
 import { useState } from "react";
 
 // Import custom hooks and types
+import { apiService } from "@/lib/api-service";
 import { useTripParticipants } from "@/lib/hooks/useTripParticipants";
 import { useUser } from "@/lib/hooks/useUser";
 import type { Trip, TripParticipant } from "@/types/api";
@@ -47,16 +48,20 @@ interface NeoClanVolunteeringRolesProps {
 // Define volunteer role options
 const VOLUNTEER_ROLES = [
 	{ value: "none", label: "No Role" },
-	{ value: "Trip Director", label: "Trip Director" },
-	{ value: "Trip Leader", label: "Trip Leader" },
-	{ value: "Trip Organiser", label: "Trip Organiser" },
-	{ value: "tacklemanager", label: "Tackle Manager" },
-	{ value: "lift", label: "Lift Coordinator" },
-	{ value: "floorwalker", label: "Floor Walker" },
-	{ value: "skillsharer", label: "Skill Sharer" },
-	{ value: "announcements", label: "Announcements" },
-	{ value: "checkin", label: "Check-in" },
-	{ value: "pairing", label: "Pairing Coordinator" },
+	{ value: "trip_director", label: "Trip Director" },
+	{ value: "event_assistant", label: "Event Assistant" },
+	{ value: "lift_coordinator", label: "Lift Coordinator" },
+	{ value: "climbing_coordinator", label: "Climbing Coordinator" },
+	{ value: "kit_coordinator", label: "Kit Coordinator" },
+	{ value: "buddy_coordinator", label: "Buddy Coordinator" },
+	{ value: "postpromo1", label: "Post Promotion" },
+	{ value: "breakfast_marshal", label: "Breakfast Marshal" },
+	{ value: "lunch_marshal", label: "Lunch Marshal" },
+	{ value: "covid_marshal", label: "COVID Marshal" },
+	{ value: "evening_meal_washingup_marshal", label: "Evening Meal/Washing Up Marshal" },
+	{ value: "head_chef", label: "Head Chef" },
+	{ value: "evening_meal_chef", label: "Evening Meal Chef" },
+	{ value: "lunch_breakfast_chef", label: "Lunch/Breakfast Chef" },
 ];
 
 export function NeoClanVolunteeringRoles({
@@ -104,21 +109,17 @@ export function NeoClanVolunteeringRoles({
 
 		setIsSubmitting(true);
 		try {
-			// This would be an API call to update the role
-			// For now, we'll just simulate it with a timeout
-			await new Promise((resolve) => setTimeout(resolve, 1000));
+			const response = await apiService.updateVolunteerRole(
+				selectedParticipant.order_id,
+				selectedRole
+			);
 
-			// In a real implementation, you would call an API endpoint like:
-			// await fetch(`/api/orders/${selectedParticipant.order_id}/volunteer`, {
-			//   method: 'PUT',
-			//   headers: { 'Content-Type': 'application/json' },
-			//   body: JSON.stringify({ role: selectedRole })
-			// });
+			if (!response.success) throw new Error(response.message);
 
 			// Show success notification
 			notifications.show({
-				title: "Role assigned",
-				message: `Role updated for ${selectedParticipant.first_name} ${selectedParticipant.last_name}`,
+				title: "Role assigned!",
+				message: `${selectedParticipant.first_name} is now ${VOLUNTEER_ROLES.find(r => r.value === selectedRole)?.label || selectedRole}`,
 				color: "green",
 				icon: <IconCheck size={16} />,
 			});
