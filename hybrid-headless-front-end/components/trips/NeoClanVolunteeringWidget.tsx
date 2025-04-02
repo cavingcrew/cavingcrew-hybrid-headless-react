@@ -206,7 +206,7 @@ export function NeoClanVolunteeringWidget({
 		setIsMarkingAll(true);
 		try {
 			const response = await fetch(
-				`/hybrid-headless/v1/caving-crew/events/${trip.id}/mark-all-attended`,
+				`/wp-json/hybrid-headless/v1/caving-crew/events/${trip.id}/mark-all-attended`,
 				{
 					method: "POST",
 					credentials: "include",
