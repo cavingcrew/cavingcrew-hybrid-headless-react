@@ -232,7 +232,7 @@ export function NeoClanVolunteeringRoles({
 												) : null
 											}
 										>
-											{getRoleLabel(currentRole)}
+											{getRoleLabel(currentRole) || "No Role"}
 										</Badge>
 									)}
 								</Table.Td>
