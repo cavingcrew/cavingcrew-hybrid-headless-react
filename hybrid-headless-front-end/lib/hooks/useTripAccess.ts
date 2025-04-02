@@ -1,6 +1,8 @@
 'use client';
 
 import { useUser } from "./useUser";
+import { useTripParticipants } from "./useTripParticipants";
+import { Auth } from "../../utils/user-utils";
 import type { Trip } from "../../types/api";
 
 /**
@@ -9,16 +11,20 @@ import type { Trip } from "../../types/api";
  * @returns Object with various access flags
  */
 export function useTripAccess(trip: Trip) {
-  const { purchasedProducts } = useUser();
+  const { user } = useUser();
+  const { data } = useTripParticipants(trip?.id);
+  const accessLevel = data?.data?.access_level;
   
   const hasPurchased = trip.id ? 
-    purchasedProducts.includes(trip.id) ||
-    trip.variations.some(v => purchasedProducts.includes(v.id)) : 
+    user?.purchasedProducts?.includes(trip.id) ||
+    trip.variations.some(v => user?.purchasedProducts?.includes(v.id)) : 
     false;
 
   return {
     hasPurchased,
     isParticipant: hasPurchased,
-    canViewSensitiveInfo: hasPurchased
+    canViewSensitiveInfo: Auth.canViewSensitive(user, trip, accessLevel),
+    isTripLeader: Auth.isTripLeader(user, trip),
+    canEdit: Auth.canEditTrip(user, trip, accessLevel)
   };
 }
