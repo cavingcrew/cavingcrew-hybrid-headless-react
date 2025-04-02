@@ -67,19 +67,21 @@ class ProductEventDataVariable extends Variable_Abstract implements Variable_Int
 
     private function get_hut_data( $product_id ) {
         $hut_id = $this->get_referenced_post_id( 'hut_id', $product_id );
-        
-        if ( ! $hut_id ) {
-            return null;
-        }
+        if ( ! $hut_id ) return null;
 
         $hut_data = get_fields( $hut_id );
         
         return [
-            'id'          => $hut_id,
-            'name'        => $hut_data['hut_name'] ?? '',
+            'id' => $hut_id,
+            'name' => $hut_data['hut_name'] ?? '',
             'description' => $hut_data['hut_sales_description'] ?? '',
-            'capacity'    => $hut_data['hut_capacity'] ?? '',
-            'facilities'  => $hut_data['hut_facilities'] ?? [],
+            'parking' => [
+                'instructions' => $hut_data['hut_parking_instructions'] ?? '',
+                'coordinates' => $this->parse_coordinates( $hut_data['hut_lat_long'] ?? '' )
+            ],
+            'facilities' => $hut_data['hut_facilities'] ?? [],
+            'capacity' => $hut_data['hut_capacity'] ?? '',
+            'dogs_allowed' => $hut_data['hut_dogs_allowed'] ?? 'no'
         ];
     }
 
@@ -114,6 +116,20 @@ class ProductEventDataVariable extends Variable_Abstract implements Variable_Int
         return null;
     }
 
+    private function parse_coordinates( $input ) {
+        if ( is_array( $input ) ) {
+            $lat = $input['lat'] ?? '';
+            $lng = $input['lng'] ?? '';
+            return "$lat,$lng";
+        }
+        
+        if ( is_string( $input ) ) {
+            return str_replace( ' ', '', $input );
+        }
+        
+        return '';
+    }
+
     private function get_location_data( $location_id ) {
         if ( ! $location_id ) {
             return null;
@@ -124,7 +140,7 @@ class ProductEventDataVariable extends Variable_Abstract implements Variable_Int
         return [
             'id'          => $location_id,
             'name'        => get_the_title( $location_id ),
-            'coordinates' => $location_data['location_parking_latlong'] ?? '',
+            'coordinates' => $this->parse_coordinates( $location_data['location_parking_latlong'] ?? '' ),
             'description' => $location_data['location_parking_description'] ?? '',
         ];
     }
