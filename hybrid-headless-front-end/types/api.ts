@@ -155,7 +155,11 @@ export interface TripParticipant {
 		"admin-covid-cautious"?: "yes" | "no" | string;
 		"admin-no-insurance-disclaimer"?: "yes" | "no" | string;
 		"admin-no-personal-insurance-disclaimer"?: "yes" | "no" | string;
-		"admin-insurance-status"?: "insured" | "uninsured" | "club-insurance-only" | string;
+		"admin-insurance-status"?:
+			| "insured"
+			| "uninsured"
+			| "club-insurance-only"
+			| string;
 		"admin-participation-statement-one"?: "yes" | "no" | string;
 		"admin-participation-statement-two"?: "yes" | "no" | string;
 		"admin-u18-child-name-of-supervisor"?: string;
@@ -163,19 +167,19 @@ export interface TripParticipant {
 		"admin-u18-participation-statement-two"?: "yes" | "no" | string;
 		"admin-u18-supervisor-name-of-child"?: string;
 		"admin-over18"?: "yes" | "no" | string;
-		"admin_dob"?: string;
+		admin_dob?: string;
 		"admin-personal-year-of-birth"?: string;
 		"admin-personal-pronouns"?: string;
 		"admin-other-club-name"?: string;
 		"admin-bca-number"?: string;
-		"membership_managed"?: "yes" | "no" | string;
-		"membership_renewal_date"?: string;
-		"membership_joining_date"?: string;
-		"membership_leaving_date"?: string;
-		"membership_cancellation_date"?: string;
-		"cc_membership_cancellation_intent_date"?: string;
+		membership_managed?: "yes" | "no" | string;
+		membership_renewal_date?: string;
+		membership_joining_date?: string;
+		membership_leaving_date?: string;
+		membership_cancellation_date?: string;
+		cc_membership_cancellation_intent_date?: string;
 		"admin-membership-type"?: string;
-		"committee_current"?: string;
+		committee_current?: string;
 		stats_attendance_attended_cached?: string;
 		scores_volunteer_score_cached?: string;
 		scores_attendance_reliability_score_cached?: string;
@@ -236,40 +240,46 @@ export interface TripParticipant {
 		"admin-health-impairment-through-medication"?: "yes" | "no" | string;
 		"admin-club-constitution-acceptance-noted-date"?: string;
 		"admin-code-of-conduct-accepted-noted-date"?: string;
-		"stats_volunteer_for_numerator_cached"?: string;
-		"stats_volunteer_for_but_no_attend_cached"?: string;
-		"stats_volunteer_for_denominator_cached"?: string;
-		"stats_attendance_attended_cached"?: string;
-		"stats_attendance_outdoor_day_attended_cached"?: string;
-		"stats_attendance_outdoor_saturday_attended_cached"?: string;
-		"stats_attendance_indoor_wednesday_attended_cached"?: string;
-		"stats_attendance_overnight_attended_cached"?: string;
-		"stats_attendance_training_attended_cached"?: string;
-		"stats_attendance_social_attended_cached"?: string;
-		"stats_attendance_signups_cached"?: string;
-		"stats_attendance_cancelled_cached"?: string;
-		"stats_attendance_noregistershow_cached"?: string;
-		"stats_attendance_noshow_cached"?: string;
-		"stats_attendance_latebail_cached"?: string;
-		"stats_attendance_duplicate_cached"?: string;
-		"stats_attendance_inprogress_cached"?: string;
-		"stats_volunteer_for_but_no_volunteer_cached"?: string;
-		"scores_volunteer_reliability_score_cached"?: string;
-		"scores_attendance_reliability_score_cached"?: string;
-		"scores_volunteer_value_cached"?: string;
-		"scores_attendance_score_cached"?: string;
-		"scores_volunteer_score_cached"?: string;
-		"scores_and_stats_cache_last_updated"?: string;
-		"cc_attendance_noted_date"?: string;
-		"cc_compliance_last_date_of_caving"?: string;
-		"cc_compliance_first_date_of_caving"?: string;
+		stats_volunteer_for_numerator_cached?: string;
+		stats_volunteer_for_but_no_attend_cached?: string;
+		stats_volunteer_for_denominator_cached?: string;
+		stats_attendance_attended_cached?: string;
+		stats_attendance_outdoor_day_attended_cached?: string;
+		stats_attendance_outdoor_saturday_attended_cached?: string;
+		stats_attendance_indoor_wednesday_attended_cached?: string;
+		stats_attendance_overnight_attended_cached?: string;
+		stats_attendance_training_attended_cached?: string;
+		stats_attendance_social_attended_cached?: string;
+		stats_attendance_signups_cached?: string;
+		stats_attendance_cancelled_cached?: string;
+		stats_attendance_noregistershow_cached?: string;
+		stats_attendance_noshow_cached?: string;
+		stats_attendance_latebail_cached?: string;
+		stats_attendance_duplicate_cached?: string;
+		stats_attendance_inprogress_cached?: string;
+		stats_volunteer_for_but_no_volunteer_cached?: string;
+		scores_volunteer_reliability_score_cached?: string;
+		scores_attendance_reliability_score_cached?: string;
+		scores_volunteer_value_cached?: string;
+		scores_attendance_score_cached?: string;
+		scores_volunteer_score_cached?: string;
+		scores_and_stats_cache_last_updated?: string;
+		cc_attendance_noted_date?: string;
+		cc_compliance_last_date_of_caving?: string;
+		cc_compliance_first_date_of_caving?: string;
 		[key: string]: string | null | undefined;
 	};
 }
 
 export interface TripParticipantsResponse {
 	participants: TripParticipant[];
-	access_level: "public" | "logged_in" | "participant" | "event_role" | "admin" | "super_admin";
+	access_level:
+		| "public"
+		| "logged_in"
+		| "participant"
+		| "event_role"
+		| "admin"
+		| "super_admin";
 	trip_id: number;
 	can_update: boolean;
 	participant_count?: number;
@@ -482,12 +492,15 @@ export interface Route {
 		route_group_tackle_required?: string;
 		route_personal_gear_required?: string; // Stored as JSON string
 		route_leading_difficulty?: {
-			route_leading_difficulty_srt_leading_level_required?: number | {
-				ID: number;
-				post_title: string;
-				post_name: string;
-				permalink: string;
-			} | null;
+			route_leading_difficulty_srt_leading_level_required?:
+				| number
+				| {
+						ID: number;
+						post_title: string;
+						post_name: string;
+						permalink: string;
+				  }
+				| null;
 			route_leading_difficulty_srt_leading_skills_required?: string[];
 			route_leading_difficulty_horizontal_leading_level_required?: {
 				ID: number;
@@ -525,7 +538,7 @@ export interface Trip {
 				width: number;
 				height: number;
 				mime_type?: string;
-			}
+			};
 		};
 	}[];
 	categories: BasicCategory[];
@@ -563,7 +576,7 @@ export interface Trip {
 					width: number;
 					height: number;
 					mime_type?: string;
-				}
+				};
 			};
 		};
 		hut_dogs_allowed?: "yes" | "no" | string;
@@ -713,25 +726,29 @@ export interface UserResponse {
 		billing_postcode?: string;
 		billing_country?: string;
 		meta: {
-			"committee_current"?: string;
-			"cc_member"?: "yes" | "no";
-			"membership_managed"?: string;
-			"membership_renewal_date"?: string;
-			"membership_joining_date"?: string;
-			"membership_leaving_date"?: string;
-			"membership_cancellation_date"?: string;
-			"cc_membership_cancellation_intent_date"?: string;
+			committee_current?: string;
+			cc_member?: "yes" | "no";
+			membership_managed?: string;
+			membership_renewal_date?: string;
+			membership_joining_date?: string;
+			membership_leaving_date?: string;
+			membership_cancellation_date?: string;
+			cc_membership_cancellation_intent_date?: string;
 			"admin-membership-type"?: string;
-			"admin_agm_voting_code_2024"?: string;
-			"admin_agm_voting_code_2023"?: string;
-			"cc_membership_join_date"?: string;
+			admin_agm_voting_code_2024?: string;
+			admin_agm_voting_code_2023?: string;
+			cc_membership_join_date?: string;
 			"admin-club-constitution-acceptance"?: "yes" | "no" | string;
 			"admin-code-of-conduct-accepted"?: "yes" | "no" | string;
 			"admin-covid-agreement"?: string;
 			"admin-covid-cautious"?: "yes" | "no" | string;
 			"admin-no-insurance-disclaimer"?: "yes" | "no" | string;
 			"admin-no-personal-insurance-disclaimer"?: "yes" | "no" | string;
-			"admin-insurance-status"?: "insured" | "uninsured" | "club-insurance-only" | string;
+			"admin-insurance-status"?:
+				| "insured"
+				| "uninsured"
+				| "club-insurance-only"
+				| string;
 			"admin-participation-statement-one"?: "yes" | "no" | string;
 			"admin-participation-statement-two"?: "yes" | "no" | string;
 			"admin-over18"?: "yes" | "no" | string;
@@ -741,25 +758,25 @@ export interface UserResponse {
 			"admin-bca-number"?: string;
 			"admin-club-constitution-acceptance-noted-date"?: string;
 			"admin-code-of-conduct-accepted-noted-date"?: string;
-			"stats_volunteer_for_numerator_cached"?: string;
-			"stats_volunteer_for_denominator_cached"?: string;
-			"stats_attendance_attended_cached"?: string;
-			"scores_volunteer_reliability_score_cached"?: string;
-			"scores_attendance_reliability_score_cached"?: string;
-			"scores_volunteer_score_cached"?: string;
-			"scores_attendance_score_cached"?: string;
-			"cc_compliance_last_date_of_caving"?: string;
-			"cc_compliance_first_date_of_caving"?: string;
+			stats_volunteer_for_numerator_cached?: string;
+			stats_volunteer_for_denominator_cached?: string;
+			stats_attendance_attended_cached?: string;
+			scores_volunteer_reliability_score_cached?: string;
+			scores_attendance_reliability_score_cached?: string;
+			scores_volunteer_score_cached?: string;
+			scores_attendance_score_cached?: string;
+			cc_compliance_last_date_of_caving?: string;
+			cc_compliance_first_date_of_caving?: string;
 			[key: string]: string | null;
 		};
 	};
 }
 
 // Access level type from API
-export type AccessLevel = 
-  | "public" 
-  | "logged_in" 
-  | "participant" 
-  | "event_role" 
-  | "admin" 
-  | "super_admin";
+export type AccessLevel =
+	| "public"
+	| "logged_in"
+	| "participant"
+	| "event_role"
+	| "admin"
+	| "super_admin";
