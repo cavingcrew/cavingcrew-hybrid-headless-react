@@ -8,6 +8,7 @@ export type VolunteerRole = {
 		| "safety"
 		| "hospitality"
 		| "promotion";
+	id?: string;
 	requiredPermissions?: ("admin" | "trip_leader" | "committee")[];
 	icon?: string; // For future UI icons
 };
@@ -20,7 +21,7 @@ export const VOLUNTEER_ROLES: VolunteerRole[] = [
 		description: "No assigned responsibilities",
 	},
 	{
-		value: "trip_director",
+		value: "Trip Director",
 		label: "Trip Director",
 		category: "event_management",
 		description: "Overall responsibility for trip organization and safety",
