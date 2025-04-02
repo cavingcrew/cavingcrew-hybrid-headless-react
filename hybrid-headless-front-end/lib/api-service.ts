@@ -231,7 +231,8 @@ export const apiService = {
 			return {
 				success: false,
 				data: null,
-				message: error instanceof Error ? error.message : "Failed to update role",
+				message:
+					error instanceof Error ? error.message : "Failed to update role",
 			};
 		}
 	},

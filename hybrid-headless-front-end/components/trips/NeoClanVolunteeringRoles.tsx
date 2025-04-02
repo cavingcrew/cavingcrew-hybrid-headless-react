@@ -58,7 +58,10 @@ const VOLUNTEER_ROLES = [
 	{ value: "breakfast_marshal", label: "Breakfast Marshal" },
 	{ value: "lunch_marshal", label: "Lunch Marshal" },
 	{ value: "covid_marshal", label: "COVID Marshal" },
-	{ value: "evening_meal_washingup_marshal", label: "Evening Meal/Washing Up Marshal" },
+	{
+		value: "evening_meal_washingup_marshal",
+		label: "Evening Meal/Washing Up Marshal",
+	},
 	{ value: "head_chef", label: "Head Chef" },
 	{ value: "evening_meal_chef", label: "Evening Meal Chef" },
 	{ value: "lunch_breakfast_chef", label: "Lunch/Breakfast Chef" },
@@ -92,8 +95,8 @@ export function NeoClanVolunteeringRoles({
 	// Check if user has permission to assign roles
 	const canAssignRoles =
 		(Auth.isAdmin(user, accessLevel) ||
-		Auth.isTripLeader(user, trip) ||
-		Auth.isCommittee(user)) &&
+			Auth.isTripLeader(user, trip) ||
+			Auth.isCommittee(user)) &&
 		!data?.data?.event_closed;
 
 	// Function to open role assignment modal
@@ -111,7 +114,7 @@ export function NeoClanVolunteeringRoles({
 		try {
 			const response = await apiService.updateVolunteerRole(
 				selectedParticipant.order_id,
-				selectedRole
+				selectedRole,
 			);
 
 			if (!response.success) throw new Error(response.message);
@@ -119,7 +122,7 @@ export function NeoClanVolunteeringRoles({
 			// Show success notification
 			notifications.show({
 				title: "Role assigned!",
-				message: `${selectedParticipant.first_name} is now ${VOLUNTEER_ROLES.find(r => r.value === selectedRole)?.label || selectedRole}`,
+				message: `${selectedParticipant.first_name} is now ${VOLUNTEER_ROLES.find((r) => r.value === selectedRole)?.label || selectedRole}`,
 				color: "green",
 				icon: <IconCheck size={16} />,
 			});
@@ -194,10 +197,11 @@ export function NeoClanVolunteeringRoles({
 					Volunteer roles are assigned by trip leaders and administrators.
 				</Alert>
 			)}
-			
+
 			{data?.data?.event_closed && (
 				<Alert icon={<IconInfoCircle size={16} />} color="green" mb="md">
-					This event has been finalized and archived. Volunteer roles are now frozen.
+					This event has been finalized and archived. Volunteer roles are now
+					frozen.
 				</Alert>
 			)}
 
