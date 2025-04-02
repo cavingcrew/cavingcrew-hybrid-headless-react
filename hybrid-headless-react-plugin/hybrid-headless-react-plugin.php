@@ -117,6 +117,12 @@ final class Hybrid_Headless_Plugin {
         return $triggers;
     }
 
+    public function register_rules( $rules ) {
+        $rules['customer_last_trip_in_period'] = 'HybridHeadless\Rules\Customer_Last_Trip_In_Period';
+        $rules['customer_has_upcoming_trip'] = 'HybridHeadless\Rules\Customer_Has_Upcoming_Trip';
+        return $rules;
+    }
+
     /**
      * Plugin initialization
      */

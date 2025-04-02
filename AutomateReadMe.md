@@ -97,6 +97,34 @@ hut.facilities - ["Kitchen", "Showers", "Bunks"]
 
 ---
 
+## Trip Date Rules
+
+### Customer - Last Trip Within Time Period
+Checks if the customer's most recent completed trip started within a specified time period.
+
+**Parameters:**
+- Time Amount: Number of units (e.g. 30)
+- Time Unit: Days/Weeks/Months
+
+**Example:**
+```plaintext
+If Customer's last trip started within the last 6 months
+→ Send re-engagement email
+```
+
+### Customer - Has Upcoming Trip Within Time Period
+Checks if the customer has any trips starting within a specified future window.
+
+**Parameters:**
+- Time Amount: Number of units (e.g. 14)
+- Time Unit: Days/Weeks/Months
+
+**Example:**
+```plaintext
+If Customer has trip starting in next 7 days
+→ Send pre-trip preparation guide
+```
+
 ## Best Practices
 
 1. **Time Zones:**  
