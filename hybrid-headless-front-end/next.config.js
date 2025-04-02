@@ -10,10 +10,7 @@ const nextConfig = {
 	transpilePackages: ["@tanstack/react-query"],
 	compiler: {
 		reactRemoveProperties: process.env.NODE_ENV === "production",
-		emotion: true,
-	},
-	experimental: {
-		emotion: true
+		emotion: true, // This is the modern way to enable Emotion
 	},
 	webpack: (config) => {
 		// Add path aliases while preserving existing ones

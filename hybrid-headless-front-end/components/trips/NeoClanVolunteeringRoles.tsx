@@ -25,8 +25,7 @@ import {
 	IconInfoCircle,
 	IconX,
 } from "@tabler/icons-react";
-import React from "react";
-import React, { useState } from "react";
+import { useState } from "react";
 
 // Import custom hooks and types
 import { useTripParticipants } from "@/lib/hooks/useTripParticipants";

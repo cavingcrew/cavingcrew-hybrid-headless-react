@@ -1,6 +1,5 @@
 "use client";
 
-import React from 'react';
 import {
 	ActionIcon,
 	Alert,
@@ -38,7 +37,7 @@ import {
 	IconUsers,
 	IconX,
 } from "@tabler/icons-react";
-import React, { useState } from "react";
+import { useState } from "react";
 import { cleanHtmlEntities } from "@/utils/string-utils";
 import { WordPressLoginWidget } from "@/components/auth/WordPressLoginWidget";
 import { NeoClanVolunteeringRoles } from "./NeoClanVolunteeringRoles";
