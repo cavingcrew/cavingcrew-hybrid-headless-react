@@ -60,7 +60,7 @@ export function useTrips(): UseQueryResult<ApiResponse<Trip[]>> {
           queryClient.setQueryData(tripKeys.all, (old: any) => ({
             ...freshData,
             // Preserve timestamp if data is similar
-            timestamp: isDataStale(old?.data, freshData.data) ? Date.now() : old?.timestamp
+            timestamp: (old?.data && freshData.data && isDataStale(old.data, freshData.data)) ? Date.now() : old?.timestamp
           }));
           return freshData;
         },
