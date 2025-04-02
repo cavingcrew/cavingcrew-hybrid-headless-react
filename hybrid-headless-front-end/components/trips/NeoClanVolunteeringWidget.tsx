@@ -325,9 +325,9 @@ export function NeoClanVolunteeringWidget({
 				<>
 					<Group gap="xs" mb="xs">
 						<Badge color="blue">
-							{data?.data?.event_closed ? 
-								`${participants.length} final participants` : 
-								formatParticipantCount(participants.length, accessLevel)}
+							{data?.data?.event_closed
+								? `${participants.length} final participants`
+								: formatParticipantCount(participants.length, accessLevel)}
 						</Badge>
 						{data?.data?.event_closed && (
 							<Badge color="green" variant="dot">
@@ -448,17 +448,19 @@ export function NeoClanVolunteeringWidget({
 			</Group>
 
 			{data?.data?.event_closed && (
-				<Alert 
-					icon={<IconInfoCircle size={16} />} 
-					color="green" 
+				<Alert
+					icon={<IconInfoCircle size={16} />}
+					color="green"
 					title="Event Finalized"
 					mb="md"
 				>
 					<Group>
 						<Text>
-							This event was marked complete by {data.data.closed_by} on{' '}
-							{new Date(parseInt(data.data.closed_at || '0') * 1000).toLocaleDateString()}. 
-							Participant list is now frozen for historical records.
+							This event was marked complete by {data.data.closed_by} on{" "}
+							{new Date(
+								Number.parseInt(data.data.closed_at || "0") * 1000,
+							).toLocaleDateString()}
+							. Participant list is now frozen for historical records.
 						</Text>
 						<Badge variant="outline" color="green">
 							Archived
@@ -569,7 +571,9 @@ export function NeoClanVolunteeringWidget({
 								</Group>
 							) : (
 								<Group justify="flex-end" mb="md">
-									<Badge color="green" size="lg">Event Archived</Badge>
+									<Badge color="green" size="lg">
+										Event Archived
+									</Badge>
 								</Group>
 							)}
 							<Table striped>
@@ -577,7 +581,9 @@ export function NeoClanVolunteeringWidget({
 									<Table.Tr>
 										<Table.Th>Name</Table.Th>
 										<Table.Th>Status</Table.Th>
-										{!data?.data?.event_closed && <Table.Th>First Timer</Table.Th>}
+										{!data?.data?.event_closed && (
+											<Table.Th>First Timer</Table.Th>
+										)}
 										<Table.Th>Role</Table.Th>
 										{!data?.data?.event_closed && <Table.Th>Order ID</Table.Th>}
 									</Table.Tr>
