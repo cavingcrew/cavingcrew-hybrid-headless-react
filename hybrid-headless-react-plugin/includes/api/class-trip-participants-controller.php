@@ -426,14 +426,32 @@ class Hybrid_Headless_Trip_Participants_Controller {
             $participants[] = $participant;
         }
 
-        return rest_ensure_response([
+        // Prepare response with event closure information
+        $response = [
             'participants' => $participants,
             'access_level' => $access_level,
             'trip_id' => $trip_id,
             'can_update' => ($access_level === 'admin' || $access_level === 'super_admin'),
             'participant_count' => $participant_count,
             'is_logged_in' => true
-        ]);
+        ];
+
+        // Check if event is closed (has trip-reports tag)
+        $product = wc_get_product($trip_id);
+        if ($product) {
+            $terms = wp_get_post_terms($product->get_id(), 'product_tag');
+            $term_ids = wp_list_pluck($terms, 'term_id');
+            $has_closed_tag = in_array(61, $term_ids);
+            
+            if ($has_closed_tag) {
+                $response['event_closed'] = true;
+                $response['event_message'] = 'This event has been finalized and archived';
+                $response['closed_at'] = $product->get_meta('cc_post_completed_at');
+                $response['closed_by'] = $product->get_meta('cc_post_completed_by');
+            }
+        }
+
+        return rest_ensure_response($response);
     }
 
     /**

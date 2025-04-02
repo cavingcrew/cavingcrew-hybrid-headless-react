@@ -325,8 +325,15 @@ export function NeoClanVolunteeringWidget({
 				<>
 					<Group gap="xs" mb="xs">
 						<Badge color="blue">
-							{formatParticipantCount(participants.length, accessLevel)}
+							{data?.data?.event_closed ? 
+								`${participants.length} final participants` : 
+								formatParticipantCount(participants.length, accessLevel)}
 						</Badge>
+						{data?.data?.event_closed && (
+							<Badge color="green" variant="dot">
+								Closed {formatRelativeTime(data.data.closed_at)}
+							</Badge>
+						)}
 					</Group>
 					<Group gap="xs" mb="md">
 						{participants.map((participant) => (
@@ -440,6 +447,26 @@ export function NeoClanVolunteeringWidget({
 				</Alert>
 			</Group>
 
+			{data?.data?.event_closed && (
+				<Alert 
+					icon={<IconInfoCircle size={16} />} 
+					color="green" 
+					title="Event Finalized"
+					mb="md"
+				>
+					<Group>
+						<Text>
+							This event was marked complete by {data.data.closed_by} on{' '}
+							{new Date(parseInt(data.data.closed_at || '0') * 1000).toLocaleDateString()}. 
+							Participant list is now frozen for historical records.
+						</Text>
+						<Badge variant="outline" color="green">
+							Archived
+						</Badge>
+					</Group>
+				</Alert>
+			)}
+
 			{participants.length === 0 ? (
 				<Alert icon={<IconInfoCircle size={16} />} color="blue">
 					No one has signed up for this trip yet.
@@ -490,63 +517,69 @@ export function NeoClanVolunteeringWidget({
 						</Tabs.List>
 
 						<Tabs.Panel value="cavers" pt="xs">
-							<Group justify="flex-end" mb="md">
-								<Button
-									leftSection={<IconMessage size={16} />}
-									onClick={handleGenerateTackleRequestText}
-									variant="outline"
-									color="teal"
-									mr="xs"
-								>
-									Write a request to the tackle manager
-								</Button>
-								<Button
-									leftSection={<IconFileDescription size={16} />}
-									onClick={handleGenerateCalloutText}
-									variant="outline"
-									color="blue"
-									mr="xs"
-								>
-									Generate callout text
-								</Button>
-								<Button
-									leftSection={<IconMessage size={16} />}
-									onClick={handleGenerateGearTripCheckText}
-									variant="outline"
-									color="indigo"
-									mr="xs"
-								>
-									Gear Trip Check
-								</Button>
-								<Button
-									leftSection={<IconMessage size={16} />}
-									onClick={handleGenerateLocationInfoText}
-									variant="outline"
-									color="green"
-									mr="xs"
-								>
-									Location Info Message
-								</Button>
-								{shouldShowMarkAllAttended(trip) && (
+							{!data?.data?.event_closed ? (
+								<Group justify="flex-end" mb="md">
 									<Button
-										leftSection={<IconCheck size={16} />}
-										onClick={() => setMarkAllModalOpen(true)}
-										variant="filled"
-										color="green"
-										disabled={participants.length === 0}
+										leftSection={<IconMessage size={16} />}
+										onClick={handleGenerateTackleRequestText}
+										variant="outline"
+										color="teal"
+										mr="xs"
 									>
-										Mark All as Attended
+										Write a request to the tackle manager
 									</Button>
-								)}
-							</Group>
+									<Button
+										leftSection={<IconFileDescription size={16} />}
+										onClick={handleGenerateCalloutText}
+										variant="outline"
+										color="blue"
+										mr="xs"
+									>
+										Generate callout text
+									</Button>
+									<Button
+										leftSection={<IconMessage size={16} />}
+										onClick={handleGenerateGearTripCheckText}
+										variant="outline"
+										color="indigo"
+										mr="xs"
+									>
+										Gear Trip Check
+									</Button>
+									<Button
+										leftSection={<IconMessage size={16} />}
+										onClick={handleGenerateLocationInfoText}
+										variant="outline"
+										color="green"
+										mr="xs"
+									>
+										Location Info Message
+									</Button>
+									{shouldShowMarkAllAttended(trip) && (
+										<Button
+											leftSection={<IconCheck size={16} />}
+											onClick={() => setMarkAllModalOpen(true)}
+											variant="filled"
+											color="green"
+											disabled={participants.length === 0}
+										>
+											Mark All as Attended
+										</Button>
+									)}
+								</Group>
+							) : (
+								<Group justify="flex-end" mb="md">
+									<Badge color="green" size="lg">Event Archived</Badge>
+								</Group>
+							)}
 							<Table striped>
 								<Table.Thead>
 									<Table.Tr>
 										<Table.Th>Name</Table.Th>
 										<Table.Th>Status</Table.Th>
-										<Table.Th>First Timer</Table.Th>
+										{!data?.data?.event_closed && <Table.Th>First Timer</Table.Th>}
 										<Table.Th>Role</Table.Th>
-										<Table.Th>Order ID</Table.Th>
+										{!data?.data?.event_closed && <Table.Th>Order ID</Table.Th>}
 									</Table.Tr>
 								</Table.Thead>
 								<Table.Tbody>
@@ -562,15 +595,17 @@ export function NeoClanVolunteeringWidget({
 												<Table.Td>
 													<Badge color={getStatusColor(status)}>{status}</Badge>
 												</Table.Td>
-												<Table.Td>
-													{firstTimer ? (
-														<Badge color="red" variant="light">
-															First Timer
-														</Badge>
-													) : (
-														"No"
-													)}
-												</Table.Td>
+												{!data?.data?.event_closed && (
+													<Table.Td>
+														{firstTimer ? (
+															<Badge color="red" variant="light">
+																First Timer
+															</Badge>
+														) : (
+															"No"
+														)}
+													</Table.Td>
+												)}
 												<Table.Td>
 													{participant.order_meta?.cc_volunteer &&
 													participant.order_meta.cc_volunteer !== "none" ? (
@@ -581,14 +616,16 @@ export function NeoClanVolunteeringWidget({
 														"None"
 													)}
 												</Table.Td>
-												<Table.Td>
-													<Anchor
-														href={`https://www.cavingcrew.com/wp-admin/post.php?post=${participant.order_id}&action=edit`}
-														target="_blank"
-													>
-														{participant.order_id}
-													</Anchor>
-												</Table.Td>
+												{!data?.data?.event_closed && (
+													<Table.Td>
+														<Anchor
+															href={`https://www.cavingcrew.com/wp-admin/post.php?post=${participant.order_id}&action=edit`}
+															target="_blank"
+														>
+															{participant.order_id}
+														</Anchor>
+													</Table.Td>
+												)}
 											</Table.Tr>
 										);
 									})}

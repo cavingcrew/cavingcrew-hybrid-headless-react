@@ -86,9 +86,10 @@ export function NeoClanVolunteeringRoles({
 
 	// Check if user has permission to assign roles
 	const canAssignRoles =
-		Auth.isAdmin(user, accessLevel) ||
+		(Auth.isAdmin(user, accessLevel) ||
 		Auth.isTripLeader(user, trip) ||
-		Auth.isCommittee(user);
+		Auth.isCommittee(user)) &&
+		!data?.data?.event_closed;
 
 	// Function to open role assignment modal
 	const handleOpenRoleModal = (participant: TripParticipant) => {
@@ -187,9 +188,15 @@ export function NeoClanVolunteeringRoles({
 				)}
 			</Group>
 
-			{!canAssignRoles && (
+			{!canAssignRoles && !data?.data?.event_closed && (
 				<Alert icon={<IconInfoCircle size={16} />} color="blue" mb="md">
 					Volunteer roles are assigned by trip leaders and administrators.
+				</Alert>
+			)}
+			
+			{data?.data?.event_closed && (
+				<Alert icon={<IconInfoCircle size={16} />} color="green" mb="md">
+					This event has been finalized and archived. Volunteer roles are now frozen.
 				</Alert>
 			)}
 

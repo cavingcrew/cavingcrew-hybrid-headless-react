@@ -19,6 +19,7 @@ import {
   IconInfoCircle
 } from "@tabler/icons-react";
 import { useUser } from "../../lib/hooks/useUser";
+import { useTripParticipants } from "../../lib/hooks/useTripParticipants";
 import type { Trip } from "../../types/api";
 
 interface TripParticipantInfoProps {
@@ -29,6 +30,8 @@ interface TripParticipantInfoProps {
 export function TripParticipantInfo({ hut, tripId }: TripParticipantInfoProps) {
   const { hasPurchased } = useUser();
   const isPurchased = tripId ? hasPurchased(tripId) : false;
+  const { data: participantsData } = useTripParticipants(tripId || 0);
+  const participantsResponse = participantsData?.data;
 
   if (!isPurchased || !hut) return null;
 
@@ -121,7 +124,11 @@ export function TripParticipantInfo({ hut, tripId }: TripParticipantInfoProps) {
       )}
 
       <Alert icon={<IconInfoCircle size={16} />} color="green" variant="light">
-        This information is only visible to signed-up participants. Please keep location details confidential.
+        {participantsResponse?.event_closed ? (
+          "This event has been archived. Location details preserved for historical records."
+        ) : (
+          "This information is only visible to signed-up participants. Please keep location details confidential."
+        )}
       </Alert>
     </Stack>
   );
