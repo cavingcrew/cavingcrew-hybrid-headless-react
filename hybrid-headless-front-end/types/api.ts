@@ -902,7 +902,7 @@ export interface UserResponse {
 			wc_last_active?: string;
 			_legacy_info_bca_member?: "yes" | "no" | string;
 			_legacy_info_bca_club?: string;
-			[key: string]: string | null;
+			[key: string]: string | null | undefined;
 		};
 	};
 }
