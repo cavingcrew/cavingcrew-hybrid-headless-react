@@ -1,6 +1,5 @@
 "use client";
 
-import React from 'react';
 import {
 	ActionIcon,
 	Alert,
@@ -26,6 +25,7 @@ import {
 	IconInfoCircle,
 	IconX,
 } from "@tabler/icons-react";
+import React from "react";
 import React, { useState } from "react";
 
 // Import custom hooks and types

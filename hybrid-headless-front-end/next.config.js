@@ -10,8 +10,10 @@ const nextConfig = {
 	transpilePackages: ["@tanstack/react-query"],
 	compiler: {
 		reactRemoveProperties: process.env.NODE_ENV === "production",
-		reactRemoveHtmlAttributes: true,
 		emotion: true,
+	},
+	experimental: {
+		emotion: true
 	},
 	webpack: (config) => {
 		// Add path aliases while preserving existing ones
