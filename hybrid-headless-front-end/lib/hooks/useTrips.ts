@@ -67,7 +67,7 @@ export function useTrips(): UseQueryResult<ApiResponse<Trip[]>> {
 				queryKey: [...tripKeys.all, "fresh"],
 				queryFn: async () => {
 					const freshData = await apiService.getTrips(false);
-					queryClient.setQueryData(tripKeys.all, (old: any) => ({
+					queryClient.setQueryData(tripKeys.all, (old: ApiResponse<Trip[]> | undefined) => ({
 						...freshData,
 						// Preserve timestamp if data is similar
 						timestamp:
