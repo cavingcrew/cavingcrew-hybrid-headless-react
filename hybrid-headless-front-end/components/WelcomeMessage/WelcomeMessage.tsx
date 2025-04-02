@@ -1,11 +1,14 @@
 'use client';
 
 import { useUser } from '@/lib/hooks/useUser';
+import { Auth } from '../../utils/user-utils';
 import { Title, Text } from '@mantine/core';
 
 export function WelcomeMessage() {
-  const { user, isLoggedIn, isMember } = useUser();
-  const firstName = user?.first_name || 'there';
+  const { user } = useUser();
+  const firstName = user?.user?.first_name || 'there';
+  const isLoggedIn = Auth.isLoggedIn(user);
+  const isMember = Auth.isMember(user);
 
   return (
     <div>
