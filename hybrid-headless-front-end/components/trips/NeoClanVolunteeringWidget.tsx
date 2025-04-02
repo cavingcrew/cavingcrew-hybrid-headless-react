@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { WordPressLoginWidget } from "@/components/auth/WordPressLoginWidget";
 import { cleanHtmlEntities } from "@/utils/string-utils";
 import {
@@ -41,6 +40,7 @@ import {
 	IconUsers,
 	IconX,
 } from "@tabler/icons-react";
+import React from "react";
 import { useState } from "react";
 import { NeoClanVolunteeringRoles } from "./NeoClanVolunteeringRoles";
 
@@ -1579,11 +1579,7 @@ export function NeoClanVolunteeringWidget({
 														) : (
 															<Stack gap="xs">
 																{missingGear.map((item) => (
-																	<Badge
-																		key={item}
-																		color="red"
-																		variant="light"
-																	>
+																	<Badge key={item} color="red" variant="light">
 																		{item}
 																	</Badge>
 																))}
@@ -2078,11 +2074,12 @@ export function NeoClanVolunteeringWidget({
 												{participant.first_name} {participant.last_name}
 											</Table.Td>
 											<Table.Td>
-												{participant.meta?.stats_attendance_attended_cached || "0"}
+												{participant.meta?.stats_attendance_attended_cached ||
+													"0"}
 											</Table.Td>
 											<Table.Td>
 												{formatRelativeTime(
-													participant.meta?.cc_compliance_last_date_of_caving
+													participant.meta?.cc_compliance_last_date_of_caving,
 												)}
 											</Table.Td>
 											<Table.Td>
@@ -2094,7 +2091,8 @@ export function NeoClanVolunteeringWidget({
 															) > 0.7
 																? "green"
 																: Number.parseFloat(
-																			participant.meta.scores_volunteer_score_cached,
+																			participant.meta
+																				.scores_volunteer_score_cached,
 																		) > 0.4
 																	? "yellow"
 																	: "red"
@@ -2107,21 +2105,27 @@ export function NeoClanVolunteeringWidget({
 												)}
 											</Table.Td>
 											<Table.Td>
-												{participant.meta?.scores_attendance_reliability_score_cached ? (
+												{participant.meta
+													?.scores_attendance_reliability_score_cached ? (
 													<Badge
 														color={
 															Number.parseFloat(
-																participant.meta.scores_attendance_reliability_score_cached,
+																participant.meta
+																	.scores_attendance_reliability_score_cached,
 															) > 0.7
 																? "green"
 																: Number.parseFloat(
-																			participant.meta.scores_attendance_reliability_score_cached,
+																			participant.meta
+																				.scores_attendance_reliability_score_cached,
 																		) > 0.4
 																	? "yellow"
 																	: "red"
 														}
 													>
-														{participant.meta.scores_attendance_reliability_score_cached}
+														{
+															participant.meta
+																.scores_attendance_reliability_score_cached
+														}
 													</Badge>
 												) : (
 													"N/A"
