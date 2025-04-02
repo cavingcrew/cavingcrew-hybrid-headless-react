@@ -397,7 +397,7 @@ export function NeoClanVolunteeringWidget({
 										participant.order_meta.cc_volunteer !== "none" &&
 										participant.order_meta.cc_volunteer !== "" ? (
 											<Badge color="green">
-												{participant.order_meta.cc_volunteer}
+												{getRoleLabel(participant.order_meta.cc_volunteer)}
 											</Badge>
 										) : (
 											"None"

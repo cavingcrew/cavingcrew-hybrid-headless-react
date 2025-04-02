@@ -202,7 +202,10 @@ export function NeoClanVolunteeringRoles({
 								<Table.Td>
 									{canAssignRoles ? (
 										<Select
-											data={VOLUNTEER_ROLES}
+											data={VOLUNTEER_ROLES.map(role => ({
+                        value: role.value,
+                        label: role.label  
+                      }))}
 											value={localRoles[participant.order_id] ?? currentRole}
 											onChange={(value) => {
 												if (value) {
