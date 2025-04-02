@@ -327,3 +327,41 @@ export function NeoClanVolunteeringRoles({
 		</Paper>
 	);
 }
+import React, { useState } from "react";
+import { 
+  Alert,
+  Badge,
+  Button,
+  Group,
+  Modal,
+  Paper,
+  Select,
+  Stack,
+  Table,
+  Text,
+  Title,
+  Tooltip 
+} from "@mantine/core";
+import { useDebouncedCallback } from "@mantine/hooks";
+import { notifications } from "@mantine/notifications";
+import {
+  IconAlertCircle,
+  IconCheck,
+  IconHeartHandshake,
+  IconInfoCircle,
+  IconX,
+} from "@tabler/icons-react";
+
+import { apiService } from "@/lib/api-service";
+import { useTripParticipants } from "@/lib/hooks/useTripParticipants";
+import { useUser } from "@/lib/hooks/useUser";
+import type {
+  Trip,
+  TripParticipant,
+  TripParticipantsResponse,
+} from "@/types/api";
+import {
+  determineSignupStatus,
+  getStatusColor,
+} from "@/utils/trip-participant-utils";
+import { Auth } from "@/utils/user-utils";

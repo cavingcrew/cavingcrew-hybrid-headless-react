@@ -41,7 +41,6 @@ import {
 	IconX,
 } from "@tabler/icons-react";
 import React, { useState } from "react";
-import { useState } from "react";
 import { NeoClanVolunteeringRoles } from "./NeoClanVolunteeringRoles";
 
 // Import custom hooks and types
