@@ -17,6 +17,20 @@
  * - isTransportCoordinator: Checks transport coordinator role
  * - isSeconder: Checks if participant is seconder volunteer
  * - canViewParticipants: Checks participant list view permissions
+ * - isCompetentEveningTripDirector: Checks evening trip director competency
+ * - isCompetentHorizontalTripLeader: Checks horizontal trip leader competency
+ * - isCompetentEveningTripTackleManager: Checks evening tackle manager competency
+ * - isCompetentEveningTripLiftCoordinator: Checks evening lift coordinator competency
+ * - isCompetentVerticalTripLeader: Checks vertical trip leader competency
+ * - isCompetentTripBuddyFriend: Checks trip buddy friend competency
+ * - isCompetentOvernightTripDirector: Checks overnight trip director competency
+ * - isCompetentOvernightEveningMeal: Checks overnight meal coordinator competency
+ * - isCompetentOvernightCavingCoordinator: Checks overnight caving coordinator competency
+ * - isCompetentOvernightLiftCoordinator: Checks overnight lift coordinator competency
+ * - isCompetentOvernightBreakfastCoordinator: Checks overnight breakfast coordinator competency
+ * - isCompetentTrainingOrganiser: Checks training organiser competency
+ * - isCompetentSkillsharer: Checks skillsharer competency
+ * - isCompetentSocialOrganiser: Checks social organiser competency
  */
 
 import type { Trip, TripParticipant, UserResponse } from "../types/api";
@@ -211,6 +225,73 @@ export const Auth = {
 	},
 
 	/**
+	 * Competency role checks
+	 */
+	isCompetentEveningTripDirector(user: UserResponse | null): boolean {
+		return this.hasCompetencyRole(user, 'competency_evening_trip_director');
+	},
+
+	isCompetentHorizontalTripLeader(user: UserResponse | null): boolean {
+		return this.hasCompetencyRole(user, 'competency_horizontal_trip_leader');
+	},
+
+	isCompetentEveningTripTackleManager(user: UserResponse | null): boolean {
+		return this.hasCompetencyRole(user, 'competency_evening_trip_tacklemanager');
+	},
+
+	isCompetentEveningTripLiftCoordinator(user: UserResponse | null): boolean {
+		return this.hasCompetencyRole(user, 'competency_evening_trip_lift_coordinator');
+	},
+
+	isCompetentVerticalTripLeader(user: UserResponse | null): boolean {
+		return this.hasCompetencyRole(user, 'competency_vertical_trip_leader');
+	},
+
+	isCompetentTripBuddyFriend(user: UserResponse | null): boolean {
+		return this.hasCompetencyRole(user, 'competency_trip_buddy_friend');
+	},
+
+	isCompetentOvernightTripDirector(user: UserResponse | null): boolean {
+		return this.hasCompetencyRole(user, 'competency_overnight_trip_director');
+	},
+
+	isCompetentOvernightEveningMeal(user: UserResponse | null): boolean {
+		return this.hasCompetencyRole(user, 'competency_overnight_evening_meal');
+	},
+
+	isCompetentOvernightCavingCoordinator(user: UserResponse | null): boolean {
+		return this.hasCompetencyRole(user, 'competency_overnight_caving_coordinator');
+	},
+
+	isCompetentOvernightLiftCoordinator(user: UserResponse | null): boolean {
+		return this.hasCompetencyRole(user, 'competency_overnight_lift_coordinator');
+	},
+
+	isCompetentOvernightBreakfastCoordinator(user: UserResponse | null): boolean {
+		return this.hasCompetencyRole(user, 'competency_overnight_breakfast_coordinator');
+	},
+
+	isCompetentTrainingOrganiser(user: UserResponse | null): boolean {
+		return this.hasCompetencyRole(user, 'competency_training_training_organiser');
+	},
+
+	isCompetentSkillsharer(user: UserResponse | null): boolean {
+		return this.hasCompetencyRole(user, 'competency_training_skillsharer');
+	},
+
+	isCompetentSocialOrganiser(user: UserResponse | null): boolean {
+		return this.hasCompetencyRole(user, 'competency_social_social_organiser');
+	},
+
+	/**
+	 * Generic competency checker
+	 */
+	hasCompetencyRole(user: UserResponse | null, metaKey: string): boolean {
+		const value = user?.user?.meta?.[metaKey];
+		return !!value && value !== 'none' && value !== 'No competency';
+	},
+
+	/**
 	 * Determine if user can view participant details
 	 */
 	canViewParticipants(
@@ -323,4 +404,60 @@ export function isTransportCoordinator(
 
 export function isSeconder(participant?: TripParticipant | null): boolean {
 	return Auth.isSeconder(participant);
+}
+
+export function isCompetentEveningTripDirector(user: UserResponse | null): boolean {
+	return Auth.isCompetentEveningTripDirector(user);
+}
+
+export function isCompetentHorizontalTripLeader(user: UserResponse | null): boolean {
+	return Auth.isCompetentHorizontalTripLeader(user);
+}
+
+export function isCompetentEveningTripTackleManager(user: UserResponse | null): boolean {
+	return Auth.isCompetentEveningTripTackleManager(user);
+}
+
+export function isCompetentEveningTripLiftCoordinator(user: UserResponse | null): boolean {
+	return Auth.isCompetentEveningTripLiftCoordinator(user);
+}
+
+export function isCompetentVerticalTripLeader(user: UserResponse | null): boolean {
+	return Auth.isCompetentVerticalTripLeader(user);
+}
+
+export function isCompetentTripBuddyFriend(user: UserResponse | null): boolean {
+	return Auth.isCompetentTripBuddyFriend(user);
+}
+
+export function isCompetentOvernightTripDirector(user: UserResponse | null): boolean {
+	return Auth.isCompetentOvernightTripDirector(user);
+}
+
+export function isCompetentOvernightEveningMeal(user: UserResponse | null): boolean {
+	return Auth.isCompetentOvernightEveningMeal(user);
+}
+
+export function isCompetentOvernightCavingCoordinator(user: UserResponse | null): boolean {
+	return Auth.isCompetentOvernightCavingCoordinator(user);
+}
+
+export function isCompetentOvernightLiftCoordinator(user: UserResponse | null): boolean {
+	return Auth.isCompetentOvernightLiftCoordinator(user);
+}
+
+export function isCompetentOvernightBreakfastCoordinator(user: UserResponse | null): boolean {
+	return Auth.isCompetentOvernightBreakfastCoordinator(user);
+}
+
+export function isCompetentTrainingOrganiser(user: UserResponse | null): boolean {
+	return Auth.isCompetentTrainingOrganiser(user);
+}
+
+export function isCompetentSkillsharer(user: UserResponse | null): boolean {
+	return Auth.isCompetentSkillsharer(user);
+}
+
+export function isCompetentSocialOrganiser(user: UserResponse | null): boolean {
+	return Auth.isCompetentSocialOrganiser(user);
 }
