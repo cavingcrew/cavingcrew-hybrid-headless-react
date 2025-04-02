@@ -1,5 +1,7 @@
 "use client";
 
+import { WordPressLoginWidget } from "@/components/auth/WordPressLoginWidget";
+import { cleanHtmlEntities } from "@/utils/string-utils";
 import {
 	ActionIcon,
 	Alert,
@@ -38,8 +40,6 @@ import {
 	IconX,
 } from "@tabler/icons-react";
 import { useState } from "react";
-import { cleanHtmlEntities } from "@/utils/string-utils";
-import { WordPressLoginWidget } from "@/components/auth/WordPressLoginWidget";
 import { NeoClanVolunteeringRoles } from "./NeoClanVolunteeringRoles";
 
 // Import custom hooks and types
