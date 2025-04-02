@@ -1,3 +1,24 @@
+/**
+ * User Authentication and Authorization Utilities
+ * 
+ * Available checks:
+ * - isLoggedIn: Checks if user is authenticated
+ * - isMember: Checks if user has membership
+ * - isCommittee: Checks if user is committee member
+ * - isSuperAdmin: Checks for super admin access level
+ * - isAdmin: Checks for admin or super admin access
+ * - isTripLeader: Checks if user is listed as trip leader
+ * - hasTripAccess: Checks admin/leader access to trip
+ * - canEditTrip: Checks edit permissions for trip
+ * - hasCompetency: Validates user's caving skill level
+ * - canViewSensitive: Checks permission for sensitive info
+ * - canPurchase: Validates trip purchase eligibility
+ * - isTripReporter: Checks if participant is trip reporter volunteer
+ * - isTransportCoordinator: Checks transport coordinator role
+ * - isSeconder: Checks if participant is seconder volunteer
+ * - canViewParticipants: Checks participant list view permissions
+ */
+
 import type { Trip, TripParticipant, UserResponse } from "../types/api";
 import type { SkillCategory } from "./skill-definitions";
 import { getSkillDefinition } from "./skill-definitions";
