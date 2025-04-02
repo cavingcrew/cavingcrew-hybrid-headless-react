@@ -674,26 +674,26 @@ class Hybrid_Headless_Caving_Crew_Controller {
         $order_id = $request['id'];
         $role = $request['role'];
         
-        // Define valid roles and their corresponding order statuses
+        // Define valid roles without changing order status
         $valid_roles = [
-            'trip_director' => 'on-hold',
-            'event_assistant' => 'on-hold',
-            'lift_coordinator' => 'on-hold',
-            'climbing_coordinator' => 'on-hold',
-            'kit_coordinator' => 'on-hold',
-            'buddy_coordinator' => 'on-hold',
-            'postpromo1' => 'on-hold',
-            'breakfast_marshal' => 'on-hold',
-            'lunch_marshal' => 'on-hold',
-            'covid_marshal' => 'on-hold',
-            'evening_meal_washingup_marshal' => 'on-hold',
-            'head_chef' => 'on-hold',
-            'evening_meal_chef' => 'on-hold',
-            'lunch_breakfast_chef' => 'on-hold',
-            'none' => 'processing'
+            'trip_director',
+            'event_assistant',
+            'lift_coordinator',
+            'climbing_coordinator',
+            'kit_coordinator',
+            'buddy_coordinator',
+            'postpromo1',
+            'breakfast_marshal',
+            'lunch_marshal',
+            'covid_marshal',
+            'evening_meal_washingup_marshal',
+            'head_chef',
+            'evening_meal_chef',
+            'lunch_breakfast_chef',
+            'none'
         ];
         
-        if (!isset($valid_roles[$role])) {
+        if (!in_array($role, $valid_roles)) {
             return new WP_Error('invalid_role', 'Invalid role specified', ['status' => 400]);
         }
         
@@ -704,9 +704,8 @@ class Hybrid_Headless_Caving_Crew_Controller {
         
         $current_user = wp_get_current_user();
         
-        // Update order metadata and status
+        // Update order metadata only - no status change
         $order->update_meta_data('cc_volunteer', $role);
-        $order->update_status($valid_roles[$role]);
         
         // Add audit note
         $order_note = sprintf(
@@ -723,7 +722,6 @@ class Hybrid_Headless_Caving_Crew_Controller {
             'success' => true,
             'order_id' => $order_id,
             'role' => $role,
-            'status' => $valid_roles[$role],
             'assigned_by' => [
                 'name' => $current_user->display_name,
                 'email' => $current_user->user_email
