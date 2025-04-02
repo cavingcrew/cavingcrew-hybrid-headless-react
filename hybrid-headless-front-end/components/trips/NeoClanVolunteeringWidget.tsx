@@ -62,6 +62,7 @@ import {
 	getSkillInfoUrl,
 	getSkillLabel,
 } from "@/utils/skill-definitions";
+import { getRoleLabel } from "@/utils/roles-definitions";
 import {
 	generateCalloutText,
 	generateGearTripCheckText,
