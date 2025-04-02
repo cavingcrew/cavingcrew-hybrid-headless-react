@@ -95,10 +95,19 @@ final class Hybrid_Headless_Plugin {
         require_once HYBRID_HEADLESS_PLUGIN_DIR . 'includes/triggers/class-order-event-date-trigger.php';
         add_filter( 'automatewoo/triggers', [ $this, 'register_triggers' ] );
         
+        // Load variables
+        require_once HYBRID_HEADLESS_PLUGIN_DIR . 'includes/variables/class-product-event-data-variable.php';
+        add_filter( 'automatewoo/variables', [ $this, 'register_variables' ] );
+        
         // Enable logging 
         if ( ! defined( 'AUTOMATEWOO_LOG_DIR' ) ) {
             define( 'AUTOMATEWOO_LOG_DIR', WP_CONTENT_DIR . '/logs/automatewoo/' );
         }
+    }
+
+    public function register_variables( $variables ) {
+        $variables['product_event_data'] = 'HybridHeadless\Variables\ProductEventDataVariable';
+        return $variables;
     }
 
     public function register_triggers( $triggers ) {
