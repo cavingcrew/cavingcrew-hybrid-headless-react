@@ -319,4 +319,4 @@ export function NeoClanVolunteeringRoles({
 				</Stack>
 			</Modal>
 		</Paper>
-}
+	);
