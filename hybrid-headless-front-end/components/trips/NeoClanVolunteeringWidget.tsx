@@ -37,6 +37,7 @@ import {
 	IconUsers,
 	IconX,
 } from "@tabler/icons-react";
+import { NeoClanVolunteeringRoles } from "./NeoClanVolunteeringRoles";
 import React, { useState } from "react";
 import { cleanHtmlEntities } from "../../utils/string-utils";
 import { WordPressLoginWidget } from "../auth/WordPressLoginWidget";
@@ -108,7 +109,7 @@ export function NeoClanVolunteeringWidget({
 	const [locationInfoText, setLocationInfoText] = useState("");
 
 	// Fetch trip participants data
-	const { data, isLoading, error } = useTripParticipants(trip.id);
+	const { data, isLoading, error, refetch } = useTripParticipants(trip.id);
 	const { user } = useUser();
 	const isLoggedIn = Auth.isLoggedIn(user);
 
@@ -1986,43 +1987,13 @@ export function NeoClanVolunteeringWidget({
 						</Tabs.Panel>
 
 						<Tabs.Panel value="roles" pt="xs">
-							<Table striped>
-								<Table.Thead>
-									<Table.Tr>
-										<Table.Th>Name</Table.Th>
-										<Table.Th>Trip Role</Table.Th>
-										<Table.Th>Attendance Status</Table.Th>
-									</Table.Tr>
-								</Table.Thead>
-								<Table.Tbody>
-									{participants.map((participant) => (
-										<Table.Tr key={participant.order_id}>
-											<Table.Td>
-												{participant.first_name} {participant.last_name}
-											</Table.Td>
-											<Table.Td>
-												{participant.order_meta?.cc_volunteer &&
-												participant.order_meta.cc_volunteer !== "none" ? (
-													<Badge color="green">
-														{participant.order_meta.cc_volunteer}
-													</Badge>
-												) : (
-													"None"
-												)}
-											</Table.Td>
-											<Table.Td>
-												<Badge
-													color={getStatusColor(
-														determineSignupStatus(participant),
-													)}
-												>
-													{determineSignupStatus(participant)}
-												</Badge>
-											</Table.Td>
-										</Table.Tr>
-									))}
-								</Table.Tbody>
-							</Table>
+							<NeoClanVolunteeringRoles 
+								trip={trip} 
+								onRoleAssigned={() => {
+									// Refresh participants data when a role is assigned
+									refetch();
+								}}
+							/>
 						</Tabs.Panel>
 
 						<Tabs.Panel value="stats" pt="xs">
