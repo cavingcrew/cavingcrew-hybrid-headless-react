@@ -504,7 +504,7 @@ export function NeoClanVolunteeringWidget({
 								value="roles"
 								leftSection={<IconHeartHandshake size={14} />}
 							>
-								Roles & Volunteering
+								Trip Roles
 							</Tabs.Tab>
 							<Tabs.Tab value="stats" leftSection={<IconChartBar size={14} />}>
 								Stats

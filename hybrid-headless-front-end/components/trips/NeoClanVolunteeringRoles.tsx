@@ -96,8 +96,8 @@ export function NeoClanVolunteeringRoles({
 
 				// Show success notification
 				notifications.show({
-					title: "Role updated!",
-					message: `${participant.first_name}'s role updated to ${
+					title: "Trip role updated!",
+					message: `${participant.first_name}'s trip role updated to ${
 						VOLUNTEER_ROLES.find((r) => r.value === newRole)?.label || newRole
 					}`,
 					color: "green",
@@ -158,11 +158,11 @@ export function NeoClanVolunteeringRoles({
 	return (
 		<Paper withBorder p="md" radius="md">
 			<Group justify="space-between" mb="md">
-				<Title order={3}>Volunteer Roles</Title>
+				<Title order={3}>Trip Roles</Title>
 				{canAssignRoles && (
 					<Tooltip label="Click dropdowns in the table to assign roles">
 						<Badge color="blue" variant="dot" size="lg">
-							Role Assignment Enabled
+							Trip Role Assignment Enabled
 						</Badge>
 					</Tooltip>
 				)}
@@ -170,7 +170,7 @@ export function NeoClanVolunteeringRoles({
 
 			{!canAssignRoles && !eventClosed && (
 				<Alert icon={<IconInfoCircle size={16} />} color="blue" mb="md">
-					Volunteer roles are assigned by trip leaders and administrators.
+					Trip roles are assigned by trip leaders and administrators.
 				</Alert>
 			)}
 
