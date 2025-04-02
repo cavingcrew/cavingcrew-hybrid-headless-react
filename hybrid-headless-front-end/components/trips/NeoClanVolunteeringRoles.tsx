@@ -4,6 +4,7 @@ import {
 	Alert,
 	Badge,
 	Group,
+	Modal,
 	Paper,
 	Select,
 	Stack,
@@ -11,7 +12,6 @@ import {
 	Text,
 	Title,
 	Tooltip,
-	Modal
 } from "@mantine/core";
 import { useDebouncedCallback } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
