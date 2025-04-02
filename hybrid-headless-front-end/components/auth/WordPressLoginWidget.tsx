@@ -1,5 +1,6 @@
 "use client";
 
+import React from 'react';
 import { apiService } from "@/lib/api-service";
 import { participantKeys } from "@/lib/hooks/useTripParticipants";
 import { tripKeys } from "@/lib/hooks/useTrips";

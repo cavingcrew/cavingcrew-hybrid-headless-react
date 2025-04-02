@@ -8,6 +8,11 @@ const nextConfig = {
 		domains: ["localhost", "www.cavingcrew.com", "cavingcrew.com"],
 	},
 	transpilePackages: ["@tanstack/react-query"],
+	compiler: {
+		reactRemoveProperties: process.env.NODE_ENV === 'production',
+		reactRemoveHtmlAttributes: true,
+		emotion: true,
+	},
 	webpack: (config) => {
 		// Add path aliases while preserving existing ones
 		config.resolve.alias = {
