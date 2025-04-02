@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { WordPressLoginWidget } from "@/components/auth/WordPressLoginWidget";
 import { cleanHtmlEntities } from "@/utils/string-utils";
 import {
@@ -328,8 +329,8 @@ export function NeoClanVolunteeringWidget({
 						</Badge>
 					</Group>
 					<Group gap="xs" mb="md">
-						{participants.map((participant, index) => (
-							<Badge key={index} variant="outline">
+						{participants.map((participant) => (
+							<Badge key={participant.order_id} variant="outline">
 								{participant.first_name}
 							</Badge>
 						))}
@@ -1189,11 +1190,11 @@ export function NeoClanVolunteeringWidget({
 											let itemsNeedCount = 0;
 
 											// Check each standard gear item
-											standardGear.forEach((item) => {
+											for (const item of standardGear) {
 												// Skip checking if they're a new caver claiming to bring nothing
 												if (isNewCaver && item !== "Wellies") {
 													itemsNeedCount++;
-													return;
+													continue;
 												}
 
 												// Special case for SRT Kit and Harness/Cowstails
@@ -1265,7 +1266,7 @@ export function NeoClanVolunteeringWidget({
 														itemsNeedCount++;
 													}
 												}
-											});
+											}
 
 											// Return participant with gear counts for sorting
 											return {
@@ -1354,11 +1355,11 @@ export function NeoClanVolunteeringWidget({
 											const missingGear: string[] = [];
 
 											// Check each standard gear item
-											standardGear.forEach((item) => {
+											for (const item of standardGear) {
 												// Skip checking if they're a new caver claiming to bring nothing
 												if (isNewCaver && item !== "Wellies") {
 													missingGear.push(item);
-													return;
+													continue;
 												}
 
 												// Special case for SRT Kit and Harness/Cowstails
@@ -1435,7 +1436,7 @@ export function NeoClanVolunteeringWidget({
 												} else {
 													missingGear.push(item);
 												}
-											});
+											}
 
 											// Check for additional gear beyond requirements
 											const additionalGear = bringingItems.filter((item) => {
@@ -1556,9 +1557,9 @@ export function NeoClanVolunteeringWidget({
 																			);
 																		});
 																	})
-																	.map((item, index) => (
+																	.map((item) => (
 																		<Badge
-																			key={index}
+																			key={item}
 																			color={
 																				item.includes("Nothing")
 																					? "red"
@@ -1577,9 +1578,9 @@ export function NeoClanVolunteeringWidget({
 															<Badge color="green">All required gear</Badge>
 														) : (
 															<Stack gap="xs">
-																{missingGear.map((item, index) => (
+																{missingGear.map((item) => (
 																	<Badge
-																		key={index}
+																		key={item}
 																		color="red"
 																		variant="light"
 																	>
@@ -1602,9 +1603,9 @@ export function NeoClanVolunteeringWidget({
 															<Text c="dimmed">None</Text>
 														) : (
 															<Stack gap="xs">
-																{additionalGear.map((item, index) => (
+																{additionalGear.map((item) => (
 																	<Badge
-																		key={index}
+																		key={item}
 																		color="teal"
 																		variant="light"
 																	>
@@ -2002,7 +2003,7 @@ export function NeoClanVolunteeringWidget({
 															if (participant.admin_meta) {
 																for (const key in participant.admin_meta) {
 																	if (
-																		participant.admin_meta.hasOwnProperty(key)
+																		Object.hasOwn(participant.admin_meta, key)
 																	) {
 																		entries.push([
 																			key,
@@ -2077,68 +2078,50 @@ export function NeoClanVolunteeringWidget({
 												{participant.first_name} {participant.last_name}
 											</Table.Td>
 											<Table.Td>
-												{participant.meta?.[
-													"stats_attendance_attended_cached"
-												] || "0"}
+												{participant.meta?.stats_attendance_attended_cached || "0"}
 											</Table.Td>
 											<Table.Td>
 												{formatRelativeTime(
-													participant.meta?.[
-														"cc_compliance_last_date_of_caving"
-													],
+													participant.meta?.cc_compliance_last_date_of_caving
 												)}
 											</Table.Td>
 											<Table.Td>
-												{participant.meta?.["scores_volunteer_score_cached"] ? (
+												{participant.meta?.scores_volunteer_score_cached ? (
 													<Badge
 														color={
 															Number.parseFloat(
-																participant.meta[
-																	"scores_volunteer_score_cached"
-																],
+																participant.meta.scores_volunteer_score_cached,
 															) > 0.7
 																? "green"
 																: Number.parseFloat(
-																			participant.meta[
-																				"scores_volunteer_score_cached"
-																			],
+																			participant.meta.scores_volunteer_score_cached,
 																		) > 0.4
 																	? "yellow"
 																	: "red"
 														}
 													>
-														{participant.meta["scores_volunteer_score_cached"]}
+														{participant.meta.scores_volunteer_score_cached}
 													</Badge>
 												) : (
 													"N/A"
 												)}
 											</Table.Td>
 											<Table.Td>
-												{participant.meta?.[
-													"scores_attendance_reliability_score_cached"
-												] ? (
+												{participant.meta?.scores_attendance_reliability_score_cached ? (
 													<Badge
 														color={
 															Number.parseFloat(
-																participant.meta[
-																	"scores_attendance_reliability_score_cached"
-																],
+																participant.meta.scores_attendance_reliability_score_cached,
 															) > 0.7
 																? "green"
 																: Number.parseFloat(
-																			participant.meta[
-																				"scores_attendance_reliability_score_cached"
-																			],
+																			participant.meta.scores_attendance_reliability_score_cached,
 																		) > 0.4
 																	? "yellow"
 																	: "red"
 														}
 													>
-														{
-															participant.meta[
-																"scores_attendance_reliability_score_cached"
-															]
-														}
+														{participant.meta.scores_attendance_reliability_score_cached}
 													</Badge>
 												) : (
 													"N/A"
