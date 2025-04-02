@@ -31,6 +31,7 @@
  * - isCompetentTrainingOrganiser: Checks training organiser competency
  * - isCompetentSkillsharer: Checks skillsharer competency
  * - isCompetentSocialOrganiser: Checks social organiser competency
+ * - getCompetencies: Returns object with all competency statuses
  */
 
 import type { Trip, TripParticipant, UserResponse } from "../types/api";
@@ -302,6 +303,28 @@ export const Auth = {
 	},
 
 	/**
+	 * Get all competency statuses for a user
+	 */
+	getCompetencies(user: UserResponse | null): Record<string, boolean> {
+		return {
+			eveningTripDirector: this.isCompetentEveningTripDirector(user),
+			horizontalTripLeader: this.isCompetentHorizontalTripLeader(user),
+			eveningTripTackleManager: this.isCompetentEveningTripTackleManager(user),
+			eveningTripLiftCoordinator: this.isCompetentEveningTripLiftCoordinator(user),
+			verticalTripLeader: this.isCompetentVerticalTripLeader(user),
+			tripBuddyFriend: this.isCompetentTripBuddyFriend(user),
+			overnightTripDirector: this.isCompetentOvernightTripDirector(user),
+			overnightEveningMeal: this.isCompetentOvernightEveningMeal(user),
+			overnightCavingCoordinator: this.isCompetentOvernightCavingCoordinator(user),
+			overnightLiftCoordinator: this.isCompetentOvernightLiftCoordinator(user),
+			overnightBreakfastCoordinator: this.isCompetentOvernightBreakfastCoordinator(user),
+			trainingOrganiser: this.isCompetentTrainingOrganiser(user),
+			skillsharer: this.isCompetentSkillsharer(user),
+			socialOrganiser: this.isCompetentSocialOrganiser(user)
+		};
+	},
+
+	/**
 	 * Generic competency checker
 	 */
 	hasCompetencyRole(user: UserResponse | null, metaKey: string): boolean {
@@ -500,4 +523,8 @@ export function isCompetentSkillsharer(user: UserResponse | null): boolean {
 
 export function isCompetentSocialOrganiser(user: UserResponse | null): boolean {
 	return Auth.isCompetentSocialOrganiser(user);
+}
+
+export function getCompetencies(user: UserResponse | null): Record<string, boolean> {
+	return Auth.getCompetencies(user);
 }
