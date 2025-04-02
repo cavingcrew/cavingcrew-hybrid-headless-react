@@ -90,6 +90,15 @@ final class Hybrid_Headless_Plugin {
         // Load purchase restrictions
         require_once HYBRID_HEADLESS_PLUGIN_DIR . 'includes/purchase-restrictions/class-purchase-restrictions.php';
         new Hybrid_Headless_Purchase_Restrictions();
+        
+        // Load triggers
+        require_once HYBRID_HEADLESS_PLUGIN_DIR . 'includes/triggers/class-order-event-date-trigger.php';
+        add_filter( 'automatewoo/triggers', [ $this, 'register_triggers' ] );
+    }
+
+    public function register_triggers( $triggers ) {
+        $triggers['order_event_date'] = 'HybridHeadless\Triggers\OrderEventDateTrigger';
+        return $triggers;
     }
 
     /**
