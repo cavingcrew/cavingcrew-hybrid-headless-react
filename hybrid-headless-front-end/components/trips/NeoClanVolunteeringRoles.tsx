@@ -1,12 +1,9 @@
 "use client";
 
 import {
-	ActionIcon,
 	Alert,
 	Badge,
-	Button,
 	Group,
-	Modal,
 	Paper,
 	Select,
 	Stack,
@@ -15,18 +12,15 @@ import {
 	Title,
 	Tooltip,
 } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import {
 	IconAlertCircle,
 	IconCheck,
-	IconEdit,
 	IconHeartHandshake,
 	IconInfoCircle,
 	IconX,
 } from "@tabler/icons-react";
-import React from "react";
-import { useState } from "react";
+import { useDebouncedCallback } from "@mantine/hooks";
 
 // Import custom hooks and types
 import { apiService } from "@/lib/api-service";
@@ -75,13 +69,6 @@ export function NeoClanVolunteeringRoles({
 	trip,
 	onRoleAssigned,
 }: NeoClanVolunteeringRolesProps) {
-	// State for role assignment modal
-	const [opened, { open, close }] = useDisclosure(false);
-	const [selectedParticipant, setSelectedParticipant] =
-		useState<TripParticipant | null>(null);
-	const [selectedRole, setSelectedRole] = useState<string | null>(null);
-	const [isSubmitting, setIsSubmitting] = useState(false);
-
 	// Fetch trip participants data
 	const { data, isLoading, error, refetch } = useTripParticipants(trip.id);
 	const { user } = useUser();
@@ -95,60 +82,51 @@ export function NeoClanVolunteeringRoles({
 		| "event_role"
 		| "admin"
 		| "super_admin";
+	const eventClosed = !!(data?.data as TripParticipantsResponse | undefined)?.event_closed;
 
 	// Check if user has permission to assign roles
 	const canAssignRoles =
 		(Auth.isAdmin(user, accessLevel) ||
 			Auth.isTripLeader(user, trip) ||
 			Auth.isCommittee(user)) &&
-		!(data?.data as TripParticipantsResponse | undefined)?.event_closed;
+		!eventClosed;
 
-	// Function to open role assignment modal
-	const handleOpenRoleModal = (participant: TripParticipant) => {
-		setSelectedParticipant(participant);
-		setSelectedRole(participant.order_meta?.cc_volunteer || "none");
-		open();
-	};
+	// Debounced function to update role
+	const debouncedRoleUpdate = useDebouncedCallback(
+		async (participant: TripParticipant, newRole: string) => {
+			try {
+				const response = await apiService.updateVolunteerRole(
+					participant.order_id,
+					newRole
+				);
 
-	// Function to assign role
-	const handleAssignRole = async () => {
-		if (!selectedParticipant || !selectedRole) return;
+				if (!response.success) throw new Error(response.message);
 
-		setIsSubmitting(true);
-		try {
-			const response = await apiService.updateVolunteerRole(
-				selectedParticipant.order_id,
-				selectedRole,
-			);
+				// Show success notification
+				notifications.show({
+					title: "Role updated!",
+					message: `${participant.first_name}'s role updated to ${
+						VOLUNTEER_ROLES.find((r) => r.value === newRole)?.label || newRole
+					}`,
+					color: "green",
+					icon: <IconCheck size={16} />,
+				});
 
-			if (!response.success) throw new Error(response.message);
-
-			// Show success notification
-			notifications.show({
-				title: "Role assigned!",
-				message: `${selectedParticipant.first_name} is now ${VOLUNTEER_ROLES.find((r) => r.value === selectedRole)?.label || selectedRole}`,
-				color: "green",
-				icon: <IconCheck size={16} />,
-			});
-
-			// Refresh data
-			refetch();
-			if (onRoleAssigned) onRoleAssigned();
-
-			// Close modal
-			close();
-		} catch (error) {
-			// Show error notification
-			notifications.show({
-				title: "Error",
-				message: "Failed to assign role. Please try again.",
-				color: "red",
-				icon: <IconX size={16} />,
-			});
-		} finally {
-			setIsSubmitting(false);
-		}
-	};
+				// Refresh data
+				refetch();
+				if (onRoleAssigned) onRoleAssigned();
+			} catch (error) {
+				// Show error notification
+				notifications.show({
+					title: "Error",
+					message: "Failed to update role. Please try again.",
+					color: "red",
+					icon: <IconX size={16} />,
+				});
+			}
+		},
+		500
+	);
 
 	// Loading state rendering
 	if (isLoading) {
@@ -190,19 +168,21 @@ export function NeoClanVolunteeringRoles({
 			<Group justify="space-between" mb="md">
 				<Title order={3}>Volunteer Roles</Title>
 				{canAssignRoles && (
-					<Badge color="blue" size="lg">
-						You can assign roles
-					</Badge>
+					<Tooltip label="Click dropdowns in the table to assign roles">
+						<Badge color="blue" variant="dot" size="lg">
+							Role Assignment Enabled
+						</Badge>
+					</Tooltip>
 				)}
 			</Group>
 
-			{!canAssignRoles && !data?.data?.event_closed && (
+			{!canAssignRoles && !eventClosed && (
 				<Alert icon={<IconInfoCircle size={16} />} color="blue" mb="md">
 					Volunteer roles are assigned by trip leaders and administrators.
 				</Alert>
 			)}
 
-			{data?.data?.event_closed && (
+			{eventClosed && (
 				<Alert icon={<IconInfoCircle size={16} />} color="green" mb="md">
 					This event has been finalized and archived. Volunteer roles are now
 					frozen.
@@ -215,12 +195,12 @@ export function NeoClanVolunteeringRoles({
 						<Table.Th>Name</Table.Th>
 						<Table.Th>Role</Table.Th>
 						<Table.Th>Status</Table.Th>
-						{canAssignRoles && <Table.Th>Actions</Table.Th>}
 					</Table.Tr>
 				</Table.Thead>
 				<Table.Tbody>
 					{participants.map((participant) => {
 						const status = determineSignupStatus(participant);
+						const currentRole = participant.order_meta?.cc_volunteer || "none";
 
 						return (
 							<Table.Tr key={participant.order_id}>
@@ -228,78 +208,32 @@ export function NeoClanVolunteeringRoles({
 									{participant.first_name} {participant.last_name}
 								</Table.Td>
 								<Table.Td>
-									{participant.order_meta?.cc_volunteer &&
-									participant.order_meta.cc_volunteer !== "none" ? (
-										<Badge
-											color="green"
-											leftSection={<IconHeartHandshake size={14} />}
-										>
-											{participant.order_meta.cc_volunteer}
-										</Badge>
+									{canAssignRoles ? (
+										<Select
+											data={VOLUNTEER_ROLES}
+											value={currentRole}
+											onChange={(value) => value && debouncedRoleUpdate(participant, value)}
+											placeholder="Select role"
+											size="xs"
+											allowDeselect={false}
+										/>
 									) : (
-										<Text c="dimmed">No role assigned</Text>
+										<Badge
+											color={currentRole === "none" ? "gray" : "green"}
+											leftSection={currentRole !== "none" ? <IconHeartHandshake size={14} /> : null}
+										>
+											{VOLUNTEER_ROLES.find((r) => r.value === currentRole)?.label || currentRole}
+										</Badge>
 									)}
 								</Table.Td>
 								<Table.Td>
 									<Badge color={getStatusColor(status)}>{status}</Badge>
 								</Table.Td>
-								{canAssignRoles && (
-									<Table.Td>
-										<Tooltip label="Assign role">
-											<ActionIcon
-												variant="subtle"
-												color="blue"
-												onClick={() => handleOpenRoleModal(participant)}
-											>
-												<IconEdit size={16} />
-											</ActionIcon>
-										</Tooltip>
-									</Table.Td>
-								)}
 							</Table.Tr>
 						);
 					})}
 				</Table.Tbody>
 			</Table>
-
-			{/* Role assignment modal */}
-			<Modal
-				opened={opened}
-				onClose={close}
-				title="Assign Volunteer Role"
-				centered
-			>
-				{selectedParticipant && (
-					<Stack>
-						<Text>
-							Assigning role to {selectedParticipant.first_name}{" "}
-							{selectedParticipant.last_name}
-						</Text>
-
-						<Select
-							label="Select Role"
-							placeholder="Choose a volunteer role"
-							data={VOLUNTEER_ROLES}
-							value={selectedRole}
-							onChange={setSelectedRole}
-							clearable={false}
-						/>
-
-						<Group justify="flex-end" mt="md">
-							<Button variant="outline" onClick={close}>
-								Cancel
-							</Button>
-							<Button
-								onClick={handleAssignRole}
-								loading={isSubmitting}
-								leftSection={<IconHeartHandshake size={16} />}
-							>
-								Assign Role
-							</Button>
-						</Group>
-					</Stack>
-				)}
-			</Modal>
 		</Paper>
 	);
 }
