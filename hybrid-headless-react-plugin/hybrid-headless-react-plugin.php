@@ -107,6 +107,8 @@ final class Hybrid_Headless_Plugin {
 
     public function register_variables( $variables ) {
         $variables['product_event_data'] = 'HybridHeadless\Variables\ProductEventDataVariable';
+        $variables['product_event_start_date'] = 'HybridHeadless\Variables\ProductEventStartDate';
+        $variables['product_event_finish_date'] = 'HybridHeadless\Variables\ProductEventFinishDate';
         return $variables;
     }
 

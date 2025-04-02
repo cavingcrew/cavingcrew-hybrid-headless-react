@@ -42,15 +42,42 @@ Use dot notation to navigate nested data:
 {{ product_event_data.field.subfield }}
 ```
 
-### Available Fields
+## Date Formatting Variables
 
-#### Product Info
+### Product Event Start Date
 ```plaintext
-product.event_start_date_time - "2023-12-25 09:00:00"
-product.event_finish_date_time 
-product.event_type - "training", "overnight", etc.
-product.event_trip_leader - "John Doe"
+{{ product_event_start_date }} // Raw value: 2023-12-25 09:00:00
+{{ product_event_start_date format="site" }} // 25/12/2023
+{{ product_event_start_date format="d/m/Y H:i" }} // 25/12/2023 09:00
+{{ product_event_start_date modify="+3 days" }} // 2023-12-28 09:00:00
 ```
+
+### Product Event Finish Date  
+```plaintext
+{{ product_event_finish_date format="mysql" }} // 2023-12-26 17:00:00
+{{ product_event_finish_date format="F j, Y" }} // December 26, 2023
+```
+
+**Format Parameters:**
+- `format`: Choose from:
+  - `mysql` - Default database format
+  - `site` - WordPress settings format
+  - `custom` - Use with `custom-format` parameter
+- `custom-format`: PHP date format (e.g. "Y-m-d H:i")
+- `modify`: Time modifier (e.g. "+3 days", "-1 hour")
+
+---
+
+## Existing Product Event Data Variable
+Still available for raw data access:
+```plaintext
+{{ product_event_data.product.event_start_date_time }} // 2023-12-25T09:00:00+00:00
+{{ product_event_data.product.event_finish_date_time }} // 2023-12-26T17:00:00+00:00
+{{ product_event_data.product.event_type }} // "training", "overnight", etc.
+{{ product_event_data.product.event_trip_leader }} // "John Doe"
+```
+
+Use the dedicated date variables for formatted dates in emails and messages.
 
 #### Route Details
 ```plaintext
