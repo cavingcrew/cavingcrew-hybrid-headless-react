@@ -67,16 +67,19 @@ export function useTrips(): UseQueryResult<ApiResponse<Trip[]>> {
 				queryKey: [...tripKeys.all, "fresh"],
 				queryFn: async () => {
 					const freshData = await apiService.getTrips(false);
-					queryClient.setQueryData(tripKeys.all, (old: ApiResponse<Trip[]> | undefined) => ({
-						...freshData,
-						// Preserve timestamp if data is similar
-						timestamp:
-							old?.data &&
-							freshData.data &&
-							isDataStale(old.data, freshData.data)
-								? Date.now()
-								: old?.timestamp,
-					}));
+					queryClient.setQueryData(
+						tripKeys.all,
+						(old: ApiResponse<Trip[]> | undefined) => ({
+							...freshData,
+							// Preserve timestamp if data is similar
+							timestamp:
+								old?.data &&
+								freshData.data &&
+								isDataStale(old.data, freshData.data)
+									? Date.now()
+									: old?.timestamp,
+						}),
+					);
 					return freshData;
 				},
 				staleTime: 0,
