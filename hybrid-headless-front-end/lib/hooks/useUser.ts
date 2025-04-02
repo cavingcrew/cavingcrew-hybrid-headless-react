@@ -1,7 +1,8 @@
 'use client';
 
 import { Auth } from '../../utils/user-utils';
-import type { Trip, AccessLevel } from '../../types/api';
+import type { Trip } from '../../types/api';
+import type { AccessLevel } from '../../utils/user-utils';
 
 export const userKeys = {
   all: ['user'] as const,

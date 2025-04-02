@@ -30,6 +30,7 @@ import { isWithinDays } from '../../utils/event-timing';
 import { useUser } from '@/lib/hooks/useUser';
 import { useTripAccess } from '@/lib/hooks/useTripAccess';
 import { Auth } from '../../utils/user-utils';
+import type { AccessLevel } from '../../utils/user-utils';
 import { TripSignupWidget } from "./TripSignupWidget";
 import {
 	IconCalendar,

@@ -661,3 +661,12 @@ export interface UserResponse {
 		};
 	};
 }
+
+// Access level type from API
+export type AccessLevel = 
+  | "public" 
+  | "logged_in" 
+  | "participant" 
+  | "event_role" 
+  | "admin" 
+  | "super_admin";

@@ -19,6 +19,7 @@ import { cleanHtmlEntities } from '../../utils/string-utils';
 import { useTripParticipants } from '../../lib/hooks/useTripParticipants';
 import { useUser } from '../../lib/hooks/useUser';
 import { Auth } from '../../utils/user-utils';
+import type { AccessLevel } from '../../utils/user-utils';
 import type { Trip, TripParticipant } from '../../types/api';
 
 // Define props interface for the component
