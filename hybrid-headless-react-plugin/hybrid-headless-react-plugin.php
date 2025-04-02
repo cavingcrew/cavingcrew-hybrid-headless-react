@@ -99,6 +99,12 @@ final class Hybrid_Headless_Plugin {
         require_once HYBRID_HEADLESS_PLUGIN_DIR . 'includes/variables/class-product-event-data-variable.php';
         add_filter( 'automatewoo/variables', [ $this, 'register_variables' ] );
         
+        // Load rules
+        require_once HYBRID_HEADLESS_PLUGIN_DIR . 'includes/rules/class-customer-trip-date-rule.php';
+        require_once HYBRID_HEADLESS_PLUGIN_DIR . 'includes/rules/class-customer-last-trip-in-period.php';
+        require_once HYBRID_HEADLESS_PLUGIN_DIR . 'includes/rules/class-customer-has-upcoming-trip.php';
+        add_filter( 'automatewoo/rules', [ $this, 'register_rules' ] );
+        
         // Enable logging 
         if ( ! defined( 'AUTOMATEWOO_LOG_DIR' ) ) {
             define( 'AUTOMATEWOO_LOG_DIR', WP_CONTENT_DIR . '/logs/automatewoo/' );
