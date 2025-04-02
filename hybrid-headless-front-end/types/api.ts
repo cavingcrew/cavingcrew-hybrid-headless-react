@@ -153,8 +153,8 @@ export interface TripParticipant {
 		"admin-code-of-conduct-accepted"?: "yes" | "no" | string;
 		"admin-first-timer-question"?: "yes" | "no" | string;
 		"admin-will-you-not-flake-please"?: "yes" | "no" | string;
-		"last_update"?: string;
-		"wc_last_active"?: string;
+		last_update?: string;
+		wc_last_active?: string;
 		"admin-covid-agreement"?: string;
 		"admin-covid-cautious"?: "yes" | "no" | string;
 		"admin-no-insurance-disclaimer"?: "yes" | "no" | string;
@@ -898,10 +898,10 @@ export interface UserResponse {
 			"caving-srt-or-horizontal-preference"?: string;
 			"admin-first-timer-question"?: "yes" | "no" | string;
 			"admin-will-you-not-flake-please"?: "yes" | "no" | string;
-			"last_update"?: string;
-			"wc_last_active"?: string;
-			"_legacy_info_bca_member"?: "yes" | "no" | string;
-			"_legacy_info_bca_club"?: string;
+			last_update?: string;
+			wc_last_active?: string;
+			_legacy_info_bca_member?: "yes" | "no" | string;
+			_legacy_info_bca_club?: string;
 			[key: string]: string | null;
 		};
 	};
