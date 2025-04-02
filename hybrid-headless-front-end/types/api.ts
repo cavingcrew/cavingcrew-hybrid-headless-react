@@ -336,6 +336,11 @@ export interface TripParticipantsResponse {
 	can_update: boolean;
 	participant_count?: number;
 	is_logged_in?: boolean;
+        event_closed?: boolean;
+        event_message?: string;
+        closed_at?: string;
+        closed_by?: string;
+
 }
 
 export interface TripsResponse {
