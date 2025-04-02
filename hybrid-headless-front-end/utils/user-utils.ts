@@ -310,17 +310,20 @@ export const Auth = {
 			eveningTripDirector: this.isCompetentEveningTripDirector(user),
 			horizontalTripLeader: this.isCompetentHorizontalTripLeader(user),
 			eveningTripTackleManager: this.isCompetentEveningTripTackleManager(user),
-			eveningTripLiftCoordinator: this.isCompetentEveningTripLiftCoordinator(user),
+			eveningTripLiftCoordinator:
+				this.isCompetentEveningTripLiftCoordinator(user),
 			verticalTripLeader: this.isCompetentVerticalTripLeader(user),
 			tripBuddyFriend: this.isCompetentTripBuddyFriend(user),
 			overnightTripDirector: this.isCompetentOvernightTripDirector(user),
 			overnightEveningMeal: this.isCompetentOvernightEveningMeal(user),
-			overnightCavingCoordinator: this.isCompetentOvernightCavingCoordinator(user),
+			overnightCavingCoordinator:
+				this.isCompetentOvernightCavingCoordinator(user),
 			overnightLiftCoordinator: this.isCompetentOvernightLiftCoordinator(user),
-			overnightBreakfastCoordinator: this.isCompetentOvernightBreakfastCoordinator(user),
+			overnightBreakfastCoordinator:
+				this.isCompetentOvernightBreakfastCoordinator(user),
 			trainingOrganiser: this.isCompetentTrainingOrganiser(user),
 			skillsharer: this.isCompetentSkillsharer(user),
-			socialOrganiser: this.isCompetentSocialOrganiser(user)
+			socialOrganiser: this.isCompetentSocialOrganiser(user),
 		};
 	},
 
@@ -525,6 +528,8 @@ export function isCompetentSocialOrganiser(user: UserResponse | null): boolean {
 	return Auth.isCompetentSocialOrganiser(user);
 }
 
-export function getCompetencies(user: UserResponse | null): Record<string, boolean> {
+export function getCompetencies(
+	user: UserResponse | null,
+): Record<string, boolean> {
 	return Auth.getCompetencies(user);
 }
