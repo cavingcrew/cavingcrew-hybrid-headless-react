@@ -2,6 +2,7 @@
 
 import '@mantine/core/styles.css';
 import { ColorSchemeScript } from '@mantine/core';
+import { Notifications } from '@mantine/notifications';
 import { MantineProvider } from '@/components/providers/MantineProvider';
 import { QueryProvider } from '@/components/providers/QueryProvider';
 import { ClientRouterProvider } from '@/components/providers/ClientRouterProvider';
@@ -36,19 +37,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <QueryProvider>
           <MantineProvider>
-            <ClientRouterProvider>
-              <div style={{ 
-                minHeight: '100vh',
-                display: 'flex',
-                flexDirection: 'column'
-              }}>
-                <MainHeader />
-                <main style={{ flex: 1 }}>
-                  {children}
-                </main>
-                <MainFooter />
-              </div>
-            </ClientRouterProvider>
+            <>
+              <Notifications />
+              <ClientRouterProvider>
+                <div style={{ 
+                  minHeight: '100vh',
+                  display: 'flex',
+                  flexDirection: 'column'
+                }}>
+                  <MainHeader />
+                  <main style={{ flex: 1 }}>
+                    {children}
+                  </main>
+                  <MainFooter />
+                </div>
+              </ClientRouterProvider>
+            </>
           </MantineProvider>
         </QueryProvider>
       </body>
