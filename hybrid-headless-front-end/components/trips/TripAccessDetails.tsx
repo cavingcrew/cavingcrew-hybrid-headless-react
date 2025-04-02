@@ -1,5 +1,6 @@
 "use client";
 
+import { useTripAccess } from "@/lib/hooks/useTripAccess";
 import { Carousel } from "@mantine/carousel";
 import {
 	Alert,
@@ -17,7 +18,6 @@ import {
 	Title,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { useTripAccess } from "@/lib/hooks/useTripAccess";
 import {
 	IconInfoCircle,
 	IconKey,
@@ -50,7 +50,9 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 		Array.isArray(routeDescription) &&
 		routeDescription.length > 0 &&
 		routeDescription.some(
-			(segment) => segment.route_description_segment_title?.trim() && segment.route_description_segment_html?.trim()
+			(segment) =>
+				segment.route_description_segment_title?.trim() &&
+				segment.route_description_segment_html?.trim(),
 		);
 	const parkingInstructions = locationData?.location_parking_description;
 	const entranceCoords = locationData?.location_entrance_latlong;
@@ -102,13 +104,16 @@ export function TripAccessDetails({ trip }: TripAccessDetailsProps) {
 							</Text>
 							<List size="sm" mt={4}>
 								<List.Item>Follow all access guidelines carefully</List.Item>
-								<List.Item>Do not share exact location details publicly</List.Item>
+								<List.Item>
+									Do not share exact location details publicly
+								</List.Item>
 								<List.Item>Avoid naming the location on social media</List.Item>
 							</List>
 						</>
 					) : (
 						<Text size="sm">
-							This location has sensitive access arrangements. Sign up to view detailed access information.
+							This location has sensitive access arrangements. Sign up to view
+							detailed access information.
 						</Text>
 					)}
 				</Alert>
