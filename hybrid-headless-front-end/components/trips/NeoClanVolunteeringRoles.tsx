@@ -94,9 +94,10 @@ export function NeoClanVolunteeringRoles({
 
 	// State for role change confirmation
 	const [isRoleChangeModalOpen, setIsRoleChangeModalOpen] = useState(false);
-	const [selectedParticipant, setSelectedParticipant] = useState<TripParticipant | null>(null);
+	const [selectedParticipant, setSelectedParticipant] =
+		useState<TripParticipant | null>(null);
 	const [selectedNewRole, setSelectedNewRole] = useState("");
-	const [selectedOldRole, setSelectedOldRole] = useState(""); 
+	const [selectedOldRole, setSelectedOldRole] = useState("");
 	const [localRoles, setLocalRoles] = useState<Record<number, string>>({});
 
 	// Debounced function to update role
@@ -226,9 +227,9 @@ export function NeoClanVolunteeringRoles({
 													setSelectedNewRole(value);
 													setSelectedOldRole(currentRole);
 													setIsRoleChangeModalOpen(true);
-													setLocalRoles(prev => ({
+													setLocalRoles((prev) => ({
 														...prev,
-														[participant.order_id]: value
+														[participant.order_id]: value,
 													}));
 												}
 											}}
@@ -258,21 +259,21 @@ export function NeoClanVolunteeringRoles({
 					})}
 				</Table.Tbody>
 			</Table>
-			
+
 			{/* Role Change Confirmation Modal */}
 			<Modal
 				opened={isRoleChangeModalOpen}
 				onClose={() => {
 					setIsRoleChangeModalOpen(false);
 					if (selectedParticipant) {
-						setLocalRoles(prev => {
-							const newLocalRoles = {...prev};
+						setLocalRoles((prev) => {
+							const newLocalRoles = { ...prev };
 							delete newLocalRoles[selectedParticipant.order_id];
 							return newLocalRoles;
 						});
 					}
 				}}
-				title="Confirm Role Assignment" 
+				title="Confirm Role Assignment"
 				centered
 			>
 				<Stack>
@@ -280,22 +281,27 @@ export function NeoClanVolunteeringRoles({
 						You're about to assign <strong>{selectedNewRole}</strong> to{" "}
 						<strong>{selectedParticipant?.first_name}</strong>
 					</Text>
-					
+
 					{selectedOldRole !== "none" && (
-						<Alert color="yellow" variant="light" icon={<IconInfoCircle size={16} />}>
-							They were previously assigned <strong>{selectedOldRole}</strong>. We'll notify them of their new role, 
-							but you may want to reach out directly to ensure they're aware of the change.
+						<Alert
+							color="yellow"
+							variant="light"
+							icon={<IconInfoCircle size={16} />}
+						>
+							They were previously assigned <strong>{selectedOldRole}</strong>.
+							We'll notify them of their new role, but you may want to reach out
+							directly to ensure they're aware of the change.
 						</Alert>
 					)}
 
 					<Group justify="flex-end" mt="md">
-						<Button 
+						<Button
 							variant="default"
 							onClick={() => {
 								setIsRoleChangeModalOpen(false);
 								if (selectedParticipant) {
-									setLocalRoles(prev => {
-										const newLocalRoles = {...prev};
+									setLocalRoles((prev) => {
+										const newLocalRoles = { ...prev };
 										delete newLocalRoles[selectedParticipant.order_id];
 										return newLocalRoles;
 									});
