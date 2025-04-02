@@ -1,7 +1,7 @@
 'use client';
 
 import { Auth } from '../../utils/user-utils';
-import type { Trip } from '../../types/api';
+import type { Trip, AccessLevel } from '../../types/api';
 
 export const userKeys = {
   all: ['user'] as const,
@@ -52,13 +52,19 @@ export function useUser() {
     }
   }, [data?.data?.isLoggedIn, queryClient]);
 
+  const user = data?.data ?? null; // Convert undefined to null
+
   return {
-    user: data?.data,
-    isLoggedIn: Auth.isLoggedIn(data?.data),
-    isMember: Auth.isMember(data?.data),
-    isCommittee: Auth.isCommittee(data?.data),
-    purchasedProducts: data?.data?.purchases || [],
-    cartCount: data?.data?.cartCount || 0,
+    user,
+    isLoggedIn: Auth.isLoggedIn(user),
+    isMember: Auth.isMember(user),
+    isCommittee: Auth.isCommittee(user),
+    isAdmin: (accessLevel?: AccessLevel | string) => Auth.isAdmin(user, accessLevel),
+    isTripLeader: (trip?: Trip) => Auth.isTripLeader(user, trip),
+    hasPurchased: (tripId: number) => 
+      tripId ? user?.purchases?.includes(tripId) ?? false : false,
+    purchasedProducts: user?.purchases || [],
+    cartCount: user?.cartCount || 0,
     isLoading,
     error
   };

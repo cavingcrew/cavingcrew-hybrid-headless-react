@@ -526,7 +526,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
 							title={
 								<>
 									You're Signed Up
-									{isLoggedIn && user?.billing_first_name && `, ${user.billing_first_name}`}!
+									{isLoggedIn && user?.user?.billing_first_name && `, ${user.user.billing_first_name}`}!
 								</>
 							}
 						>

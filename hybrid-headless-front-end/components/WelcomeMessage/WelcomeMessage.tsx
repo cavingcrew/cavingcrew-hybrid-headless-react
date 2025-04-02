@@ -7,8 +7,8 @@ import { Title, Text } from '@mantine/core';
 export function WelcomeMessage() {
   const { user } = useUser();
   const firstName = user?.user?.first_name || 'there';
-  const isLoggedIn = Auth.isLoggedIn(user ?? null);
-  const isMember = Auth.isMember(user ?? null);
+  const isLoggedIn = Auth.isLoggedIn(user);
+  const isMember = Auth.isMember(user);
 
   return (
     <div>

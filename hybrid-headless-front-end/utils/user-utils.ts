@@ -52,7 +52,7 @@ export const Auth = {
   },
 
   isCommittee(user: UserResponse | null): boolean {
-    return user?.user?.meta?.cc_committee_member === 'yes';
+    return !!user?.user?.meta?.cc_committee_member === 'yes';
   },
 
   isSuperAdmin(accessLevel?: AccessLevel | string): boolean {

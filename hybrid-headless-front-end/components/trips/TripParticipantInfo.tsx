@@ -27,10 +27,10 @@ interface TripParticipantInfoProps {
 }
 
 export function TripParticipantInfo({ hut, tripId }: TripParticipantInfoProps) {
-  const { user } = useUser();
-  const hasPurchased = tripId ? user?.purchases?.includes(tripId) : false;
+  const { hasPurchased } = useUser();
+  const isPurchased = tripId ? hasPurchased(tripId) : false;
 
-  if (!hasPurchased || !hut) return null;
+  if (!isPurchased || !hut) return null;
 
   return (
     <Stack gap="md">
