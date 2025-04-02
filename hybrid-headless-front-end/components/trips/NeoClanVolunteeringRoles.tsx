@@ -12,8 +12,10 @@ import {
 	Text,
 	Title,
 	Tooltip,
+	Button
 } from "@mantine/core";
 import { useDebouncedCallback } from "@mantine/hooks";
+import react, { useState } from "react";
 import { notifications } from "@mantine/notifications";
 import {
 	IconAlertCircle,
