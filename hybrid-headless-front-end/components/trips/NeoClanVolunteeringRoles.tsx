@@ -32,7 +32,11 @@ import { useState } from "react";
 import { apiService } from "@/lib/api-service";
 import { useTripParticipants } from "@/lib/hooks/useTripParticipants";
 import { useUser } from "@/lib/hooks/useUser";
-import type { Trip, TripParticipant, TripParticipantsResponse } from "@/types/api";
+import type {
+	Trip,
+	TripParticipant,
+	TripParticipantsResponse,
+} from "@/types/api";
 import {
 	determineSignupStatus,
 	getStatusColor,
