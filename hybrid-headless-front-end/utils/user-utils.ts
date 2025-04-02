@@ -1,4 +1,4 @@
-import type { UserResponse, Trip } from "../types/api";
+import type { UserResponse, Trip, TripParticipant } from "../types/api";
 import type { SkillCategory } from "./skill-definitions";
 import { getSkillDefinition } from "./skill-definitions";
 
@@ -158,6 +158,21 @@ export const Auth = {
   },
 
   /**
+   * Trip volunteer role checks
+   */
+  isTripReporter(participant?: TripParticipant | null): boolean {
+    return participant?.order_meta?.cc_volunteer === 'Trip Reporter';
+  },
+
+  isTransportCoordinator(participant?: TripParticipant | null): boolean {
+    return participant?.order_meta?.cc_volunteer === 'Transport Coordinator';
+  },
+
+  isSeconder(participant?: TripParticipant | null): boolean {
+    return participant?.order_meta?.cc_volunteer === 'Seconder';
+  },
+
+  /**
    * Determine if user can view participant details
    */
   canViewParticipants(
@@ -252,4 +267,16 @@ export function canViewParticipantDetails(
   accessLevel?: string
 ): boolean {
   return Auth.canViewParticipants(user, trip, accessLevel);
+}
+
+export function isTripReporter(participant?: TripParticipant | null): boolean {
+  return Auth.isTripReporter(participant);
+}
+
+export function isTransportCoordinator(participant?: TripParticipant | null): boolean {
+  return Auth.isTransportCoordinator(participant);
+}
+
+export function isSeconder(participant?: TripParticipant | null): boolean {
+  return Auth.isSeconder(participant);
 }
