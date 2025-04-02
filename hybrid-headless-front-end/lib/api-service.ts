@@ -5,6 +5,7 @@ import type {
 	Trip,
 	TripParticipantsResponse,
 	UserResponse,
+	Variation,
 } from "../types/api";
 import { API_BASE_URL } from "./constants";
 
