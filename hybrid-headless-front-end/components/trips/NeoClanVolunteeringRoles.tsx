@@ -44,27 +44,7 @@ interface NeoClanVolunteeringRolesProps {
 	onRoleAssigned?: () => void;
 }
 
-// Define volunteer role options
-const VOLUNTEER_ROLES = [
-	{ value: "none", label: "No Role" },
-	{ value: "trip_director", label: "Trip Director" },
-	{ value: "event_assistant", label: "Event Assistant" },
-	{ value: "lift_coordinator", label: "Lift Coordinator" },
-	{ value: "climbing_coordinator", label: "Climbing Coordinator" },
-	{ value: "kit_coordinator", label: "Kit Coordinator" },
-	{ value: "buddy_coordinator", label: "Buddy Coordinator" },
-	{ value: "postpromo1", label: "Post Promotion" },
-	{ value: "breakfast_marshal", label: "Breakfast Marshal" },
-	{ value: "lunch_marshal", label: "Lunch Marshal" },
-	{ value: "covid_marshal", label: "COVID Marshal" },
-	{
-		value: "evening_meal_washingup_marshal",
-		label: "Evening Meal/Washing Up Marshal",
-	},
-	{ value: "head_chef", label: "Head Chef" },
-	{ value: "evening_meal_chef", label: "Evening Meal Chef" },
-	{ value: "lunch_breakfast_chef", label: "Lunch/Breakfast Chef" },
-];
+import { VOLUNTEER_ROLES, getRoleLabel } from "@/utils/roles-definitions";
 
 export function NeoClanVolunteeringRoles({
 	trip,
@@ -247,8 +227,7 @@ export function NeoClanVolunteeringRoles({
 												) : null
 											}
 										>
-											{VOLUNTEER_ROLES.find((r) => r.value === currentRole)
-												?.label || currentRole}
+											{getRoleLabel(currentRole)}
 										</Badge>
 									)}
 								</Table.Td>
