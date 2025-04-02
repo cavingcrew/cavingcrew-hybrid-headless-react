@@ -97,7 +97,7 @@ export function NeoClanVolunteeringRoles({
 		(Auth.isAdmin(user, accessLevel) ||
 			Auth.isTripLeader(user, trip) ||
 			Auth.isCommittee(user)) &&
-		!data?.data?.event_closed;
+		!(data?.data as TripParticipantsResponse | undefined)?.event_closed;
 
 	// Function to open role assignment modal
 	const handleOpenRoleModal = (participant: TripParticipant) => {
