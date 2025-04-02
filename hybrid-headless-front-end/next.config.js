@@ -1,4 +1,4 @@
-const path = require('path'); // Need to require path module
+const path = require("path"); // Need to require path module
 
 const nextConfig = {
 	eslint: {
@@ -12,12 +12,12 @@ const nextConfig = {
 		// Add path aliases while preserving existing ones
 		config.resolve.alias = {
 			...config.resolve.alias, // Keep existing aliases
-			'@': path.resolve(__dirname), // Add new alias
+			"@": path.resolve(__dirname), // Add new alias
 		};
 
 		// Maintain existing webpack config for fs polyfill
 		config.resolve.fallback = { fs: false };
-		
+
 		return config;
 	},
 };
