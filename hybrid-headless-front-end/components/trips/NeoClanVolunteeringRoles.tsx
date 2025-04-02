@@ -92,6 +92,13 @@ export function NeoClanVolunteeringRoles({
 			Auth.isCommittee(user)) &&
 		!eventClosed;
 
+	// State for role change confirmation
+	const [isRoleChangeModalOpen, setIsRoleChangeModalOpen] = useState(false);
+	const [selectedParticipant, setSelectedParticipant] = useState<TripParticipant | null>(null);
+	const [selectedNewRole, setSelectedNewRole] = useState("");
+	const [selectedOldRole, setSelectedOldRole] = useState(""); 
+	const [localRoles, setLocalRoles] = useState<Record<number, string>>({});
+
 	// Debounced function to update role
 	const debouncedRoleUpdate = useDebouncedCallback(
 		async (participant: TripParticipant, newRole: string) => {
@@ -212,10 +219,19 @@ export function NeoClanVolunteeringRoles({
 									{canAssignRoles ? (
 										<Select
 											data={VOLUNTEER_ROLES}
-											value={currentRole}
-											onChange={(value) =>
-												value && debouncedRoleUpdate(participant, value)
-											}
+											value={localRoles[participant.order_id] ?? currentRole}
+											onChange={(value) => {
+												if (value) {
+													setSelectedParticipant(participant);
+													setSelectedNewRole(value);
+													setSelectedOldRole(currentRole);
+													setIsRoleChangeModalOpen(true);
+													setLocalRoles(prev => ({
+														...prev,
+														[participant.order_id]: value
+													}));
+												}
+											}}
 											placeholder="Select role"
 											size="xs"
 											allowDeselect={false}
@@ -243,5 +259,65 @@ export function NeoClanVolunteeringRoles({
 				</Table.Tbody>
 			</Table>
 		</Paper>
+
+		{/* Role Change Confirmation Modal */}
+		<Modal
+			opened={isRoleChangeModalOpen}
+			onClose={() => {
+				setIsRoleChangeModalOpen(false);
+				if (selectedParticipant) {
+					setLocalRoles(prev => {
+						const newLocalRoles = {...prev};
+						delete newLocalRoles[selectedParticipant.order_id];
+						return newLocalRoles;
+					});
+				}
+			}}
+			title="Confirm Role Assignment"
+			centered
+		>
+			<Stack>
+				<Text>
+					You're about to assign <strong>{selectedNewRole}</strong> to{" "}
+					<strong>{selectedParticipant?.first_name}</strong>
+				</Text>
+				
+				{selectedOldRole !== "none" && (
+					<Alert color="yellow" variant="light" icon={<IconInfoCircle size={16} />}>
+						They were previously assigned <strong>{selectedOldRole}</strong>. We'll notify them of their new role, 
+						but you may want to reach out directly to ensure they're aware of the change.
+					</Alert>
+				)}
+
+				<Group justify="flex-end" mt="md">
+					<Button 
+						variant="default" 
+						onClick={() => {
+							setIsRoleChangeModalOpen(false);
+							if (selectedParticipant) {
+								setLocalRoles(prev => {
+									const newLocalRoles = {...prev};
+									delete newLocalRoles[selectedParticipant.order_id];
+									return newLocalRoles;
+								});
+							}
+						}}
+					>
+						Cancel
+					</Button>
+					<Button
+						color="blue"
+						onClick={() => {
+							if (selectedParticipant) {
+								debouncedRoleUpdate(selectedParticipant, selectedNewRole);
+								setIsRoleChangeModalOpen(false);
+							}
+						}}
+					>
+						Confirm
+					</Button>
+				</Group>
+			</Stack>
+		</Modal>
 	);
 }
