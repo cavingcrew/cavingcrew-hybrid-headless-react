@@ -259,8 +259,6 @@ export function NeoClanVolunteeringRoles({
 				</Table.Tbody>
 			</Table>
 		</Paper>
-
-		{/* Role Change Confirmation Modal */}
 		<Modal
 			opened={isRoleChangeModalOpen}
 			onClose={() => {
