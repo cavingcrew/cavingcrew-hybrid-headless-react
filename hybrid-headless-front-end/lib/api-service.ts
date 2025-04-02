@@ -210,16 +210,18 @@ export const apiService = {
 	async updateVolunteerRole(
 		orderId: number,
 		role: string,
-	): Promise<ApiResponse<{
-		success: boolean;
-		order_id: number;
-		role: string;
-		status: string;
-		assigned_by: {
-			name: string;
-			email: string;
-		};
-	}>> {
+	): Promise<
+		ApiResponse<{
+			success: boolean;
+			order_id: number;
+			role: string;
+			status: string;
+			assigned_by: {
+				name: string;
+				email: string;
+			};
+		}>
+	> {
 		try {
 			const response = await fetch(
 				`${API_BASE_URL}/hybrid-headless/v1/caving-crew/orders/${orderId}/volunteer`,
