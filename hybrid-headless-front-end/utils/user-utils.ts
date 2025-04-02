@@ -1,6 +1,6 @@
 /**
  * User Authentication and Authorization Utilities
- * 
+ *
  * Available checks:
  * - isLoggedIn: Checks if user is authenticated
  * - isMember: Checks if user has membership
