@@ -37,10 +37,10 @@ import {
 	IconUsers,
 	IconX,
 } from "@tabler/icons-react";
-import { NeoClanVolunteeringRoles } from "./NeoClanVolunteeringRoles";
 import React, { useState } from "react";
 import { cleanHtmlEntities } from "../../utils/string-utils";
 import { WordPressLoginWidget } from "../auth/WordPressLoginWidget";
+import { NeoClanVolunteeringRoles } from "./NeoClanVolunteeringRoles";
 
 // Import custom hooks and types
 import { useTripParticipants } from "../../lib/hooks/useTripParticipants";
@@ -1987,8 +1987,8 @@ export function NeoClanVolunteeringWidget({
 						</Tabs.Panel>
 
 						<Tabs.Panel value="roles" pt="xs">
-							<NeoClanVolunteeringRoles 
-								trip={trip} 
+							<NeoClanVolunteeringRoles
+								trip={trip}
 								onRoleAssigned={() => {
 									// Refresh participants data when a role is assigned
 									refetch();
