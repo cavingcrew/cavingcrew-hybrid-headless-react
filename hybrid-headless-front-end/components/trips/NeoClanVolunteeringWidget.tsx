@@ -107,6 +107,8 @@ export function NeoClanVolunteeringWidget({
 	const [liftCoordinationText, setLiftCoordinationText] = useState("");
 	const [locationInfoModalOpen, setLocationInfoModalOpen] = useState(false);
 	const [locationInfoText, setLocationInfoText] = useState("");
+	const [markAllModalOpen, setMarkAllModalOpen] = useState(false);
+	const [isMarkingAll, setIsMarkingAll] = useState(false);
 
 	// Fetch trip participants data
 	const { data, isLoading, error, refetch } = useTripParticipants(trip.id);
@@ -194,6 +196,51 @@ export function NeoClanVolunteeringWidget({
 		const text = generateLocationInfoText(trip);
 		setLocationInfoText(text);
 		setLocationInfoModalOpen(true);
+	};
+
+	// Function to mark all participants as attended
+	const handleMarkAllAttended = async () => {
+		setIsMarkingAll(true);
+		try {
+			const response = await fetch(
+				`/hybrid-headless/v1/caving-crew/events/${trip.id}/mark-all-attended`,
+				{
+					method: 'POST',
+					credentials: 'include'
+				}
+			);
+
+			if (!response.ok) throw new Error('Failed to mark all attended');
+			
+			notifications.show({
+				title: 'Success!',
+				message: `Marked ${participants.length} participants as attended`,
+				color: 'green',
+				icon: <IconCheck size={16} />
+			});
+			
+			refetch(); // Refresh participant data
+			setMarkAllModalOpen(false);
+		} catch (error) {
+			notifications.show({
+				title: 'Error',
+				message: 'Failed to mark all attended',
+				color: 'red',
+				icon: <IconX size={16} />
+			});
+		} finally {
+			setIsMarkingAll(false);
+		}
+	};
+
+	// Check if "Mark All as Attended" button should be shown
+	const shouldShowMarkAllAttended = (trip: Trip) => {
+		const tripStart = trip.acf.event_start_date_time;
+		if (!tripStart) return false;
+		
+		const startDate = new Date(tripStart);
+		const oneHourAfter = new Date(startDate.getTime() + 60 * 60 * 1000);
+		return new Date() > oneHourAfter;
 	};
 
 	// Render different views based on access level
@@ -471,9 +518,21 @@ export function NeoClanVolunteeringWidget({
 									onClick={handleGenerateLocationInfoText}
 									variant="outline"
 									color="green"
+									mr="xs"
 								>
 									Location Info Message
 								</Button>
+								{shouldShowMarkAllAttended(trip) && (
+									<Button
+										leftSection={<IconCheck size={16} />}
+										onClick={() => setMarkAllModalOpen(true)}
+										variant="filled"
+										color="green"
+										disabled={participants.length === 0}
+									>
+										Mark All as Attended
+									</Button>
+								)}
 							</Group>
 							<Table striped>
 								<Table.Thead>
@@ -2181,6 +2240,34 @@ export function NeoClanVolunteeringWidget({
 						onTextChange={setLocationInfoText}
 						trip={trip}
 					/>
+
+					{/* Mark All as Attended confirmation modal */}
+					<Modal
+						opened={markAllModalOpen}
+						onClose={() => setMarkAllModalOpen(false)}
+						title="Confirm Mark All as Attended"
+						centered
+					>
+						<Stack>
+							<Alert color="red" icon={<IconAlertCircle size={16} />}>
+								This action will mark ALL participants as attended and CANNOT BE UNDONE!
+							</Alert>
+							<Text>Are you sure you want to mark all {participants.length} participants as attended?</Text>
+							
+							<Group justify="flex-end">
+								<Button variant="default" onClick={() => setMarkAllModalOpen(false)}>
+									Cancel
+								</Button>
+								<Button 
+									color="red" 
+									onClick={handleMarkAllAttended}
+									loading={isMarkingAll}
+								>
+									Confirm Mark All
+								</Button>
+							</Group>
+						</Stack>
+					</Modal>
 				</>
 			)}
 		</Paper>

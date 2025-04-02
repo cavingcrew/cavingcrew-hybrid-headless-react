@@ -218,7 +218,50 @@ class Hybrid_Headless_Caving_Crew_Controller {
      * @return bool|WP_Error
      */
     public function check_event_admin_permissions($request) {
-        return Hybrid_Headless_Auth_Utils::check_trip_director_permissions($request);
+        // First ensure user is authenticated
+        Hybrid_Headless_Auth_Utils::ensure_user_authenticated();
+        
+        if (!is_user_logged_in()) {
+            return new WP_Error(
+                'rest_not_logged_in',
+                __('You must be logged in to access this endpoint.', 'hybrid-headless'),
+                array('status' => 401)
+            );
+        }
+        
+        $user_id = get_current_user_id();
+        
+        // Check if user is an admin or shop manager
+        if (current_user_can('manage_woocommerce') || current_user_can('administrator')) {
+            return true;
+        }
+        
+        // Check if user is a committee member
+        if (Hybrid_Headless_Auth_Utils::is_committee_member($user_id)) {
+            return true;
+        }
+        
+        // Get the product ID from the request
+        $product_id = isset($request['id']) ? intval($request['id']) : 0;
+        
+        if (!$product_id) {
+            return new WP_Error(
+                'missing_product_id',
+                __('Product ID is required.', 'hybrid-headless'),
+                array('status' => 400)
+            );
+        }
+        
+        // Check if user is a trip director for this product
+        if (Hybrid_Headless_Auth_Utils::is_trip_director($user_id, $product_id)) {
+            return true;
+        }
+        
+        return new WP_Error(
+            'rest_forbidden',
+            __('You must be a trip director, committee member, or admin to access this endpoint.', 'hybrid-headless'),
+            array('status' => 403)
+        );
     }
 
     /**
