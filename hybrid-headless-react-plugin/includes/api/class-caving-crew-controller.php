@@ -677,19 +677,19 @@ class Hybrid_Headless_Caving_Crew_Controller {
         // Define valid roles without changing order status
         $valid_roles = [
             'trip_director',
-            'event_assistant',
-            'lift_coordinator',
-            'climbing_coordinator',
-            'kit_coordinator',
-            'buddy_coordinator',
-            'postpromo1',
-            'breakfast_marshal',
-            'lunch_marshal',
-            'covid_marshal',
-            'evening_meal_washingup_marshal',
-            'head_chef',
-            'evening_meal_chef',
-            'lunch_breakfast_chef',
+            'backseat_leader',
+            'overnight_gear_tackle',
+            'evening_gear_tackle',
+            'washing_up',
+            'overnight_reporter',
+            'day_trip_reporter',
+            'evening_chef',
+            'breakfast_chef',
+            'trip_leader',
+            'seconder',
+            'overnight_caving',
+            'overnight_director',
+            'evening_day_director',
             'none'
         ];
         
