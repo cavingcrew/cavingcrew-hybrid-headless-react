@@ -55,7 +55,6 @@ interface NeoClanVolunteeringWidgetProps {
 	trip: Trip;
 }
 
-import { notifications } from "@mantine/notifications";
 import { formatRelativeTime } from "@/utils/date-utils";
 import {
 	getSkillDefinition,
@@ -78,6 +77,7 @@ import {
 	isFirstTimeCaver,
 	requiresMembership,
 } from "@/utils/trip-participant-utils";
+import { notifications } from "@mantine/notifications";
 import {
 	CalloutModal,
 	EmergencyAccessModal,
@@ -238,10 +238,10 @@ export function NeoClanVolunteeringWidget({
 	// Check if "Mark All as Attended" button should be shown
 	const shouldShowMarkAllAttended = (trip: Trip) => {
 		const tripStart = trip.acf.event_start_date_time;
-		
+
 		// If no start time is set, always show the button
 		if (!tripStart) return true;
-		
+
 		const startDate = new Date(tripStart);
 		const oneHourAfter = new Date(startDate.getTime() + 60 * 60 * 1000);
 		return new Date() > oneHourAfter;
