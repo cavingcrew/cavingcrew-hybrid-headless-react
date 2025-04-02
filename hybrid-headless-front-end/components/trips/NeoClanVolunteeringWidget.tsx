@@ -12,6 +12,7 @@ import {
 	CopyButton,
 	Group,
 	List,
+	Modal,
 	Paper,
 	Skeleton,
 	Stack,
