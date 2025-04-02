@@ -48,7 +48,7 @@ export const apiService = {
 	},
 	async getProductVariations(productId: number): Promise<
 		ApiResponse<{
-			variations: any[];
+			variations: Variation[];
 			userStatus: { isLoggedIn: boolean; isMember: boolean };
 		}>
 	> {
@@ -95,7 +95,7 @@ export const apiService = {
 		}
 	},
 
-	async getTrips(useCache = true): Promise<ApiResponse<any>> {
+	async getTrips(useCache = true): Promise<ApiResponse<Trip[]>> {
 		try {
 			const cacheParam = useCache ? "cachemeifyoucan=please" : "nocache=please";
 			const url = `${API_BASE_URL}/hybrid-headless/v1/products?${cacheParam}`;
@@ -210,7 +210,16 @@ export const apiService = {
 	async updateVolunteerRole(
 		orderId: number,
 		role: string,
-	): Promise<ApiResponse<any>> {
+	): Promise<ApiResponse<{
+		success: boolean;
+		order_id: number;
+		role: string;
+		status: string;
+		assigned_by: {
+			name: string;
+			email: string;
+		};
+	}>> {
 		try {
 			const response = await fetch(
 				`${API_BASE_URL}/hybrid-headless/v1/caving-crew/orders/${orderId}/volunteer`,
