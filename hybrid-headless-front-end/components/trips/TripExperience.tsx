@@ -45,6 +45,7 @@ import { TripChallengeIndicator } from "./TripChallengeIndicator";
 import { TripObjectionHandling } from "./TripObjectionHandling";
 import { AboutCavingCrew } from "./AboutCavingCrew";
 import { useUser } from "../../lib/hooks/useUser";
+import { Auth } from "../../utils/user-utils";
 import { useTripParticipants } from "../../lib/hooks/useTripParticipants";
 
 /**
@@ -103,7 +104,8 @@ interface TripExperienceProps {
 }
 
 export function TripExperience({ trip }: TripExperienceProps) {
-	const { isLoggedIn, user } = useUser();
+	const { user } = useUser();
+	const isLoggedIn = Auth.isLoggedIn(user);
 	const { data } = useTripParticipants(trip.id);
 	const routeData = trip.route?.acf;
 	const participantSkills = routeData?.route_participants_skills_required;

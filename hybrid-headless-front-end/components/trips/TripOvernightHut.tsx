@@ -48,8 +48,8 @@ export function TripOvernightHut({
   facilities,
   photo
 }: TripOvernightHutProps) {
-  const { isLoggedIn, isMember, purchasedProducts } = useUser();
-  const hasPurchased = tripId ? purchasedProducts.includes(tripId) : false;
+  const { user, isLoggedIn, isMember } = useUser();
+  const hasPurchased = tripId ? user?.purchases?.includes(tripId) : false;
 
   // Support both new hut object and legacy props
   const hutName = hut?.hut_name || location || "Accommodation";

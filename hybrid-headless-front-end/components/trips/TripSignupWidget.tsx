@@ -4,6 +4,7 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useUser } from '@/lib/hooks/useUser';
+import { Auth } from '../../utils/user-utils';
 import { participantKeys } from '@/lib/hooks/useTripParticipants';
 import {
   Box,
@@ -61,7 +62,7 @@ export function TripSignupWidget({
   ) === 'yes';
   const mustCavedBefore = trip.acf?.event_must_caved_with_us_before === 'yes';
   // Declare all derived variables first
-  const { purchasedProducts, isLoggedIn, isMember } = useUser();
+  const { user, isLoggedIn, isMember, purchasedProducts } = useUser();
   const hasPurchased = purchasedProducts.includes(trip.id) ||
     trip.variations.some(v => purchasedProducts.includes(v.id));
   const memberDiscount = trip.acf.event_members_discount;

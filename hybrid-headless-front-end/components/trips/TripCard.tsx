@@ -61,7 +61,7 @@ export default function TripCard({ trip }: TripCardProps) {
     ? formatDateWithOrdinal(trip.acf.event_start_date_time)
     : null;
 
-  const { purchasedProducts } = useUser();
+  const { user, purchasedProducts } = useUser();
   const hasPurchased = purchasedProducts?.includes(trip.id) ||
     trip.variations.some(v => purchasedProducts?.includes(v.id));
 

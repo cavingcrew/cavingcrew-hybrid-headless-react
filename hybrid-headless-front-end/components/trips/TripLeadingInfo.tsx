@@ -5,13 +5,15 @@ import { IconMountain, IconInfoCircle, IconStar, IconDroplet } from "@tabler/ico
 import React from "react";
 import type { Trip } from "../../types/api";
 import { useUser } from "@/lib/hooks/useUser";
+import { Auth } from "../../utils/user-utils";
 
 interface TripLeadingInfoProps {
   trip: Trip;
 }
 
 export function TripLeadingInfo({ trip }: TripLeadingInfoProps) {
-  const { isLoggedIn } = useUser();
+  const { user } = useUser();
+  const isLoggedIn = Auth.isLoggedIn(user);
 
   // Directly access nested properties with optional chaining
   const hasLeadingContent =

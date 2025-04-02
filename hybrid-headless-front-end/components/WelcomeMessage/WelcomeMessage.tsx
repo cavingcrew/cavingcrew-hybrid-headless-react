@@ -4,7 +4,7 @@ import { useUser } from '@/lib/hooks/useUser';
 import { Title, Text } from '@mantine/core';
 
 export function WelcomeMessage() {
-  const { isLoggedIn, isMember, user } = useUser();
+  const { user, isLoggedIn, isMember } = useUser();
   const firstName = user?.first_name || 'there';
 
   return (

@@ -18,6 +18,7 @@ import { cleanHtmlEntities } from '../../utils/string-utils';
 // Import custom hooks and types
 import { useTripParticipants } from '../../lib/hooks/useTripParticipants';
 import { useUser } from '../../lib/hooks/useUser';
+import { Auth } from '../../utils/user-utils';
 import type { Trip, TripParticipant } from '../../types/api';
 
 // Define props interface for the component
@@ -77,7 +78,8 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
 
     // Fetch trip participants data
     const { data, isLoading, error } = useTripParticipants(trip.id);
-    const { isLoggedIn } = useUser();
+    const { user } = useUser();
+    const isLoggedIn = Auth.isLoggedIn(user);
 
     // Extract participants and access level with default fallbacks
     const participants = data?.data?.participants || [];
@@ -179,7 +181,8 @@ export function NeoClanVolunteeringWidget({ trip }: NeoClanVolunteeringWidgetPro
 
     // Check if user is signed up but not a member
     const isSignedUpNonMember = () => {
-        return data?.data?.is_logged_in &&
+        return Auth.isLoggedIn(user) && 
+               !Auth.isMember(user) &&
                data?.data?.access_level === 'logged_in' &&
                data?.data?.participants?.length > 0;
     };

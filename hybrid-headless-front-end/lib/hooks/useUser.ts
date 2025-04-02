@@ -1,5 +1,7 @@
 'use client';
 
+import { Auth } from '../../utils/user-utils';
+import type { Trip } from '../../types/api';
 
 export const userKeys = {
   all: ['user'] as const,
@@ -51,10 +53,11 @@ export function useUser() {
   }, [data?.data?.isLoggedIn, queryClient]);
 
   return {
-    isLoggedIn: data?.data?.isLoggedIn || false,
-    isMember: data?.data?.isMember || false,
+    user: data?.data,
+    isLoggedIn: Auth.isLoggedIn(data?.data),
+    isMember: Auth.isMember(data?.data),
+    isCommittee: Auth.isCommittee(data?.data),
     purchasedProducts: data?.data?.purchases || [],
-    user: data?.data?.user,
     cartCount: data?.data?.cartCount || 0,
     isLoading,
     error

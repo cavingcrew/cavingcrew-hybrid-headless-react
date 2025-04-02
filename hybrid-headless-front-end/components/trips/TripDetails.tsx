@@ -29,6 +29,7 @@ import { TripLeadingInfo } from './TripLeadingInfo';
 import { isWithinDays } from '../../utils/event-timing';
 import { useUser } from '@/lib/hooks/useUser';
 import { useTripAccess } from '@/lib/hooks/useTripAccess';
+import { Auth } from '../../utils/user-utils';
 import { TripSignupWidget } from "./TripSignupWidget";
 import {
 	IconCalendar,
@@ -56,7 +57,8 @@ interface TripDetailsProps {
 
 export function TripDetails({ trip }: TripDetailsProps) {
 	const acf = trip.acf;
-	const { isLoggedIn, user } = useUser();
+	const { user } = useUser();
+	const isLoggedIn = Auth.isLoggedIn(user);
 	const { hasPurchased } = useTripAccess(trip);
 
 	// Helper function to extract locality from address

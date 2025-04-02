@@ -11,13 +11,13 @@ import type { Trip } from "../../types/api";
  * @returns Object with various access flags
  */
 export function useTripAccess(trip: Trip) {
-  const { user } = useUser();
+  const { user, purchasedProducts } = useUser();
   const { data } = useTripParticipants(trip?.id);
   const accessLevel = data?.data?.access_level;
   
   const hasPurchased = trip.id ? 
-    user?.purchasedProducts?.includes(trip.id) ||
-    trip.variations.some(v => user?.purchasedProducts?.includes(v.id)) : 
+    purchasedProducts?.includes(trip.id) ||
+    trip.variations.some(v => purchasedProducts?.includes(v.id)) : 
     false;
 
   return {

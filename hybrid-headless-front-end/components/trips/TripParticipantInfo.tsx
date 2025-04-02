@@ -27,8 +27,8 @@ interface TripParticipantInfoProps {
 }
 
 export function TripParticipantInfo({ hut, tripId }: TripParticipantInfoProps) {
-  const { purchasedProducts } = useUser();
-  const hasPurchased = tripId ? purchasedProducts.includes(tripId) : false;
+  const { user } = useUser();
+  const hasPurchased = tripId ? user?.purchases?.includes(tripId) : false;
 
   if (!hasPurchased || !hut) return null;
 
