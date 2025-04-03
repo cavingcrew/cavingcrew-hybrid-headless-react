@@ -138,7 +138,7 @@ class OrderEventDateTrigger extends AbstractBatchedDailyTrigger {
         return null;
     }
 
-    public function validate_workflow( Workflow $workflow ) {
+    public function validate_workflow( $workflow ) {
         $order = $workflow->data_layer()->get_order();
         $product = $workflow->data_layer()->get_product();
 

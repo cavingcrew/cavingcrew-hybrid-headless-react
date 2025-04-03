@@ -1,7 +1,7 @@
 <?php
 namespace HybridHeadless\Variables;
 
-use AutomateWoo\Variable_Abstract;
+use AutomateWoo\Variables\Variable_Abstract;
 use AutomateWoo\Variables\Variable_Interface;
 use AutomateWoo\Clean;
 
