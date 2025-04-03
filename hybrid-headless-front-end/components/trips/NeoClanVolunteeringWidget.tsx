@@ -248,23 +248,12 @@ export function NeoClanVolunteeringWidget({
 	// Extract participants and access level with default fallbacks
 	const participants = data?.data?.participants || [];
 	const accessLevel = (data?.data?.access_level || "public") as
-		| "public"
-		| "logged_in"
-		| "participant"
-		| "event_role"
-		| "admin"
-		| "super_admin";
+		"public" | "logged_in" | "participant" | "event_role" | "admin" | "super_admin";
 	const canAssignRoles =
 		(Auth.isAdmin(user, accessLevel) ||
 			Auth.isTripLeader(user, trip) ||
 			Auth.isCommittee(user)) &&
 		!data?.data?.event_closed;
-		| "public"
-		| "logged_in"
-		| "participant"
-		| "event_role"
-		| "admin"
-		| "super_admin";
 
 	// Loading state rendering
 	if (isLoading) {
