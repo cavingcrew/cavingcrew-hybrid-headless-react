@@ -1,13 +1,13 @@
 <?php
 namespace HybridHeadless\Variables;
 
-use AutomateWoo\Variables\Variable_Abstract;
+use AutomateWoo\Variable;
 use AutomateWoo\Variables\Variable_Interface;
 use AutomateWoo\Clean;
 
 defined( 'ABSPATH' ) || exit;
 
-class ProductEventDataVariable extends Variable_Abstract implements Variable_Interface {
+class ProductEventDataVariable extends Variable implements Variable_Interface {
 
     public function load_admin_details() {
         $this->description = __( 'Displays event-related data from the product in an order', 'hybrid-headless' );
