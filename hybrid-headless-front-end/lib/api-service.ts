@@ -277,29 +277,29 @@ export const apiService = {
 
 	async updateAttendanceStatus(
 		orderId: number,
-		status: string
+		status: string,
 	): Promise<ApiResponse<{ success: boolean }>> {
 		try {
 			const response = await fetch(
 				`${API_BASE_URL}/hybrid-headless/v1/caving-crew/orders/${orderId}/attendance`,
 				{
-					method: 'PUT',
-					credentials: 'include',
+					method: "PUT",
+					credentials: "include",
 					headers: {
-						'Content-Type': 'application/json',
+						"Content-Type": "application/json",
 					},
 					body: JSON.stringify({ status }),
-				}
+				},
 			);
 
-			if (!response.ok) throw new Error('Failed to update attendance');
+			if (!response.ok) throw new Error("Failed to update attendance");
 			return { data: await response.json(), success: true };
 		} catch (error) {
 			return {
 				success: false,
 				data: null,
-				message: error instanceof Error ? error.message : 'Update failed',
+				message: error instanceof Error ? error.message : "Update failed",
 			};
 		}
-	}
+	},
 };
