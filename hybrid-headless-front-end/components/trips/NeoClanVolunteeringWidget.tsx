@@ -46,10 +46,9 @@ import { NeoClanVolunteeringRoles } from "./NeoClanVolunteeringRoles";
 // Import custom hooks and types
 import { useTripParticipants } from "@/lib/hooks/useTripParticipants";
 import { useUser } from "@/lib/hooks/useUser";
-import type { AccessLevel, Trip, TripParticipant } from "@/types/api";
+import type { Trip, TripParticipant } from "@/types/api";
 import { getSignupTiming } from "@/utils/event-timing";
 import { Auth } from "@/utils/user-utils";
-import type { AccessLevel } from "@/utils/user-utils";
 import { Radio } from "@mantine/core";
 
 // Define props interface for the component
@@ -206,7 +205,7 @@ export function NeoClanVolunteeringWidget({
 	const [markAllModalOpen, setMarkAllModalOpen] = useState(false);
 	const [isMarkingAll, setIsMarkingAll] = useState(false);
 	const [attendanceModalOpen, setAttendanceModalOpen] = useState(false);
-	const [selectedParticipant, setSelectedParticipant] =
+	const [attendanceParticipant, setAttendanceParticipant] =
 		useState<TripParticipant | null>(null);
 
 	const openAttendanceModal = (participant: TripParticipant) => {
