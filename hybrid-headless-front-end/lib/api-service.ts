@@ -274,7 +274,6 @@ export const apiService = {
 			};
 		}
 	},
-	},
 
 	async updateAttendanceStatus(
 		orderId: number,
@@ -302,5 +301,5 @@ export const apiService = {
 				message: error instanceof Error ? error.message : 'Update failed',
 			};
 		}
-	},
+	}
 };
