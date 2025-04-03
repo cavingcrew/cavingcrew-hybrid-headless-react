@@ -41,7 +41,8 @@ export function getSignupTiming(trip: Trip): SignupTiming {
 			closesAt.setHours(20, 0, 0, 0);
 			break;
 
-		case "known": // Day/Evening trips
+		case "known": // Day/Evening/Mystery trips
+		case "mystery":
 			// Open: 6 weeks before at midnight
 			opensAt.setDate(opensAt.getDate() - 42);
 			opensAt.setHours(0, 0, 0, 0);
@@ -49,6 +50,12 @@ export function getSignupTiming(trip: Trip): SignupTiming {
 			// Close: Midday the day before
 			closesAt.setDate(closesAt.getDate() - 1);
 			closesAt.setHours(12, 0, 0, 0);
+			break;
+
+		case "membership":
+			// Always open
+			opensAt = new Date(0); // Epoch start
+			closesAt = new Date(8640000000000000); // Far future
 			break;
 
 		case "training":
