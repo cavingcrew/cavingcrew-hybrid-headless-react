@@ -171,11 +171,12 @@ import {
 	requiresMembership,
 } from "@/utils/trip-participant-utils";
 import { notifications } from "@mantine/notifications";
+import { apiService } from "@/lib/api-service";
 import {
 	CalloutModal,
 	EmergencyAccessModal,
 	EmergencyInfoModal,
-	GearTripCheckModal,
+	GearTripCheckModal, 
 	LiftCoordinationModal,
 	LocationInfoModal,
 	TackleRequestModal,
