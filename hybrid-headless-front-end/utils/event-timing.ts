@@ -16,63 +16,64 @@ export function isWithinDays(dateString: string, days: number): boolean {
 }
 
 export function getSignupTiming(trip: Trip): SignupTiming {
-    const now = new Date();
-    const startDate = trip.acf.event_start_date_time
-        ? new Date(trip.acf.event_start_date_time)
-        : null;
+	const now = new Date();
+	const startDate = trip.acf.event_start_date_time
+		? new Date(trip.acf.event_start_date_time)
+		: null;
 
-    if (!startDate) return { opensAt: null, closesAt: null, isOpen: false, status: "closed" };
+	if (!startDate)
+		return { opensAt: null, closesAt: null, isOpen: false, status: "closed" };
 
-    // Initialize with start date copies
-    let opensAt = new Date(startDate);
-    let closesAt = new Date(startDate);
+	// Initialize with start date copies
+	let opensAt = new Date(startDate);
+	let closesAt = new Date(startDate);
 
-    switch (trip.acf.event_type) {
-        case "overnight":
-            // Open: Previous Sunday 8pm, two months before
-            opensAt.setMonth(opensAt.getMonth() - 2);
-            opensAt.setDate(opensAt.getDate() - opensAt.getDay()); // Previous Sunday
-            opensAt.setHours(20, 0, 0, 0); // 8pm
+	switch (trip.acf.event_type) {
+		case "overnight":
+			// Open: Previous Sunday 8pm, two months before
+			opensAt.setMonth(opensAt.getMonth() - 2);
+			opensAt.setDate(opensAt.getDate() - opensAt.getDay()); // Previous Sunday
+			opensAt.setHours(20, 0, 0, 0); // 8pm
 
-            // Close: Previous Sunday 8pm, one week before
-            closesAt.setDate(closesAt.getDate() - 7);
-            closesAt.setDate(closesAt.getDate() - closesAt.getDay()); // Previous Sunday
-            closesAt.setHours(20, 0, 0, 0);
-            break;
+			// Close: Previous Sunday 8pm, one week before
+			closesAt.setDate(closesAt.getDate() - 7);
+			closesAt.setDate(closesAt.getDate() - closesAt.getDay()); // Previous Sunday
+			closesAt.setHours(20, 0, 0, 0);
+			break;
 
-        case "known": // Day/Evening trips
-            // Open: 6 weeks before at midnight
-            opensAt.setDate(opensAt.getDate() - 42);
-            opensAt.setHours(0, 0, 0, 0);
+		case "known": // Day/Evening trips
+			// Open: 6 weeks before at midnight
+			opensAt.setDate(opensAt.getDate() - 42);
+			opensAt.setHours(0, 0, 0, 0);
 
-            // Close: Midday the day before
-            closesAt.setDate(closesAt.getDate() - 1);
-            closesAt.setHours(12, 0, 0, 0);
-            break;
+			// Close: Midday the day before
+			closesAt.setDate(closesAt.getDate() - 1);
+			closesAt.setHours(12, 0, 0, 0);
+			break;
 
-        case "training":
-        case "giggletrip":
-            // Open: Very early (epoch start)
-            opensAt = new Date(0);
-            
-            // Close: Midday the day before
-            closesAt.setDate(closesAt.getDate() - 1);
-            closesAt.setHours(12, 0, 0, 0);
-            break;
+		case "training":
+		case "giggletrip":
+			// Open: Very early (epoch start)
+			opensAt = new Date(0);
 
-        default:
-            // Default to 1 month open window
-            opensAt.setMonth(opensAt.getMonth() - 1);
-            closesAt.setDate(closesAt.getDate() - 1);
-            closesAt.setHours(12, 0, 0, 0);
-    }
+			// Close: Midday the day before
+			closesAt.setDate(closesAt.getDate() - 1);
+			closesAt.setHours(12, 0, 0, 0);
+			break;
 
-    // Apply overrides
-    if (trip.acf.event_allow_early_signup) opensAt = new Date(0); // Epoch start
-    if (trip.acf.event_allow_late_signup) closesAt = new Date(8640000000000000); // Far future
+		default:
+			// Default to 1 month open window
+			opensAt.setMonth(opensAt.getMonth() - 1);
+			closesAt.setDate(closesAt.getDate() - 1);
+			closesAt.setHours(12, 0, 0, 0);
+	}
 
-    const isOpen = now >= opensAt && now <= closesAt;
-    const status = now < opensAt ? "early" : now > closesAt ? "late" : "open";
+	// Apply overrides
+	if (trip.acf.event_allow_early_signup) opensAt = new Date(0); // Epoch start
+	if (trip.acf.event_allow_late_signup) closesAt = new Date(8640000000000000); // Far future
 
-    return { opensAt, closesAt, isOpen, status };
+	const isOpen = now >= opensAt && now <= closesAt;
+	const status = now < opensAt ? "early" : now > closesAt ? "late" : "open";
+
+	return { opensAt, closesAt, isOpen, status };
 }
