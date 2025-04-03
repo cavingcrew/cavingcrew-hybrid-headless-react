@@ -147,6 +147,7 @@ const MarkAttendanceModal = ({
 	);
 };
 
+import { apiService } from "@/lib/api-service";
 import { formatRelativeTime } from "@/utils/date-utils";
 import { getRoleLabel } from "@/utils/roles-definitions";
 import {
@@ -171,12 +172,11 @@ import {
 	requiresMembership,
 } from "@/utils/trip-participant-utils";
 import { notifications } from "@mantine/notifications";
-import { apiService } from "@/lib/api-service";
 import {
 	CalloutModal,
 	EmergencyAccessModal,
 	EmergencyInfoModal,
-	GearTripCheckModal, 
+	GearTripCheckModal,
 	LiftCoordinationModal,
 	LocationInfoModal,
 	TackleRequestModal,
