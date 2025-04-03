@@ -241,7 +241,7 @@ export interface TripParticipant {
 	order_meta?: {
 		cc_attendance?:
 			| "attended"
-			| "noshow"
+			| "noshow" 
 			| "cancelled"
 			| "latebail"
 			| "no-register-show"
