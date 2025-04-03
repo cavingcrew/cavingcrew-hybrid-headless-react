@@ -241,7 +241,7 @@ export interface TripParticipant {
 	order_meta?: {
 		cc_attendance?:
 			| "attended"
-			| "noshow" 
+			| "noshow"
 			| "cancelled"
 			| "latebail"
 			| "no-register-show"
@@ -336,11 +336,10 @@ export interface TripParticipantsResponse {
 	can_update: boolean;
 	participant_count?: number;
 	is_logged_in?: boolean;
-        event_closed?: boolean;
-        event_message?: string;
-        closed_at?: string;
-        closed_by?: string;
-
+	event_closed?: boolean;
+	event_message?: string;
+	closed_at?: string;
+	closed_by?: string;
 }
 
 export interface TripsResponse {

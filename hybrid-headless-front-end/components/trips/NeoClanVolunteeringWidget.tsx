@@ -48,111 +48,104 @@ import { useTripParticipants } from "@/lib/hooks/useTripParticipants";
 import { useUser } from "@/lib/hooks/useUser";
 import type { AccessLevel, Trip, TripParticipant } from "@/types/api";
 import { getSignupTiming } from "@/utils/event-timing";
-import { Radio } from "@mantine/core";
 import { Auth } from "@/utils/user-utils";
 import type { AccessLevel } from "@/utils/user-utils";
+import { Radio } from "@mantine/core";
 
 // Define props interface for the component
 interface NeoClanVolunteeringWidgetProps {
 	trip: Trip;
 }
 
-const MarkAttendanceModal = ({ 
-  participant,
-  trip,
-  onClose,
-  onConfirm 
+const MarkAttendanceModal = ({
+	participant,
+	trip,
+	onClose,
+	onConfirm,
 }: {
-  participant: TripParticipant;
-  trip: Trip;
-  onClose: () => void;
-  onConfirm: (status: string) => void;
+	participant: TripParticipant;
+	trip: Trip;
+	onClose: () => void;
+	onConfirm: (status: string) => void;
 }) => {
-  const [step, setStep] = useState(0);
-  const [status, setStatus] = useState('');
-  const { closesAt } = getSignupTiming(trip);
-  const now = new Date();
-  
-  const steps = [
-    {
-      title: "Update Attendance Status",
-      content: !closesAt || now < closesAt ? (
-        <Radio.Group
-          value={status}
-          onChange={setStatus}
-          name="attendanceStatus"
-        >
-          <Stack>
-            <Radio value="attended" label="Attended" />
-            <Radio value="cancelled" label="Cancelled" />
-            <Radio value="noshow" label="No Show" />
-          </Stack>
-        </Radio.Group>
-      ) : (
-        <Radio.Group
-          value={status}
-          onChange={setStatus}
-          name="attendanceStatus"
-        >
-          <Stack>
-            <Radio value="attended" label="Attended" />
-            <Radio value="latebail" label="Late Bail" />
-            <Radio value="noshow" label="No Show" />
-          </Stack>
-        </Radio.Group>
-      )
-    },
-    {
-      title: "Late Bail Details",
-      content: (
-        <Radio.Group
-          value={status}
-          onChange={setStatus}
-          name="lateBailDetails"
-        >
-          <Stack>
-            <Text size="sm" c="dimmed" mb="md">
-              Did they notify before {closesAt?.toLocaleDateString()}?
-            </Text>
-            <Radio value="latebail" label="Yes - Mark as Late Bail" />
-            <Radio value="noshow" label="No - Mark as No Show" />
-          </Stack>
-        </Radio.Group>
-      )
-    }
-  ];
+	const [step, setStep] = useState(0);
+	const [status, setStatus] = useState("");
+	const { closesAt } = getSignupTiming(trip);
+	const now = new Date();
 
-  return (
-    <Modal 
-      opened={true} 
-      onClose={onClose}
-      title={steps[step].title}
-    >
-      <Stack>
-        {steps[step].content}
-        <Group justify="space-between" mt="md">
-          {step > 0 && (
-            <Button variant="default" onClick={() => setStep(s => s - 1)}>
-              Back
-            </Button>
-          )}
-          <Button 
-            onClick={() => {
-              if (step < steps.length - 1) {
-                setStep(s => s + 1);
-              } else {
-                onConfirm(status);
-                onClose();
-              }
-            }}
-            disabled={!status}
-          >
-            {step === steps.length - 1 ? 'Confirm' : 'Next'}
-          </Button>
-        </Group>
-      </Stack>
-    </Modal>
-  );
+	const steps = [
+		{
+			title: "Update Attendance Status",
+			content:
+				!closesAt || now < closesAt ? (
+					<Radio.Group
+						value={status}
+						onChange={setStatus}
+						name="attendanceStatus"
+					>
+						<Stack>
+							<Radio value="attended" label="Attended" />
+							<Radio value="cancelled" label="Cancelled" />
+							<Radio value="noshow" label="No Show" />
+						</Stack>
+					</Radio.Group>
+				) : (
+					<Radio.Group
+						value={status}
+						onChange={setStatus}
+						name="attendanceStatus"
+					>
+						<Stack>
+							<Radio value="attended" label="Attended" />
+							<Radio value="latebail" label="Late Bail" />
+							<Radio value="noshow" label="No Show" />
+						</Stack>
+					</Radio.Group>
+				),
+		},
+		{
+			title: "Late Bail Details",
+			content: (
+				<Radio.Group value={status} onChange={setStatus} name="lateBailDetails">
+					<Stack>
+						<Text size="sm" c="dimmed" mb="md">
+							Did they notify before {closesAt?.toLocaleDateString()}?
+						</Text>
+						<Radio value="latebail" label="Yes - Mark as Late Bail" />
+						<Radio value="noshow" label="No - Mark as No Show" />
+					</Stack>
+				</Radio.Group>
+			),
+		},
+	];
+
+	return (
+		<Modal opened={true} onClose={onClose} title={steps[step].title}>
+			<Stack>
+				{steps[step].content}
+				<Group justify="space-between" mt="md">
+					{step > 0 && (
+						<Button variant="default" onClick={() => setStep((s) => s - 1)}>
+							Back
+						</Button>
+					)}
+					<Button
+						onClick={() => {
+							if (step < steps.length - 1) {
+								setStep((s) => s + 1);
+							} else {
+								onConfirm(status);
+								onClose();
+							}
+						}}
+						disabled={!status}
+					>
+						{step === steps.length - 1 ? "Confirm" : "Next"}
+					</Button>
+				</Group>
+			</Stack>
+		</Modal>
+	);
 };
 
 import { formatRelativeTime } from "@/utils/date-utils";
@@ -213,7 +206,8 @@ export function NeoClanVolunteeringWidget({
 	const [markAllModalOpen, setMarkAllModalOpen] = useState(false);
 	const [isMarkingAll, setIsMarkingAll] = useState(false);
 	const [attendanceModalOpen, setAttendanceModalOpen] = useState(false);
-	const [selectedParticipant, setSelectedParticipant] = useState<TripParticipant | null>(null);
+	const [selectedParticipant, setSelectedParticipant] =
+		useState<TripParticipant | null>(null);
 
 	const openAttendanceModal = (participant: TripParticipant) => {
 		setSelectedParticipant(participant);
@@ -226,14 +220,14 @@ export function NeoClanVolunteeringWidget({
 		try {
 			const response = await apiService.updateAttendanceStatus(
 				selectedParticipant.order_id,
-				status
+				status,
 			);
 
 			if (response.success) {
 				notifications.show({
 					title: "Status Updated",
 					message: `${selectedParticipant.first_name}'s status set to ${status}`,
-					color: "green"
+					color: "green",
 				});
 				refetch();
 			}
@@ -241,7 +235,7 @@ export function NeoClanVolunteeringWidget({
 			notifications.show({
 				title: "Update Failed",
 				message: "Could not update attendance status",
-				color: "red"
+				color: "red",
 			});
 		}
 	};
