@@ -210,12 +210,12 @@ export function NeoClanVolunteeringWidget({
 		useState<TripParticipant | null>(null);
 
 	const openAttendanceModal = (participant: TripParticipant) => {
-		setSelectedParticipant(participant);
+		setAttendanceParticipant(participant);
 		setAttendanceModalOpen(true);
 	};
 
 	const handleAttendanceConfirm = async (status: string) => {
-		if (!selectedParticipant) return;
+		if (!attendanceParticipant) return;
 
 		try {
 			const response = await apiService.updateAttendanceStatus(
@@ -716,9 +716,9 @@ export function NeoClanVolunteeringWidget({
 									</Table.Tr>
 								</Table.Thead>
 								<Table.Tbody>
-									{attendanceModalOpen && selectedParticipant && (
+									{attendanceModalOpen && attendanceParticipant && (
 										<MarkAttendanceModal
-											participant={selectedParticipant}
+											participant={attendanceParticipant}
 											trip={trip}
 											onClose={() => setAttendanceModalOpen(false)}
 											onConfirm={handleAttendanceConfirm}

@@ -302,5 +302,5 @@ export const apiService = {
 				message: error instanceof Error ? error.message : 'Update failed',
 			};
 		}
-	}
+	},
 };
