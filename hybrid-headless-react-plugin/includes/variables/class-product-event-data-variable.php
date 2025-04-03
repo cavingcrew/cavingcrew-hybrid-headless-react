@@ -1,13 +1,25 @@
 <?php
 namespace HybridHeadless\Variables;
 
+// Temporary debug
+error_log('Loading ProductEventDataVariable class...');
+error_log('Checking if Variable_Interface exists: ' . (interface_exists('AutomateWoo\Variables\Variable_Interface') ? 'YES' : 'NO'));
+
+// Try alternate namespace if needed
+if (!interface_exists('AutomateWoo\Variables\Variable_Interface')) {
+    error_log('Checking root namespace: ' . (interface_exists('AutomateWoo\Variable_Interface') ? 'YES' : 'NO'));
+}
+
+// Try loading base class
+error_log('Checking Variable class: ' . (class_exists('AutomateWoo\Variable') ? 'YES' : 'NO'));
+
+// Original class declaration
 use AutomateWoo\Variable;
-use AutomateWoo\Variables\Variable_Interface;
 use AutomateWoo\Clean;
 
 defined( 'ABSPATH' ) || exit;
 
-class ProductEventDataVariable extends Variable implements Variable_Interface {
+class ProductEventDataVariable extends Variable /*implements Variable_Interface*/ {
 
     public function load_admin_details() {
         $this->description = __( 'Displays event-related data from the product in an order', 'hybrid-headless' );
