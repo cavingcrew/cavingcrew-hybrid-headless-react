@@ -56,15 +56,36 @@ final class Hybrid_Headless_Plugin {
      * Constructor
      */
     private function __construct() {
+        // Check dependencies first
+        if ( ! $this->check_dependencies() ) {
+            return;
+        }
+        
         $this->init_hooks();
-        $this->init_handlers();
+        $this->init_handlers(); // only init handlers if deps are met
+    }
+
+    private function check_dependencies() {
+        if ( ! class_exists( 'AutomateWoo\Triggers\AbstractBatchedDailyTrigger' ) ) {
+            add_action( 'admin_notices', [ $this, 'automatewoo_missing_notice' ] );
+            return false;
+        }
+        return true;
+    }
+
+    public function automatewoo_missing_notice() {
+        ?>
+        <div class="error">
+            <p><?php esc_html_e( 'Hybrid Headless requires AutomateWoo (v5.1+) to be installed and activated.', 'hybrid-headless' ); ?></p>
+        </div>
+        <?php
     }
 
     /**
      * Initialize WordPress hooks
      */
     private function init_hooks() {
-        add_action( 'plugins_loaded', array( $this, 'on_plugins_loaded' ) );
+        add_action( 'plugins_loaded', array( $this, 'on_plugins_loaded' ), 11 ); // Changed to priority 11
         add_action( 'init', array( $this, 'init' ) );
         add_action( 'admin_init', array( $this, 'register_settings' ) );
     }
