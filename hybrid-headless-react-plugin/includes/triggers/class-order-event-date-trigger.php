@@ -5,12 +5,12 @@ use AutomateWoo\Customer_Factory;
 use AutomateWoo\Exceptions\InvalidArgument;
 use AutomateWoo\Fields\Number;
 use AutomateWoo\Fields\Select;
-use AutomateWoo\Triggers\Abstracts\BatchedDailyTrigger;
+use AutomateWoo\Triggers\AbstractBatchedDailyTrigger;
 use AutomateWoo\Workflow;
 
 defined( 'ABSPATH' ) || exit;
 
-class OrderEventDateTrigger extends BatchedDailyTrigger {
+class OrderEventDateTrigger extends AbstractBatchedDailyTrigger {
 
     public $supplied_data_items = [ 'order', 'customer', 'product' ];
 
