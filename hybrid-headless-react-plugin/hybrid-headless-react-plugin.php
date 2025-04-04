@@ -40,6 +40,14 @@ final class Hybrid_Headless_Plugin {
      */
     private static $instance = null;
 
+    public function activate() {
+        flush_rewrite_rules();
+    }
+
+    public function deactivate() {
+        flush_rewrite_rules();
+    }
+
     /**
      * Get plugin instance
      *
@@ -252,7 +260,17 @@ function hybrid_headless_init() {
 // Load CLI commands
 if (defined('WP_CLI') && WP_CLI) {
     require_once HYBRID_HEADLESS_PLUGIN_DIR . 'includes/class-cli.php';
+    WP_CLI::add_command('hybrid-headless', 'Hybrid_Headless_CLI');
+    
+    // Add flush command
+    WP_CLI::add_command('hybrid-headless flush-rules', function() {
+        flush_rewrite_rules();
+        WP_CLI::success('Rewrite rules flushed');
+    });
 }
 
 // Start the plugin
 hybrid_headless_init();
+
+register_activation_hook(__FILE__, [Hybrid_Headless_Plugin::instance(), 'activate']);
+register_deactivation_hook(__FILE__, [Hybrid_Headless_Plugin::instance(), 'deactivate']);
