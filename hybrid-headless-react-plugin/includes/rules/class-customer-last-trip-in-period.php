@@ -11,7 +11,7 @@ class Customer_Last_Trip_In_Period extends Customer_Trip_Date_Rule {
         return __( 'Customer - Last Trip Within Time Period', 'hybrid-headless' );
     }
 
-    public function validate( $customer ) {
+    public function validate( $customer, $compare, $value = null ) {
         $time_amount = Clean::string( $this->get_parameter( 'time_amount' ) );
         $time_unit = Clean::string( $this->get_parameter( 'time_unit' ) );
         $period = $this->parse_time( $time_amount, $time_unit );
