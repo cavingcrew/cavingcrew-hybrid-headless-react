@@ -19,7 +19,21 @@ class Hybrid_Headless_Caving_Crew_Controller {
      * Constructor
      */
     public function __construct() {
-        add_action('rest_api_init', array($this, 'register_routes'));
+        $this->register_hooks();
+    }
+
+    /**
+     * Register WordPress hooks
+     */
+    public function register_hooks() {
+        add_action('rest_api_init', [$this, 'register_routes']);
+    }
+
+    /**
+     * Explicit initialization
+     */
+    public function init() {
+        $this->register_routes();
     }
 
     /**
