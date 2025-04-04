@@ -1,17 +1,23 @@
 <?php
 namespace HybridHeadless\Rules;
 
-use AutomateWoo\Customer;
+use AutomateWoo\Clean;
+use AutomateWoo\DateTime;
+use AutomateWoo\Rules\Abstract_Date;
+use AutomateWoo\Rules\Rule;
 
 defined( 'ABSPATH' ) || exit;
 
-class Customer_Last_Trip_In_Period extends Customer_Trip_Date_Rule {
+class Customer_Last_Trip_In_Period extends Abstract_Date {
 
-    public function get_title() {
-        return __( 'Customer - Last Trip Within Time Period', 'hybrid-headless' );
+    public $data_item = 'customer';
+
+    public function init() {
+        $this->title = __( 'Customer - Last Trip Within Period', 'hybrid-headless' );
+        $this->group = __( 'Customer', 'hybrid-headless' );
     }
 
-    public function validate( $customer ) {
+    public function validate( $customer, $compare, $value ) {
         $time_amount = Clean::string( $this->get_parameter( 'time_amount' ) );
         $time_unit = Clean::string( $this->get_parameter( 'time_unit' ) );
         $period = $this->parse_time( $time_amount, $time_unit );
@@ -19,21 +25,27 @@ class Customer_Last_Trip_In_Period extends Customer_Trip_Date_Rule {
         $trips = $this->get_customer_trips( $customer );
         $now = current_time( 'timestamp' );
 
-        // Filter past trips and find most recent
-        $past_trips = array_filter( $trips, function( $trip ) use ( $now ) {
-            $trip_time = strtotime( $trip['start'] );
-            return $trip_time && $trip_time < $now;
-        });
-
-        if ( empty( $past_trips ) ) {
+        $last_trip_date = $this->get_last_trip_date( $trips );
+        if ( ! $last_trip_date ) {
             return false;
         }
 
-        usort( $past_trips, function( $a, $b ) {
+        return $this->validate_date( $compare, $value, $last_trip_date );
+    }
+
+    protected function get_last_trip_date( $trips ) {
+        $valid_trips = array_filter( $trips, function( $trip ) {
+            return ! empty( $trip['start'] );
+        });
+
+        if ( empty( $valid_trips ) ) {
+            return false;
+        }
+
+        usort( $valid_trips, function( $a, $b ) {
             return strtotime( $b['start'] ) <=> strtotime( $a['start'] );
         });
 
-        $last_trip_time = strtotime( $past_trips[0]['start'] );
-        return $last_trip_time >= ( $now - $period );
+        return new DateTime( $valid_trips[0]['start'] );
     }
 }
