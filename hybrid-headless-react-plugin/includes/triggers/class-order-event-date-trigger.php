@@ -10,13 +10,13 @@ use AutomateWoo\Workflow;
 
 defined( 'ABSPATH' ) || exit;
 
-class OrderEventDateTrigger extends AbstractBatchedDailyTrigger {
+class Order_Event_Date_Trigger extends AbstractBatchedDailyTrigger {
 
     public $supplied_data_items = [ 'order', 'customer', 'product' ];
 
     public function load_admin_details() {
         $this->title = __( 'Order Event Date', 'hybrid-headless' );
-        $this->description = __( 'Triggers based on time before/after an order product\'s event start date', 'hybrid-headless' );
+        $this->description = __( 'Triggers based on time relative to a product\'s event date', 'hybrid-headless' );
         $this->group = __( 'Orders', 'hybrid-headless' );
     }
 
