@@ -134,7 +134,7 @@ This variable provides access to various data points related to the event produc
 *   `hut.description`
 *   `hut.parking.instructions`
 *   `hut.parking.coordinates`
-*   `hut.facilities` *(Returns comma-separated string, e.g., "Kitchen, Showers, Bunks")*
+*   `hut.facilities` *(Array values like this are returned as comma-separated strings, e.g., "Kitchen, Showers, Bunks")*
 *   `hut.capacity`
 *   `hut.dogs_allowed`
 *   `cave.id`
