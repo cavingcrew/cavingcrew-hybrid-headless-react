@@ -286,3 +286,5 @@ class Product_Event_Data_Variable extends Variable {
         return $value;
     }
 }
+
+return new Product_Event_Data_Variable();

@@ -30,8 +30,8 @@ AutomateWoo components (Triggers, Rules, Variables) within this plugin are manag
 
 -   **Registration Hook:** `automatewoo/variables`
 -   **Method:** `Hybrid_Headless_Addon::register_variables()`
--   **Mechanism:** Adds entries to a nested array. The top-level key is the data type (e.g., `product`), the second-level key is the variable name (e.g., `event_start_date`), and the value is the **fully qualified class name** (e.g., `HybridHeadlessAutomateWoo\Variables\ProductEventStartDate`).
--   **Loading:** Similar to triggers, AutomateWoo uses the class name, and the plugin's autoloader includes the corresponding file (e.g., `includes/variables/product-event-start-date.php`). AutomateWoo then instantiates the class.
+-   **Mechanism:** Adds entries to a nested array. The top-level key is the data type (e.g., `product`), the second-level key is the variable name (e.g., `event_start_date`), and the value is the **absolute file path** to the variable's PHP file (e.g., `/path/to/wp-content/plugins/hybrid-headless-automatewoo/includes/variables/product-event-start-date.php`).
+-   **Loading:** Similar to rules, AutomateWoo includes the specified PHP file when the variable is needed. The variable file **must** end with `return new VariableClassName();`. AutomateWoo executes the included file and uses the returned variable object instance.
 
 ---
 

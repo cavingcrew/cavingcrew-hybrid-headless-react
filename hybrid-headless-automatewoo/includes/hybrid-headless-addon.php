@@ -156,17 +156,14 @@ final class Hybrid_Headless_Addon extends Addon {
 	 * @return array Modified variables.
 	 */
 	public function register_variables( $variables ) {
-        // Explicitly include variable files to ensure they are loaded
-        // This bypasses potential autoloader issues during variable processing.
+        // Register variables by providing the absolute file path.
+        // AutomateWoo's registry will include the file when the variable is needed.
+        // The variable file MUST end with 'return new ClassName();'
         $variable_path = $this->path( '/includes/variables/' );
-        include_once $variable_path . 'product-event-start-date.php';
-        include_once $variable_path . 'product-event-finish-date.php';
-        include_once $variable_path . 'product-event-data-variable.php';
 
-        // Register by mapping keys within data types to the fully qualified class name.
-		$variables['product']['event_start_date'] = __NAMESPACE__ . '\Variables\ProductEventStartDate';
-		$variables['product']['event_finish_date'] = __NAMESPACE__ . '\Variables\ProductEventFinishDate';
-        $variables['product']['event_data'] = __NAMESPACE__ . '\Variables\ProductEventDataVariable';
+		$variables['product']['event_start_date'] = $variable_path . 'product-event-start-date.php';
+		$variables['product']['event_finish_date'] = $variable_path . 'product-event-finish-date.php';
+        $variables['product']['event_data'] = $variable_path . 'product-event-data-variable.php';
 
         // Removed variable registration logging
 		return $variables;

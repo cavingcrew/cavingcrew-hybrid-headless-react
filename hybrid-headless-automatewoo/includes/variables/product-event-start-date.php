@@ -18,3 +18,5 @@ class ProductEventStartDate extends Variable_Abstract_Datetime {
         return $this->format_datetime( $date, $parameters, true );
     }
 }
+
+return new ProductEventStartDate();
