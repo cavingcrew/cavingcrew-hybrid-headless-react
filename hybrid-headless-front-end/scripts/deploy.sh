@@ -27,8 +27,15 @@ YELLOW='\033[1;33m'
 # Function to deploy WordPress plugin
 deploy_plugin() {
     local plugin_key=$1
-    local plugin_source=${PLUGINS[$plugin_key][0]#*=}
-    local plugin_name=${PLUGINS[$plugin_key][1]#*=}
+    local plugin_source plugin_name
+    
+    # Find the plugin by key and parse its properties
+    for plugin in "${PLUGINS[@]}"; do
+        IFS=' ' read -r key src name <<< "$plugin"
+        [[ "$key" == "$plugin_key" ]] || continue
+        plugin_source=${src#*=}
+        plugin_name=${name#*=}
+    done
 
     echo "🔌 Deploying WordPress plugin: $plugin_name..."
     
