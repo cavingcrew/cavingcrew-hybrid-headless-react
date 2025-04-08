@@ -17,6 +17,9 @@ if ( ! class_exists( 'AutomateWoo\Addon' ) ) {
  */
 final class Hybrid_Headless_Addon extends Addon {
 
+    /** @var Options */
+	private $options;
+
     /**
 	 * Addon main class constructor.
 	 *
@@ -78,11 +81,21 @@ final class Hybrid_Headless_Addon extends Addon {
         }
 	}
 
-    // Note: No init() method here. The parent Addon class handles basic init.
-    // We add our specific hooks in the constructor.
-
-    // Note: No options() method here for now. Can be added later if needed,
-    // mirroring the Birthdays plugin structure with a separate Options class.
+    /**
+	 * Get the options class instance.
+     * Required implementation from AutomateWoo\Addon.
+	 *
+	 * @return Options
+	 */
+	public function options() {
+		if ( ! isset( $this->options ) ) {
+            // Ensure the Options class file is included if not autoloaded reliably yet
+            // Although the autoloader should handle this, explicit include can be safer during setup.
+            // include_once $this->path( '/includes/options.php' );
+			$this->options = new Options();
+		}
+		return $this->options;
+	}
 
     /**
 	 * Register custom triggers.
