@@ -11,7 +11,8 @@ class Customer_Has_Upcoming_Trip extends Customer_Trip_Date_Rule {
     public function init() {
         $this->title = __( 'Customer - Has Upcoming Trip', 'hybrid-headless-automatewoo' );
         $this->group = __( 'Customer', 'hybrid-headless-automatewoo' );
-        parent::init();
+        // The parent init() is called automatically by the constructor chain.
+        // Do not call parent::init() here.
     }
 
     public function validate( $customer, $compare_type, $value ) {
