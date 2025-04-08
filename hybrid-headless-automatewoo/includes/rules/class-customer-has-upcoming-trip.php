@@ -33,3 +33,5 @@ class Customer_Has_Upcoming_Trip extends Customer_Trip_Date_Rule {
         return false;
     }
 }
+
+return new Customer_Has_Upcoming_Trip();

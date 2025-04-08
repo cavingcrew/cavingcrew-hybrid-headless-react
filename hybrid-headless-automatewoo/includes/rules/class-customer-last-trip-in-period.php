@@ -50,3 +50,5 @@ class Customer_Last_Trip_In_Period extends Abstract_Date {
         return new DateTime( $valid_trips[0]['start'] );
     }
 }
+
+return new Customer_Last_Trip_In_Period();
