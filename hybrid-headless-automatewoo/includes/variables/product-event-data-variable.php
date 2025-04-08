@@ -1,31 +1,39 @@
 <?php
 namespace HybridHeadlessAutomateWoo\Variables;
 
-use AutomateWoo\Variable_Abstract_Datetime;
+use AutomateWoo\Variable; // Extend the correct base class
 use AutomateWoo\Clean;
 
 defined( 'ABSPATH' ) || exit;
 
-class Product_Event_Data_Variable extends Variable_Abstract_Datetime {
+// Extend the base Variable class, not the Datetime one
+class Product_Event_Data_Variable extends Variable {
 
     public function load_admin_details() {
         $this->title = __( 'Product - Event Data', 'hybrid-headless-automatewoo' );
         $this->group = __( 'Product', 'hybrid-headless-automatewoo' );
-        $this->description = __( "Displays event-related data for products", 'hybrid-headless-automatewoo' );
+        $this->description = __( "Access nested event data (product, route, hut, cave) using the 'field' parameter with dot notation (e.g., 'product.event_type', 'route.name', 'hut.facilities').", 'hybrid-headless-automatewoo' );
 
-        $type_options = [
-            'product' => __( 'Product Event Data', 'hybrid-headless-automatewoo' ),
-            'route' => __( 'Route Data', 'hybrid-headless-automatewoo' ), 
-            'hut' => __( 'Hut Data', 'hybrid-headless-automatewoo' ),
-            'cave' => __( 'Cave Data', 'hybrid-headless-automatewoo' )
-        ];
+        // Add a text field parameter for the data path
+        $this->add_parameter_text_field(
+            'field', // Parameter name
+            __( "Enter the data path using dot notation.", 'hybrid-headless-automatewoo' ), // Parameter description
+            true // Required
+        );
 
-        $this->add_parameter_select_field( 'type', __( 'Select which event data to display', 'hybrid-headless-automatewoo' ), $type_options, true );
-        parent::add_parameter_select_field( 'format', __( 'Date format', 'hybrid-headless-automatewoo' ), $this->get_date_format_options(), false );
+        // Remove the date format parameter field added by the previous base class
     }
 
+    /**
+     * Get the value of the specified nested field.
+     *
+     * @param \WC_Product $product
+     * @param array $parameters Expects ['field' => 'path.to.data']
+     * @return string The requested data, or a comma-separated list for arrays.
+     */
     public function get_value( $product, $parameters ) {
-        if ( ! $product || ! $product->get_id() ) {
+        // Ensure product exists and the 'field' parameter is set
+        if ( ! $product || ! $product->get_id() || empty( $parameters['field'] ) ) {
             return ''; // Return empty if product or field parameter is missing
         }
 

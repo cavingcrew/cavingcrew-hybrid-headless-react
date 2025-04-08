@@ -62,65 +62,95 @@ Triggers workflows based on proximity to event dates associated with products wi
 
 ---
 
-## Product Event Data Variable
+## Product Variables
 
-### Access Syntax
-Use dot notation to navigate nested data:
+### Date Formatting Variables (`product.event_start_date`, `product.event_finish_date`)
+
+These variables allow you to display the event start and finish dates stored in product ACF fields (`event_start_date_time`, `event_finish_date_time`) with flexible formatting.
+
+**Syntax:**
 ```plaintext
-{{ product_event_data.field.subfield }}
+{{ product.event_start_date [parameters] }}
+{{ product.event_finish_date [parameters] }}
 ```
 
-## Date Formatting Variables
+**Available Parameters (from `Variable_Abstract_Datetime`):**
 
-### Product Event Start Date
+*   `format`: Predefined formats.
+    *   `'site'`: Uses the date format set in WordPress Settings > General.
+    *   `'mysql'`: Outputs `Y-m-d H:i:s`.
+    *   `'timestamp'`: Outputs Unix timestamp.
+    *   `'wc_database'`: Outputs `Y-m-d H:i:s`.
+    *   `'site_date_only'`: Uses the date part of the format from WordPress Settings > General.
+    *   `'site_time_only'`: Uses the time part of the format from WordPress Settings > General.
+    *   *Any valid PHP date format string* (e.g., `'F j, Y'`, `'d/m/Y H:i'`).
+*   `modify`: A PHP `strtotime()` compatible string to adjust the date (e.g., `'+3 days'`, `'-1 hour'`).
+*   `timezone`: Specify `'site'` (WordPress setting) or `'utc'` (default is UTC).
+
+**Examples:**
+
 ```plaintext
-{{ product_event_start_date }} // Raw value: 2023-12-25 09:00:00
-{{ product_event_start_date format="site" }} // 25/12/2023
-{{ product_event_start_date format="d/m/Y H:i" }} // 25/12/2023 09:00
-{{ product_event_start_date modify="+3 days" }} // 2023-12-28 09:00:00
+{{ product.event_start_date }}                     // Raw value from ACF (likely Y-m-d H:i:s)
+{{ product.event_start_date format="site" }}         // e.g., December 25, 2023 10:00 am
+{{ product.event_start_date format="d/m/Y H:i" }}    // e.g., 25/12/2023 10:00
+{{ product.event_start_date modify="+3 days" }}      // Start date + 3 days
+{{ product.event_finish_date format="F j, Y" }}      // e.g., December 26, 2023
 ```
-
-### Product Event Finish Date  
-```plaintext
-{{ product_event_finish_date format="mysql" }} // 2023-12-26 17:00:00
-{{ product_event_finish_date format="F j, Y" }} // December 26, 2023
-```
-
-**Format Parameters:**
-- `format`: Choose from:
-  - `mysql` - Default database format
-  - `site` - WordPress settings format
-  - `custom` - Use with `custom-format` parameter
-- `custom-format`: PHP date format (e.g. "Y-m-d H:i")
-- `modify`: Time modifier (e.g. "+3 days", "-1 hour")
 
 ---
 
-## Existing Product Event Data Variable
-Still available for raw data access:
+### Nested Event Data Variable (`product.event_data`)
+
+This variable provides access to various data points related to the event product, including data from linked Route, Hut, or Cave posts. You **must** use the `field` parameter with dot notation to specify the exact piece of data you want.
+
+**Syntax:**
 ```plaintext
-{{ product_event_data.product.event_start_date_time }} // 2023-12-25T09:00:00+00:00
-{{ product_event_data.product.event_finish_date_time }} // 2023-12-26T17:00:00+00:00
-{{ product_event_data.product.event_type }} // "training", "overnight", etc.
-{{ product_event_data.product.event_trip_leader }} // "John Doe"
+{{ product.event_data field="path.to.value" }}
 ```
 
-Use the dedicated date variables for formatted dates in emails and messages.
+**Data Structure Accessible via `field` Parameter:**
 
-#### Route Details
-```plaintext
-route.name - "Giant's Hole Main Route"
-route.entrance.coordinates - "53.123,-1.456" 
-route.difficulty.claustrophobia - 3 
-route.difficulty.wetness - 2
-```
+*   `product.event_start_date_time`
+*   `product.event_finish_date_time`
+*   `product.event_type`
+*   `product.event_trip_leader`
+*   `route.id`
+*   `route.name`
+*   `route.description`
+*   `route.difficulty.claustrophobia`
+*   `route.difficulty.tightness`
+*   `route.difficulty.wetness`
+*   `route.difficulty.heights`
+*   `route.entrance.id`
+*   `route.entrance.name`
+*   `route.entrance.coordinates`
+*   `route.entrance.description`
+*   `route.exit.id`
+*   `route.exit.name`
+*   `route.exit.coordinates`
+*   `route.exit.description`
+*   `hut.id`
+*   `hut.name`
+*   `hut.description`
+*   `hut.parking.instructions`
+*   `hut.parking.coordinates`
+*   `hut.facilities` *(Returns comma-separated string, e.g., "Kitchen, Showers, Bunks")*
+*   `hut.capacity`
+*   `hut.dogs_allowed`
+*   `cave.id`
+*   `cave.name`
+*   `cave.description`
+*   `cave.access`
 
-#### Hut Facilities  
+**Examples:**
+
 ```plaintext
-hut.name - "Peak Cavern Hut"
-hut.capacity - "12"
-hut.parking.instructions - "Park in layby, 5 min walk"
-hut.facilities - ["Kitchen", "Showers", "Bunks"]
+Trip Leader: {{ product.event_data field="product.event_trip_leader" }}
+Route: {{ product.event_data field="route.name" }}
+Claustrophobia Rating: {{ product.event_data field="route.difficulty.claustrophobia" }}
+Hut: {{ product.event_data field="hut.name" }}
+Hut Facilities: {{ product.event_data field="hut.facilities" }}
+Cave Access: {{ product.event_data field="cave.access" }}
 ```
 
 ---
