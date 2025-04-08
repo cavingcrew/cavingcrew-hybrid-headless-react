@@ -26,29 +26,30 @@ class Plugin extends Addon {
             return;
         }
 
-        $relative_class = substr($class, strlen(__NAMESPACE__) + 1);
-        $parts = explode('\\', $relative_class);
+        // Simplify autoloader based on Birthdays plugin example
         
-        if (count($parts) > 1) {
-            // Handle namespaced classes like Triggers\Test_Trigger
-            $filename = strtolower(str_replace('_', '-', end($parts)));
-            $directory = strtolower($parts[0]);
-            // Use the path() method for consistency
-            $path = $this->path("/includes/$directory/class-$filename.php");
-        } else {
-            // Handle root namespace classes (e.g., Plugin, Options)
-            $filename = strtolower(str_replace('_', '-', $relative_class));
-             // Use the path() method for consistency
-            $path = $this->path("/includes/class-$filename.php");
-        }
+        // 1. Remove base namespace: HybridHeadlessAutomateWoo\Triggers\Test_Trigger -> Triggers\Test_Trigger
+        $relative_class = str_replace(__NAMESPACE__ . '\\', '', $class); 
+        
+        // 2. Replace namespace separators with directory separators: Triggers\Test_Trigger -> Triggers/Test_Trigger
+        $relative_path = str_replace('\\', '/', $relative_class);
+        
+        // 3. Convert to lowercase: Triggers/Test_Trigger -> triggers/test_trigger
+        $relative_path_lower = strtolower($relative_path);
+        
+        // 4. Replace underscores with hyphens (if any): triggers/test_trigger -> triggers/test-trigger
+        $file = str_replace('_', '-', $relative_path_lower);
+        
+        // 5. Construct the full path: /path/to/plugin/includes/triggers/test-trigger.php
+        //    (Note: We will rename files below to remove the 'class-' prefix)
+        $path = $this->path("/includes/{$file}.php");
 
         error_log("Attempting to load: $class from path: $path");
 
-        if ($path && file_exists($path)) { // Check if path was constructed
+        if ($path && file_exists($path)) {
             include $path;
             error_log("Successfully loaded: $class");
         } else {
-            // Add the calculated path to the error message for clarity
             error_log("Failed to load: $class - File not found at calculated path: " . $path);
         }
     }
