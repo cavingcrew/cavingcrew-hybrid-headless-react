@@ -1,13 +1,13 @@
 <?php
 namespace HybridHeadless\Rules;
 
-use AutomateWoo\Rule;
+use AutomateWoo\Rules;
 use AutomateWoo\Customer;
 use AutomateWoo\Clean;
 
 defined( 'ABSPATH' ) || exit;
 
-abstract class Customer_Trip_Date_Rule extends Rule {
+abstract class Customer_Trip_Date_Rule extends  Rules\Abstract_Date  {
 
     public $type = 'customer';
 
