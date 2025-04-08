@@ -8,15 +8,30 @@
 
 ---
 
-## Trigger Registration and Loading
+## Trigger, Rule, and Variable Registration
 
-AutomateWoo triggers within this plugin are managed through the main `Hybrid_Headless_Addon` class (`hybrid-headless-automatewoo/includes/hybrid-headless-addon.php`).
+AutomateWoo components (Triggers, Rules, Variables) within this plugin are managed through the main `Hybrid_Headless_Addon` class (`hybrid-headless-automatewoo/includes/hybrid-headless-addon.php`). The addon uses standard AutomateWoo filter hooks for registration.
 
-1.  **Registration:** Triggers are registered using the `automatewoo/triggers` filter hook within the `Hybrid_Headless_Addon::register_triggers()` method. Each trigger is added to an array where the key is a unique identifier (e.g., `hh_order_event_date`) and the value is the fully qualified class name (e.g., `HybridHeadlessAutomateWoo\Triggers\Order_Event_Date_Trigger`).
-2.  **Autoloading:** When AutomateWoo needs to load a specific trigger (either in the admin UI or during workflow execution), it uses the registered class name. The plugin's autoloader (`Hybrid_Headless_Addon::autoload()`) intercepts requests for classes within the `HybridHeadlessAutomateWoo` namespace. It converts the class name into a file path (e.g., `HybridHeadlessAutomateWoo\Triggers\Order_Event_Date_Trigger` becomes `includes/triggers/order-event-date-trigger.php`) and includes the corresponding file.
-3.  **Instantiation:** AutomateWoo then instantiates the trigger class. The trigger's `init()` method sets up basic details like title and description, `load_fields()` defines any UI options, and `register_hooks()` (for non-batched triggers) tells AutomateWoo which WordPress actions or filters the trigger should listen to. For batched triggers like `Order_Event_Date_Trigger`, the process involves `get_batch_for_workflow` and `process_item_for_workflow`.
+### 1. Triggers
 
-See `Test_Trigger` (`includes/triggers/test-trigger.php`) for a basic example of a trigger listening to a custom action.
+-   **Registration Hook:** `automatewoo/triggers`
+-   **Method:** `Hybrid_Headless_Addon::register_triggers()`
+-   **Mechanism:** Adds entries to an array where the key is a unique trigger identifier (e.g., `hh_order_event_date`) and the value is the **fully qualified class name** (e.g., `HybridHeadlessAutomateWoo\Triggers\Order_Event_Date_Trigger`).
+-   **Loading:** AutomateWoo uses the class name. The plugin's PSR-4 style autoloader (`Hybrid_Headless_Addon::autoload()`) converts the namespace and class name into a file path (e.g., `includes/triggers/order-event-date-trigger.php`) and includes the file. AutomateWoo then instantiates the class.
+
+### 2. Rules
+
+-   **Registration Hook:** `automatewoo/rules/includes`
+-   **Method:** `Hybrid_Headless_Addon::register_rules()`
+-   **Mechanism:** Adds entries to an array where the key is a unique rule identifier (e.g., `customer_last_trip_in_period`) and the value is the **absolute file path** to the rule's PHP file (e.g., `/path/to/wp-content/plugins/hybrid-headless-automatewoo/includes/rules/customer-last-trip-in-period.php`).
+-   **Loading:** AutomateWoo includes the specified PHP file. Crucially, the rule file **must** end with `return new RuleClassName();`. AutomateWoo executes the included file and uses the returned rule object instance.
+
+### 3. Variables
+
+-   **Registration Hook:** `automatewoo/variables`
+-   **Method:** `Hybrid_Headless_Addon::register_variables()`
+-   **Mechanism:** Adds entries to a nested array. The top-level key is the data type (e.g., `product`), the second-level key is the variable name (e.g., `event_start_date`), and the value is the **fully qualified class name** (e.g., `HybridHeadlessAutomateWoo\Variables\ProductEventStartDate`).
+-   **Loading:** Similar to triggers, AutomateWoo uses the class name, and the plugin's autoloader includes the corresponding file (e.g., `includes/variables/product-event-start-date.php`). AutomateWoo then instantiates the class.
 
 ---
 
@@ -112,31 +127,27 @@ hut.facilities - ["Kitchen", "Showers", "Bunks"]
 
 ## Trip Date Rules
 
-### Customer - Last Trip Within Time Period
-Checks if the customer's most recent completed trip started within a specified time period.
+These rules allow workflows to trigger based on a customer's trip history or upcoming trips, using the `event_start_date_time` meta field associated with products in their completed/processing orders.
 
-**Parameters:**
-- Time Amount: Number of units (e.g. 30)
-- Time Unit: Days/Weeks/Months
+Both rules now extend `AutomateWoo\Rules\Abstract_Date`, leveraging its built-in date comparison logic and UI fields.
 
-**Example:**
-```plaintext
-If Customer's last trip started within the last 6 months
-→ Send re-engagement email
-```
+### Customer - Last Trip Within Period (`customer_last_trip_in_period.php`)
 
-### Customer - Has Upcoming Trip Within Time Period
-Checks if the customer has any trips starting within a specified future window.
+-   **Functionality:** Checks if the customer's **most recent** trip (based on the latest `event_start_date_time` from their orders) occurred within a specified past time frame.
+-   **UI Fields:** Uses the standard `Abstract_Date` "past" comparison fields (e.g., "is within the last", "is before", "is after"). You select the comparison type and specify the number of days/weeks/months.
+-   **Example Use Case:** Send a "We miss you" email if the customer's last trip was more than 6 months ago.
+    ```plaintext
+    Rule: Customer - Last Trip Within Period | is before | 6 | Months ago
+    ```
 
-**Parameters:**
-- Time Amount: Number of units (e.g. 14)
-- Time Unit: Days/Weeks/Months
+### Customer - Has Upcoming Trip Within Period (`customer_has_upcoming_trip.php`)
 
-**Example:**
-```plaintext
-If Customer has trip starting in next 7 days
-→ Send pre-trip preparation guide
-```
+-   **Functionality:** Checks if the customer's **next upcoming** trip (based on the soonest future `event_start_date_time` from their orders) is scheduled within a specified future time frame.
+-   **UI Fields:** Uses the standard `Abstract_Date` "future" comparison fields (e.g., "is within the next", "is after"). You select the comparison type and specify the number of days/weeks/months.
+-   **Example Use Case:** Send a pre-trip preparation email 7 days before their next trip.
+    ```plaintext
+    Rule: Customer - Has Upcoming Trip Within Period | is within the next | 7 | Days
+    ```
 
 ## Best Practices
 
