@@ -22,18 +22,15 @@ class Plugin extends Addon {
     }
 
     public function autoload($class) {
-        if (strpos($class, __NAMESPACE__) !== 0) {
+        // Match the birthdays plugin's autoload pattern
+        if (0 !== strpos($class, __NAMESPACE__ . '\\')) {
             return;
         }
 
         $file = str_replace(__NAMESPACE__ . '\\', '', $class);
+        $file = str_replace('_', '-', $file);
+        $file = strtolower($file);
         $file = str_replace('\\', '/', $file);
-        
-        // Add 'class-' prefix and convert to hyphenated lowercase
-        $file_parts = explode('/', $file);
-        $file_parts[count($file_parts)-1] = 'class-' . strtolower(preg_replace('/(?<!^)[A-Z]/', '-$0', end($file_parts)));
-        $file = implode('/', $file_parts);
-        
         $path = $this->path("/includes/$file.php");
 
         if (file_exists($path)) {
