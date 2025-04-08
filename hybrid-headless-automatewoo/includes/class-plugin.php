@@ -46,10 +46,10 @@ class Plugin extends Addon {
         add_filter('automatewoo/triggers', [$this, 'register_triggers']);
         add_filter('automatewoo/rules/includes', [$this, 'register_rules']); // Changed to rules/includes
         add_filter('automatewoo/variables', [$this, 'register_variables']);
-
-        // Explicitly include the Options class file
-        require_once $this->path('/includes/options.php');
-        
+ 
+        // Explicitly include the Options class file using a relative path
+        require_once $this->path('includes/options.php');
+         
         $this->options = new Options();
     }
 
