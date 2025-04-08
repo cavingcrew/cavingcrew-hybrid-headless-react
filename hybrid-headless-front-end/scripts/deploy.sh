@@ -51,8 +51,8 @@ deploy_plugin() {
         --exclude='node_modules/' \
         --exclude='tests/' \
         --exclude='.github/' \
-        "$plugin_source/" \
-        "$REMOTE_HOST:$PLUGIN_DEST/"
+        "$plugin_source/." \
+        "$REMOTE_HOST:$PLUGIN_DEST/$plugin_name/"
 
     if [ $? -ne 0 ]; then
         echo -e "${RED}Plugin deployment failed${NC}"
