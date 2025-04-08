@@ -33,22 +33,23 @@ class Plugin extends Addon {
             // Handle namespaced classes like Triggers\Test_Trigger
             $filename = strtolower(str_replace('_', '-', end($parts)));
             $directory = strtolower($parts[0]);
-            // Correctly prepend the base path
-            $path = $this->plugin_data->path . "/includes/$directory/class-$filename.php"; 
+            // Use the path() method for consistency
+            $path = $this->path("/includes/$directory/class-$filename.php");
         } else {
             // Handle root namespace classes (e.g., Plugin, Options)
             $filename = strtolower(str_replace('_', '-', $relative_class));
-             // Correctly prepend the base path
-            $path = $this->plugin_data->path . "/includes/class-$filename.php";
+             // Use the path() method for consistency
+            $path = $this->path("/includes/class-$filename.php");
         }
-        
+
         error_log("Attempting to load: $class from path: $path");
 
-        if (file_exists($path)) {
+        if ($path && file_exists($path)) { // Check if path was constructed
             include $path;
             error_log("Successfully loaded: $class");
         } else {
-            error_log("Failed to load: $class - File not found");
+            // Add the calculated path to the error message for clarity
+            error_log("Failed to load: $class - File not found at calculated path: " . $path);
         }
     }
 
