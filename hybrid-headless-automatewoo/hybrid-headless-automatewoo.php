@@ -46,7 +46,10 @@ final class Hybrid_Headless_AutomateWoo_Loader {
 
         // Standard hooks like Birthdays
 		add_action( 'admin_notices', [ __CLASS__, 'admin_notices' ] );
-		add_action( 'plugins_loaded', [ __CLASS__, 'load' ], 11 ); // Priority 11 to load after AW core (usually 10)
+        // Remove the 'plugins_loaded' hook for loading the main logic
+		// add_action( 'plugins_loaded', [ __CLASS__, 'load' ], 11 ); 
+        // Add hook to load the addon later, during 'init'
+        add_action( 'init', [ __CLASS__, 'load_addon' ], 10 ); // Priority 10 is usually safe for init actions
 		add_action( 'init', [ __CLASS__, 'load_textdomain' ], 5 ); // Load text domain early
 
         // Optional: Add activation/compatibility hooks if needed later
@@ -55,9 +58,10 @@ final class Hybrid_Headless_AutomateWoo_Loader {
 	}
 
     /**
-	 * Loads the plugin if requirements are met.
+	 * Loads the addon class during the 'init' action, after checking requirements.
+     * Renamed from load() to load_addon() for clarity.
 	 */
-	public static function load() {
+	public static function load_addon() {
 		self::check_requirements(); // Check dependencies first
 
 		if ( empty( self::$errors ) ) {
