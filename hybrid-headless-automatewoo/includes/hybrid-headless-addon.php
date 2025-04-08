@@ -42,6 +42,15 @@ final class Hybrid_Headless_Addon extends Addon {
 	}
 
     /**
+     * Initialize the addon.
+     * Required implementation from AutomateWoo\Addon.
+     */
+    public function init() {
+        // Add any addon-specific initialization logic here if needed in the future.
+        // For now, it can be empty.
+    }
+
+    /**
 	 * Translatable plugin name must be defined after load_plugin_textdomain() is called.
 	 */
 	public function set_plugin_name() {
