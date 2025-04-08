@@ -7,14 +7,14 @@ APP_NAME="hybrid-headless-frontend"
 
 # Plugin configurations
 PLUGINS=(
-    ["hybrid"]=(
-        "source=../hybrid-headless-react-plugin"
-        "name=hybrid-headless-react-plugin" 
-    )
-    ["automatewoo"]=(
-        "source=../climbingclan-automatewoo-birthdays"
-        "name=automatewoo-birthdays"
-    )
+    "hybrid source=../hybrid-headless-react-plugin name=hybrid-headless-react-plugin"
+    "automatewoo source=../climbingclan-automatewoo-birthdays name=automatewoo-birthdays"
+)
+
+# Plugin deployment flags
+declare -A PLUGIN_DEPLOY_FLAGS=(
+    ["hybrid"]=0
+    ["automatewoo"]=0
 )
 PLUGIN_DEST="/home/bitnami/stack/wordpress/wp-content/plugins"
 
@@ -117,17 +117,22 @@ deploy_frontend() {
 # Parse command line arguments
 SKIP_BUILD=false
 SKIP_FRONTEND=false
-SKIP_PLUGIN=false
-ONLY_AUTOMATEWOO=false
-DEPLOY_PLUGINS=false
+SKIP_PLUGINS=false
+PLUGIN_DEPLOY_MODE="default"
 
 while [[ "$#" -gt 0 ]]; do
     case $1 in
+        --plugins)
+            PLUGIN_DEPLOY_MODE="all"
+            shift
+            ;;
+        --only-automatewoo)
+            PLUGIN_DEPLOY_MODE="automatewoo"
+            shift
+            ;;
         --skip-build) SKIP_BUILD=true ;;
         --skip-frontend) SKIP_FRONTEND=true ;;
-        --skip-plugin) SKIP_PLUGIN=true ;;
-        --only-automatewoo) ONLY_AUTOMATEWOO=true ;;
-        --plugins) DEPLOY_PLUGINS=true ;;
+        --skip-plugin) SKIP_PLUGINS=true ;;
         *) echo "Unknown parameter: $1"; exit 1 ;;
     esac
     shift
@@ -155,15 +160,25 @@ else
 fi
 
 # Handle plugin deployments
-if [ "$SKIP_PLUGIN" = false ] || [ "$DEPLOY_PLUGINS" = true ] || [ "$ONLY_AUTOMATEWOO" = true ]; then
-    if [ "$ONLY_AUTOMATEWOO" = true ]; then
-        deploy_plugin "automatewoo"
-    elif [ "$DEPLOY_PLUGINS" = true ]; then
-        deploy_plugin "hybrid"
-        deploy_plugin "automatewoo"
-    else
-        deploy_plugin "hybrid"
-    fi
+if [ "$SKIP_PLUGINS" = false ]; then
+    case $PLUGIN_DEPLOY_MODE in
+        "all")
+            for plugin in "${PLUGINS[@]}"; do
+                IFS=' ' read -r key source name <<< "$plugin"
+                deploy_plugin "$key"
+            done
+            ;;
+        "automatewoo")
+            for plugin in "${PLUGINS[@]}"; do
+                IFS=' ' read -r key source name <<< "$plugin"
+                if [ "$key" == "automatewoo" ]; then
+                    deploy_plugin "$key"
+                fi
+            done
+            ;;
+        *)
+            deploy_plugin "hybrid"
+    esac
 else
     echo -e "${YELLOW}Skipping plugin deployment...${NC}"
 fi
