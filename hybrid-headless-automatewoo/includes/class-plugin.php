@@ -1,136 +1,131 @@
 <?php
-namespace HybridHeadlessAutomateWoo;
+namespace HybridHeadlessAutomateWoo; // Changed namespace to match directory structure convention
 
 use AutomateWoo\Addon;
 
 defined('ABSPATH') || exit;
 
-class Plugin extends Addon {
-    private static $instance = null;
+// Ensure the base Addon class is available
+if ( ! class_exists( 'AutomateWoo\Addon' ) ) {
+    // This check might be redundant if the loader ensures AutomateWoo is active, but good practice.
+	return;
+}
 
-    public static function instance($plugin_data) {
-        if (is_null(self::$instance)) {
-            self::$instance = new self($plugin_data);
-            self::$instance->init();
+/**
+ * Main plugin class for the Hybrid Headless AutomateWoo Add-on.
+ * Mirrors the structure of AW_Birthdays_Addon.
+ */
+final class Hybrid_Headless_Addon extends Addon {
+
+    /**
+	 * Addon main class constructor.
+	 *
+	 * @param \stdClass $plugin_data
+	 */
+	public function __construct( $plugin_data ) {
+		parent::__construct( $plugin_data ); // Pass data to parent constructor
+
+		// Register autoloader immediately
+		spl_autoload_register( [ $this, 'autoload' ] );
+
+        // Add hooks for registration - These run after the object is constructed
+        // and AutomateWoo is loaded.
+        add_filter( 'automatewoo/triggers', [ $this, 'register_triggers' ] );
+		add_filter( 'automatewoo/rules/includes', [ $this, 'register_rules' ] );
+		add_filter( 'automatewoo/variables', [ $this, 'register_variables' ] );
+
+        // Hook to set translatable name later, after text domain is loaded
+        add_action( 'init', [ $this, 'set_plugin_name' ], 6 ); // Priority 6 to run after textdomain load (usually 5)
+	}
+
+    /**
+	 * Translatable plugin name must be defined after load_plugin_textdomain() is called.
+	 */
+	public function set_plugin_name() {
+		$this->name = __( 'Hybrid Headless AutomateWoo', 'hybrid-headless-automatewoo' );
+	}
+
+    /**
+	 * Class autoload callback.
+     * Mirrors AW_Birthdays_Addon::autoload and get_autoload_path
+	 *
+	 * @param string $class
+	 */
+	public function autoload( $class ) {
+        // Check if the class belongs to this plugin's namespace
+		if ( 0 !== strpos( $class, __NAMESPACE__ . '\\' ) ) {
+			return;
+		}
+
+        // Build the path based on class name
+		$file = str_replace( __NAMESPACE__ . '\\', '', $class ); // Remove base namespace
+		$file = str_replace( '_', '-', $file ); // Convert underscores to hyphens
+		$file = strtolower( $file ); // Convert to lowercase
+		$file = str_replace( '\\', '/', $file ); // Convert namespace separators to directory separators
+
+        // Construct the full path using the parent Addon's path() method
+		$path = $this->path( "/includes/{$file}.php" ); // Assumes files are like includes/triggers/test-trigger.php
+
+		if ( $path && file_exists( $path ) ) {
+            // No need for logging here anymore unless debugging path issues again
+			include $path;
+		} else {
+            // Log if file not found - helps debug path/naming issues
+            error_log("Autoload failed for class: $class. Calculated path: $path");
         }
-        return self::$instance;
-    }
+	}
 
-    public function __construct($plugin_data) {
-        parent::__construct($plugin_data);
-        spl_autoload_register([$this, 'autoload']);
-    }
+    // Note: No init() method here. The parent Addon class handles basic init.
+    // We add our specific hooks in the constructor.
 
-    public function autoload($class) {
-        if (0 !== strpos($class, __NAMESPACE__ . '\\')) {
-            return;
-        }
+    // Note: No options() method here for now. Can be added later if needed,
+    // mirroring the Birthdays plugin structure with a separate Options class.
 
-        // Simplify autoloader based on Birthdays plugin example
-        
-        // 1. Remove base namespace: HybridHeadlessAutomateWoo\Triggers\Test_Trigger -> Triggers\Test_Trigger
-        $relative_class = str_replace(__NAMESPACE__ . '\\', '', $class); 
-        
-        // 2. Replace namespace separators with directory separators: Triggers\Test_Trigger -> Triggers/Test_Trigger
-        $relative_path = str_replace('\\', '/', $relative_class);
-        
-        // 3. Convert to lowercase: Triggers/Test_Trigger -> triggers/test_trigger
-        $relative_path_lower = strtolower($relative_path);
-        
-        // 4. Replace underscores with hyphens (if any): triggers/test_trigger -> triggers/test-trigger
-        $file = str_replace('_', '-', $relative_path_lower);
-        
-        // 5. Construct the full path: /path/to/plugin/includes/triggers/test-trigger.php
-        //    (Note: We will rename files below to remove the 'class-' prefix)
-        $path = $this->path("/includes/{$file}.php");
+    /**
+	 * Register custom triggers.
+	 *
+	 * @param array $triggers Existing triggers.
+	 * @return array Modified triggers.
+	 */
+	public function register_triggers( $triggers ) {
+        // Register by mapping a unique key to the fully qualified class name
+		$triggers['test_trigger']     = __NAMESPACE__ . '\Triggers\Test_Trigger';
+		$triggers['order_event_date'] = __NAMESPACE__ . '\Triggers\Order_Event_Date_Trigger';
+        $triggers['debug_trigger']    = __NAMESPACE__ . '\Triggers\Debug_Trigger'; // Assuming you still want this
 
-        error_log("Attempting to load: $class from path: $path");
+		return $triggers;
+	}
 
-        if ($path && file_exists($path)) {
-            include $path;
-            error_log("Successfully loaded: $class");
-        } else {
-            error_log("Failed to load: $class - File not found at calculated path: " . $path);
-        }
-    }
+    /**
+	 * Register custom rules.
+	 *
+	 * @param array $includes Existing rule file paths.
+	 * @return array Modified rule file paths.
+	 */
+	public function register_rules( $includes ) {
+        // Register by mapping a unique key to the absolute file path.
+        // The file MUST end with 'return new ClassName();'
+		$includes['customer_last_trip_in_period'] = $this->path( '/includes/rules/customer-last-trip-in-period.php' );
+		$includes['customer_has_upcoming_trip']   = $this->path( '/includes/rules/customer-has-upcoming-trip.php' );
 
-    /** @var Options */
-    public $options;
+		return $includes;
+	}
 
-    public function init() {
-        error_log('Initializing HybridHeadlessAutomateWoo plugin');
-        
-        add_filter('automatewoo/triggers', [$this, 'register_triggers']);
-        add_filter('automatewoo/rules/includes', [$this, 'register_rules']);
-        add_filter('automatewoo/variables', [$this, 'register_variables']);
-        
-        // Define a simple options class inline to avoid file loading issues
-        $this->options = new class() {
-            public $prefix = 'hybrid_headless_automatewoo_';
-            public $defaults = ['version' => '1.0.0'];
-            
-            public function __get($key) {
-                return get_option($this->prefix . $key, $this->defaults[$key] ?? null);
-            }
-            
-            public function __set($key, $value) {
-                update_option($this->prefix . $key, $value);
-            }
-        };
+    /**
+	 * Register custom variables.
+	 *
+	 * @param array $variables Existing variables.
+	 * @return array Modified variables.
+	 */
+	public function register_variables( $variables ) {
+        // Register by mapping keys within data types to the fully qualified class name.
+		$variables['product']['event_start_date'] = __NAMESPACE__ . '\Variables\ProductEventStartDate';
+		$variables['product']['event_finish_date'] = __NAMESPACE__ . '\Variables\ProductEventFinishDate';
+        $variables['product']['event_data'] = __NAMESPACE__ . '\Variables\ProductEventDataVariable'; // Corrected class name to match file
 
-        // Add debug hook to see all registered triggers
-        add_action('automatewoo/after_init_triggers', function() {
-            $triggers = \AutomateWoo\Triggers::get_all();
-            error_log('All registered AutomateWoo triggers: ' . print_r(array_keys($triggers), true));
-        });
-    }
+		return $variables;
+	}
 
-    public function options() {
-        return $this->options;
-    }
-
-    public function register_triggers($triggers) {
-        error_log('Registering triggers in HybridHeadlessAutomateWoo: ' . print_r(array_keys($triggers), true));
-        
-        // Add test trigger with full class name for clarity
-        $class_name = __NAMESPACE__ . '\Triggers\Test_Trigger';
-        error_log("Adding trigger 'test_trigger' with class: $class_name");
-        $triggers['test_trigger'] = $class_name;
-        
-        // Add your other triggers
-        $class_name = __NAMESPACE__ . '\Triggers\Order_Event_Date_Trigger';
-        error_log("Adding trigger 'order_event_date' with class: $class_name");
-        $triggers['order_event_date'] = $class_name;
-        
-        // Add debug trigger
-        $class_name = __NAMESPACE__ . '\Triggers\Debug_Trigger';
-        error_log("Adding trigger 'debug_trigger' with class: $class_name");
-        $triggers['debug_trigger'] = $class_name;
-        
-        error_log('After adding our triggers: ' . print_r(array_keys($triggers), true));
-        return $triggers;
-    }
-
-    public function register_rules($includes) {
-        // Use the correct filenames after renaming
-        $includes['customer_last_trip_in_period'] = $this->path('/includes/rules/customer-last-trip-in-period.php');
-        $includes['customer_has_upcoming_trip'] = $this->path('/includes/rules/customer-has-upcoming-trip.php');
-        error_log('Registering rules: ' . print_r($includes, true)); // Add log to see registered rule paths
-        return $includes;
-    }
-
-    public function register_variables($variables) {
-        $variables['product']['event_start_date'] = __NAMESPACE__ . '\Variables\ProductEventStartDate';
-        $variables['product']['event_finish_date'] = __NAMESPACE__ . '\Variables\ProductEventFinishDate';
-        $variables['product']['event_data'] = __NAMESPACE__ . '\Variables\Product_Event_Data_Variable';
-        return $variables;
-    }
-    public function path($path = '') {
-        // Add debug log here
-        error_log("Inside path(): \$this->plugin_data->path = " . ($this->plugin_data->path ?? 'NULL'));
-        error_log("Inside path(): \$path argument = " . $path);
-        $full_path = ($this->plugin_data->path ?? '') . $path;
-        error_log("Inside path(): Returning full path = " . $full_path);
-        return $full_path;
-    }
+    // Removed the custom path() method as we rely on the parent Addon::path()
+    // Removed the custom options() method and inline options class
 }
