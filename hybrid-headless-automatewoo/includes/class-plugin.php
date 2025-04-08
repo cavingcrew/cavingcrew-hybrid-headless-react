@@ -22,15 +22,16 @@ class Plugin extends Addon {
     }
 
     public function autoload($class) {
-        // Match the birthdays plugin's autoload pattern
         if (0 !== strpos($class, __NAMESPACE__ . '\\')) {
             return;
         }
 
-        $file = str_replace(__NAMESPACE__ . '\\', '', $class);
-        $file = str_replace('_', '-', $file);
+        $file = str_replace(
+            [__NAMESPACE__ . '\\', '_'],
+            ['', '-'],
+            $class
+        );
         $file = strtolower($file);
-        $file = str_replace('\\', '/', $file);
         $path = $this->path("/includes/$file.php");
 
         if (file_exists($path)) {
