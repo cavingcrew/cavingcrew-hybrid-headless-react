@@ -8,7 +8,7 @@ APP_NAME="hybrid-headless-frontend"
 # Plugin configurations
 PLUGINS=(
     "hybrid source=../hybrid-headless-react-plugin name=hybrid-headless-react-plugin"
-    "automatewoo source=../climbingclan-automatewoo-birthdays name=automatewoo-birthdays"
+    "automatewoo source=../hybrid-headless-automatewoo name=hybrid-headless-automatewoo"
 )
 
 # Plugin deployment flags
@@ -44,7 +44,7 @@ deploy_plugin() {
         --exclude='node_modules/' \
         --exclude='tests/' \
         --exclude='.github/' \
-        "$plugin_source" \
+        "$plugin_source/" \
         "$REMOTE_HOST:$PLUGIN_DEST/"
 
     if [ $? -ne 0 ]; then
