@@ -20,4 +20,4 @@ class ProductEventFinishDate extends Variable_Abstract_Datetime {
 }
 
 error_log('[Variable Load] Reached end of product-event-finish-date.php');
-return new ProductEventFinishDate();
+return new \HybridHeadlessAutomateWoo\Variables\ProductEventFinishDate();

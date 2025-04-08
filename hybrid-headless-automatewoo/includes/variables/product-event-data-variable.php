@@ -288,4 +288,4 @@ class Product_Event_Data_Variable extends Variable {
 }
 
 error_log('[Variable Load] Reached end of product-event-data-variable.php');
-return new Product_Event_Data_Variable();
+return new \HybridHeadlessAutomateWoo\Variables\Product_Event_Data_Variable();
