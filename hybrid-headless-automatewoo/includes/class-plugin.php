@@ -33,10 +33,12 @@ class Plugin extends Addon {
             // Handle namespaced classes like Triggers\Test_Trigger
             $filename = strtolower(str_replace('_', '-', end($parts)));
             $directory = strtolower($parts[0]);
-            $path = $this->plugin_data->path . "/includes/$directory/class-$filename.php";
+            // Correctly prepend the base path
+            $path = $this->plugin_data->path . "/includes/$directory/class-$filename.php"; 
         } else {
-            // Handle root namespace classes
+            // Handle root namespace classes (e.g., Plugin, Options)
             $filename = strtolower(str_replace('_', '-', $relative_class));
+             // Correctly prepend the base path
             $path = $this->plugin_data->path . "/includes/class-$filename.php";
         }
         
