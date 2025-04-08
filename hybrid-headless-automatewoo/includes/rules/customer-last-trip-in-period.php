@@ -1,96 +1,52 @@
 <?php
 namespace HybridHeadlessAutomateWoo\Rules;
-error_log('[Rule Include Attempt] Including customer-last-trip-in-period.php'); // Moved after namespace
+// Removed include attempt log
 
-use AutomateWoo\Clean;
-use AutomateWoo\DateTime;
-use AutomateWoo\Rules\Abstract_Date;
-// Removed duplicate use statements
+use AutomateWoo\DateTime; // Keep DateTime for return type hint if needed, or remove if not used directly
 
 defined( 'ABSPATH' ) || exit;
 
-// Extend Abstract_Date directly
-class Customer_Last_Trip_In_Period extends Abstract_Date {
+// Extend the custom abstract class again
+class Customer_Last_Trip_In_Period extends Customer_Trip_Date_Rule {
 
-    public $data_item = 'customer';
+    // data_item is inherited from Abstract_Date via Customer_Trip_Date_Rule
 
     public function init() {
         $this->title = __( 'Customer - Last Trip Within Period', 'hybrid-headless-automatewoo' );
         $this->group = __( 'Customer', 'hybrid-headless-automatewoo' );
-
-        // Add parameters previously defined in the abstract class or needed by Abstract_Date
-        $this->add_parameter_select_field( 'time_unit', __( 'Time Unit', 'hybrid-headless-automatewoo' ), [
-            'days' => __( 'Days', 'hybrid-headless-automatewoo' ),
-            'weeks' => __( 'Weeks', 'hybrid-headless-automatewoo' ),
-            'months' => __( 'Months', 'hybrid-headless-automatewoo' )
-        ], true );
-        $this->add_parameter_number_field( 'time_amount', __( 'Time Amount', 'hybrid-headless-automatewoo' ), true );
+        // Parameters (time_unit, time_amount) are added in Customer_Trip_Date_Rule::init()
     }
 
+    /**
+     * Validate the rule.
+     *
+     * @param \AutomateWoo\Customer $customer
+     * @param string $compare Comparison type (e.g., 'is', 'is_before'). Provided by Abstract_Date fields.
+     * @param mixed $value Comparison value (e.g., date string, number of days). Provided by Abstract_Date fields.
+     * @return bool
+     */
     public function validate( $customer, $compare, $value ) {
-        // $value parameter from Abstract_Date might represent the date comparison value,
-        // ensure logic aligns with how Abstract_Date validation works.
-        // For now, let's assume we just need the last trip date.
-
-        $trips = $this->get_customer_trips( $customer );
-        $last_trip_date = $this->get_last_trip_date( $trips );
+        // Get the date of the customer's last trip using the inherited helper method
+        $last_trip_date = $this->get_last_trip_date( $customer );
 
         if ( ! $last_trip_date ) {
-            return false; // No last trip found
+            return false; // No last trip found, rule fails
         }
 
+        // Use the validate_date method inherited from Abstract_Date to perform the comparison
         return $this->validate_date( $compare, $value, $last_trip_date );
     }
 
-    // --- Helper methods copied from abstract class ---
+    /**
+     * Get the DateTime object for the customer's last trip.
+     * Helper method specific to this rule.
+     *
+     * @param \AutomateWoo\Customer $customer
+     * @return DateTime|false
+     */
+    protected function get_last_trip_date( $customer ) {
+        $trips = $this->get_customer_trips( $customer ); // Use inherited helper
 
-    protected function get_customer_trips( $customer ) {
-        if ( ! $customer || ! $customer->get_user_id() ) {
-            return [];
-        }
-
-        $orders = wc_get_orders([
-            'customer_id' => $customer->get_user_id(),
-            'status' => ['completed', 'processing'], // Consider which statuses indicate a 'trip'
-            'limit' => -1,
-            'return' => 'ids'
-        ]);
-
-        $trips = [];
-
-        foreach ( $orders as $order_id ) {
-            $order = wc_get_order( $order_id );
-            if ( ! $order ) continue;
-            foreach ( $order->get_items() as $item ) {
-                $product = $item->get_product();
-                // Ensure get_meta returns a valid date string
-                if ( $product && ( $start_date = $product->get_meta( 'event_start_date_time' ) ) && strtotime( $start_date ) ) {
-                    $trips[] = [
-                        'start' => $start_date,
-                        'product_id' => $product->get_id()
-                    ];
-                }
-            }
-        }
-
-        return $trips;
-    }
-
-    protected function parse_time( $amount, $unit ) {
-        $amount = (int) $amount;
-        $multipliers = [
-            'days' => DAY_IN_SECONDS,
-            'weeks' => WEEK_IN_SECONDS,
-            'months' => MONTH_IN_SECONDS // Note: MONTH_IN_SECONDS is an approximation
-        ];
-
-        return $amount * ( $multipliers[ $unit ] ?? DAY_IN_SECONDS );
-    }
-
-    // --- End of copied helper methods ---
-
-
-    protected function get_last_trip_date( $trips ) {
         $valid_trips = array_filter( $trips, function( $trip ) {
             return ! empty( $trip['start'] );
         });
@@ -99,13 +55,25 @@ class Customer_Last_Trip_In_Period extends Abstract_Date {
             return false;
         }
 
+        // Sort trips by start date descending to find the latest one
         usort( $valid_trips, function( $a, $b ) {
             return strtotime( $b['start'] ) <=> strtotime( $a['start'] );
         });
 
-        return new DateTime( $valid_trips[0]['start'] );
+        // Return the date of the latest trip as a DateTime object
+        // Ensure the date string is valid before creating DateTime
+        $latest_start_date = $valid_trips[0]['start'];
+        try {
+            return new DateTime( $latest_start_date );
+        } catch (\Exception $e) {
+            // Log error if date is invalid
+            error_log("Error creating DateTime for last trip date: " . $e->getMessage() . " Date string: " . $latest_start_date);
+            return false;
+        }
     }
+
+    // Removed copied helper methods (get_customer_trips, parse_time) - they are in Customer_Trip_Date_Rule
 }
 
-error_log('[Rule Return] Reached end of customer-last-trip-in-period.php, returning instance.'); // Add this log
+// Removed return log
 return new Customer_Last_Trip_In_Period();
