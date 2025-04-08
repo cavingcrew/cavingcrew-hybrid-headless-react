@@ -171,6 +171,34 @@ final class Hybrid_Headless_AutomateWoo_Loader {
 // Initialize the loader
 Hybrid_Headless_AutomateWoo_Loader::init();
 
+// --- Debug Hook for automatewoo_init_addons ---
+add_action( 'automatewoo_init_addons', 'hybrid_headless_debug_init_addons_hook', 5 ); // Hook early
+
+function hybrid_headless_debug_init_addons_hook() {
+    error_log('[Debug Hook] automatewoo_init_addons action fired.');
+
+    if ( class_exists('AutomateWoo\Addons') ) {
+        $addon_id = 'hybrid-headless-automatewoo';
+        $addon = \AutomateWoo\Addons::get( $addon_id );
+        if ( $addon ) {
+            error_log("[Debug Hook] Found addon '$addon_id' in AutomateWoo registry.");
+            // Let's try calling init manually just for debugging - REMOVE THIS LATER
+            // if (method_exists($addon, 'init')) {
+            //     error_log("[Debug Hook] Manually calling init() on found addon...");
+            //     $addon->init();
+            // } else {
+            //     error_log("[Debug Hook] Found addon does not have an init() method?");
+            // }
+        } else {
+            error_log("[Debug Hook] Addon '$addon_id' NOT found in AutomateWoo registry at this point.");
+            // Log all registered addons for comparison
+             error_log("[Debug Hook] Registered addons: " . print_r( array_keys( \AutomateWoo\Addons::get_all() ), true ) );
+        }
+    } else {
+        error_log("[Debug Hook] AutomateWoo\Addons class not found.");
+    }
+}
+
 
 // --- Singleton Accessor Function ---
 
