@@ -80,20 +80,14 @@ final class Hybrid_Headless_Addon extends Addon {
         // Construct the full path using the parent Addon's path() method
 		$path = $this->path( "/includes/{$file}.php" ); // Assumes files are like includes/triggers/test-trigger.php
 
-        // Improved logging
-        $type = 'Unknown';
-        if (strpos($original_file, 'Triggers\\') === 0) $type = 'Trigger';
-        if (strpos($original_file, 'Rules\\') === 0) $type = 'Rule';
-        if (strpos($original_file, 'Variables\\') === 0) $type = 'Variable';
-        error_log("[Autoload] Attempting to load $type: $class");
-        error_log("[Autoload] Calculated path: $path");
-
+        // Minimal logging for autoload - just check if file exists and include
 		if ( $path && file_exists( $path ) ) {
 			include $path;
-            error_log("[Autoload] Successfully included: $path for class $class");
+            // Optional: Log success only if needed later for specific class issues
+            // error_log("[Autoload] Successfully included: $path for class $class");
 		} else {
-            // Log if file not found - helps debug path/naming issues
-            error_log("[Autoload] Failed to load: $class - File not found at calculated path: " . $path);
+            // Optional: Log failure only if needed later for specific class issues
+            // error_log("[Autoload] Failed to load: $class - File not found at calculated path: " . $path);
         }
 	}
 
