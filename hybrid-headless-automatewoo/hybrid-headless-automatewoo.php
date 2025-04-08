@@ -47,7 +47,7 @@ final class Hybrid_Headless_AutomateWoo_Loader {
         // Standard hooks like Birthdays
 		add_action( 'admin_notices', [ __CLASS__, 'admin_notices' ] );
         // Remove the 'plugins_loaded' hook for loading the main logic
-		// add_action( 'plugins_loaded', [ __CLASS__, 'load' ], 11 ); 
+		// add_action( 'plugins_loaded', [ __CLASS__, 'load' ], 11 );
         // Add hook to load the addon later, during 'init'
         add_action( 'init', [ __CLASS__, 'load_addon' ], 10 ); // Priority 10 is usually safe for init actions
 		add_action( 'init', [ __CLASS__, 'load_textdomain' ], 5 ); // Load text domain early
@@ -90,59 +90,67 @@ final class Hybrid_Headless_AutomateWoo_Loader {
         );
 	}
 
-    /**
-	 * Checks if the plugin can be loaded by verifying dependencies.
-     * Mirrors AW_Birthdays_Loader::check
-	 */
-	protected static function check_requirements() {
-		// translators: %s: Plugin name placeholder
-		$inactive_text = '<strong>' . esc_html__( 'Hybrid Headless AutomateWoo', 'hybrid-headless-automatewoo' ) . '</strong>';
+  	/**
+  	 * Checks if the plugin can be loaded.
+  	 */
+  	protected static function check_requirements() {
+  		// translators: 1) The name of the AutomateWoo addon
+  		$inactive_text = '<strong>' . sprintf( __( '%s is inactive.', 'automatewoo-birthdays' ), __( 'AutomateWoo - Birthdays', 'automatewoo-birthdays' ) ) . '</strong>';
 
-		if ( ! self::is_automatewoo_active() ) {
-            // translators: %s: Inactive text placeholder
-			self::$errors[] = sprintf( esc_html__( '%s is inactive. The plugin requires AutomateWoo to be installed and activated.', 'hybrid-headless-automatewoo' ), $inactive_text );
-		} elseif ( ! self::is_automatewoo_version_ok() ) {
-            // translators: 1: Inactive text placeholder, 2: Minimum AutomateWoo version
-			self::$errors[] = sprintf( esc_html__( '%1$s is inactive. The plugin requires AutomateWoo version %2$s or newer.', 'hybrid-headless-automatewoo' ), $inactive_text, self::$data->min_automatewoo_version );
-		}
-        // Optional: Check for WooCommerce if it's a strict requirement
-        if ( ! class_exists('WooCommerce') ) {
-            // translators: %s: Inactive text placeholder
-            self::$errors[] = sprintf( esc_html__( '%s is inactive. The plugin requires WooCommerce to be installed and activated.', 'hybrid-headless-automatewoo' ), $inactive_text );
-        }
-	}
+  		if ( ! self::is_automatewoo_active() ) {
+  			// translators: 1) Text stating that the addon is inactive
+  			self::$errors[] = sprintf( __( '%s The plugin requires AutomateWoo to be installed and activated.', 'automatewoo-birthdays' ), $inactive_text );
+  		} elseif ( ! self::is_automatewoo_version_ok() ) {
+  			// translators: 1) Text stating that the addon is inactive 2) The minimum version of AutomateWoo required
+  			self::$errors[] = sprintf( __( '%1$s The plugin requires AutomateWoo version %2$s or newer.', 'automatewoo-birthdays' ), $inactive_text, self::$data->min_automatewoo_version );
+  		} elseif ( ! self::is_automatewoo_directory_name_ok() ) {
+  			// translators: 1) Text stating that the addon is inactive
+  			self::$errors[] = sprintf( __( '%s AutomateWoo plugin directory name is not correct.', 'automatewoo-birthdays' ), $inactive_text );
+  		}
+  	}
 
-    /**
-	 * Checks if AutomateWoo is active.
-	 * @return bool
-	 */
-	protected static function is_automatewoo_active() {
-		return class_exists( 'AutomateWoo\Plugin' ) && function_exists( 'AW' );
-	}
+  	/**
+  	 * Checks if AutomateWoo is active.
+  	 *
+  	 * @return bool
+  	 */
+  	protected static function is_automatewoo_active() {
+  		return function_exists( 'AW' );
+  	}
 
-    /**
-	 * Checks if the version of AutomateWoo is compatible.
-	 * @return bool
-	 */
-	protected static function is_automatewoo_version_ok() {
-		return defined( 'AUTOMATEWOO_VERSION' ) && version_compare( AUTOMATEWOO_VERSION, self::$data->min_automatewoo_version, '>=' );
-	}
+  	/**
+  	 * Checks if the version of AutomateWoo is compatible.
+  	 *
+  	 * @return bool
+  	 */
+  	protected static function is_automatewoo_version_ok() {
+  		if ( ! function_exists( 'AW' ) ) {
+  			return false;
+  		}
+  		return version_compare( AW()->version, self::$data->min_automatewoo_version, '>=' );
+  	}
 
-    /**
-	 * Outputs any errors as admin notices.
-	 */
-	public static function admin_notices() {
-		if ( ! empty( self::$errors ) ) {
-			echo '<div class="notice notice-error"><p>';
-			echo wp_kses_post( implode( '<br>', self::$errors ) );
-			echo '</p></div>';
-		}
-	}
+  	/**
+  	 * Checks if AutomateWoo is in the correct location.
+  	 *
+  	 * @return bool
+  	 */
+  	protected static function is_automatewoo_directory_name_ok() {
+  		$active_plugins = (array) get_option( 'active_plugins', [] );
+  		return in_array( 'automatewoo/automatewoo.php', $active_plugins, true ) || array_key_exists( 'automatewoo/automatewoo.php', $active_plugins );
+  	}
 
-    // Optional: Placeholder for activation logic
-    // public static function plugin_activate() { ... }
-    // public static function addon_activate() { ... }
-    // public static function declare_feature_compatibility() { ... }
+  	/**
+  	 * Outputs any errors as admin notices.
+  	 */
+  	public static function admin_notices() {
+  		if ( empty( self::$errors ) ) {
+  			return;
+  		}
+  		echo '<div class="notice notice-error"><p>';
+  		echo wp_kses_post( implode( '<br>', self::$errors ) );
+  		echo '</p></div>';
+  	}
 
 }
 
