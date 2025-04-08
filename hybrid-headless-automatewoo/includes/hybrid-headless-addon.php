@@ -70,7 +70,8 @@ final class Hybrid_Headless_Addon extends Addon {
 		}
 
         // Build the path based on class name
-		$file = str_replace( __NAMESPACE__ . '\\', '', $class ); // Remove base namespace
+		$original_file = str_replace( __NAMESPACE__ . '\\', '', $class ); // Remove base namespace
+        $file = $original_file;
 		$file = str_replace( '_', '-', $file ); // Convert underscores to hyphens
 		$file = strtolower( $file ); // Convert to lowercase
 		$file = str_replace( '\\', '/', $file ); // Convert namespace separators to directory separators
@@ -78,15 +79,20 @@ final class Hybrid_Headless_Addon extends Addon {
         // Construct the full path using the parent Addon's path() method
 		$path = $this->path( "/includes/{$file}.php" ); // Assumes files are like includes/triggers/test-trigger.php
 
-        // Add back logging for debugging path calculation
-        error_log("Attempting to load: $class from path: $path");
+        // Improved logging
+        $type = 'Unknown';
+        if (strpos($original_file, 'Triggers\\') === 0) $type = 'Trigger';
+        if (strpos($original_file, 'Rules\\') === 0) $type = 'Rule';
+        if (strpos($original_file, 'Variables\\') === 0) $type = 'Variable';
+        error_log("[Autoload] Attempting to load $type: $class");
+        error_log("[Autoload] Calculated path: $path");
 
 		if ( $path && file_exists( $path ) ) {
 			include $path;
-            error_log("Successfully loaded: $class");
+            error_log("[Autoload] Successfully included: $path for class $class");
 		} else {
             // Log if file not found - helps debug path/naming issues
-            error_log("Failed to load: $class - File not found at calculated path: " . $path);
+            error_log("[Autoload] Failed to load: $class - File not found at calculated path: " . $path);
         }
 	}
 
@@ -113,14 +119,16 @@ final class Hybrid_Headless_Addon extends Addon {
 	 * @return array Modified triggers.
 	 */
 	public function register_triggers( $triggers ) {
-        error_log('Registering triggers in HybridHeadlessAutomateWoo: ' . print_r(array_keys($triggers), true)); // Add back log
+        // Ensure this log appears. If not, the filter isn't running.
+        error_log('[Register] Running register_triggers filter hook.');
+        error_log('[Register] Initial triggers: ' . print_r(array_keys($triggers), true));
 
         // Register by mapping a unique key to the fully qualified class name
-		$triggers['test_trigger']     = __NAMESPACE__ . '\Triggers\Test_Trigger';
-		$triggers['order_event_date'] = __NAMESPACE__ . '\Triggers\Order_Event_Date_Trigger';
-        $triggers['debug_trigger']    = __NAMESPACE__ . '\Triggers\Debug_Trigger'; // Assuming you still want this
+		$triggers['hh_test_trigger']     = __NAMESPACE__ . '\Triggers\Test_Trigger'; // Added prefix for uniqueness
+		$triggers['hh_order_event_date'] = __NAMESPACE__ . '\Triggers\Order_Event_Date_Trigger'; // Added prefix
+        $triggers['hh_debug_trigger']    = __NAMESPACE__ . '\Triggers\Debug_Trigger'; // Added prefix
 
-        error_log('After adding our triggers: ' . print_r(array_keys($triggers), true)); // Add back log
+        error_log('[Register] After adding Hybrid Headless triggers: ' . print_r(array_keys($triggers), true));
 		return $triggers;
 	}
 
