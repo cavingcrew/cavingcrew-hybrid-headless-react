@@ -32,12 +32,6 @@ final class Hybrid_Headless_Addon extends Addon {
 		// Register autoloader immediately
 		spl_autoload_register( [ $this, 'autoload' ] );
 
-        // Add hooks for registration - These run after the object is constructed
-        // and AutomateWoo is loaded.
-        add_filter( 'automatewoo/triggers', [ $this, 'register_triggers' ] );
-		add_filter( 'automatewoo/rules/includes', [ $this, 'register_rules' ] );
-		add_filter( 'automatewoo/variables', [ $this, 'register_variables' ] );
-
         // Hook to set translatable name later, after text domain is loaded
         add_action( 'init', [ $this, 'set_plugin_name' ], 6 ); // Priority 6 to run after textdomain load (usually 5)
 	}
@@ -45,10 +39,15 @@ final class Hybrid_Headless_Addon extends Addon {
     /**
      * Initialize the addon.
      * Required implementation from AutomateWoo\Addon.
+     * Hooks for triggers, rules, and variables should be added here.
      */
     public function init() {
-        // Add any addon-specific initialization logic here if needed in the future.
-        // For now, it can be empty.
+        // Add hooks for registration here, ensuring they run after AutomateWoo is ready.
+        add_filter( 'automatewoo/triggers', [ $this, 'register_triggers' ] );
+		add_filter( 'automatewoo/rules/includes', [ $this, 'register_rules' ] );
+		add_filter( 'automatewoo/variables', [ $this, 'register_variables' ] );
+
+        // Add any other addon-specific initialization logic here if needed.
     }
 
     /**
