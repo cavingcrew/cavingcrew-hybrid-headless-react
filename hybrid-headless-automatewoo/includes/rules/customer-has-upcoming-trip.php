@@ -43,19 +43,70 @@ class Customer_Has_Upcoming_Trip extends Abstract_Date {
 
         $period = $this->parse_time( $time_amount, $time_unit );
         $trips = $this->get_customer_trips( $customer );
-        $now = current_time( 'timestamp', true ); // Use UTC timestamp
-        $cutoff = $now + $period;
+        $cutoff = $now + $period; // Calculate end of the period in UTC
 
         foreach ( $trips as $trip ) {
-            $trip_time = strtotime( $trip['start'] );
-            if ( $trip_time && $trip_time > $now && $trip_time <= $cutoff ) {
-                return true;
+            $trip_date = aw_normalize_date( $trip['start'] ); // Normalize to DateTime object (UTC)
+            if ( ! $trip_date ) continue;
+
+            $trip_time = $trip_date->getTimestamp();
+
+            // Check if the trip start time is after now and before or at the cutoff time
+            if ( $trip_time > $now && $trip_time <= $cutoff ) {
+                return true; // Found an upcoming trip within the specified period
             }
         }
 
-        return false;
+        return false; // No upcoming trip found within the period
     }
+
+    // --- Helper methods copied from abstract class ---
+
+    protected function get_customer_trips( $customer ) {
+         if ( ! $customer || ! $customer->get_user_id() ) {
+            return [];
+        }
+
+        $orders = wc_get_orders([
+            'customer_id' => $customer->get_user_id(),
+            'status' => ['completed', 'processing'], // Consider which statuses indicate a 'trip'
+            'limit' => -1,
+            'return' => 'ids'
+        ]);
+
+        $trips = [];
+
+        foreach ( $orders as $order_id ) {
+            $order = wc_get_order( $order_id );
+             if ( ! $order ) continue;
+            foreach ( $order->get_items() as $item ) {
+                $product = $item->get_product();
+                // Ensure get_meta returns a valid date string
+                if ( $product && ( $start_date = $product->get_meta( 'event_start_date_time' ) ) && strtotime( $start_date ) ) {
+                    $trips[] = [
+                        'start' => $start_date,
+                        'product_id' => $product->get_id()
+                    ];
+                }
+            }
+        }
+
+        return $trips;
+    }
+
+     protected function parse_time( $amount, $unit ) {
+        $amount = (int) $amount;
+        $multipliers = [
+            'days' => DAY_IN_SECONDS,
+            'weeks' => WEEK_IN_SECONDS,
+            'months' => MONTH_IN_SECONDS // Note: MONTH_IN_SECONDS is an approximation
+        ];
+
+        return $amount * ( $multipliers[ $unit ] ?? DAY_IN_SECONDS );
+    }
+
+    // --- End of copied helper methods ---
+
 }
 
-// Removed logging from here as it's not the primary issue
 return new Customer_Has_Upcoming_Trip();

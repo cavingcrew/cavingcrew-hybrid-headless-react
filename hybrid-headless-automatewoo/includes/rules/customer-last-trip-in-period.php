@@ -44,6 +44,54 @@ class Customer_Last_Trip_In_Period extends Abstract_Date {
         return $this->validate_date( $compare, $value, $last_trip_date );
     }
 
+    // --- Helper methods copied from abstract class ---
+
+    protected function get_customer_trips( $customer ) {
+        if ( ! $customer || ! $customer->get_user_id() ) {
+            return [];
+        }
+
+        $orders = wc_get_orders([
+            'customer_id' => $customer->get_user_id(),
+            'status' => ['completed', 'processing'], // Consider which statuses indicate a 'trip'
+            'limit' => -1,
+            'return' => 'ids'
+        ]);
+
+        $trips = [];
+
+        foreach ( $orders as $order_id ) {
+            $order = wc_get_order( $order_id );
+            if ( ! $order ) continue;
+            foreach ( $order->get_items() as $item ) {
+                $product = $item->get_product();
+                // Ensure get_meta returns a valid date string
+                if ( $product && ( $start_date = $product->get_meta( 'event_start_date_time' ) ) && strtotime( $start_date ) ) {
+                    $trips[] = [
+                        'start' => $start_date,
+                        'product_id' => $product->get_id()
+                    ];
+                }
+            }
+        }
+
+        return $trips;
+    }
+
+    protected function parse_time( $amount, $unit ) {
+        $amount = (int) $amount;
+        $multipliers = [
+            'days' => DAY_IN_SECONDS,
+            'weeks' => WEEK_IN_SECONDS,
+            'months' => MONTH_IN_SECONDS // Note: MONTH_IN_SECONDS is an approximation
+        ];
+
+        return $amount * ( $multipliers[ $unit ] ?? DAY_IN_SECONDS );
+    }
+
+    // --- End of copied helper methods ---
+
+
     protected function get_last_trip_date( $trips ) {
         $valid_trips = array_filter( $trips, function( $trip ) {
             return ! empty( $trip['start'] );
