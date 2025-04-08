@@ -2,6 +2,7 @@
 namespace HybridHeadlessAutomateWoo\Rules;
 
 use AutomateWoo\Customer;
+use AutomateWoo\Clean;
 
 defined( 'ABSPATH' ) || exit;
 

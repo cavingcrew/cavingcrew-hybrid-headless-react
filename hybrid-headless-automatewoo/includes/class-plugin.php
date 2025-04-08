@@ -33,9 +33,15 @@ class Plugin extends Addon {
         );
         $file = strtolower($file);
         $path = $this->path("/includes/$file.php");
+        
+        // Add debugging
+        error_log("Attempting to load: $class from path: $path");
 
         if (file_exists($path)) {
             include $path;
+            error_log("Successfully loaded: $class");
+        } else {
+            error_log("Failed to load: $class - File not found");
         }
     }
 

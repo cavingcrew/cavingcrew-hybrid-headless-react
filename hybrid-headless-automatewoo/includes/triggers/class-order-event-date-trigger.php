@@ -1,5 +1,5 @@
 <?php
-namespace HybridHeadless\Triggers;
+namespace HybridHeadlessAutomateWoo\Triggers;
 
 use AutomateWoo\Customer_Factory;
 use AutomateWoo\Exceptions\InvalidArgument;

@@ -18,9 +18,12 @@ class Hybrid_Headless_AutomateWoo_Loader {
 
     public static function load_plugin() {
         if (!class_exists('AutomateWoo\Addon')) {
+            error_log('Hybrid Headless AutomateWoo: AutomateWoo\Addon class not found');
             return;
         }
 
+        error_log('Hybrid Headless AutomateWoo plugin is loading');
+        
         require_once __DIR__ . '/includes/class-plugin.php';
         \HybridHeadlessAutomateWoo\Plugin::instance((object) [
             'version' => '1.0.0', 
