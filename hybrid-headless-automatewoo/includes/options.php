@@ -10,7 +10,8 @@ class Options extends Options_API {
 
     public function __construct() {
         $this->defaults = [
-            // Add default settings here
+            'version' => '1.0.0',
+            // Add other default settings here
         ];
     }
 }

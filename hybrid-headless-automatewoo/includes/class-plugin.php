@@ -44,35 +44,14 @@ class Plugin extends Addon {
 
     public function init() {
         add_filter('automatewoo/triggers', [$this, 'register_triggers']);
-        add_filter('automatewoo/rules/includes', [$this, 'register_rules']); // Changed to rules/includes
+        add_filter('automatewoo/rules/includes', [$this, 'register_rules']);
         add_filter('automatewoo/variables', [$this, 'register_variables']);
-  
-        // --- Enhanced Debugging ---
-        $options_file_path = $this->path('includes/options.php');
-         
-        error_log('[HH AW Debug] Plugin base path: ' . $this->plugin_data->path);
-        error_log('[HH AW Debug] Current working directory: ' . getcwd());
-        error_log('[HH AW Debug] Resolved options path: ' . $options_file_path);
-         
-        // Check if path exists and is readable
-        if (file_exists($options_file_path)) {
-            error_log('[HH AW Debug] File exists and is readable');
-            require_once $options_file_path;
-        } else {
-            // Try alternative path resolution
-            $alt_path = plugin_dir_path($this->plugin_data->file) . 'includes/options.php';
-            error_log('[HH AW Debug] Trying alternative path: ' . $alt_path);
-             
-            if (file_exists($alt_path)) {
-                error_log('[HH AW Debug] Using alternative path');
-                require_once $alt_path;
-            } else {
-                error_log('[HH AW Debug] ERROR: Could not locate options.php');
-                error_log('[HH AW Debug] Directory contents: ' . print_r(scandir($this->plugin_data->path), true));
-                throw new \RuntimeException('Could not load plugin options file');
-            }
+        
+        // Define Options class inline to avoid file loading issues
+        if (!class_exists('HybridHeadlessAutomateWoo\Options')) {
+            require_once __DIR__ . '/options.php';
         }
-         
+        
         $this->options = new Options();
     }
 
