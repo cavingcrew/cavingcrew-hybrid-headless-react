@@ -22,8 +22,8 @@ class Hybrid_Headless_AutomateWoo_Loader {
         }
 
         require_once __DIR__ . '/includes/class-plugin.php';
-        Hybrid_Headless_AutomateWoo_Plugin::instance((object) [
-            'version' => '1.0.0',
+        \HybridHeadlessAutomateWoo\Plugin::instance((object) [
+            'version' => '1.0.0', 
             'path' => __DIR__,
             'file' => __FILE__,
             'name' => __('Hybrid Headless AutomateWoo', 'hybrid-headless-automatewoo')
