@@ -134,12 +134,18 @@ final class Hybrid_Headless_Addon extends Addon {
 	 * @return array Modified rule file paths.
 	 */
 	public function register_rules( $includes ) {
+        error_log('[Register Rules] Running register_rules filter hook.'); // Log hook start
         // Register by mapping a unique key to the absolute file path.
         // The file MUST end with 'return new ClassName();'
-		$includes['customer_last_trip_in_period'] = $this->path( '/includes/rules/customer-last-trip-in-period.php' );
-		$includes['customer_has_upcoming_trip']   = $this->path( '/includes/rules/customer-has-upcoming-trip.php' );
+        $last_trip_path = $this->path( '/includes/rules/customer-last-trip-in-period.php' );
+        $upcoming_trip_path = $this->path( '/includes/rules/customer-has-upcoming-trip.php' );
 
-        // Removed rule registration logging
+		$includes['customer_last_trip_in_period'] = $last_trip_path;
+		$includes['customer_has_upcoming_trip']   = $upcoming_trip_path;
+
+        error_log('[Register Rules] Adding path for last trip: ' . $last_trip_path);
+        error_log('[Register Rules] Adding path for upcoming trip: ' . $upcoming_trip_path);
+        error_log('[Register Rules] Returning includes: ' . print_r(array_keys($includes), true)); // Log final keys
 		return $includes;
 	}
 
