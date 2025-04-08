@@ -46,11 +46,10 @@ final class Hybrid_Headless_AutomateWoo_Loader {
 
         // Standard hooks like Birthdays
 		add_action( 'admin_notices', [ __CLASS__, 'admin_notices' ] );
-        // Remove the 'plugins_loaded' hook for loading the main logic
-		// add_action( 'plugins_loaded', [ __CLASS__, 'load' ], 11 );
-        // Add hook to load the addon later, during 'init'
-        add_action( 'init', [ __CLASS__, 'load_addon' ], 10 ); // Priority 10 is usually safe for init actions
-		add_action( 'init', [ __CLASS__, 'load_textdomain' ], 5 ); // Load text domain early
+        // Use 'plugins_loaded' hook like the Birthdays addon
+		add_action( 'plugins_loaded', [ __CLASS__, 'load_addon' ], 11 ); // Use priority 11 to run after AW core (usually 10)
+        // Keep textdomain loading on init
+		add_action( 'init', [ __CLASS__, 'load_textdomain' ], 5 );
 
         // Optional: Add activation/compatibility hooks if needed later
 		// register_activation_hook( self::$data->file, [ __CLASS__, 'plugin_activate' ] );

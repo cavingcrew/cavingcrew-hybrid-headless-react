@@ -42,6 +42,7 @@ final class Hybrid_Headless_Addon extends Addon {
      * Hooks for triggers, rules, and variables should be added here.
      */
     public function init() {
+        error_log('[Init] Running Hybrid_Headless_Addon init() method.'); // Add this log
         // Add hooks for registration here, ensuring they run after AutomateWoo is ready.
         add_filter( 'automatewoo/triggers', [ $this, 'register_triggers' ] );
 		add_filter( 'automatewoo/rules/includes', [ $this, 'register_rules' ] );
