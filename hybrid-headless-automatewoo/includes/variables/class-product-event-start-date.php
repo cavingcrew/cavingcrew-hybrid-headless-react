@@ -1,5 +1,5 @@
 <?php
-namespace HybridHeadless\Variables;
+namespace HybridHeadlessAutomateWoo\Variables;
 
 use AutomateWoo\Variable_Abstract_Datetime;
 
