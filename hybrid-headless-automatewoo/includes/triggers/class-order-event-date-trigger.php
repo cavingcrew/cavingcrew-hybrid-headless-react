@@ -23,23 +23,23 @@ class Order_Event_Date_Trigger extends AbstractBatchedDailyTrigger {
     public function load_fields() {
         $when = new Select( true );
         $when->set_name( 'when' );
-        $when->set_title( __( 'When', 'hybrid-headless' ) );
+        $when->set_title( __( 'When', 'hybrid-headless-automatewoo' ) );
         $when->set_options([
-            'before' => __( 'Before', 'hybrid-headless' ),
-            'after' => __( 'After', 'hybrid-headless' ),
+            'before' => __( 'Before', 'hybrid-headless-automatewoo' ),
+            'after' => __( 'After', 'hybrid-headless-automatewoo' ),
         ]);
 
         $unit = new Select( true );
         $unit->set_name( 'unit' );
-        $unit->set_title( __( 'Time Unit', 'hybrid-headless' ) );
+        $unit->set_title( __( 'Time Unit', 'hybrid-headless-automatewoo' ) );
         $unit->set_options([
-            'days' => __( 'Days', 'hybrid-headless' ),
-            'hours' => __( 'Hours', 'hybrid-headless' ),
+            'days' => __( 'Days', 'hybrid-headless-automatewoo' ),
+            'hours' => __( 'Hours', 'hybrid-headless-automatewoo' ),
         ]);
 
         $amount = new Number();
         $amount->set_name( 'amount' );
-        $amount->set_title( __( 'Time Amount', 'hybrid-headless' ) );
+        $amount->set_title( __( 'Time Amount', 'hybrid-headless-automatewoo' ) );
         $amount->set_required();
 
         $this->add_field( $when );
@@ -116,7 +116,7 @@ class Order_Event_Date_Trigger extends AbstractBatchedDailyTrigger {
         $order = wc_get_order( $item['order_id'] );
         
         if ( ! $order ) {
-            throw new InvalidArgument( __( 'Order not found', 'hybrid-headless' ) );
+            throw new InvalidArgument( __( 'Order not found', 'hybrid-headless-automatewoo' ) );
         }
 
         $customer = Customer_Factory::get_by_order( $order );

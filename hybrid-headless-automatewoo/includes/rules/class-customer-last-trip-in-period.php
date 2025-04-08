@@ -13,8 +13,8 @@ class Customer_Last_Trip_In_Period extends Abstract_Date {
     public $data_item = 'customer';
 
     public function init() {
-        $this->title = __( 'Customer - Last Trip Within Period', 'hybrid-headless' );
-        $this->group = __( 'Customer', 'hybrid-headless' );
+        $this->title = __( 'Customer - Last Trip Within Period', 'hybrid-headless-automatewoo' );
+        $this->group = __( 'Customer', 'hybrid-headless-automatewoo' );
         parent::init();
     }
 

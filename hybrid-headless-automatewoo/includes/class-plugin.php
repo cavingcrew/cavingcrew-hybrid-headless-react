@@ -32,7 +32,7 @@ class Plugin extends Addon {
             $class
         );
         $file = strtolower($file);
-        $path = $this->path("/includes/$file.php");
+        $path = $this->plugin_data->path . "/includes/$file.php";
         
         // Add debugging
         error_log("Attempting to load: $class from path: $path");
@@ -53,12 +53,19 @@ class Plugin extends Addon {
         add_filter('automatewoo/rules/includes', [$this, 'register_rules']);
         add_filter('automatewoo/variables', [$this, 'register_variables']);
         
-        // Define Options class inline to avoid file loading issues
-        if (!class_exists('HybridHeadlessAutomateWoo\Options')) {
-            require_once __DIR__ . '/options.php';
-        }
-        
-        $this->options = new Options();
+        // Define a simple options class inline to avoid file loading issues
+        $this->options = new class() {
+            public $prefix = 'hybrid_headless_automatewoo_';
+            public $defaults = ['version' => '1.0.0'];
+            
+            public function __get($key) {
+                return get_option($this->prefix . $key, $this->defaults[$key] ?? null);
+            }
+            
+            public function __set($key, $value) {
+                update_option($this->prefix . $key, $value);
+            }
+        };
     }
 
     public function options() {

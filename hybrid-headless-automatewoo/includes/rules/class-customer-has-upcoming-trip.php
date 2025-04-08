@@ -9,8 +9,8 @@ defined( 'ABSPATH' ) || exit;
 class Customer_Has_Upcoming_Trip extends Customer_Trip_Date_Rule {
 
     public function init() {
-        $this->title = __( 'Customer - Has Upcoming Trip', 'hybrid-headless' );
-        $this->group = __( 'Customer', 'hybrid-headless' );
+        $this->title = __( 'Customer - Has Upcoming Trip', 'hybrid-headless-automatewoo' );
+        $this->group = __( 'Customer', 'hybrid-headless-automatewoo' );
         parent::init();
     }
 
