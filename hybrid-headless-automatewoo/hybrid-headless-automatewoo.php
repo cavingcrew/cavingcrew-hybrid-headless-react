@@ -12,7 +12,8 @@ defined('ABSPATH') || exit;
 class Hybrid_Headless_AutomateWoo_Loader {
 
     public static function init() {
-        add_action('automatewoo_loaded', [__CLASS__, 'load_plugin']);
+        // Increase priority to ensure AutomateWoo is fully loaded
+        add_action('automatewoo_loaded', [__CLASS__, 'load_plugin'], 20);
         add_action('init', [__CLASS__, 'load_textdomain']);
     }
 

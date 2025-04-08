@@ -26,15 +26,20 @@ class Plugin extends Addon {
             return;
         }
 
-        $file = str_replace(
-            [__NAMESPACE__ . '\\', '_'],
-            ['', '-'],
-            $class
-        );
-        $file = strtolower($file);
-        $path = $this->plugin_data->path . "/includes/$file.php";
+        $relative_class = substr($class, strlen(__NAMESPACE__) + 1);
+        $parts = explode('\\', $relative_class);
         
-        // Add debugging
+        if (count($parts) > 1) {
+            // Handle namespaced classes like Triggers\Test_Trigger
+            $filename = strtolower(str_replace('_', '-', end($parts)));
+            $directory = strtolower($parts[0]);
+            $path = $this->plugin_data->path . "/includes/$directory/class-$filename.php";
+        } else {
+            // Handle root namespace classes
+            $filename = strtolower(str_replace('_', '-', $relative_class));
+            $path = $this->plugin_data->path . "/includes/class-$filename.php";
+        }
+        
         error_log("Attempting to load: $class from path: $path");
 
         if (file_exists($path)) {
@@ -49,6 +54,24 @@ class Plugin extends Addon {
     public $options;
 
     public function init() {
+        error_log('Initializing HybridHeadlessAutomateWoo plugin');
+        
+        // Explicitly include trigger files
+        $trigger_files = [
+            '/includes/triggers/class-test-trigger.php',
+            '/includes/triggers/class-order-event-date-trigger.php'
+        ];
+        
+        foreach ($trigger_files as $file) {
+            $path = $this->plugin_data->path . $file;
+            if (file_exists($path)) {
+                error_log("Including trigger file: $path");
+                include_once $path;
+            } else {
+                error_log("Trigger file not found: $path");
+            }
+        }
+        
         add_filter('automatewoo/triggers', [$this, 'register_triggers']);
         add_filter('automatewoo/rules/includes', [$this, 'register_rules']);
         add_filter('automatewoo/variables', [$this, 'register_variables']);
@@ -66,6 +89,12 @@ class Plugin extends Addon {
                 update_option($this->prefix . $key, $value);
             }
         };
+
+        // Add debug hook to see all registered triggers
+        add_action('automatewoo/after_init_triggers', function() {
+            $triggers = \AutomateWoo\Triggers::get_all();
+            error_log('All registered AutomateWoo triggers: ' . print_r(array_keys($triggers), true));
+        });
     }
 
     public function options() {
@@ -73,13 +102,22 @@ class Plugin extends Addon {
     }
 
     public function register_triggers($triggers) {
-        error_log('Registering triggers: ' . print_r(array_keys($triggers), true));
+        error_log('Registering triggers in HybridHeadlessAutomateWoo: ' . print_r(array_keys($triggers), true));
         
-        // Add test trigger
-        $triggers['test_trigger'] = __NAMESPACE__ . '\Triggers\Test_Trigger';
+        // Add test trigger with full class name for clarity
+        $class_name = __NAMESPACE__ . '\Triggers\Test_Trigger';
+        error_log("Adding trigger 'test_trigger' with class: $class_name");
+        $triggers['test_trigger'] = $class_name;
         
         // Add your other triggers
-        $triggers['order_event_date'] = __NAMESPACE__ . '\Triggers\Order_Event_Date_Trigger';
+        $class_name = __NAMESPACE__ . '\Triggers\Order_Event_Date_Trigger';
+        error_log("Adding trigger 'order_event_date' with class: $class_name");
+        $triggers['order_event_date'] = $class_name;
+        
+        // Add debug trigger
+        $class_name = __NAMESPACE__ . '\Triggers\Debug_Trigger';
+        error_log("Adding trigger 'debug_trigger' with class: $class_name");
+        $triggers['debug_trigger'] = $class_name;
         
         error_log('After adding our triggers: ' . print_r(array_keys($triggers), true));
         return $triggers;
