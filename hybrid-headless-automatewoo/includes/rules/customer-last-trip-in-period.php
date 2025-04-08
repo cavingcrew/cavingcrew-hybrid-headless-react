@@ -1,35 +1,51 @@
 <?php
 namespace HybridHeadlessAutomateWoo\Rules;
-// Removed include attempt log
 
-use AutomateWoo\DateTime; // Keep DateTime for return type hint if needed, or remove if not used directly
+use AutomateWoo\DateTime;
+use AutomateWoo\Rules\Abstract_Date; // Use the correct base class
+use AutomateWoo\Customer; // Keep for type hinting
 
 defined( 'ABSPATH' ) || exit;
 
-// Extend the custom abstract class again
-class Customer_Last_Trip_In_Period extends Customer_Trip_Date_Rule {
+// Extend Abstract_Date directly
+class Customer_Last_Trip_In_Period extends Abstract_Date {
 
-    // data_item is inherited from Abstract_Date via Customer_Trip_Date_Rule
+    // data_item is inherited from Abstract_Date
+    public $data_item = 'customer';
 
-    public function init() {
-        $this->title = __( 'Customer - Last Trip Within Period', 'hybrid-headless-automatewoo' );
-        $this->group = __( 'Customer', 'hybrid-headless-automatewoo' );
-        // Parameters (time_unit, time_amount) are added in Customer_Trip_Date_Rule::init()
+    /**
+     * Constructor.
+     */
+    public function __construct() {
+        // Enable comparisons like 'is within the last X days'
+        $this->has_is_past_comparision = true;
+        parent::__construct();
     }
 
     /**
-     * Validate the rule.
+     * Init.
+     */
+    public function init() {
+        $this->title = __( 'Customer - Last Trip Within Period', 'hybrid-headless-automatewoo' );
+        $this->group = __( 'Customer', 'hybrid-headless-automatewoo' );
+        // No need to add parameters, Abstract_Date handles comparison fields
+    }
+
+    /**
+     * Validate the rule using Abstract_Date's comparison logic.
      *
      * @param \AutomateWoo\Customer $customer
      * @param string $compare Comparison type (e.g., 'is', 'is_before'). Provided by Abstract_Date fields.
-     * @param mixed $value Comparison value (e.g., date string, number of days). Provided by Abstract_Date fields.
+     * @param Customer $customer
+     * @param string   $compare Comparison type (e.g., 'is_past').
+     * @param array    $value   Comparison value (e.g., ['number' => 7, 'unit' => 'days']).
      * @return bool
      */
     public function validate( $customer, $compare, $value ) {
-        // Get the date of the customer's last trip using the inherited helper method
         $last_trip_date = $this->get_last_trip_date( $customer );
 
         if ( ! $last_trip_date ) {
+            // No trips found for customer, rule fails
             return false; // No last trip found, rule fails
         }
 
@@ -41,14 +57,15 @@ class Customer_Last_Trip_In_Period extends Customer_Trip_Date_Rule {
      * Get the DateTime object for the customer's last trip.
      * Helper method specific to this rule.
      *
-     * @param \AutomateWoo\Customer $customer
-     * @return DateTime|false
+     * @param Customer $customer
+     * @return DateTime|false DateTime object in UTC.
      */
     protected function get_last_trip_date( $customer ) {
-        $trips = $this->get_customer_trips( $customer ); // Use inherited helper
+        $trips = $this->get_customer_trips( $customer );
 
         $valid_trips = array_filter( $trips, function( $trip ) {
-            return ! empty( $trip['start'] );
+            // Ensure start date is valid before attempting to use it
+            return ! empty( $trip['start'] ) && strtotime( $trip['start'] ) !== false;
         });
 
         if ( empty( $valid_trips ) ) {
@@ -60,20 +77,47 @@ class Customer_Last_Trip_In_Period extends Customer_Trip_Date_Rule {
             return strtotime( $b['start'] ) <=> strtotime( $a['start'] );
         });
 
-        // Return the date of the latest trip as a DateTime object
-        // Ensure the date string is valid before creating DateTime
-        $latest_start_date = $valid_trips[0]['start'];
-        try {
-            return new DateTime( $latest_start_date );
-        } catch (\Exception $e) {
-            // Log error if date is invalid
-            error_log("Error creating DateTime for last trip date: " . $e->getMessage() . " Date string: " . $latest_start_date);
-            return false;
-        }
+        // Return the date of the latest trip as a DateTime object (already normalized by aw_normalize_date)
+        return aw_normalize_date( $valid_trips[0]['start'] );
     }
 
-    // Removed copied helper methods (get_customer_trips, parse_time) - they are in Customer_Trip_Date_Rule
-}
+    /**
+     * Get all trip start dates for a customer.
+     * Copied from deleted Customer_Trip_Date_Rule.
+     *
+     * @param Customer $customer
+     * @return array Array of trip data ['start' => 'Y-m-d H:i:s', 'product_id' => int].
+     */
+    protected function get_customer_trips( $customer ) {
+        if ( ! $customer || ! $customer->get_user_id() ) {
+           return [];
+       }
 
-// Removed return log
+       $orders = wc_get_orders([
+           'customer_id' => $customer->get_user_id(),
+           'status' => ['completed', 'processing'], // Consider which statuses indicate a 'trip'
+           'limit' => -1,
+           'return' => 'ids'
+       ]);
+
+       $trips = [];
+
+       foreach ( $orders as $order_id ) {
+           $order = wc_get_order( $order_id );
+            if ( ! $order ) continue;
+           foreach ( $order->get_items() as $item ) {
+               $product = $item->get_product();
+               // Ensure get_meta returns a valid date string
+               if ( $product && ( $start_date = $product->get_meta( 'event_start_date_time' ) ) && strtotime( $start_date ) ) {
+                   $trips[] = [
+                       'start' => $start_date,
+                       'product_id' => $product->get_id()
+                   ];
+               }
+           }
+       }
+
+       return $trips;
+   }
+}
 return new Customer_Last_Trip_In_Period();
