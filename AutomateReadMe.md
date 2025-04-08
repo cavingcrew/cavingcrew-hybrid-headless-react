@@ -3,26 +3,39 @@
 ## Table of Contents
 - [Order Event Date Trigger](#order-event-date-trigger)
 - [Product Event Data Variable](#product-event-data-variable)
+- [Trip Date Rules](#trip-date-rules)
 - [Best Practices](#best-practices)
+
+---
+
+## Trigger Registration and Loading
+
+AutomateWoo triggers within this plugin are managed through the main `Hybrid_Headless_Addon` class (`hybrid-headless-automatewoo/includes/hybrid-headless-addon.php`).
+
+1.  **Registration:** Triggers are registered using the `automatewoo/triggers` filter hook within the `Hybrid_Headless_Addon::register_triggers()` method. Each trigger is added to an array where the key is a unique identifier (e.g., `hh_order_event_date`) and the value is the fully qualified class name (e.g., `HybridHeadlessAutomateWoo\Triggers\Order_Event_Date_Trigger`).
+2.  **Autoloading:** When AutomateWoo needs to load a specific trigger (either in the admin UI or during workflow execution), it uses the registered class name. The plugin's autoloader (`Hybrid_Headless_Addon::autoload()`) intercepts requests for classes within the `HybridHeadlessAutomateWoo` namespace. It converts the class name into a file path (e.g., `HybridHeadlessAutomateWoo\Triggers\Order_Event_Date_Trigger` becomes `includes/triggers/order-event-date-trigger.php`) and includes the corresponding file.
+3.  **Instantiation:** AutomateWoo then instantiates the trigger class. The trigger's `init()` method sets up basic details like title and description, `load_fields()` defines any UI options, and `register_hooks()` (for non-batched triggers) tells AutomateWoo which WordPress actions or filters the trigger should listen to. For batched triggers like `Order_Event_Date_Trigger`, the process involves `get_batch_for_workflow` and `process_item_for_workflow`.
+
+See `Test_Trigger` (`includes/triggers/test-trigger.php`) for a basic example of a trigger listening to a custom action.
 
 ---
 
 ## Order Event Date Trigger
 
 ### Overview
-Triggers workflows based on proximity to event dates from ordered products. Useful for pre-event reminders and post-event follow-ups.
+Triggers workflows based on proximity to event dates associated with products within customer orders. This is useful for sending pre-event reminders or post-event follow-ups. It extends AutomateWoo's `AbstractBatchedDailyTrigger`, meaning it runs once daily to find matching orders.
 
-### Configuration
-1. **Trigger Setup:**
-   - Select workflows → Add Trigger → "Order Event Date"
-2. **Options:**
-   - Direction: Before/After event
-   - Units: Days or Hours
-   - Amount: Number of time units
-3. **Data Available:**
-   - Order details
-   - Customer info
-   - Event product data
+### Implementation Details (`includes/triggers/order-event-date-trigger.php`)
+- **Registration:** Registered in `Hybrid_Headless_Addon::register_triggers` with the key `hh_order_event_date`.
+- **Configuration Fields:** The `load_fields()` method defines the UI options seen in the workflow editor:
+    - `When`: Select 'Before' or 'After' the event date.
+    - `Time Unit`: Choose 'Days' or 'Hours'.
+    - `Time Amount`: Specify the number of days or hours.
+- **Batch Processing:**
+    - `get_batch_for_workflow()`: Runs daily. It calculates a target date/time based on the workflow's settings (e.g., 3 days before now) and queries the database for order items linked to products whose `event_start_date_time` meta field falls within a narrow window around that target time. It returns an array of matching `order_id`s.
+    - `process_item_for_workflow()`: AutomateWoo calls this method for each `order_id` found in the batch. It fetches the full `WC_Order` object, the associated `AutomateWoo\Customer`, and the primary product from the order. It then calls `$workflow->maybe_run()` with this data.
+- **Validation:** The `validate_workflow()` method performs final checks before execution, ensuring the order and product exist and preventing duplicate runs for the same order within a short timeframe.
+- **Data Available:** Provides `order`, `customer`, and `product` data items to the workflow actions.
 
 ### Example Workflows
 - "3 Day Pre-Event Reminder":
