@@ -36,27 +36,35 @@ class Plugin extends Addon {
         }
     }
 
+    /** @var Options */
+    public $options;
+
     public function init() {
         add_filter('automatewoo/triggers', [$this, 'register_triggers']);
-        add_filter('automatewoo/rules', [$this, 'register_rules']);
+        add_filter('automatewoo/rules/includes', [$this, 'register_rules']); // Changed to rules/includes
         add_filter('automatewoo/variables', [$this, 'register_variables']);
+        
+        $this->options = new Options();
     }
 
     public function register_triggers($triggers) {
-        $triggers['order_event_date'] = 'HybridHeadlessAutomateWoo\Triggers\Order_Event_Date_Trigger';
+        $triggers['order_event_date'] = __NAMESPACE__ . '\Triggers\Order_Event_Date_Trigger';
         return $triggers;
     }
 
-    public function register_rules($rules) {
-        $rules['customer_last_trip_in_period'] = 'HybridHeadlessAutomateWoo\Rules\Customer_Last_Trip_In_Period';
-        $rules['customer_has_upcoming_trip'] = 'HybridHeadlessAutomateWoo\Rules\Customer_Has_Upcoming_Trip';
-        return $rules;
+    public function register_rules($includes) {
+        $includes['customer_last_trip_in_period'] = $this->path('/includes/rules/class-customer-last-trip-in-period.php');
+        $includes['customer_has_upcoming_trip'] = $this->path('/includes/rules/class-customer-has-upcoming-trip.php');
+        return $includes;
     }
 
     public function register_variables($variables) {
-        $variables['product']['event_start_date'] = 'HybridHeadlessAutomateWoo\Variables\ProductEventStartDate';
-        $variables['product']['event_finish_date'] = 'HybridHeadlessAutomateWoo\Variables\ProductEventFinishDate';
-        $variables['product']['event_data'] = 'HybridHeadlessAutomateWoo\Variables\Product_Event_Data_Variable';
+        $variables['product']['event_start_date'] = __NAMESPACE__ . '\Variables\ProductEventStartDate';
+        $variables['product']['event_finish_date'] = __NAMESPACE__ . '\Variables\ProductEventFinishDate';
+        $variables['product']['event_data'] = __NAMESPACE__ . '\Variables\Product_Event_Data_Variable';
         return $variables;
+    }
+    public function path($path = '') {
+        return $this->plugin_data->path . $path;
     }
 }
