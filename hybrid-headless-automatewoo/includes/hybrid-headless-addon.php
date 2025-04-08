@@ -66,12 +66,15 @@ final class Hybrid_Headless_Addon extends Addon {
         // Construct the full path using the parent Addon's path() method
 		$path = $this->path( "/includes/{$file}.php" ); // Assumes files are like includes/triggers/test-trigger.php
 
+        // Add back logging for debugging path calculation
+        error_log("Attempting to load: $class from path: $path");
+
 		if ( $path && file_exists( $path ) ) {
-            // No need for logging here anymore unless debugging path issues again
 			include $path;
+            error_log("Successfully loaded: $class");
 		} else {
             // Log if file not found - helps debug path/naming issues
-            error_log("Autoload failed for class: $class. Calculated path: $path");
+            error_log("Failed to load: $class - File not found at calculated path: " . $path);
         }
 	}
 
@@ -88,11 +91,14 @@ final class Hybrid_Headless_Addon extends Addon {
 	 * @return array Modified triggers.
 	 */
 	public function register_triggers( $triggers ) {
+        error_log('Registering triggers in HybridHeadlessAutomateWoo: ' . print_r(array_keys($triggers), true)); // Add back log
+
         // Register by mapping a unique key to the fully qualified class name
 		$triggers['test_trigger']     = __NAMESPACE__ . '\Triggers\Test_Trigger';
 		$triggers['order_event_date'] = __NAMESPACE__ . '\Triggers\Order_Event_Date_Trigger';
         $triggers['debug_trigger']    = __NAMESPACE__ . '\Triggers\Debug_Trigger'; // Assuming you still want this
 
+        error_log('After adding our triggers: ' . print_r(array_keys($triggers), true)); // Add back log
 		return $triggers;
 	}
 
@@ -108,6 +114,7 @@ final class Hybrid_Headless_Addon extends Addon {
 		$includes['customer_last_trip_in_period'] = $this->path( '/includes/rules/customer-last-trip-in-period.php' );
 		$includes['customer_has_upcoming_trip']   = $this->path( '/includes/rules/customer-has-upcoming-trip.php' );
 
+        error_log('Registering rules: ' . print_r($includes, true)); // Add back log
 		return $includes;
 	}
 
@@ -123,6 +130,7 @@ final class Hybrid_Headless_Addon extends Addon {
 		$variables['product']['event_finish_date'] = __NAMESPACE__ . '\Variables\ProductEventFinishDate';
         $variables['product']['event_data'] = __NAMESPACE__ . '\Variables\ProductEventDataVariable'; // Corrected class name to match file
 
+        error_log('Registering variables: ' . print_r($variables, true)); // Add back log
 		return $variables;
 	}
 
