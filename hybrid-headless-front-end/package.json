@@ -24,7 +24,7 @@
 		"deploy:frontend": "chmod +x ./scripts/deploy.sh && ./scripts/deploy.sh --skip-plugin",
 		"deploy:plugin": "chmod +x ./scripts/deploy.sh && ./scripts/deploy.sh --skip-frontend --skip-build",
 		"deploy:frontend-only": "chmod +x ./scripts/deploy.sh && ./scripts/deploy.sh --skip-build --skip-plugin",
-
+		"deploy:automatewoo": "chmod +x ./scripts/deploy.sh && ./scripts/deploy.sh --only-automatewoo --skip-frontend --skip-build",
 		"lint:biome": "biome lint .",
 		"format:biome": "biome format . --write",
 		"check:biome": "biome check --apply ."
