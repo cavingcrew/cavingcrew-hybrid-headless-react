@@ -19,6 +19,7 @@ if (!class_exists('AutomateWoo\Addon')) {
 
 class Plugin extends Addon {
     private static $instance = null;
+    private $options;
 
     public static function instance($plugin_data) {
         if (is_null(self::$instance)) {
@@ -40,12 +41,23 @@ class Plugin extends Addon {
 
         $file = str_replace(__NAMESPACE__ . '\\', '', $class);
         $file = str_replace('\\', '/', $file);
+        
+        // Convert snake_case to kebab-case for file names
         $file = strtolower(preg_replace('/(?<!^)[A-Z]/', '-$0', $file));
+        
         $path = $this->path("/includes/{$file}.php");
 
         if (file_exists($path)) {
             include $path;
         }
+    }
+
+    public function options() {
+        if ( ! isset( $this->options ) ) {
+            include_once $this->path( '/includes/class-options.php' );
+            $this->options = new Options();
+        }
+        return $this->options;
     }
 
     public function init() {
