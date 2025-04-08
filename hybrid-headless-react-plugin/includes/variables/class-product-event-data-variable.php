@@ -1,5 +1,5 @@
 <?php
-namespace HybridHeadless\Variables;
+namespace HybridHeadlessAutomateWoo\Variables;
 
 use AutomateWoo\Variable_Abstract_Datetime;
 use AutomateWoo\Clean;
@@ -10,17 +10,17 @@ class Product_Event_Data_Variable extends Variable_Abstract_Datetime {
 
     public function load_admin_details() {
         $type_options = [
-            'product' => __( 'Product Event Data', 'hybrid-headless' ),
-            'route' => __( 'Route Data', 'hybrid-headless' ), 
-            'hut' => __( 'Hut Data', 'hybrid-headless' ),
-            'cave' => __( 'Cave Data', 'hybrid-headless' )
+            'product' => __( 'Product Event Data', 'hybrid-headless-automatewoo' ),
+            'route' => __( 'Route Data', 'hybrid-headless-automatewoo' ), 
+            'hut' => __( 'Hut Data', 'hybrid-headless-automatewoo' ),
+            'cave' => __( 'Cave Data', 'hybrid-headless-automatewoo' )
         ];
 
-        $this->add_parameter_select_field( 'type', __( 'Select which event data to display', 'hybrid-headless' ), $type_options, true );
-        parent::add_parameter_select_field( 'format', __( 'Date format', 'hybrid-headless' ), $this->get_date_format_options(), false );
+        $this->add_parameter_select_field( 'type', __( 'Select which event data to display', 'hybrid-headless-automatewoo' ), $type_options, true );
+        parent::add_parameter_select_field( 'format', __( 'Date format', 'hybrid-headless-automatewoo' ), $this->get_date_format_options(), false );
 
-        $this->description = __( "Displays event-related data for products", 'hybrid-headless' );
-        $this->group = __( 'Product', 'hybrid-headless' );
+        $this->description = __( "Displays event-related data for products", 'hybrid-headless-automatewoo' );
+        $this->group = __( 'Product', 'hybrid-headless-automatewoo' );
     }
 
     public function get_value( $product, $parameters ) {
