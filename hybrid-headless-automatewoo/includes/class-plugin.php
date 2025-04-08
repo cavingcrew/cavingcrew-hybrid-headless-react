@@ -56,22 +56,6 @@ class Plugin extends Addon {
     public function init() {
         error_log('Initializing HybridHeadlessAutomateWoo plugin');
         
-        // Explicitly include trigger files
-        $trigger_files = [
-            '/includes/triggers/class-test-trigger.php',
-            '/includes/triggers/class-order-event-date-trigger.php'
-        ];
-        
-        foreach ($trigger_files as $file) {
-            $path = $this->plugin_data->path . $file;
-            if (file_exists($path)) {
-                error_log("Including trigger file: $path");
-                include_once $path;
-            } else {
-                error_log("Trigger file not found: $path");
-            }
-        }
-        
         add_filter('automatewoo/triggers', [$this, 'register_triggers']);
         add_filter('automatewoo/rules/includes', [$this, 'register_rules']);
         add_filter('automatewoo/variables', [$this, 'register_variables']);
