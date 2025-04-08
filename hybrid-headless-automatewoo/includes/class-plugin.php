@@ -112,8 +112,10 @@ class Plugin extends Addon {
     }
 
     public function register_rules($includes) {
-        $includes['customer_last_trip_in_period'] = $this->path('/includes/rules/class-customer-last-trip-in-period.php');
-        $includes['customer_has_upcoming_trip'] = $this->path('/includes/rules/class-customer-has-upcoming-trip.php');
+        // Use the correct filenames after renaming
+        $includes['customer_last_trip_in_period'] = $this->path('/includes/rules/customer-last-trip-in-period.php');
+        $includes['customer_has_upcoming_trip'] = $this->path('/includes/rules/customer-has-upcoming-trip.php');
+        error_log('Registering rules: ' . print_r($includes, true)); // Add log to see registered rule paths
         return $includes;
     }
 
@@ -124,6 +126,11 @@ class Plugin extends Addon {
         return $variables;
     }
     public function path($path = '') {
-        return $this->plugin_data->path . $path;
+        // Add debug log here
+        error_log("Inside path(): \$this->plugin_data->path = " . ($this->plugin_data->path ?? 'NULL'));
+        error_log("Inside path(): \$path argument = " . $path);
+        $full_path = ($this->plugin_data->path ?? '') . $path;
+        error_log("Inside path(): Returning full path = " . $full_path);
+        return $full_path;
     }
 }
