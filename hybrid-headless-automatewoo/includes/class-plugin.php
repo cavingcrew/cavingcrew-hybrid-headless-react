@@ -28,7 +28,12 @@ class Plugin extends Addon {
 
         $file = str_replace(__NAMESPACE__ . '\\', '', $class);
         $file = str_replace('\\', '/', $file);
-        $file = strtolower(preg_replace('/(?<!^)[A-Z]/', '-$0', $file));
+        
+        // Add 'class-' prefix and convert to hyphenated lowercase
+        $file_parts = explode('/', $file);
+        $file_parts[count($file_parts)-1] = 'class-' . strtolower(preg_replace('/(?<!^)[A-Z]/', '-$0', end($file_parts)));
+        $file = implode('/', $file_parts);
+        
         $path = $this->path("/includes/$file.php");
 
         if (file_exists($path)) {
