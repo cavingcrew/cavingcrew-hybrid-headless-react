@@ -9,6 +9,10 @@ defined( 'ABSPATH' ) || exit;
 class Product_Event_Data_Variable extends Variable_Abstract_Datetime {
 
     public function load_admin_details() {
+        $this->title = __( 'Product - Event Data', 'hybrid-headless-automatewoo' );
+        $this->group = __( 'Product', 'hybrid-headless-automatewoo' );
+        $this->description = __( "Displays event-related data for products", 'hybrid-headless-automatewoo' );
+
         $type_options = [
             'product' => __( 'Product Event Data', 'hybrid-headless-automatewoo' ),
             'route' => __( 'Route Data', 'hybrid-headless-automatewoo' ), 
@@ -18,9 +22,6 @@ class Product_Event_Data_Variable extends Variable_Abstract_Datetime {
 
         $this->add_parameter_select_field( 'type', __( 'Select which event data to display', 'hybrid-headless-automatewoo' ), $type_options, true );
         parent::add_parameter_select_field( 'format', __( 'Date format', 'hybrid-headless-automatewoo' ), $this->get_date_format_options(), false );
-
-        $this->description = __( "Displays event-related data for products", 'hybrid-headless-automatewoo' );
-        $this->group = __( 'Product', 'hybrid-headless-automatewoo' );
     }
 
     public function get_value( $product, $parameters ) {

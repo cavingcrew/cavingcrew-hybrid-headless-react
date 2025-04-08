@@ -15,6 +15,7 @@ class Customer_Last_Trip_In_Period extends Abstract_Date {
     public function init() {
         $this->title = __( 'Customer - Last Trip Within Period', 'hybrid-headless' );
         $this->group = __( 'Customer', 'hybrid-headless' );
+        parent::init();
     }
 
     public function validate( $customer, $compare, $value ) {

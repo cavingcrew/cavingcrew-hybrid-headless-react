@@ -7,8 +7,10 @@ defined( 'ABSPATH' ) || exit;
 
 class Customer_Has_Upcoming_Trip extends Customer_Trip_Date_Rule {
 
-    public function get_title() {
-        return __( 'Customer - Has Upcoming Trip Within Time Period', 'hybrid-headless' );
+    public function init() {
+        $this->title = __( 'Customer - Has Upcoming Trip', 'hybrid-headless' );
+        $this->group = __( 'Customer', 'hybrid-headless' );
+        parent::init();
     }
 
     public function validate( $customer, $compare_type, $value ) {
