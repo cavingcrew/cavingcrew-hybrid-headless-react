@@ -26,40 +26,75 @@ class Product_Event_Data_Variable extends Variable_Abstract_Datetime {
 
     public function get_value( $product, $parameters ) {
         if ( ! $product || ! $product->get_id() ) {
-            return '';
+            return ''; // Return empty if product or field parameter is missing
         }
 
+        // Fetch the complete data structure
         $data = $this->get_product_event_data( $product->get_id() );
-        
-        if ( empty( $parameters['field'] ) ) {
-            return $data;
+
+        // Get the requested value using the path from the 'field' parameter
+        $value = $this->get_nested_property( $data, $parameters['field'] );
+
+        // If the value is an array, convert it to a comma-separated string
+        if ( is_array( $value ) ) {
+            // Clean array elements before imploding
+            $cleaned_array = array_map( [ Clean::class, 'string' ], $value );
+            // Filter out empty values that might result from cleaning
+            $non_empty_array = array_filter($cleaned_array, function($item) {
+                return $item !== '';
+            });
+            return implode( ', ', $non_empty_array );
         }
-        
-        return $this->get_nested_property( $data, $parameters['field'] );
+
+        // Otherwise, return the cleaned string value
+        return Clean::string( $value );
     }
 
+    /**
+     * Fetches and structures all related event data.
+     * Checks if ACF function exists before calling it.
+     *
+     * @param int $product_id
+     * @return array
+     */
     private function get_product_event_data( $product_id ) {
         return [
             'product' => $this->get_product_fields( $product_id ),
             'route'   => $this->get_route_data( $product_id ),
             'hut'     => $this->get_hut_data( $product_id ),
-            'cave'    => $this->get_cave_data( $product_id ),
+            'cave'    => $this->get_cave_data( $product_id ), // Keep cave data retrieval
         ];
     }
 
+    /**
+     * Gets direct product ACF fields.
+     * Checks if ACF function exists before calling it.
+     *
+     * @param int $product_id
+     * @return array
+     */
     private function get_product_fields( $product_id ) {
+        if ( ! function_exists('get_field') ) return [];
         return [
             'event_start_date_time'  => get_field( 'event_start_date_time', $product_id ),
             'event_finish_date_time' => get_field( 'event_finish_date_time', $product_id ),
             'event_type'             => get_field( 'event_type', $product_id ),
             'event_trip_leader'      => get_field( 'event_trip_leader', $product_id ),
+            // Add other direct product fields if necessary
         ];
     }
 
+    /**
+     * Gets related route data.
+     * Checks if ACF function exists before calling it.
+     *
+     * @param int $product_id
+     * @return array|null
+     */
     private function get_route_data( $product_id ) {
         $route_id = $this->get_referenced_post_id( 'event_route_id', $product_id );
-        
-        if ( ! $route_id ) {
+
+        if ( ! $route_id || ! function_exists('get_fields') ) {
             return null;
         }
 
@@ -72,15 +107,27 @@ class Product_Event_Data_Variable extends Variable_Abstract_Datetime {
             'difficulty'  => $this->get_route_difficulty( $route_data ),
             'entrance'    => $this->get_location_data( $route_data['route_entrance_location_id'] ?? 0 ),
             'exit'        => $this->get_location_data( $route_data['route_exit_location_id'] ?? 0 ),
+            'exit'        => $this->get_location_data( $route_data['route_exit_location_id'] ?? 0 ),
+            // Add other route fields if necessary
         ];
     }
 
+    /**
+     * Gets related hut data.
+     * Checks if ACF function exists before calling it.
+     *
+     * @param int $product_id
+     * @return array|null
+     */
     private function get_hut_data( $product_id ) {
         $hut_id = $this->get_referenced_post_id( 'hut_id', $product_id );
-        if ( ! $hut_id ) return null;
+        if ( ! $hut_id || ! function_exists('get_fields') ) {
+             return null;
+        }
 
         $hut_data = get_fields( $hut_id );
-        
+        if ( ! $hut_data ) return null; // Check if get_fields returned data
+
         return [
             'id' => $hut_id,
             'name' => $hut_data['hut_name'] ?? '',
@@ -92,13 +139,21 @@ class Product_Event_Data_Variable extends Variable_Abstract_Datetime {
             'facilities' => $hut_data['hut_facilities'] ?? [],
             'capacity' => $hut_data['hut_capacity'] ?? '',
             'dogs_allowed' => $hut_data['hut_dogs_allowed'] ?? 'no'
+            // Add other hut fields if necessary
         ];
     }
 
+    /**
+     * Gets related cave data.
+     * Checks if ACF function exists before calling it.
+     *
+     * @param int $product_id
+     * @return array|null
+     */
     private function get_cave_data( $product_id ) {
         $cave_id = $this->get_referenced_post_id( 'event_cave_id', $product_id );
-        
-        if ( ! $cave_id ) {
+
+        if ( ! $cave_id || ! function_exists('get_fields') ) {
             return null;
         }
 
@@ -109,13 +164,38 @@ class Product_Event_Data_Variable extends Variable_Abstract_Datetime {
             'name'        => get_the_title( $cave_id ),
             'description' => $cave_data['location_description'] ?? '',
             'access'      => $cave_data['location_access_arrangement'] ?? '',
+            // Add other cave fields if necessary
         ];
     }
 
+    /**
+     * Helper to get the ID from an ACF Post Object or Relationship field.
+     * Checks if ACF function exists before calling it.
+     *
+     * @param string $field_name
+     * @param int $product_id
+     * @return int|null
+     */
     private function get_referenced_post_id( $field_name, $product_id ) {
+        if ( ! function_exists('get_field') ) return null;
         $value = get_field( $field_name, $product_id );
-        
-        if ( is_array( $value ) && isset( $value['ID'] ) ) {
+
+        // Handle ACF Post Object field (returns WP_Post object or ID)
+        if ( $value instanceof \WP_Post ) {
+            return $value->ID;
+        }
+        // Handle ACF Relationship field (returns array of IDs or Post objects)
+        if ( is_array( $value ) && ! empty( $value ) ) {
+            $first_item = reset($value);
+            if ( $first_item instanceof \WP_Post ) {
+                return $first_item->ID;
+            }
+            if ( is_numeric( $first_item ) ) {
+                return (int) $first_item; // Return the first related post ID
+            }
+        }
+        // Handle case where field stores just the ID
+        if ( is_numeric( $value ) ) {
             return $value['ID'];
         }
         
@@ -152,29 +232,49 @@ class Product_Event_Data_Variable extends Variable_Abstract_Datetime {
             'name'        => get_the_title( $location_id ),
             'coordinates' => $this->parse_coordinates( $location_data['location_parking_latlong'] ?? '' ),
             'description' => $location_data['location_parking_description'] ?? '',
+            'description' => $location_data['location_parking_description'] ?? '',
+            // Add other location fields if necessary
         ];
     }
 
+    /**
+     * Gets route difficulty fields.
+     *
+     * @param array $route_data ACF fields for the route.
+     * @return array
+     */
     private function get_route_difficulty( $route_data ) {
         return [
-            'claustrophobia' => $route_data['route_difficulty_psychological_claustrophobia'] ?? 0,
-            'tightness'      => $route_data['route_difficulty_objective_tightness'] ?? 0,
-            'wetness'        => $route_data['route_difficulty_wetness'] ?? 0,
-            'heights'        => $route_data['route_difficulty_exposure_to_heights'] ?? 0,
+            'claustrophobia' => $route_data['route_difficulty_psychological_claustrophobia'] ?? '', // Return empty string if not set
+            'tightness'      => $route_data['route_difficulty_objective_tightness'] ?? '',
+            'wetness'        => $route_data['route_difficulty_wetness'] ?? '',
+            'heights'        => $route_data['route_difficulty_exposure_to_heights'] ?? '',
+            // Add other difficulty fields if necessary
         ];
     }
 
+    /**
+     * Safely retrieves a nested property from an array using dot notation.
+     *
+     * @param array $data The data array.
+     * @param string $path The dot-separated path (e.g., 'route.difficulty.claustrophobia').
+     * @return mixed The value found at the path, or an empty string if not found.
+     */
     private function get_nested_property( $data, $path ) {
         $parts = explode( '.', $path );
         $value = $data;
 
         foreach ( $parts as $part ) {
-            if ( ! isset( $value[$part] ) ) {
+            // Check if the current level is an array and the key exists
+            if ( is_array( $value ) && isset( $value[$part] ) ) {
+                $value = $value[$part];
+            } else {
+                // Path does not exist
                 return '';
             }
-            $value = $value[$part];
         }
 
-        return is_array( $value ) ? Clean::recursive( $value ) : Clean::string( $value );
+        // Return the final value (could be scalar or array)
+        return $value;
     }
 }
