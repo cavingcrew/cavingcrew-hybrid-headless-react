@@ -32,9 +32,11 @@ class Plugin {
     }
 
     private function load_files() {
-        require_once __DIR__ . '/includes/rules/class-customer-last-trip-in-period.php';
-        require_once __DIR__ . '/includes/rules/class-customer-has-upcoming-trip.php';
+        // Load parent class first
         require_once __DIR__ . '/includes/rules/class-customer-trip-date-rule.php';
+        // Then child classes
+        require_once __DIR__ . '/includes/rules/class-customer-has-upcoming-trip.php';
+        require_once __DIR__ . '/includes/rules/class-customer-last-trip-in-period.php';
         require_once __DIR__ . '/includes/variables/class-product-event-data-variable.php';
     }
 

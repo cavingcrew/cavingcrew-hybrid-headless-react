@@ -1,5 +1,5 @@
 <?php
-namespace HybridHeadless\Rules;
+namespace HybridHeadlessAutomateWoo\Rules;
 
 use AutomateWoo\Rules;
 use AutomateWoo\Customer;
