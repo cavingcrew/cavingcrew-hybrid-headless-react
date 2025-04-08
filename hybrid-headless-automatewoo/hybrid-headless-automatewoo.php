@@ -14,6 +14,9 @@
 
 defined('ABSPATH') || exit;
 
+// Use statement for easier access
+use AutomateWoo\Addons;
+
 /**
  * Loader class for the Hybrid Headless AutomateWoo Add-on.
  * Mirrors the structure of AW_Birthdays_Loader.
@@ -80,6 +83,22 @@ final class Hybrid_Headless_AutomateWoo_Loader {
 
             if ($instance) {
                 error_log('[Loader] Successfully obtained addon instance.'); // Log success
+
+                // Explicitly register the addon instance with AutomateWoo's registry
+                if ( class_exists('AutomateWoo\Addons') ) {
+                    error_log('[Loader] Attempting to explicitly register addon with AutomateWoo\\Addons...');
+                    Addons::register( $instance );
+                    // Verify registration immediately (optional, but helpful)
+                    $verify_addon = Addons::get( self::$data->id );
+                    if ($verify_addon) {
+                         error_log('[Loader] Successfully registered addon. Found in registry immediately.');
+                    } else {
+                         error_log('[Loader] Failed to register addon explicitly or find it immediately after registration.');
+                    }
+                } else {
+                     error_log('[Loader] AutomateWoo\\Addons class not found for explicit registration.');
+                }
+
             } else {
                 error_log('[Loader] Failed to obtain addon instance.'); // Log failure
             }
