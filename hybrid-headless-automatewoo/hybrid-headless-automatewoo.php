@@ -62,21 +62,36 @@ final class Hybrid_Headless_AutomateWoo_Loader {
      * Renamed from load() to load_addon() for clarity.
 	 */
 	public static function load_addon() {
+        error_log('[Loader] Running load_addon method.'); // Log start
 		self::check_requirements(); // Check dependencies first
 
 		if ( empty( self::$errors ) ) {
-            // Include the main addon class file
-			require_once __DIR__ . '/includes/hybrid-headless-addon.php';
+            error_log('[Loader] Requirements check passed. Proceeding to load addon class.'); // Log check passed
+            $addon_file = __DIR__ . '/includes/hybrid-headless-addon.php';
+            error_log('[Loader] Attempting to include: ' . $addon_file); // Log before include
 
+            // Include the main addon class file
+			require_once $addon_file;
+            error_log('[Loader] Successfully included addon class file.'); // Log after include
+
+            error_log('[Loader] Attempting to get addon instance...'); // Log before instance call
             // Instantiate the addon using its singleton method (inherited from AutomateWoo\Addon)
             // This automatically stores the instance.
-            \HybridHeadlessAutomateWoo\Hybrid_Headless_Addon::instance( self::$data );
+            $instance = \HybridHeadlessAutomateWoo\Hybrid_Headless_Addon::instance( self::$data );
+
+            if ($instance) {
+                error_log('[Loader] Successfully obtained addon instance.'); // Log success
+            } else {
+                error_log('[Loader] Failed to obtain addon instance.'); // Log failure
+            }
 
             // Optional: Activation hook logic like Birthdays
 			// if ( 'yes' === get_option( self::$data->id . '-activated' ) ) {
 			// 	add_action( 'automatewoo_loaded', [ __CLASS__, 'addon_activate' ] );
 			// }
-		}
+		} else {
+            error_log('[Loader] Requirements check failed. Errors: ' . print_r(self::$errors, true)); // Log if req check fails
+        }
 	}
 
     /**

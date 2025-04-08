@@ -35,5 +35,5 @@ class Customer_Has_Upcoming_Trip extends Customer_Trip_Date_Rule {
     }
 }
 
-error_log('[Rule Include] Including and returning Customer_Has_Upcoming_Trip instance.'); // Add this log
+// Removed logging from here as it's not the primary issue
 return new Customer_Has_Upcoming_Trip();

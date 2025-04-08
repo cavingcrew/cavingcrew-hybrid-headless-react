@@ -120,16 +120,16 @@ final class Hybrid_Headless_Addon extends Addon {
 	 * @return array Modified triggers.
 	 */
 	public function register_triggers( $triggers ) {
-        // Ensure this log appears. If not, the filter isn't running.
+        // Keep this log to confirm the filter hook runs
         error_log('[Register] Running register_triggers filter hook.');
-        error_log('[Register] Initial triggers: ' . print_r(array_keys($triggers), true));
+        // Removed initial/final trigger list logging for brevity
 
         // Register by mapping a unique key to the fully qualified class name
 		$triggers['hh_test_trigger']     = __NAMESPACE__ . '\Triggers\Test_Trigger'; // Added prefix for uniqueness
 		$triggers['hh_order_event_date'] = __NAMESPACE__ . '\Triggers\Order_Event_Date_Trigger'; // Added prefix
         $triggers['hh_debug_trigger']    = __NAMESPACE__ . '\Triggers\Debug_Trigger'; // Added prefix
 
-        error_log('[Register] After adding Hybrid Headless triggers: ' . print_r(array_keys($triggers), true));
+        // Removed final trigger list logging for brevity
 		return $triggers;
 	}
 
@@ -145,7 +145,7 @@ final class Hybrid_Headless_Addon extends Addon {
 		$includes['customer_last_trip_in_period'] = $this->path( '/includes/rules/customer-last-trip-in-period.php' );
 		$includes['customer_has_upcoming_trip']   = $this->path( '/includes/rules/customer-has-upcoming-trip.php' );
 
-        error_log('Registering rules: ' . print_r($includes, true)); // Add back log
+        // Removed rule registration logging
 		return $includes;
 	}
 
@@ -161,7 +161,7 @@ final class Hybrid_Headless_Addon extends Addon {
 		$variables['product']['event_finish_date'] = __NAMESPACE__ . '\Variables\ProductEventFinishDate';
         $variables['product']['event_data'] = __NAMESPACE__ . '\Variables\ProductEventDataVariable'; // Corrected class name to match file
 
-        error_log('Registering variables: ' . print_r($variables, true)); // Add back log
+        // Removed variable registration logging
 		return $variables;
 	}
 
