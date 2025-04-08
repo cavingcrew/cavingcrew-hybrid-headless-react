@@ -66,7 +66,15 @@ class Plugin extends Addon {
     }
 
     public function register_triggers($triggers) {
+        error_log('Registering triggers: ' . print_r(array_keys($triggers), true));
+        
+        // Add test trigger
+        $triggers['test_trigger'] = __NAMESPACE__ . '\Triggers\Test_Trigger';
+        
+        // Add your other triggers
         $triggers['order_event_date'] = __NAMESPACE__ . '\Triggers\Order_Event_Date_Trigger';
+        
+        error_log('After adding our triggers: ' . print_r(array_keys($triggers), true));
         return $triggers;
     }
 

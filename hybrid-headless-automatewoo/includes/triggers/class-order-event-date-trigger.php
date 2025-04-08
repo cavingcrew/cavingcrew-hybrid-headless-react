@@ -14,10 +14,10 @@ class Order_Event_Date_Trigger extends AbstractBatchedDailyTrigger {
 
     public $supplied_data_items = [ 'order', 'customer', 'product' ];
 
-    public function load_admin_details() {
-        $this->title = __( 'Order Event Date', 'hybrid-headless' );
-        $this->description = __( 'Triggers based on time relative to a product\'s event date', 'hybrid-headless' );
-        $this->group = __( 'Orders', 'hybrid-headless' );
+    public function init() {
+        $this->title = __( 'Order Event Date', 'hybrid-headless-automatewoo' );
+        $this->description = __( 'Triggers based on time relative to a product\'s event date', 'hybrid-headless-automatewoo' );
+        $this->group = __( 'Orders', 'hybrid-headless-automatewoo' );
     }
 
     public function load_fields() {
@@ -142,11 +142,21 @@ class Order_Event_Date_Trigger extends AbstractBatchedDailyTrigger {
         $order = $workflow->data_layer()->get_order();
         $product = $workflow->data_layer()->get_product();
 
-        if ( ! $order || ! $product ) {
+        if ( ! $order ) {
+            $workflow->log_error('Order not found in data layer');
             return false;
         }
 
-        // Ensure we haven't already triggered for this order in the last hour
-        return ! $workflow->has_run_for_data_item( 'order', HOUR_IN_SECONDS );
+        if ( ! $product ) {
+            $workflow->log_error('Product not found in data layer');
+            return false;
+        }
+
+        if ( $workflow->has_run_for_data_item( 'order', HOUR_IN_SECONDS ) ) {
+            $workflow->log_error('Workflow has already run for this order in the last hour');
+            return false;
+        }
+
+        return true;
     }
 }
