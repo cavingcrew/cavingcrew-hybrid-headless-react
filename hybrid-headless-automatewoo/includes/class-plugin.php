@@ -47,6 +47,10 @@ class Plugin extends Addon {
         $this->options = new Options();
     }
 
+    public function options() {
+        return $this->options;
+    }
+
     public function register_triggers($triggers) {
         $triggers['order_event_date'] = __NAMESPACE__ . '\Triggers\Order_Event_Date_Trigger';
         return $triggers;
