@@ -3,10 +3,20 @@
 # Configuration
 REMOTE_HOST="cavingcrew"
 REMOTE_PATH="/home/bitnami/apps/nextjs-frontend"
-PLUGIN_SOURCE="../hybrid-headless-react-plugin"
-PLUGIN_DEST="/home/bitnami/stack/wordpress/wp-content/plugins"
 APP_NAME="hybrid-headless-frontend"
-PLUGIN_NAME="hybrid-headless-react-plugin"
+
+# Plugin configurations
+PLUGINS=(
+    ["hybrid"]=(
+        "source=../hybrid-headless-react-plugin"
+        "name=hybrid-headless-react-plugin" 
+    )
+    ["automatewoo"]=(
+        "source=../climbingclan-automatewoo-birthdays"
+        "name=automatewoo-birthdays"
+    )
+)
+PLUGIN_DEST="/home/bitnami/stack/wordpress/wp-content/plugins"
 
 # Colors for output
 GREEN='\033[0;32m'
@@ -16,11 +26,15 @@ YELLOW='\033[1;33m'
 
 # Function to deploy WordPress plugin
 deploy_plugin() {
-    echo "🔌 Deploying WordPress plugin..."
+    local plugin_key=$1
+    local plugin_source=${PLUGINS[$plugin_key][0]#*=}
+    local plugin_name=${PLUGINS[$plugin_key][1]#*=}
+
+    echo "🔌 Deploying WordPress plugin: $plugin_name..."
     
     # Deactivate plugin
     echo "⏸️  Deactivating plugin..."
-    ssh -o "ForwardX11=no" -o "ForwardAgent=no" "$REMOTE_HOST" "sudo wp plugin deactivate $PLUGIN_NAME --path=/home/bitnami/stack/wordpress --allow-root"
+    ssh -o "ForwardX11=no" -o "ForwardAgent=no" "$REMOTE_HOST" "sudo wp plugin deactivate $plugin_name --path=/home/bitnami/stack/wordpress --allow-root"
     
     # Deploy plugin files
     echo "📤 Copying plugin files..."
@@ -30,7 +44,7 @@ deploy_plugin() {
         --exclude='node_modules/' \
         --exclude='tests/' \
         --exclude='.github/' \
-        "$PLUGIN_SOURCE" \
+        "$plugin_source" \
         "$REMOTE_HOST:$PLUGIN_DEST/"
 
     if [ $? -ne 0 ]; then
@@ -40,7 +54,7 @@ deploy_plugin() {
 
     # Reactivate plugin
     echo "▶️  Reactivating plugin..."
-    ssh -o "ForwardX11=no" -o "ForwardAgent=no" "$REMOTE_HOST" "sudo wp plugin activate $PLUGIN_NAME --path=/home/bitnami/stack/wordpress --allow-root"
+    ssh -o "ForwardX11=no" -o "ForwardAgent=no" "$REMOTE_HOST" "sudo wp plugin activate $plugin_name --path=/home/bitnami/stack/wordpress --allow-root"
     
     echo -e "${GREEN}✨ Plugin deployment complete!${NC}"
 }
@@ -104,12 +118,16 @@ deploy_frontend() {
 SKIP_BUILD=false
 SKIP_FRONTEND=false
 SKIP_PLUGIN=false
+ONLY_AUTOMATEWOO=false
+DEPLOY_PLUGINS=false
 
 while [[ "$#" -gt 0 ]]; do
     case $1 in
         --skip-build) SKIP_BUILD=true ;;
         --skip-frontend) SKIP_FRONTEND=true ;;
         --skip-plugin) SKIP_PLUGIN=true ;;
+        --only-automatewoo) ONLY_AUTOMATEWOO=true ;;
+        --plugins) DEPLOY_PLUGINS=true ;;
         *) echo "Unknown parameter: $1"; exit 1 ;;
     esac
     shift
@@ -118,7 +136,8 @@ done
 # Main deployment logic
 echo "🚀 Starting deployment process..."
 
-if [ "$SKIP_FRONTEND" = false ]; then
+# Handle frontend deployment
+if [ "$SKIP_FRONTEND" = false ] && [ "$ONLY_AUTOMATEWOO" = false ]; then
     if [ "$SKIP_BUILD" = false ]; then
         echo "📦 Building Next.js application..."
         NEXT_TELEMETRY_DISABLED=1 npm run build
@@ -135,8 +154,16 @@ else
     echo -e "${YELLOW}Skipping frontend deployment...${NC}"
 fi
 
-if [ "$SKIP_PLUGIN" = false ]; then
-    deploy_plugin
+# Handle plugin deployments
+if [ "$SKIP_PLUGIN" = false ] || [ "$DEPLOY_PLUGINS" = true ] || [ "$ONLY_AUTOMATEWOO" = true ]; then
+    if [ "$ONLY_AUTOMATEWOO" = true ]; then
+        deploy_plugin "automatewoo"
+    elif [ "$DEPLOY_PLUGINS" = true ]; then
+        deploy_plugin "hybrid"
+        deploy_plugin "automatewoo"
+    else
+        deploy_plugin "hybrid"
+    fi
 else
     echo -e "${YELLOW}Skipping plugin deployment...${NC}"
 fi
