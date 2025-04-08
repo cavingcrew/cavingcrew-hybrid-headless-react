@@ -1,7 +1,6 @@
 <?php
-error_log('[Rule Include Attempt] Including customer-has-upcoming-trip.php'); // Add this log
-
 namespace HybridHeadlessAutomateWoo\Rules;
+error_log('[Rule Include Attempt] Including customer-has-upcoming-trip.php'); // Moved after namespace
 
 use AutomateWoo\Customer; // Keep
 use AutomateWoo\Clean; // Keep

@@ -1,7 +1,6 @@
 <?php
-error_log('[Rule Include Attempt] Including customer-last-trip-in-period.php'); // Add this log
-
 namespace HybridHeadlessAutomateWoo\Rules;
+error_log('[Rule Include Attempt] Including customer-last-trip-in-period.php'); // Moved after namespace
 
 use AutomateWoo\Clean;
 use AutomateWoo\DateTime;
