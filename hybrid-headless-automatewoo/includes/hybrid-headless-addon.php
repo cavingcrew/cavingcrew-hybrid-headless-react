@@ -43,6 +43,15 @@ final class Hybrid_Headless_Addon extends Addon {
      */
     public function init() {
         error_log('[Init] Running Hybrid_Headless_Addon init() method.'); // Add this log
+
+        // Explicitly include variable files early to ensure classes are defined
+        // before AutomateWoo tries to load them via registry paths.
+        $variable_path = $this->path( '/includes/variables/' );
+        include_once $variable_path . 'product-event-start-date.php';
+        include_once $variable_path . 'product-event-finish-date.php';
+        include_once $variable_path . 'product-event-data-variable.php';
+        error_log('[Init] Explicitly included variable files.');
+
         // Add hooks for registration here, ensuring they run after AutomateWoo is ready.
         add_filter( 'automatewoo/triggers', [ $this, 'register_triggers' ] );
 		add_filter( 'automatewoo/rules/includes', [ $this, 'register_rules' ] );
