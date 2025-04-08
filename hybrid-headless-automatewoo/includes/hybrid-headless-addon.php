@@ -26,6 +26,7 @@ final class Hybrid_Headless_Addon extends Addon {
 	 * @param \stdClass $plugin_data
 	 */
 	public function __construct( $plugin_data ) {
+        error_log('[Constructor] Hybrid_Headless_Addon constructor running.'); // Add this log
 		parent::__construct( $plugin_data ); // Pass data to parent constructor
 
 		// Register autoloader immediately

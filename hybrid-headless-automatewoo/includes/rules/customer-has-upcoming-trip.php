@@ -35,4 +35,5 @@ class Customer_Has_Upcoming_Trip extends Customer_Trip_Date_Rule {
     }
 }
 
+error_log('[Rule Include] Including and returning Customer_Has_Upcoming_Trip instance.'); // Add this log
 return new Customer_Has_Upcoming_Trip();
