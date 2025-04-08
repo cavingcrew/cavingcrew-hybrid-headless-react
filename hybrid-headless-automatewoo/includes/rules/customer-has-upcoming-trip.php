@@ -109,4 +109,5 @@ class Customer_Has_Upcoming_Trip extends Abstract_Date {
 
 }
 
+error_log('[Rule Return] Reached end of customer-has-upcoming-trip.php, returning instance.'); // Add this log
 return new Customer_Has_Upcoming_Trip();

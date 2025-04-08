@@ -5,9 +5,8 @@ namespace HybridHeadlessAutomateWoo\Rules;
 
 use AutomateWoo\Clean;
 use AutomateWoo\DateTime;
-use AutomateWoo\Rules\Abstract_Date; // Keep this
-use AutomateWoo\DateTime; // Keep this
-use AutomateWoo\Clean; // Keep this
+use AutomateWoo\Rules\Abstract_Date;
+// Removed duplicate use statements
 
 defined( 'ABSPATH' ) || exit;
 
@@ -109,4 +108,5 @@ class Customer_Last_Trip_In_Period extends Abstract_Date {
     }
 }
 
+error_log('[Rule Return] Reached end of customer-last-trip-in-period.php, returning instance.'); // Add this log
 return new Customer_Last_Trip_In_Period();
