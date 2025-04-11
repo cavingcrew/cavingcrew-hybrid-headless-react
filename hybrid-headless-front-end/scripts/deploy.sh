@@ -149,7 +149,7 @@ done
 echo "🚀 Starting deployment process..."
 
 # Handle frontend deployment
-if [ "$SKIP_FRONTEND" = false ] && [ "$ONLY_AUTOMATEWOO" = false ]; then
+if [ "$SKIP_FRONTEND" = false ]; then
     if [ "$SKIP_BUILD" = false ]; then
         echo "📦 Building Next.js application..."
         NEXT_TELEMETRY_DISABLED=1 npm run build
