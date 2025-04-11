@@ -377,13 +377,14 @@ export function TripSignupWidget({
             ) : (
               <Group justify="space-between">
                 {!isMember && !nonMembersWelcome ? (
-                  <Alert color="blue" w="100%">
-                    Membership required.{" "}
-                    <Anchor href="/membership" c="blue">
-                      Get membership
-                    </Anchor>{" "}
-                    to sign up
-                  </Alert>
+                  <Button
+                    component="a"
+                    href="/membership"
+                    size="lg"
+                    fullWidth
+                  >
+                    Membership Required - Get Membership to Sign Up
+                  </Button>
                 ) : !isMember && mustCavedBefore ? (
                   <Alert color="blue" w="100%">
                     This trip requires previous experience.{" "}
