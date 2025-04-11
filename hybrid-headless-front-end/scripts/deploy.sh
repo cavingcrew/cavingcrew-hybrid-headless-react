@@ -140,6 +140,15 @@ while [[ "$#" -gt 0 ]]; do
         --skip-build) SKIP_BUILD=true ;;
         --skip-frontend) SKIP_FRONTEND=true ;;
         --skip-plugin) SKIP_PLUGINS=true ;;
+        --frontend-only)
+            SKIP_PLUGINS=true
+            SKIP_BUILD=false
+            shift
+            ;;
+        --plugins-only)
+            SKIP_FRONTEND=true
+            shift
+            ;;
         *) echo "Unknown parameter: $1"; exit 1 ;;
     esac
     shift
