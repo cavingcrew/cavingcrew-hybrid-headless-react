@@ -482,15 +482,16 @@ export function TripSignupWidget({
 							<Group justify="space-between">
 								{!isMember && !nonMembersWelcome ? (
 									<>
-										<Alert 
-											color="blue" 
-											variant="light" 
+										<Alert
+											color="blue"
+											variant="light"
 											mb="md"
 											icon={<IconInfoCircle size={18} />}
 										>
 											<Text fw={500}>
-												You'll need Crew membership to join this trip. It's instant, costs less than 
-												you think, and can be cancelled any time.
+												You'll need Crew membership to join this trip. It's
+												instant, costs less than you think, and can be cancelled
+												any time.
 											</Text>
 										</Alert>
 										<Button
@@ -503,7 +504,7 @@ export function TripSignupWidget({
 											style={{
 												fontWeight: 600,
 												fontSize: "1.1rem",
-												backgroundColor: '#228be6',
+												backgroundColor: "#228be6",
 											}}
 										>
 											<Group gap="xs">
