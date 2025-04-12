@@ -381,7 +381,8 @@ export function TripSignupWidget({
 													hasPurchased ||
 													!inStock ||
 													isBcaMemberVariation ||
-													isPurchased
+													isPurchased ||
+													(!isMember && !nonMembersWelcome)
 												}
 												styles={{
 													root: {
@@ -469,9 +470,33 @@ export function TripSignupWidget({
 						) : (
 							<Group justify="space-between">
 								{!isMember && !nonMembersWelcome ? (
-									<Button component="a" href="/membership" size="lg" fullWidth>
-										Membership Required - Get Membership to Sign Up
-									</Button>
+									<>
+										<Alert color="red" variant="filled" mb="md">
+											<Text fw={500}>
+												<Group gap="xs">
+													<IconInfoCircle />
+													<span>You must be a Caving Crew member to sign up for this trip</span>
+												</Group>
+											</Text>
+										</Alert>
+										<Button 
+											component="a" 
+											href="/membership" 
+											size="lg" 
+											fullWidth
+											variant="filled"
+											color="red"
+											style={{
+												fontWeight: 700,
+												fontSize: "1.1rem",
+											}}
+										>
+											<Group gap="xs">
+												<IconLogin size={20} />
+												<span>Membership Required - Get Instant Membership to Sign Up</span>
+											</Group>
+										</Button>
+									</>
 								) : !isMember && mustCavedBefore ? (
 									<Alert color="blue" w="100%">
 										This trip requires previous experience.{" "}
