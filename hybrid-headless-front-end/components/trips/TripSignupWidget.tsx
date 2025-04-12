@@ -482,15 +482,15 @@ export function TripSignupWidget({
 							<Group justify="space-between">
 								{!isMember && !nonMembersWelcome ? (
 									<>
-										<Alert color="red" variant="filled" mb="md">
+										<Alert 
+											color="blue" 
+											variant="light" 
+											mb="md"
+											icon={<IconInfoCircle size={18} />}
+										>
 											<Text fw={500}>
-												<Group gap="xs">
-													<IconInfoCircle />
-													<span>
-														You must be a Caving Crew member to sign up for this
-														trip
-													</span>
-												</Group>
+												You'll need Crew membership to join this trip. It's instant, costs less than 
+												you think, and can be cancelled any time.
 											</Text>
 										</Alert>
 										<Button
@@ -499,18 +499,16 @@ export function TripSignupWidget({
 											size="lg"
 											fullWidth
 											variant="filled"
-											color="red"
+											color="blue"
 											style={{
-												fontWeight: 700,
+												fontWeight: 600,
 												fontSize: "1.1rem",
+												backgroundColor: '#228be6',
 											}}
 										>
 											<Group gap="xs">
 												<IconLogin size={20} />
-												<span>
-													Membership Required - Get Instant Membership to Sign
-													Up
-												</span>
+												<span>Get Instant Membership to Join</span>
 											</Group>
 										</Button>
 									</>
