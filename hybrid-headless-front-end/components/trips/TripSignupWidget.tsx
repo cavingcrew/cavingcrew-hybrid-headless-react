@@ -269,30 +269,43 @@ export function TripSignupWidget({
 											p="md"
 											radius="md"
 											style={{
-												cursor: requiresLogin || hasPurchased || (!isMember && !nonMembersWelcome) 
-													? "not-allowed" 
-													: "pointer",
+												cursor:
+													requiresLogin ||
+													hasPurchased ||
+													(!isMember && !nonMembersWelcome)
+														? "not-allowed"
+														: "pointer",
 												transition: "all 0.2s ease",
-												borderColor: selectedVariation === variation.id.toString() 
-													? "#228be6" 
-													: undefined,
-												borderWidth: selectedVariation === variation.id.toString() ? 2 : 1,
-												opacity: isBcaMemberVariation || (!isMember && !nonMembersWelcome)
-													? 0.5
-													: requiresLogin
-													? 0.8
-													: 1,
+												borderColor:
+													selectedVariation === variation.id.toString()
+														? "#228be6"
+														: undefined,
+												borderWidth:
+													selectedVariation === variation.id.toString() ? 2 : 1,
+												opacity:
+													isBcaMemberVariation ||
+													(!isMember && !nonMembersWelcome)
+														? 0.5
+														: requiresLogin
+															? 0.8
+															: 1,
 												backgroundColor: isBcaMemberVariation
 													? "#f8f9fa"
 													: selectedVariation === variation.id.toString()
-													? "#f1f3f5"
-													: undefined,
-												boxShadow: selectedVariation === variation.id.toString()
-													? "0 0 0 2px rgba(34, 139, 230, 0.2)"
-													: undefined,
+														? "#f1f3f5"
+														: undefined,
+												boxShadow:
+													selectedVariation === variation.id.toString()
+														? "0 0 0 2px rgba(34, 139, 230, 0.2)"
+														: undefined,
 											}}
 											onClick={() => {
-												if (inStock && !isBcaMemberVariation && !isPurchased && (isMember || nonMembersWelcome)) {
+												if (
+													inStock &&
+													!isBcaMemberVariation &&
+													!isPurchased &&
+													(isMember || nonMembersWelcome)
+												) {
 													setSelectedVariation(variation.id.toString());
 												}
 											}}
@@ -473,14 +486,17 @@ export function TripSignupWidget({
 											<Text fw={500}>
 												<Group gap="xs">
 													<IconInfoCircle />
-													<span>You must be a Caving Crew member to sign up for this trip</span>
+													<span>
+														You must be a Caving Crew member to sign up for this
+														trip
+													</span>
 												</Group>
 											</Text>
 										</Alert>
-										<Button 
-											component="a" 
-											href="/membership" 
-											size="lg" 
+										<Button
+											component="a"
+											href="/membership"
+											size="lg"
 											fullWidth
 											variant="filled"
 											color="red"
@@ -491,7 +507,10 @@ export function TripSignupWidget({
 										>
 											<Group gap="xs">
 												<IconLogin size={20} />
-												<span>Membership Required - Get Instant Membership to Sign Up</span>
+												<span>
+													Membership Required - Get Instant Membership to Sign
+													Up
+												</span>
 											</Group>
 										</Button>
 									</>
