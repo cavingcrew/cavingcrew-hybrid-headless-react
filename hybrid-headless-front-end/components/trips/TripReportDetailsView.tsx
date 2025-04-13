@@ -233,7 +233,7 @@ export function TripReportDetailsView({ trip }: TripReportDetailsViewProps) {
 												alt={image.alt || `Trip report image ${image.ID}`}
 												// Remove fixed height here - let Carousel's height dictate
 												fit="contain" // Keep contain to see the whole image
-												style={{ width: '100%', height: '100%' }} // Make image fill the slide area
+												style={{ width: "100%", height: "100%" }} // Make image fill the slide area
 											/>
 											{image.caption && (
 												<Text ta="center" size="sm" mt="xs" c="dimmed">
