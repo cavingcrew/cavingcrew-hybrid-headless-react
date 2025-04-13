@@ -177,7 +177,11 @@ export function TripReportDetailsView({ trip }: TripReportDetailsViewProps) {
 								{(() => {
 									// Determine reporter name
 									let reporterName = trip.trip_report?.report_author;
-									if (!reporterName && canViewNames && participants.length > 0) {
+									if (
+										!reporterName &&
+										canViewNames &&
+										participants.length > 0
+									) {
 										const reporter = participants.find((p) =>
 											p.order_meta?.cc_volunteer
 												?.toLowerCase()
@@ -187,7 +191,9 @@ export function TripReportDetailsView({ trip }: TripReportDetailsViewProps) {
 											reporterName = reporter.first_name;
 										}
 									}
-									return reporterName ? `${reporterName} writes:` : "Report Details";
+									return reporterName
+										? `${reporterName} writes:`
+										: "Report Details";
 								})()}
 							</Title>
 							<Box
