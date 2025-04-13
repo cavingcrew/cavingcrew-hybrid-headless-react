@@ -1,5 +1,5 @@
 <?php
-namespace HybridHeadless\Triggers;
+namespace HybridHeadlessAutomateWoo\Triggers;
 
 use AutomateWoo\Customer_Factory;
 use AutomateWoo\Exceptions\InvalidArgument;
@@ -10,36 +10,36 @@ use AutomateWoo\Workflow;
 
 defined( 'ABSPATH' ) || exit;
 
-class OrderEventDateTrigger extends AbstractBatchedDailyTrigger {
+class Order_Event_Date_Trigger extends AbstractBatchedDailyTrigger {
 
     public $supplied_data_items = [ 'order', 'customer', 'product' ];
 
-    public function load_admin_details() {
-        $this->title = __( 'Order Event Date', 'hybrid-headless' );
-        $this->description = __( 'Triggers based on time before/after an order product\'s event start date', 'hybrid-headless' );
-        $this->group = __( 'Orders', 'hybrid-headless' );
+    public function init() {
+        $this->title = __( 'Order Event Date', 'hybrid-headless-automatewoo' );
+        $this->description = __( 'Triggers based on time relative to a product\'s event date', 'hybrid-headless-automatewoo' );
+        $this->group = __( 'Orders', 'hybrid-headless-automatewoo' );
     }
 
     public function load_fields() {
         $when = new Select( true );
         $when->set_name( 'when' );
-        $when->set_title( __( 'When', 'hybrid-headless' ) );
+        $when->set_title( __( 'When', 'hybrid-headless-automatewoo' ) );
         $when->set_options([
-            'before' => __( 'Before', 'hybrid-headless' ),
-            'after' => __( 'After', 'hybrid-headless' ),
+            'before' => __( 'Before', 'hybrid-headless-automatewoo' ),
+            'after' => __( 'After', 'hybrid-headless-automatewoo' ),
         ]);
 
         $unit = new Select( true );
         $unit->set_name( 'unit' );
-        $unit->set_title( __( 'Time Unit', 'hybrid-headless' ) );
+        $unit->set_title( __( 'Time Unit', 'hybrid-headless-automatewoo' ) );
         $unit->set_options([
-            'days' => __( 'Days', 'hybrid-headless' ),
-            'hours' => __( 'Hours', 'hybrid-headless' ),
+            'days' => __( 'Days', 'hybrid-headless-automatewoo' ),
+            'hours' => __( 'Hours', 'hybrid-headless-automatewoo' ),
         ]);
 
         $amount = new Number();
         $amount->set_name( 'amount' );
-        $amount->set_title( __( 'Time Amount', 'hybrid-headless' ) );
+        $amount->set_title( __( 'Time Amount', 'hybrid-headless-automatewoo' ) );
         $amount->set_required();
 
         $this->add_field( $when );
@@ -116,7 +116,7 @@ class OrderEventDateTrigger extends AbstractBatchedDailyTrigger {
         $order = wc_get_order( $item['order_id'] );
         
         if ( ! $order ) {
-            throw new InvalidArgument( __( 'Order not found', 'hybrid-headless' ) );
+            throw new InvalidArgument( __( 'Order not found', 'hybrid-headless-automatewoo' ) );
         }
 
         $customer = Customer_Factory::get_by_order( $order );
@@ -142,11 +142,21 @@ class OrderEventDateTrigger extends AbstractBatchedDailyTrigger {
         $order = $workflow->data_layer()->get_order();
         $product = $workflow->data_layer()->get_product();
 
-        if ( ! $order || ! $product ) {
+        if ( ! $order ) {
+            $workflow->log_error('Order not found in data layer');
             return false;
         }
 
-        // Ensure we haven't already triggered for this order in the last hour
-        return ! $workflow->has_run_for_data_item( 'order', HOUR_IN_SECONDS );
+        if ( ! $product ) {
+            $workflow->log_error('Product not found in data layer');
+            return false;
+        }
+
+        if ( $workflow->has_run_for_data_item( 'order', HOUR_IN_SECONDS ) ) {
+            $workflow->log_error('Workflow has already run for this order in the last hour');
+            return false;
+        }
+
+        return true;
     }
 }

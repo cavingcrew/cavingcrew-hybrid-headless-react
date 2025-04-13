@@ -7,6 +7,42 @@ export type ChallengeDomain =
 	| "hazard"
 	| "endurance";
 
+// Standard Image Object structure from ACF/WordPress
+// Updated to reflect structure returned by get_image_data / process_acf_image_field
+export interface ImageObject {
+	ID: number;
+	id?: number; // Sometimes 'id' is used instead of 'ID'
+	url: string;
+	alt: string;
+	caption?: string;
+	width?: number; // Base width
+	height?: number; // Base height
+	sizes?: {
+		thumbnail?: {
+			file: string;
+			width: number;
+			height: number;
+			mime_type?: string;
+		};
+		medium?: {
+			file: string;
+			width: number;
+			height: number;
+			mime_type?: string;
+		};
+		medium_large?: {
+			file: string;
+			width: number;
+			height: number;
+			mime_type?: string;
+		};
+		large?: { file: string; width: number; height: number; mime_type?: string };
+		[key: string]:
+			| { file: string; width: number; height: number; mime_type?: string }
+			| undefined; // Allow other custom sizes
+	};
+}
+
 // Define the structure of the difficulty object
 export interface DifficultyData {
 	route_difficulty_psychological_claustrophobia?: string | number;
@@ -416,7 +452,7 @@ export interface Hut {
 		hut_parking_instructions?: string;
 		hut_facilities?: string[];
 		hut_arrival_and_directions?: string;
-		hut_image?: string;
+		hut_image?: ImageObject; // Updated type to ImageObject
 		hut_webaddress?: string;
 		hut_deposit_required?: "yes" | "no" | "sometimes";
 		hut_capacity?: string;

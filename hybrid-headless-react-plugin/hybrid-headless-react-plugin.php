@@ -120,19 +120,6 @@ final class Hybrid_Headless_Plugin {
         require_once HYBRID_HEADLESS_PLUGIN_DIR . 'includes/purchase-restrictions/class-purchase-restrictions.php';
         new Hybrid_Headless_Purchase_Restrictions();
         
-        // Load triggers
-        require_once HYBRID_HEADLESS_PLUGIN_DIR . 'includes/triggers/class-order-event-date-trigger.php';
-        add_filter( 'automatewoo/triggers', [ $this, 'register_triggers' ] );
-        
-        // Load variables
-        require_once HYBRID_HEADLESS_PLUGIN_DIR . 'includes/variables/class-product-event-data-variable.php';
-        add_filter( 'automatewoo/variables', [ $this, 'register_variables' ] );
-        
-        // Load rules
-        require_once HYBRID_HEADLESS_PLUGIN_DIR . 'includes/rules/class-customer-trip-date-rule.php';
-        require_once HYBRID_HEADLESS_PLUGIN_DIR . 'includes/rules/class-customer-last-trip-in-period.php';
-        require_once HYBRID_HEADLESS_PLUGIN_DIR . 'includes/rules/class-customer-has-upcoming-trip.php';
-        add_filter( 'automatewoo/rules', [ $this, 'register_rules' ] );
         
         // Enable logging 
         if ( ! defined( 'AUTOMATEWOO_LOG_DIR' ) ) {
@@ -140,23 +127,6 @@ final class Hybrid_Headless_Plugin {
         }
     }
 
-    public function register_variables( $variables ) {
-        $variables['product_event_data'] = 'HybridHeadless\Variables\ProductEventDataVariable';
-        $variables['product_event_start_date'] = 'HybridHeadless\Variables\ProductEventStartDate';
-        $variables['product_event_finish_date'] = 'HybridHeadless\Variables\ProductEventFinishDate';
-        return $variables;
-    }
-
-    public function register_triggers( $triggers ) {
-        $triggers['order_event_date'] = 'HybridHeadless\Triggers\OrderEventDateTrigger';
-        return $triggers;
-    }
-
-    public function register_rules( $rules ) {
-        $rules['customer_last_trip_in_period'] = 'HybridHeadless\Rules\Customer_Last_Trip_In_Period';
-        $rules['customer_has_upcoming_trip'] = 'HybridHeadless\Rules\Customer_Has_Upcoming_Trip';
-        return $rules;
-    }
 
     /**
      * Plugin initialization

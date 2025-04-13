@@ -3,10 +3,20 @@
 # Configuration
 REMOTE_HOST="cavingcrew"
 REMOTE_PATH="/home/bitnami/apps/nextjs-frontend"
-PLUGIN_SOURCE="../hybrid-headless-react-plugin"
-PLUGIN_DEST="/home/bitnami/stack/wordpress/wp-content/plugins"
 APP_NAME="hybrid-headless-frontend"
-PLUGIN_NAME="hybrid-headless-react-plugin"
+
+# Plugin configurations
+PLUGINS=(
+    "hybrid source=../hybrid-headless-react-plugin name=hybrid-headless-react-plugin"
+    "automatewoo source=../hybrid-headless-automatewoo name=hybrid-headless-automatewoo"
+)
+
+# Plugin deployment flags
+declare -A PLUGIN_DEPLOY_FLAGS=(
+    ["hybrid"]=0
+    ["automatewoo"]=0
+)
+PLUGIN_DEST="/home/bitnami/stack/wordpress/wp-content/plugins"
 
 # Colors for output
 GREEN='\033[0;32m'
@@ -16,11 +26,22 @@ YELLOW='\033[1;33m'
 
 # Function to deploy WordPress plugin
 deploy_plugin() {
-    echo "🔌 Deploying WordPress plugin..."
+    local plugin_key=$1
+    local plugin_source plugin_name
+    
+    # Find the plugin by key and parse its properties
+    for plugin in "${PLUGINS[@]}"; do
+        IFS=' ' read -r key src name <<< "$plugin"
+        [[ "$key" == "$plugin_key" ]] || continue
+        plugin_source=${src#*=}
+        plugin_name=${name#*=}
+    done
+
+    echo "🔌 Deploying WordPress plugin: $plugin_name..."
     
     # Deactivate plugin
     echo "⏸️  Deactivating plugin..."
-    ssh -o "ForwardX11=no" -o "ForwardAgent=no" "$REMOTE_HOST" "sudo wp plugin deactivate $PLUGIN_NAME --path=/home/bitnami/stack/wordpress --allow-root"
+    ssh -o "ForwardX11=no" -o "ForwardAgent=no" "$REMOTE_HOST" "sudo wp plugin deactivate $plugin_name --path=/home/bitnami/stack/wordpress --allow-root"
     
     # Deploy plugin files
     echo "📤 Copying plugin files..."
@@ -30,8 +51,8 @@ deploy_plugin() {
         --exclude='node_modules/' \
         --exclude='tests/' \
         --exclude='.github/' \
-        "$PLUGIN_SOURCE" \
-        "$REMOTE_HOST:$PLUGIN_DEST/"
+        "$plugin_source/." \
+        "$REMOTE_HOST:$PLUGIN_DEST/$plugin_name/"
 
     if [ $? -ne 0 ]; then
         echo -e "${RED}Plugin deployment failed${NC}"
@@ -40,7 +61,7 @@ deploy_plugin() {
 
     # Reactivate plugin
     echo "▶️  Reactivating plugin..."
-    ssh -o "ForwardX11=no" -o "ForwardAgent=no" "$REMOTE_HOST" "sudo wp plugin activate $PLUGIN_NAME --path=/home/bitnami/stack/wordpress --allow-root"
+    ssh -o "ForwardX11=no" -o "ForwardAgent=no" "$REMOTE_HOST" "sudo wp plugin activate $plugin_name --path=/home/bitnami/stack/wordpress --allow-root"
     
     echo -e "${GREEN}✨ Plugin deployment complete!${NC}"
 }
@@ -103,13 +124,31 @@ deploy_frontend() {
 # Parse command line arguments
 SKIP_BUILD=false
 SKIP_FRONTEND=false
-SKIP_PLUGIN=false
+SKIP_PLUGINS=false
+PLUGIN_DEPLOY_MODE="default"
 
 while [[ "$#" -gt 0 ]]; do
     case $1 in
+        --plugins)
+            PLUGIN_DEPLOY_MODE="all"
+            shift
+            ;;
+        --only-automatewoo)
+            PLUGIN_DEPLOY_MODE="automatewoo"
+            shift
+            ;;
         --skip-build) SKIP_BUILD=true ;;
         --skip-frontend) SKIP_FRONTEND=true ;;
-        --skip-plugin) SKIP_PLUGIN=true ;;
+        --skip-plugin) SKIP_PLUGINS=true ;;
+        --frontend-only)
+            SKIP_PLUGINS=true
+            SKIP_BUILD=false
+            shift
+            ;;
+        --plugins-only)
+            SKIP_FRONTEND=true
+            shift
+            ;;
         *) echo "Unknown parameter: $1"; exit 1 ;;
     esac
     shift
@@ -118,6 +157,7 @@ done
 # Main deployment logic
 echo "🚀 Starting deployment process..."
 
+# Handle frontend deployment
 if [ "$SKIP_FRONTEND" = false ]; then
     if [ "$SKIP_BUILD" = false ]; then
         echo "📦 Building Next.js application..."
@@ -135,8 +175,26 @@ else
     echo -e "${YELLOW}Skipping frontend deployment...${NC}"
 fi
 
-if [ "$SKIP_PLUGIN" = false ]; then
-    deploy_plugin
+# Handle plugin deployments
+if [ "$SKIP_PLUGINS" = false ]; then
+    case $PLUGIN_DEPLOY_MODE in
+        "all")
+            for plugin in "${PLUGINS[@]}"; do
+                IFS=' ' read -r key source name <<< "$plugin"
+                deploy_plugin "$key"
+            done
+            ;;
+        "automatewoo")
+            for plugin in "${PLUGINS[@]}"; do
+                IFS=' ' read -r key source name <<< "$plugin"
+                if [ "$key" == "automatewoo" ]; then
+                    deploy_plugin "$key"
+                fi
+            done
+            ;;
+        *)
+            deploy_plugin "hybrid"
+    esac
 else
     echo -e "${YELLOW}Skipping plugin deployment...${NC}"
 fi

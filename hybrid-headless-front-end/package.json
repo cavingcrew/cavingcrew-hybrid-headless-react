@@ -21,9 +21,10 @@
 		"storybook:build": "storybook build",
 		"deploy": "chmod +x ./scripts/deploy.sh && ./scripts/deploy.sh",
 		"deploy:only": "chmod +x ./scripts/deploy.sh && ./scripts/deploy.sh --skip-build",
-		"deploy:frontend": "chmod +x ./scripts/deploy.sh && ./scripts/deploy.sh --skip-plugin",
+		"deploy:frontend": "chmod +x ./scripts/deploy.sh && ./scripts/deploy.sh --skip-plugins",
 		"deploy:plugin": "chmod +x ./scripts/deploy.sh && ./scripts/deploy.sh --skip-frontend --skip-build",
-		"deploy:frontend-only": "chmod +x ./scripts/deploy.sh && ./scripts/deploy.sh --skip-build --skip-plugin",
+		"deploy:frontend-only": "chmod +x ./scripts/deploy.sh && ./scripts/deploy.sh --frontend-only",
+		"deploy:automatewoo": "chmod +x ./scripts/deploy.sh && ./scripts/deploy.sh --only-automatewoo --skip-frontend --skip-build",
 		"lint:biome": "biome lint .",
 		"format:biome": "biome format . --write",
 		"check:biome": "biome check --apply ."
