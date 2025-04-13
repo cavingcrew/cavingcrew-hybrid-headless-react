@@ -225,13 +225,15 @@ export function TripReportDetailsView({ trip }: TripReportDetailsViewProps) {
 										<Carousel.Slide key={image.ID}>
 											<Image
 												src={
+													// Prioritize larger sizes for better quality
 													image.sizes?.large?.file ||
 													image.sizes?.medium_large?.file ||
-													image.url
+													image.url // Fallback to original URL
 												}
 												alt={image.alt || `Trip report image ${image.ID}`}
-												height={400}
-												fit="contain"
+												// Remove fixed height here - let Carousel's height dictate
+												fit="contain" // Keep contain to see the whole image
+												style={{ width: '100%', height: '100%' }} // Make image fill the slide area
 											/>
 											{image.caption && (
 												<Text ta="center" size="sm" mt="xs" c="dimmed">
