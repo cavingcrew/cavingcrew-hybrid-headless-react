@@ -114,7 +114,9 @@ export function useTrip(slug: string) {
 
 	// Function to find trip/report in caches
 	const findInCaches = (): Trip | undefined => {
-		const tripsCache = queryClient.getQueryData<ApiResponse<Trip[]>>(tripKeys.all);
+		const tripsCache = queryClient.getQueryData<ApiResponse<Trip[]>>(
+			tripKeys.all,
+		);
 		const reportsCache = queryClient.getQueryData<ApiResponse<Trip[]>>(
 			tripReportKeys.all,
 		);
