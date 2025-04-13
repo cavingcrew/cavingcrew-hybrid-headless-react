@@ -1581,7 +1581,7 @@ export function NeoClanVolunteeringWidget({
 														(item === "Harness and Cowstails" &&
 															(hasSRTKit || hasHarnessAndCowstails))
 													) {
-														return; // They have this covered
+														continue; // They have this covered, check next item
 													}
 												} else if (item === "Helmet and Light") {
 													// Special case for Helmet and Light
@@ -1593,7 +1593,7 @@ export function NeoClanVolunteeringWidget({
 													);
 
 													if (hasHelmetAndLight) {
-														return; // They have a combined helmet and light
+														continue; // They have a combined helmet and light, check next item
 													}
 
 													// Check for separate helmet and light items (not spare light)
@@ -1607,7 +1607,7 @@ export function NeoClanVolunteeringWidget({
 													);
 
 													if (hasHelmet && hasLight) {
-														return; // They have both helmet and light
+														continue; // They have both helmet and light, check next item
 													}
 												} else {
 													// For all other items, check if they're bringing it
@@ -1618,7 +1618,7 @@ export function NeoClanVolunteeringWidget({
 													);
 
 													if (hasBrought) {
-														return; // They have this item
+														continue; // They have this item, check next item
 													}
 												}
 
