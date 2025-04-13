@@ -98,7 +98,9 @@ export const apiService = {
 
 	async getTrips(useCache = true): Promise<ApiResponse<Trip[]>> {
 		try {
+			// Fetch regular trips (exclude reports by default)
 			const cacheParam = useCache ? "cachemeifyoucan=please" : "nocache=please";
+			// Ensure get_reports=false is implicitly handled by the backend or explicitly if needed
 			const url = `${API_BASE_URL}/hybrid-headless/v1/products?${cacheParam}`;
 
 			const response = await fetch(url);
@@ -130,8 +132,44 @@ export const apiService = {
 		}
 	},
 
+	async getTripReports(useCache = true): Promise<ApiResponse<Trip[]>> {
+		try {
+			// Fetch only trip reports
+			const cacheParam = useCache ? "cachemeifyoucan=please" : "nocache=please";
+			const url = `${API_BASE_URL}/hybrid-headless/v1/products?get_reports=true&${cacheParam}`;
+
+			const response = await fetch(url);
+			if (!response.ok) throw new Error("Failed to fetch trip reports");
+			const data = await response.json();
+
+			// Normalize variations (though reports might not have them, good practice)
+			const normalizedReports = data.products.map((trip: Trip) => ({
+				...trip,
+				variations: (trip.variations || []).map((v) => ({
+					...v,
+					stock_quantity: v.stock_quantity ?? null,
+					stock_status: v.stock_status || "instock",
+				})),
+			}));
+
+			return {
+				success: true,
+				data: normalizedReports,
+				timestamp: Date.now(),
+			};
+		} catch (error) {
+			return {
+				success: false,
+				data: null,
+				message:
+					error instanceof Error ? error.message : "Failed to fetch trip reports",
+			};
+		}
+	},
+
 	async getTrip(slug: string): Promise<ApiResponse<Trip>> {
 		try {
+			// This endpoint fetches a single product, which might be a trip or a report
 			const response = await fetch(
 				`${API_BASE_URL}/hybrid-headless/v1/products/${slug}?by_slug=true`,
 			);

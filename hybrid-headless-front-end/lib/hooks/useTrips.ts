@@ -46,6 +46,12 @@ export const tripKeys = {
 	lists: () => [...tripKeys.all, "list"] as const,
 };
 
+export const tripReportKeys = {
+	all: ["tripReports"] as const,
+	lists: () => [...tripReportKeys.all, "list"] as const,
+};
+
+
 export function useTrips(): UseQueryResult<ApiResponse<Trip[]>> {
 	const queryClient = useQueryClient();
 
@@ -195,7 +201,69 @@ export function useTripsByCategory(categorySlug: string) {
 function isDataStale(oldData: Trip[], newData: Trip[]): boolean {
 	if (!oldData || !newData) return true;
 	if (oldData.length !== newData.length) return true;
-	return oldData.some((trip, index) => trip.id !== newData[index]?.id);
+	// Basic check: compare IDs and maybe a key field like stock_status or name
+	return oldData.some((trip, index) => {
+		const newTrip = newData[index];
+		if (!newTrip) return true; // Different length
+		return trip.id !== newTrip.id || trip.stock_status !== newTrip.stock_status;
+	});
 }
+
+export function useTripReports(): UseQueryResult<ApiResponse<Trip[]>> {
+	const queryClient = useQueryClient();
+
+	return useQuery<ApiResponse<Trip[]>>({
+		queryKey: tripReportKeys.all,
+		queryFn: async () => {
+			// Initial empty state
+			const initialEmptyState = {
+				success: true,
+				data: [],
+				timestamp: Date.now(),
+			};
+
+			// Fetch cached reports
+			const cachedResponse = await apiService.getTripReports(true);
+
+			// Queue background refresh
+			queryClient.fetchQuery({
+				queryKey: [...tripReportKeys.all, "fresh"],
+				queryFn: async () => {
+					const freshData = await apiService.getTripReports(false);
+					queryClient.setQueryData(
+						tripReportKeys.all,
+						(old: ApiResponse<Trip[]> | undefined) => ({
+							...freshData,
+							timestamp:
+								old?.data &&
+								freshData.data &&
+								isDataStale(old.data, freshData.data)
+									? Date.now()
+									: old?.timestamp,
+						}),
+					);
+					return freshData;
+				},
+				staleTime: 0,
+			});
+
+			return cachedResponse.success ? cachedResponse : initialEmptyState;
+		},
+		staleTime: 1000 * 60 * 5, // 5 minutes
+		gcTime: 1000 * 60 * 15, // 15 minutes
+		refetchOnWindowFocus: (query) => {
+			const dataAge = Date.now() - (query.state.data?.timestamp || 0);
+			return dataAge > 1000 * 60; // Refetch if older than 1 min
+		},
+		refetchOnReconnect: true,
+		refetchOnMount: true,
+		placeholderData: {
+			success: true,
+			data: [],
+			timestamp: 0,
+		},
+	});
+}
+
 
 export const useCategoryTrips = useTripsByCategory;

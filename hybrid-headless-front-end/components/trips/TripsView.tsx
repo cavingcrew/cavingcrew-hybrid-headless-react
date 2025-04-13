@@ -24,9 +24,10 @@ import {
 import Link from "next/link";
 import TripCard from './TripCard';
 import type { Trip } from '@/types/api';
+import { TripReportsWidgetView } from './TripReportsWidgetView'; // Import the new widget
 
 interface TripsViewProps {
-  trips: Trip[];
+  trips: Trip[]; // This should now only contain non-report trips
 }
 
 export function TripsView({ trips }: TripsViewProps) {
@@ -395,6 +396,9 @@ export function TripsView({ trips }: TripsViewProps) {
           </Table>
         </Table.ScrollContainer>
       )}
+
+      {/* Trip Reports Section */}
+      <TripReportsWidgetView limit={6} showViewAllButton={true} />
     </Stack>
   );
 }
