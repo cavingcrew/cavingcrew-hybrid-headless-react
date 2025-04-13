@@ -18,14 +18,30 @@ export interface ImageObject {
 	width?: number; // Base width
 	height?: number; // Base height
 	sizes?: {
-		thumbnail?: { file: string; width: number; height: number; mime_type?: string };
-		medium?: { file: string; width: number; height: number; mime_type?: string };
-		medium_large?: { file: string; width: number; height: number; mime_type?: string };
+		thumbnail?: {
+			file: string;
+			width: number;
+			height: number;
+			mime_type?: string;
+		};
+		medium?: {
+			file: string;
+			width: number;
+			height: number;
+			mime_type?: string;
+		};
+		medium_large?: {
+			file: string;
+			width: number;
+			height: number;
+			mime_type?: string;
+		};
 		large?: { file: string; width: number; height: number; mime_type?: string };
-		[key: string]: { file: string; width: number; height: number; mime_type?: string } | undefined; // Allow other custom sizes
+		[key: string]:
+			| { file: string; width: number; height: number; mime_type?: string }
+			| undefined; // Allow other custom sizes
 	};
 }
-
 
 // Define the structure of the difficulty object
 export interface DifficultyData {
