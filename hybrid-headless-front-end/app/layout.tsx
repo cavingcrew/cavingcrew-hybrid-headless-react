@@ -1,6 +1,7 @@
 "use client";
 
 import "@mantine/core/styles.css";
+import '@mantine/carousel/styles.css'; // Import carousel styles globally
 import { MainFooter } from "@/components/layout/MainFooter";
 import { MainHeader } from "@/components/layout/MainHeader";
 import { ClientRouterProvider } from "@/components/providers/ClientRouterProvider";
