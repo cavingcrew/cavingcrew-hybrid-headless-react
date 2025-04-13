@@ -40,14 +40,6 @@ final class Hybrid_Headless_Plugin {
      */
     private static $instance = null;
 
-    public function activate() {
-        flush_rewrite_rules();
-    }
-
-    public function deactivate() {
-        flush_rewrite_rules();
-    }
-
     /**
      * Get plugin instance
      *
@@ -64,36 +56,15 @@ final class Hybrid_Headless_Plugin {
      * Constructor
      */
     private function __construct() {
-        // Check dependencies first
-        if ( ! $this->check_dependencies() ) {
-            return;
-        }
-        
         $this->init_hooks();
-        $this->init_handlers(); // only init handlers if deps are met
-    }
-
-    private function check_dependencies() {
-        if ( ! class_exists( 'AutomateWoo\Triggers\AbstractBatchedDailyTrigger' ) ) {
-            add_action( 'admin_notices', [ $this, 'automatewoo_missing_notice' ] );
-            return false;
-        }
-        return true;
-    }
-
-    public function automatewoo_missing_notice() {
-        ?>
-        <div class="error">
-            <p><?php esc_html_e( 'Hybrid Headless requires AutomateWoo (v5.1+) to be installed and activated.', 'hybrid-headless' ); ?></p>
-        </div>
-        <?php
+        $this->init_handlers();
     }
 
     /**
      * Initialize WordPress hooks
      */
     private function init_hooks() {
-        add_action( 'plugins_loaded', array( $this, 'on_plugins_loaded' ), 11 ); // Changed to priority 11
+        add_action( 'plugins_loaded', array( $this, 'on_plugins_loaded' ) );
         add_action( 'init', array( $this, 'init' ) );
         add_action( 'admin_init', array( $this, 'register_settings' ) );
     }
@@ -119,14 +90,7 @@ final class Hybrid_Headless_Plugin {
         // Load purchase restrictions
         require_once HYBRID_HEADLESS_PLUGIN_DIR . 'includes/purchase-restrictions/class-purchase-restrictions.php';
         new Hybrid_Headless_Purchase_Restrictions();
-        
-        
-        // Enable logging 
-        if ( ! defined( 'AUTOMATEWOO_LOG_DIR' ) ) {
-            define( 'AUTOMATEWOO_LOG_DIR', WP_CONTENT_DIR . '/logs/automatewoo/' );
-        }
     }
-
 
     /**
      * Plugin initialization
@@ -134,7 +98,7 @@ final class Hybrid_Headless_Plugin {
     public function init() {
         // Initialize plugin functionality
         $this->load_textdomain();
-        
+
         // Check for required plugins
         if ( ! class_exists( 'WooCommerce' ) ) {
             add_action( 'admin_notices', array( $this, 'woocommerce_missing_notice' ) );
@@ -230,17 +194,7 @@ function hybrid_headless_init() {
 // Load CLI commands
 if (defined('WP_CLI') && WP_CLI) {
     require_once HYBRID_HEADLESS_PLUGIN_DIR . 'includes/class-cli.php';
-    WP_CLI::add_command('hybrid-headless', 'Hybrid_Headless_CLI');
-    
-    // Add flush command
-    WP_CLI::add_command('hybrid-headless flush-rules', function() {
-        flush_rewrite_rules();
-        WP_CLI::success('Rewrite rules flushed');
-    });
 }
 
 // Start the plugin
 hybrid_headless_init();
-
-register_activation_hook(__FILE__, [Hybrid_Headless_Plugin::instance(), 'activate']);
-register_deactivation_hook(__FILE__, [Hybrid_Headless_Plugin::instance(), 'deactivate']);
