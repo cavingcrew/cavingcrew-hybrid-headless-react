@@ -28,6 +28,7 @@ export interface ImageObject {
 
 
 // Define the structure of the difficulty object
+export interface DifficultyData {
 	route_difficulty_psychological_claustrophobia?: string | number;
 	route_difficulty_objective_tightness?: string | number;
 	route_difficulty_wetness?: string | number;
