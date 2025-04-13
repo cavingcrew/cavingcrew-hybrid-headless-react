@@ -161,12 +161,12 @@ export function TripReportDetailsView({ trip }: TripReportDetailsViewProps) {
 					<Divider />
 
 					{/* Summary Sentence */}
-					<Text ta="center" fz="lg">
+					<Text ta="center" fz="lg" style={{ lineHeight: 1.6 }}>
 						On {formatDate(trip.acf.event_start_date_time)},{" "}
-						<Text span fw={500}>
+						<Text span inherit> {/* Use inherit to match surrounding text style */}
 							{renderParticipantInfo()}
 						</Text>{" "}
-						went to {getLocationName()}
+						{participantCount === 1 ? "person" : "people"} went to {getLocationName()}
 						{getRegion() && ` in ${getRegion()}`}
 						{getRouteName() && ` to explore the ${getRouteName()} route`}.
 					</Text>

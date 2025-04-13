@@ -261,7 +261,7 @@ class Hybrid_Headless_Trip_Participants_Controller {
      * @return WP_REST_Response|WP_Error
      */
     public function get_trip_participants($request) {
-        $trip_id = $request['trip_id'];
+        $trip_id = absint($request['trip_id']); // Ensure integer
 
         // Ensure user is properly authenticated
         $user_id = 0;
@@ -388,14 +388,14 @@ class Hybrid_Headless_Trip_Participants_Controller {
             ]);
         }
 
-        // Process participants based on access level
+        // Process participants based on access level using the filtered orders
         $participants = [];
-        $participant_count = count($orders);
+        $participant_count = count($filtered_orders); // Count based on filtered list
 
-        // If not logged in or just logged in (but not participant/admin), only return appropriate data
+        // If not logged in, only return count
         if ($access_level === 'public') {
             return rest_ensure_response([
-                'participants' => [],
+                'participants' => [], // No participant details for public
                 'access_level' => $access_level,
                 'trip_id' => $trip_id,
                 'participant_count' => $participant_count,
@@ -403,7 +403,29 @@ class Hybrid_Headless_Trip_Participants_Controller {
             ]);
         }
 
-        foreach ($orders as $order) {
+        // If logged in but not participant/admin, return only first names and count
+        if ($access_level === 'logged_in') {
+             $participant_first_names = [];
+             foreach ($filtered_orders as $order) {
+                 $participant_user_id = $order->get_customer_id();
+                 if (!$participant_user_id) continue;
+                 $user = get_userdata($participant_user_id);
+                 if ($user) {
+                     $participant_first_names[] = ['first_name' => $user->first_name];
+                 }
+             }
+             return rest_ensure_response([
+                 'participants' => $participant_first_names, // Only first names
+                 'access_level' => $access_level,
+                 'trip_id' => $trip_id,
+                 'participant_count' => $participant_count,
+                 'is_logged_in' => true
+             ]);
+        }
+
+
+        // For participant, admin, super_admin levels - process full details from filtered list
+        foreach ($filtered_orders as $order) {
             $participant_user_id = $order->get_customer_id();
             if (!$participant_user_id) continue;
 
@@ -472,14 +494,13 @@ class Hybrid_Headless_Trip_Participants_Controller {
      * Get all orders for a trip
      *
      * @param int $trip_id Trip ID.
-     * @param string $access_level Access level ('public', 'participant', or 'admin').
-     * @return array
+     * @return array Array of WC_Order objects
      */
-    private function get_trip_orders($trip_id, $access_level = 'public') {
+    private function get_trip_orders($trip_id) {
         $orders = [];
 
-        // Define statuses based on access level
-        $statuses = ['on-hold', 'processing', 'completed'];
+        // Get all potentially relevant statuses
+        $statuses = ['on-hold', 'processing', 'completed', 'pending', 'cancelled', 'refunded', 'failed'];
 
         // Query for orders containing this product
         $order_ids = wc_get_orders([
@@ -492,36 +513,25 @@ class Hybrid_Headless_Trip_Participants_Controller {
             $order = wc_get_order($order_id);
             if (!$order) continue;
 
-            // For public and participant access, only show specific orders
-            if ($access_level !== 'admin') {
-                $order_status = $order->get_status();
-                $cc_attendance = $order->get_meta('cc_attendance');
-
-                // Skip orders that don't meet criteria for public/participant view
-                if (!in_array($order_status, ['processing', 'on-hold', 'pending']) ||
-                    ($cc_attendance && $cc_attendance !== 'pending')) {
-                    continue;
-                }
-            }
-            // For admin access, include all orders (even cancelled ones)
-            else {
-                // No filtering for admin
-            }
-
-            // Check if order contains the trip
+            // Check if order contains the trip - always check this
+            $contains_trip = false;
             foreach ($order->get_items() as $item) {
                 $product = $item->get_product();
                 if ($product) {
-                    $product_id = $product->get_parent_id() ?: $product->get_id();
-                    if ($product_id == $trip_id) {
-                        $orders[] = $order;
+                    $product_id = (int)($product->get_parent_id() ?: $product->get_id());
+                    if ($product_id === $trip_id) {
+                        $contains_trip = true;
                         break;
                     }
                 }
             }
+
+            if ($contains_trip) {
+                 $orders[] = $order;
+            }
         }
 
-        return $orders;
+        return $orders; // Return all orders containing the trip; filtering happens in the main function
     }
 
     /**
