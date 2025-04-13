@@ -375,10 +375,60 @@ class Hybrid_Headless_Trip_Participants_Controller {
             error_log(sprintf('[Trip Participants] Super admin access granted for user %d on trip %d', $user_id, $trip_id));
         }
 
-        // Get all orders for this trip based on access level
-        $orders = $this->get_trip_orders($trip_id, $access_level);
+        // Check if the trip is a report (has the tag)
+        $is_report = has_term('trip-reports', 'product_tag', $trip_id);
 
-        if (empty($orders)) {
+        // Get all relevant orders for this trip
+        $orders = $this->get_trip_orders($trip_id); // Get all potentially relevant orders first
+
+        // Filter orders specifically for reports if needed
+        $filtered_orders = [];
+        if ($is_report) {
+            foreach ($orders as $order) {
+                // For reports, only include completed orders where attendance is marked as 'attended'
+                if ($order->get_status() === 'completed' && $order->get_meta('cc_attendance') === 'attended') {
+                    $filtered_orders[] = $order;
+                }
+            }
+        } else {
+            // For non-reports, filter based on access level (existing logic might need refinement if needed)
+            // For now, let's keep the logic simple: show processing/on-hold for non-admins
+             foreach ($orders as $order) {
+                $order_status = $order->get_status();
+                $cc_attendance = $order->get_meta('cc_attendance');
+
+                // Include completed/attended for everyone
+                if ($order_status === 'completed' && $cc_attendance === 'attended') {
+                     $filtered_orders[] = $order;
+                     continue;
+                }
+
+                // Include processing/on-hold/pending if not cancelled/noshow etc.
+                if (in_array($order_status, ['processing', 'on-hold', 'pending']) &&
+                    (!$cc_attendance || $cc_attendance === 'pending')) {
+                     $filtered_orders[] = $order;
+                     continue;
+                }
+
+                // Admins see everything else too (like cancelled, noshow)
+                if ($access_level === 'admin' || $access_level === 'super_admin') {
+                    // Check if already added
+                    $already_added = false;
+                    foreach ($filtered_orders as $fo) {
+                        if ($fo->get_id() === $order->get_id()) {
+                            $already_added = true;
+                            break;
+                        }
+                    }
+                    if (!$already_added) {
+                        $filtered_orders[] = $order;
+                    }
+                }
+            }
+        }
+
+
+        if (empty($filtered_orders)) {
             return rest_ensure_response([
                 'participants' => [],
                 'access_level' => $access_level,
