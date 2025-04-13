@@ -416,7 +416,7 @@ export interface Hut {
 		hut_parking_instructions?: string;
 		hut_facilities?: string[];
 		hut_arrival_and_directions?: string;
-		hut_image?: string;
+		hut_image?: ImageObject; // Updated type to ImageObject
 		hut_webaddress?: string;
 		hut_deposit_required?: "yes" | "no" | "sometimes";
 		hut_capacity?: string;

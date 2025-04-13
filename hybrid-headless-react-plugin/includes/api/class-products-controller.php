@@ -697,7 +697,8 @@ class Hybrid_Headless_Products_Controller {
             'hut_parking_instructions' => $hut_acf['hut_parking_instructions'] ?? '',
             'hut_facilities' => $hut_acf['hut_facilities'] ?? [],
             'hut_arrival_and_directions' => $hut_acf['hut_arrival_and_directions'] ?? '',
-            'hut_image' => $this->get_hut_image_data($hut_acf['hut_image'] ?? 0),
+            // Use process_acf_image_field as hut_image now returns an array/object
+            'hut_image' => $this->process_acf_image_field($hut_acf['hut_image'] ?? null),
             'hut_dogs_allowed' => $hut_acf['hut_dogs_allowed'] ?? 'no'
         ];
     }
@@ -715,35 +716,11 @@ class Hybrid_Headless_Products_Controller {
         ] : null;
     }
 
-    private function get_hut_image_data($image_id) {
-        if (!$image_id) return null;
+    // Note: get_hut_image_data is no longer directly called by get_hut_data,
+    // but it might be used elsewhere or can be removed if confirmed unused.
+    // Keeping it for now unless explicitly asked to remove.
+    // private function get_hut_image_data($image_id) { ... }
 
-        $meta = wp_get_attachment_metadata($image_id);
-        $sizes_data = [];
-
-        // Process each size to get the full URL
-        if (!empty($meta['sizes'])) {
-            foreach ($meta['sizes'] as $size_name => $size_info) {
-                $src = wp_get_attachment_image_src($image_id, $size_name);
-                if ($src) {
-                    $sizes_data[$size_name] = [
-                        'file' => $src[0], // Full URL to the resized image
-                        'width' => $src[1],
-                        'height' => $src[2],
-                        'mime_type' => $size_info['mime-type'] ?? null
-                    ];
-                }
-            }
-        }
-
-        return [
-            'ID' => $image_id,
-            'url' => wp_get_attachment_url($image_id),
-            'alt' => get_post_meta($image_id, '_wp_attachment_image_alt', true),
-            'caption' => wp_get_attachment_caption($image_id),
-            'sizes' => $sizes_data
-        ];
-    }
 
     private function get_route_data($route_id, $is_cache_request = false, $current_product_id = 0) {
         $post_ref = $this->get_post_reference($route_id);
