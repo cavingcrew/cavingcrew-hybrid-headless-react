@@ -384,13 +384,23 @@ class Hybrid_Headless_Trip_Participants_Controller {
         // Filter orders specifically for reports if needed
         $filtered_orders = [];
         if ($is_report) {
+             error_log("[Trip Participants] Processing as REPORT for trip ID: " . $trip_id); // Debugging
             foreach ($orders as $order) {
+                $order_status = $order->get_status();
+                // Trim and lowercase the attendance meta for robust comparison
+                $attendance_meta = strtolower(trim($order->get_meta('cc_attendance')));
+                
+                error_log("[Trip Participants Report Filter] Order ID: " . $order->get_id() . ", Status: " . $order_status . ", Attendance Meta: '" . $attendance_meta . "'"); // Debugging
+
                 // For reports, only include completed orders where attendance is marked as 'attended'
-                if ($order->get_status() === 'completed' && $order->get_meta('cc_attendance') === 'attended') {
+                if ($order_status === 'completed' && $attendance_meta === 'attended') {
+                    error_log("[Trip Participants Report Filter] MATCH FOUND for Order ID: " . $order->get_id()); // Debugging
                     $filtered_orders[] = $order;
                 }
             }
+             error_log("[Trip Participants Report Filter] Found " . count($filtered_orders) . " attended participants for report trip ID: " . $trip_id); // Debugging
         } else {
+             error_log("[Trip Participants] Processing as REGULAR trip for trip ID: " . $trip_id); // Debugging
             // For non-reports, filter based on access level (existing logic might need refinement if needed)
             // For now, let's keep the logic simple: show processing/on-hold for non-admins
              foreach ($orders as $order) {
@@ -440,7 +450,8 @@ class Hybrid_Headless_Trip_Participants_Controller {
 
         // Process participants based on access level using the filtered orders
         $participants = [];
-        $participant_count = count($filtered_orders); // Count based on filtered list
+        // Correctly set participant count AFTER filtering
+        $participant_count = count($filtered_orders); 
 
         // If not logged in, only return count
         if ($access_level === 'public') {
