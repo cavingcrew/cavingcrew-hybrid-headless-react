@@ -141,7 +141,17 @@ export function useTrip(slug: string) {
 
 			// 3. Final fallback to direct API call
 			console.log("[useTrip] Fetching fresh data for", slug);
-			return apiService.getTrip(slug);
+			const tripResponse = await apiService.getTrip(slug);
+
+			// If fetched successfully, add it to the main trips cache if it's not a report
+			// Or potentially a separate report cache if needed? For now, just cache it under its detail key.
+			if (tripResponse.success && tripResponse.data) {
+				// No need to add to the main 'trips' list cache here,
+				// as it might be a report or an old trip not in the main list.
+				// The detail cache is sufficient.
+			}
+
+			return tripResponse;
 		},
 		staleTime: 1000 * 60 * 5, // 5 minutes
 		gcTime: 1000 * 60 * 60 * 24, // 24 hours
