@@ -188,14 +188,10 @@ export function TripReportDetailsView({ trip }: TripReportDetailsViewProps) {
 								<Carousel
 									withIndicators
 									height={400}
-									slideSize="70%"
-									slideGap="md"
+									slideSize={{ base: "100%", sm: "80%", md: "70%" }}
+									slideGap={{ base: 0, sm: "md" }}
 									loop
 									align="start"
-									breakpoints={[
-										{ maxWidth: "md", slideSize: "80%" },
-										{ maxWidth: "sm", slideSize: "100%", slideGap: 0 },
-									]}
 								>
 									{trip.trip_report.report_gallery.map((image) => (
 										<Carousel.Slide key={image.ID}>
