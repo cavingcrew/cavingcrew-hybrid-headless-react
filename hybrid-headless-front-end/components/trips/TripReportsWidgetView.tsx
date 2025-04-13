@@ -2,19 +2,19 @@
 
 import { useTripReports } from "@/lib/hooks/useTrips";
 import {
-	SimpleGrid,
-	Stack,
-	Title,
-	Text,
-	Center,
-	Loader,
 	Alert,
 	Button,
+	Center,
 	Group,
+	Loader,
+	SimpleGrid,
+	Stack,
+	Text,
+	Title,
 } from "@mantine/core";
 import { IconAlertCircle, IconReportAnalytics } from "@tabler/icons-react";
-import TripReportCard from "./TripReportCard";
 import Link from "next/link";
+import TripReportCard from "./TripReportCard";
 
 interface TripReportsWidgetViewProps {
 	limit?: number; // Optional limit for the number of reports shown
