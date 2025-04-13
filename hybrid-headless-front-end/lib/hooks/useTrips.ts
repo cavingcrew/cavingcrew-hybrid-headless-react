@@ -110,47 +110,45 @@ export function useTrips(): UseQueryResult<ApiResponse<Trip[]>> {
 }
 
 export function useTrip(slug: string) {
-	const { data: tripsData } = useTrips();
 	const queryClient = useQueryClient();
 
-	return useQuery({
+	// Function to find trip/report in caches
+	const findInCaches = (): Trip | undefined => {
+		const tripsCache = queryClient.getQueryData<ApiResponse<Trip[]>>(tripKeys.all);
+		const reportsCache = queryClient.getQueryData<ApiResponse<Trip[]>>(
+			tripReportKeys.all,
+		);
+		return (
+			tripsCache?.data?.find((t) => t.slug === slug) ||
+			reportsCache?.data?.find((r) => r.slug === slug)
+		);
+	};
+
+	return useQuery<ApiResponse<Trip>>({
 		queryKey: tripKeys.detail(slug),
 		queryFn: async () => {
-			// 1. Check main trips cache first
-			const tripsData = queryClient.getQueryData<ApiResponse<Trip[]>>(
-				tripKeys.all,
-			);
-			const cachedTrip = tripsData?.data?.find((t) => t.slug === slug);
-
-			if (cachedTrip) {
-				console.log("[useTrip] Using cached trip data for", slug);
-				return { data: cachedTrip, success: true };
-			}
-
-			// 2. If not found, check if trips are still loading
-			const isTripsLoading = queryClient.isFetching({ queryKey: tripKeys.all });
-			if (isTripsLoading) {
-				console.log("[useTrip] Waiting for trips load...");
-				await queryClient.fetchQuery({
-					queryKey: tripKeys.all,
-					queryFn: () => apiService.getTrips(true),
-				});
-				return { data: undefined, success: true }; // Will retry after cache update
-			}
-
-			// 3. Final fallback to direct API call
 			console.log("[useTrip] Fetching fresh data for", slug);
-			const tripResponse = await apiService.getTrip(slug);
+			// The query function now directly fetches the specific trip/report
+			const response = await apiService.getTrip(slug);
 
-			// If fetched successfully, add it to the main trips cache if it's not a report
-			// Or potentially a separate report cache if needed? For now, just cache it under its detail key.
-			if (tripResponse.success && tripResponse.data) {
-				// No need to add to the main 'trips' list cache here,
-				// as it might be a report or an old trip not in the main list.
-				// The detail cache is sufficient.
+			// If fetched successfully, update the detail cache
+			if (response.success && response.data) {
+				// Optional: Update the main list caches if needed, though maybe not necessary
+				// queryClient.setQueryData(tripKeys.all, ...);
+				// queryClient.setQueryData(tripReportKeys.all, ...);
+			} else {
+				console.error(`[useTrip] Failed to fetch ${slug}:`, response.message);
 			}
-
-			return tripResponse;
+			return response;
+		},
+		placeholderData: () => {
+			// Try to find the data in either cache for an initial render
+			const cachedData = findInCaches();
+			if (cachedData) {
+				console.log("[useTrip] Using placeholder data for", slug);
+				return { data: cachedData, success: true, timestamp: Date.now() };
+			}
+			return undefined; // No placeholder if not found in caches
 		},
 		staleTime: 1000 * 60 * 5, // 5 minutes
 		gcTime: 1000 * 60 * 60 * 24, // 24 hours
