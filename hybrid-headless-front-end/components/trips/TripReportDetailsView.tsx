@@ -3,7 +3,10 @@
 import { useTripParticipants } from "@/lib/hooks/useTripParticipants";
 import { useUser } from "@/lib/hooks/useUser";
 import type { Trip, TripParticipant } from "@/types/api";
+import { extractChallengeMetrics } from "@/utils/difficulty-utils";
+import { formatParticipantCount } from "@/utils/trip-participant-utils";
 import { Auth } from "@/utils/user-utils";
+import { Carousel } from "@mantine/carousel";
 import {
 	Alert,
 	Anchor,
@@ -21,7 +24,6 @@ import {
 	Title,
 	useMantineTheme,
 } from "@mantine/core";
-import { Carousel } from "@mantine/carousel";
 import {
 	IconAlertCircle,
 	IconCalendarEvent,
@@ -29,10 +31,8 @@ import {
 	IconUser,
 	IconUsers,
 } from "@tabler/icons-react";
-import { TripChallengeIndicator } from "./TripChallengeIndicator";
-import { extractChallengeMetrics } from "@/utils/difficulty-utils";
-import { formatParticipantCount } from "@/utils/trip-participant-utils";
 import { SensitiveAccessWarning } from "./SensitiveAccessWarning";
+import { TripChallengeIndicator } from "./TripChallengeIndicator";
 
 interface TripReportDetailsViewProps {
 	trip: Trip; // Report data is nested within the Trip object
@@ -73,7 +73,11 @@ export function TripReportDetailsView({ trip }: TripReportDetailsViewProps) {
 	const isSensitive =
 		!!trip.route?.acf?.route_entrance_location_id?.acf
 			?.location_sensitive_access;
-	const canViewSensitiveDetails = Auth.canViewSensitive(user, trip, accessLevel);
+	const canViewSensitiveDetails = Auth.canViewSensitive(
+		user,
+		trip,
+		accessLevel,
+	);
 
 	const getLocationName = () => {
 		if (isSensitive && !canViewSensitiveDetails) {
@@ -111,7 +115,11 @@ export function TripReportDetailsView({ trip }: TripReportDetailsViewProps) {
 			return <Loader size="xs" />;
 		}
 		if (participantsError) {
-			return <Text c="red" size="sm">Error loading participants</Text>;
+			return (
+				<Text c="red" size="sm">
+					Error loading participants
+				</Text>
+			);
 		}
 
 		if (canViewNames && participants.length > 0) {
