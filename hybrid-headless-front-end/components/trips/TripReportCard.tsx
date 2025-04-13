@@ -1,10 +1,19 @@
 "use client";
 
 import { useTripCache } from "@/lib/hooks/useCache";
-import { Card, Group, Image, Text, Badge, Stack, Box, Button } from "@mantine/core";
+import {
+	Badge,
+	Box,
+	Button,
+	Card,
+	Group,
+	Image,
+	Stack,
+	Text,
+} from "@mantine/core";
+import { IconCalendarEvent, IconUser } from "@tabler/icons-react";
 import Link from "next/link";
 import type { Trip } from "../../types/api";
-import { IconCalendarEvent, IconUser } from "@tabler/icons-react";
 
 interface TripReportCardProps {
 	report: Trip; // Using Trip type as reports are also products
