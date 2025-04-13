@@ -134,7 +134,7 @@ export function TripReportDetailsView({ trip }: TripReportDetailsViewProps) {
 				<Stack gap="lg">
 					{/* Header */}
 					<Title order={2} ta="center">
-						Trip Report: {trip.name}
+						{trip.name} {/* Removed "Trip Report:" prefix */}
 					</Title>
 
 					{/* Sensitive Access Warning */}
@@ -150,18 +150,14 @@ export function TripReportDetailsView({ trip }: TripReportDetailsViewProps) {
 								</Text>
 							</Group>
 						)}
-						{trip.trip_report?.report_author && (
-							<Group gap="xs">
-								<IconUser size={18} opacity={0.7} />
-								<Text size="sm">By: {trip.trip_report.report_author}</Text>
-							</Group>
-						)}
+						{/* Removed By: Author section */}
 					</Group>
 
 					<Divider />
 
 					{/* Summary Sentence */}
-					<Text ta="center" fz="lg" style={{ lineHeight: 1.6 }}>
+					{/* Changed ta="center" to ta="left" */}
+					<Text ta="left" fz="lg" style={{ lineHeight: 1.6 }}>
 						On {formatDate(trip.acf.event_start_date_time)},{" "}
 						<Text span inherit>
 							{" "}
@@ -178,7 +174,21 @@ export function TripReportDetailsView({ trip }: TripReportDetailsViewProps) {
 					{trip.trip_report?.report_content && (
 						<Box>
 							<Title order={3} mb="sm">
-								Report Details
+								{(() => {
+									// Determine reporter name
+									let reporterName = trip.trip_report?.report_author;
+									if (!reporterName && canViewNames && participants.length > 0) {
+										const reporter = participants.find((p) =>
+											p.order_meta?.cc_volunteer
+												?.toLowerCase()
+												.includes("reporter"),
+										);
+										if (reporter) {
+											reporterName = reporter.first_name;
+										}
+									}
+									return reporterName ? `${reporterName} writes:` : "Report Details";
+								})()}
 							</Title>
 							<Box
 								dangerouslySetInnerHTML={{
