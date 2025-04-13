@@ -1,7 +1,7 @@
 "use client";
 
 import { useTripCache } from "@/lib/hooks/useCache";
-import { Card, Group, Image, Text, Badge } from "@mantine/core";
+import { Card, Group, Image, Text, Badge, Stack, Box, Button } from "@mantine/core";
 import Link from "next/link";
 import type { Trip } from "../../types/api";
 import { IconCalendarEvent, IconUser } from "@tabler/icons-react";
