@@ -640,6 +640,11 @@ export interface Trip {
 	variations: Variation[];
 	has_variations: boolean;
 	is_variable: boolean;
+	trip_report?: {
+		report_author?: string;
+		report_content?: string;
+		report_gallery?: ImageObject[];
+	};
 	route?: Route;
 	hut?: {
 		hut_id: number;
