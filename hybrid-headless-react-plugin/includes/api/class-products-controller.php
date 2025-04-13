@@ -1179,10 +1179,21 @@ class Hybrid_Headless_Products_Controller {
 
         $images = [];
 
-        foreach ($gallery as $image_id) {
-            $image_data = $this->get_image_data($image_id);
-            if ($image_data) {
-                $images[] = $image_data;
+        foreach ($gallery as $image_item) {
+            // Check if the item is an array (ACF Image Array format) or just an ID
+            $image_id = null;
+            if (is_array($image_item) && isset($image_item['ID'])) {
+                $image_id = $image_item['ID'];
+            } elseif (is_numeric($image_item)) {
+                $image_id = $image_item;
+            }
+
+            // If we have a valid ID, get the image data
+            if ($image_id) {
+                $image_data = $this->get_image_data($image_id);
+                if ($image_data) {
+                    $images[] = $image_data;
+                }
             }
         }
 
