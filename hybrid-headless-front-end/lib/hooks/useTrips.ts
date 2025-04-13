@@ -51,7 +51,6 @@ export const tripReportKeys = {
 	lists: () => [...tripReportKeys.all, "list"] as const,
 };
 
-
 export function useTrips(): UseQueryResult<ApiResponse<Trip[]>> {
 	const queryClient = useQueryClient();
 
@@ -274,6 +273,5 @@ export function useTripReports(): UseQueryResult<ApiResponse<Trip[]>> {
 		},
 	});
 }
-
 
 export const useCategoryTrips = useTripsByCategory;
