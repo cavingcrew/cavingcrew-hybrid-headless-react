@@ -344,9 +344,8 @@ export function useTripReports(): UseQueryResult<ApiResponse<Trip[]>> {
 			// --- End detail cache population ---
 
 			return cachedResponse.success ? cachedResponse : initialEmptyState;
-		}, // This closing brace '}' correctly ends the queryFn
-
-		// These options should be part of the main useQuery options object
+		},
+		// Removed duplicated block starting from staleTime down to placeholderData
 		staleTime: 1000 * 60 * 5, // 5 minutes
 		gcTime: 1000 * 60 * 15, // 15 minutes
 		refetchOnWindowFocus: (query) => {
