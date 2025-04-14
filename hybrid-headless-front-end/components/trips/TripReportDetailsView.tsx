@@ -272,12 +272,14 @@ export function TripReportDetailsView({ trip }: TripReportDetailsViewProps) {
 								</Title>
 								<Carousel
 									withIndicators
-									withControls // Add previous/next buttons
-									height={400}
-									slideSize="100%" // Show one full image at a time
-									slideGap={0} // No gap between full slides
-									loop
-									align="center" // Center the single slide
+									withControls // Keep controls
+									height={300} // Adjusted height slightly larger than example
+									slideSize="70%" // Show 70% of the slide
+									slideGap="md" // Add medium gap
+									controlsOffset="lg" // Adjust control offset
+									controlSize={40} // Set control size
+									loop // Keep loop
+									align="start" // Align slides to the start
 								>
 									{trip.trip_report.report_gallery.map((image) => (
 										<Carousel.Slide key={image.ID}>
