@@ -162,7 +162,7 @@ export function TripExperience({
 					<Title order={2} mb="md">
 						{/* Update title based on prop */}
 						{isPastTrip
-							? "What the Trip Was Like"
+							? "What the Trip Is Like"
 							: "What the Trip Will Be Like"}
 					</Title>
 
