@@ -1,14 +1,13 @@
 "use client";
 
-import { useMemo } from "react"; // Added useMemo
 import { useTripParticipants } from "@/lib/hooks/useTripParticipants";
 import { useUser } from "@/lib/hooks/useUser";
 import type { Trip } from "@/types/api";
 import { extractChallengeMetrics } from "@/utils/difficulty-utils";
 import {
-	generateTripReportSummary,
-	formatRoleName, // Import new helper
 	formatParticipantList, // Import helper
+	formatRoleName, // Import new helper
+	generateTripReportSummary,
 } from "@/utils/trip-report-utils";
 import { Auth } from "@/utils/user-utils";
 import { Carousel } from "@mantine/carousel";
@@ -44,6 +43,7 @@ import {
 	IconUser,
 	IconUsers,
 } from "@tabler/icons-react";
+import { useMemo } from "react"; // Added useMemo
 import { SensitiveAccessWarning } from "./SensitiveAccessWarning";
 import { TripExperience } from "./TripExperience"; // Import TripExperience
 // Removed TripChallengeIndicator import
@@ -166,7 +166,7 @@ export function TripReportDetailsView({ trip }: TripReportDetailsViewProps) {
 				}
 				// Ensure first_name is treated as string before pushing
 				const firstName = p.first_name;
-				if (typeof firstName === 'string') {
+				if (typeof firstName === "string") {
 					map.get(formattedRole)?.push(firstName);
 				}
 			}
@@ -180,13 +180,14 @@ export function TripReportDetailsView({ trip }: TripReportDetailsViewProps) {
 	// Get sorted roles based on the defined order, followed by others alphabetically
 	const sortedRoles = useMemo(() => {
 		const presentRoles = Array.from(rolesMap.keys());
-		const orderedRoles = roleOrder.filter((role) => presentRoles.includes(role));
+		const orderedRoles = roleOrder.filter((role) =>
+			presentRoles.includes(role),
+		);
 		const otherRoles = presentRoles
 			.filter((role) => !roleOrder.includes(role))
 			.sort(); // Sort remaining roles alphabetically
 		return [...orderedRoles, ...otherRoles];
 	}, [rolesMap]);
-
 
 	return (
 		<Container size="md" py="xl">
