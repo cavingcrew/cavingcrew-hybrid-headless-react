@@ -28,7 +28,13 @@ import {
 import {
 	IconAlertCircle,
 	IconCalendarEvent,
+	IconHeartHandshake,
+	IconHistory,
+	IconInfoCircle,
 	IconMapPin,
+	IconSchool,
+	IconSparkles,
+	IconTools,
 	IconUser,
 	IconUsers,
 } from "@tabler/icons-react";
@@ -244,6 +250,143 @@ export function TripReportDetailsView({ trip }: TripReportDetailsViewProps) {
 								</Carousel>
 							</Box>
 						)}
+
+					{/* Original Trip Requirements Section */}
+					{(trip.acf?.event_skills_required ||
+						trip.acf?.event_gear_required ||
+						trip.route?.acf?.route_personal_gear_required ||
+						trip.acf?.event_must_caved_with_us_before ||
+						trip.acf?.event_non_members_welcome ||
+						(trip.acf?.event_volunteering_required &&
+							trip.acf.event_volunteering_required > 0) ||
+						(trip.acf?.event_attendance_required &&
+							trip.acf.event_attendance_required > 0) ||
+						trip.acf?.event_u18s_come) && (
+						<Paper withBorder p="md" radius="md" mt="lg">
+							<Title order={3} mb="md">
+								Original Trip Requirements
+							</Title>
+							<Stack gap="md">
+								{/* Skills Required */}
+								{trip.acf?.event_skills_required && (
+									<Group gap="xs">
+										<IconSchool size={20} />
+										<div>
+											<Text fw={500}>Skills Required:</Text>
+											<Text>{trip.acf.event_skills_required}</Text>
+										</div>
+									</Group>
+								)}
+
+								{/* Gear Required */}
+								{(trip.route?.acf?.route_personal_gear_required ||
+									(trip.acf?.event_gear_required &&
+										trip.acf.event_gear_required !== "None")) && (
+									<Group gap="xs">
+										<IconTools size={20} />
+										<div>
+											<Text fw={500}>Required Gear:</Text>
+											<Text>
+												{trip.route?.acf?.route_personal_gear_required
+													? typeof trip.route.acf
+															.route_personal_gear_required === "string"
+														? trip.route.acf.route_personal_gear_required
+																.replace(/<[^>]*>/g, "")
+																.trim()
+																.replace(/,/g, ", ")
+														: String(
+																trip.route.acf.route_personal_gear_required,
+															).replace(/,/g, ", ")
+													: trip.acf.event_gear_required}
+											</Text>
+										</div>
+									</Group>
+								)}
+
+								{/* Previous Experience */}
+								{trip.acf?.event_must_caved_with_us_before && (
+									<Group gap="xs">
+										<IconHistory size={20} />
+										<div>
+											<Text fw={500}>Previous Experience:</Text>
+											<Text>
+												{trip.acf.event_must_caved_with_us_before === "yes"
+													? "Must have caved with us before"
+													: "No previous experience needed"}
+											</Text>
+										</div>
+									</Group>
+								)}
+
+								{/* Membership Requirement */}
+								{trip.acf?.event_non_members_welcome && (
+									<Group gap="xs">
+										<IconUsers size={20} />
+										<div>
+											<Text fw={500}>Membership:</Text>
+											<Text>
+												{trip.acf.event_non_members_welcome === "yes"
+													? "Was open to all"
+													: "Was required to participate"}
+											</Text>
+											{trip.acf.event_non_members_welcome === "no" &&
+												trip.acf.event_why_are_only_members_allowed && (
+													<Text size="sm" c="dimmed" mt={4}>
+														Reason:{" "}
+														{trip.acf.event_why_are_only_members_allowed}
+													</Text>
+												)}
+										</div>
+									</Group>
+								)}
+
+								{/* Volunteering Requirement */}
+								{trip.acf?.event_volunteering_required &&
+									trip.acf.event_volunteering_required > 0 && (
+										<Group gap="xs">
+											<IconHeartHandshake size={20} />
+											<div>
+												<Text fw={500}>Volunteering:</Text>
+												<Text>
+													Required contribution to{" "}
+													{trip.acf.event_volunteering_required} events
+												</Text>
+											</div>
+										</Group>
+									)}
+
+								{/* Attendance Requirement */}
+								{trip.acf?.event_attendance_required &&
+									trip.acf.event_attendance_required > 0 && (
+										<Group gap="xs">
+											<IconCalendarEvent size={20} />
+											<div>
+												<Text fw={500}>Minimum Attendance:</Text>
+												<Text>
+													Required attendance at{" "}
+													{trip.acf.event_attendance_required} events
+												</Text>
+											</div>
+										</Group>
+									)}
+
+								{/* Age Restrictions */}
+								{trip.acf?.event_u18s_come && (
+									<Group gap="xs">
+										<IconUser size={20} />
+										<div>
+											<Text fw={500}>Age Restrictions:</Text>
+											<Text>
+												{trip.acf.event_u18s_come === "yes"
+													? "Was open to accompanied under-18s"
+													: "Was 18+ only"}
+											</Text>
+										</div>
+									</Group>
+								)}
+							</Stack>
+						</Paper>
+					)}
 
 					{/* Challenge Indicator */}
 					{challengeMetricsResult && (
