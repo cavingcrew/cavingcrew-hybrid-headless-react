@@ -89,12 +89,12 @@ export function useTrips(): UseQueryResult<ApiResponse<Trip[]>> {
 							}),
 						);
 						// --- Populate detail cache for each trip ---
-						freshResponse.data.forEach((trip) => {
+						for (const trip of freshResponse.data) {
 							queryClient.setQueryData(
 								tripKeys.detail(trip.slug),
 								{ data: trip, success: true, timestamp: Date.now() }, // Set detail data
 							);
-						});
+						}
 						console.log(
 							`[useTrips] Background fetch complete. Updated list and ${freshResponse.data.length} detail caches.`,
 						);
