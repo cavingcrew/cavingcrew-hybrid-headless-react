@@ -129,32 +129,101 @@ export function useTrip(slug: string) {
 	return useQuery<ApiResponse<Trip>>({
 		queryKey: tripKeys.detail(slug),
 		queryFn: async () => {
-			console.log("[useTrip] Fetching fresh data for", slug);
-			// The query function now directly fetches the specific trip/report
-			const response = await apiService.getTrip(slug);
+			console.log(`[useTrip queryFn] Starting for slug: ${slug}`);
 
-			// If fetched successfully, update the detail cache
-			if (response.success && response.data) {
-				// Optional: Update the main list caches if needed, though maybe not necessary
-				// queryClient.setQueryData(tripKeys.all, ...);
-				// queryClient.setQueryData(tripReportKeys.all, ...);
+			// --- Step 1: Trigger background fetches for cached lists ---
+			// We don't await these here, just kick them off.
+			// React Query handles deduplication if fetches are already in progress.
+			const listFetchPromises = [
+				queryClient.fetchQuery({
+					queryKey: tripKeys.lists(), // Use a more specific key if needed
+					queryFn: () => apiService.getTrips(true),
+					staleTime: 1000 * 30, // Keep list cache fresh for 30s
+				}),
+				queryClient.fetchQuery({
+					queryKey: tripReportKeys.lists(), // Use a more specific key if needed
+					queryFn: () => apiService.getTripReports(true),
+					staleTime: 1000 * 60 * 5, // Keep report cache fresh for 5m
+				}),
+			];
+
+			// --- Step 2: Attempt to update detail cache from settling list fetches ---
+			// This provides a faster update if the item is in the cached lists.
+			Promise.allSettled(listFetchPromises).then((results) => {
+				console.log(
+					`[useTrip queryFn] Cached list fetches settled for slug: ${slug}`,
+				);
+				let foundInLists = false;
+				results.forEach((result) => {
+					if (result.status === "fulfilled" && result.value.success) {
+						const item = result.value.data?.find((t) => t.slug === slug);
+						if (item) {
+							foundInLists = true;
+							console.log(
+								`[useTrip queryFn] Found ${slug} in cached list, updating detail cache.`,
+							);
+							// Update the detail cache immediately
+							queryClient.setQueryData(tripKeys.detail(slug), {
+								data: item,
+								success: true,
+								timestamp: Date.now(), // Mark as fresh from list cache
+							});
+						}
+					}
+				});
+				if (!foundInLists) {
+					console.log(
+						`[useTrip queryFn] ${slug} not found in settled cached lists.`,
+					);
+				}
+			});
+
+			// --- Step 3: Fetch the definitive uncached detail data ---
+			// This ensures the final data is the most up-to-date.
+			console.log(
+				`[useTrip queryFn] Fetching uncached details for slug: ${slug}`,
+			);
+			const detailResponse = await apiService.getTrip(slug, false); // Fetch uncached
+
+			// --- Step 4: Update cache with definitive data and return ---
+			if (detailResponse.success) {
+				console.log(
+					`[useTrip queryFn] Successfully fetched uncached details for ${slug}, updating cache.`,
+				);
+				queryClient.setQueryData(tripKeys.detail(slug), detailResponse);
 			} else {
-				console.error(`[useTrip] Failed to fetch ${slug}:`, response.message);
+				console.error(
+					`[useTrip queryFn] Failed to fetch uncached details for ${slug}:`,
+					detailResponse.message,
+				);
+				// Optional: Invalidate cache on failure? Or rely on existing placeholder/cached data?
+				// queryClient.invalidateQueries({ queryKey: tripKeys.detail(slug) });
 			}
-			return response;
+
+			console.log(`[useTrip queryFn] Finished for slug: ${slug}`);
+			return detailResponse; // Return the result of the uncached fetch
 		},
 		placeholderData: () => {
-			// Try to find the data in either cache for an initial render
+			// Try to find the data in either list cache for initial render
 			const cachedData = findInCaches();
 			if (cachedData) {
-				console.log("[useTrip] Using placeholder data for", slug);
-				return { data: cachedData, success: true, timestamp: Date.now() };
+				console.log(`[useTrip placeholderData] Using placeholder for ${slug}`);
+				return {
+					data: cachedData,
+					success: true,
+					timestamp:
+						queryClient.getQueryState(tripKeys.detail(slug))?.dataUpdatedAt ??
+						Date.now(),
+				};
 			}
+			console.log(`[useTrip placeholderData] No placeholder found for ${slug}`);
 			return undefined; // No placeholder if not found in caches
 		},
-		staleTime: 1000 * 60 * 5, // 5 minutes
-		gcTime: 1000 * 60 * 60 * 24, // 24 hours
-		refetchOnWindowFocus: false,
+		// staleTime: Infinity, // Data is considered fresh until explicitly invalidated or refetched by queryFn
+		staleTime: 1000 * 60 * 5, // Consider data stale after 5 mins to allow background updates
+		gcTime: 1000 * 60 * 60 * 1, // Keep data in cache for 1 hour
+		refetchOnWindowFocus: true, // Refetch on focus if stale
+		refetchOnMount: true, // Refetch on mount if stale
 		enabled: !!slug,
 	});
 }

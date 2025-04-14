@@ -162,19 +162,30 @@ export const apiService = {
 				success: false,
 				data: null,
 				message:
-					error instanceof Error ? error.message : "Failed to fetch trip reports",
+					error instanceof Error
+						? error.message
+						: "Failed to fetch trip reports",
 			};
 		}
 	},
 
-	async getTrip(slug: string): Promise<ApiResponse<Trip>> {
+	async getTrip(slug: string, useCache = false): Promise<ApiResponse<Trip>> {
 		try {
 			// This endpoint fetches a single product, which might be a trip or a report
-			const response = await fetch(
-				`${API_BASE_URL}/hybrid-headless/v1/products/${slug}?by_slug=true`,
-			);
+			const cacheParam = useCache ? "cachemeifyoucan=please" : "nocache=please";
+			const url = `${API_BASE_URL}/hybrid-headless/v1/products/${slug}?by_slug=true&${cacheParam}`;
+
+			console.log(`[apiService.getTrip] Fetching: ${url}`); // Added for debugging
+			const response = await fetch(url);
+
 			if (!response.ok) {
-				throw new Error(`Failed to fetch trip ${slug}`);
+				// Log status for debugging
+				console.error(
+					`[apiService.getTrip] Failed to fetch trip ${slug}. Status: ${response.status}`,
+				);
+				throw new Error(
+					`Failed to fetch trip ${slug}. Status: ${response.status}`,
+				);
 			}
 			const data = await response.json();
 			return {
