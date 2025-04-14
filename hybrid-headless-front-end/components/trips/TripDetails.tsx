@@ -442,11 +442,10 @@ export function TripDetails({ trip }: TripDetailsProps) {
 											<Text>
 												{acf.event_gear_required === "None"
 													? "All required gear can be borrowed from the Crew."
-													: acf.event_gear_required ===
-														"Horizontal Caving Gear"
+													: acf.event_gear_required === "Horizontal Caving Gear"
 														? "Participants need their own horizontal caving gear (helmet, light, suits, wellies)."
 														: acf.event_gear_required ===
-															"Horizontal Caving Gear and SRT Kit"
+																"Horizontal Caving Gear and SRT Kit"
 															? "Participants need their own full horizontal and vertical (SRT) caving gear."
 															: `Specific gear required: ${acf.event_gear_required}`}
 											</Text>
