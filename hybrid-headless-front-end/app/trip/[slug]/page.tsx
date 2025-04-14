@@ -49,11 +49,7 @@ export default function TripPage({
 				<>
 					<Group justify="space-between" align="center" mb="xl">
 						<Title order={1}>{trip.name}</Title>
-						{showStaleData && (
-							<Badge color="yellow" variant="light">
-								Updating trip details...
-							</Badge>
-						)}
+						{showStaleData }
 					</Group>
 					<TripDetails trip={trip} />
 				</>

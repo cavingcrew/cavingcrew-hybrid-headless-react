@@ -32,7 +32,8 @@ const formatTimeRemaining = (ms: number) => {
 	if (weeks > 0) result += `${weeks}w `;
 	if (days > 0 || weeks > 0) result += `${days}d `; // Show days if weeks are shown or days > 0
 	if (hours > 0 || days > 0 || weeks > 0) result += `${hours}h `; // Show hours if larger units are shown
-	if (minutes > 0 || hours > 0 || days > 0 || weeks > 0) result += `${minutes}m `; // Show minutes if larger units are shown
+	if (minutes > 0 || hours > 0 || days > 0 || weeks > 0)
+		result += `${minutes}m `; // Show minutes if larger units are shown
 	result += `${seconds}s`; // Always show seconds
 
 	return result.trim();
