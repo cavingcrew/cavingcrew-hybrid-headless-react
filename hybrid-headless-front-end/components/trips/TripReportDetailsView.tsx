@@ -28,6 +28,7 @@ import {
 import {
 	IconAlertCircle,
 	IconCalendarEvent,
+	IconClock, // Added IconClock
 	IconHeartHandshake,
 	IconHistory,
 	IconInfoCircle,
@@ -251,10 +252,23 @@ export function TripReportDetailsView({ trip }: TripReportDetailsViewProps) {
 							</Box>
 						)}
 
-					{/* Original Trip Requirements Section */}
+					{/* Challenge Indicator */}
+					{challengeMetricsResult && (
+						<Box mt="xl">
+							<Title order={3} ta="center" mb="md">
+								Route Challenge Profile
+							</Title>
+							<TripChallengeIndicator
+								metrics={challengeMetricsResult.metrics}
+								weightedRank={challengeMetricsResult.weightedRank}
+							/>
+						</Box>
+					)}
+
+					{/* Original Trip Requirements Section (Moved & Modified) */}
 					{(trip.acf?.event_skills_required ||
 						trip.acf?.event_gear_required ||
-						trip.route?.acf?.route_personal_gear_required ||
+						trip.route?.acf?.route_time_for_eta || // Added condition for time
 						trip.acf?.event_must_caved_with_us_before ||
 						trip.acf?.event_non_members_welcome ||
 						(trip.acf?.event_volunteering_required &&
@@ -267,6 +281,17 @@ export function TripReportDetailsView({ trip }: TripReportDetailsViewProps) {
 								Original Trip Requirements
 							</Title>
 							<Stack gap="md">
+								{/* Estimated Time */}
+								{trip.route?.acf?.route_time_for_eta && (
+									<Group gap="xs">
+										<IconClock size={20} />
+										<div>
+											<Text fw={500}>Estimated Duration:</Text>
+											<Text>{trip.route.acf.route_time_for_eta} hours</Text>
+										</div>
+									</Group>
+								)}
+
 								{/* Skills Required */}
 								{trip.acf?.event_skills_required && (
 									<Group gap="xs">
@@ -278,27 +303,22 @@ export function TripReportDetailsView({ trip }: TripReportDetailsViewProps) {
 									</Group>
 								)}
 
-								{/* Gear Required */}
-								{(trip.route?.acf?.route_personal_gear_required ||
-									(trip.acf?.event_gear_required &&
-										trip.acf.event_gear_required !== "None")) && (
+								{/* Gear Required (Modified Logic) */}
+								{trip.acf?.event_gear_required && (
 									<Group gap="xs">
 										<IconTools size={20} />
 										<div>
-											<Text fw={500}>Required Gear:</Text>
-											<Text>
-												{trip.route?.acf?.route_personal_gear_required
-													? typeof trip.route.acf
-															.route_personal_gear_required === "string"
-														? trip.route.acf.route_personal_gear_required
-																.replace(/<[^>]*>/g, "")
-																.trim()
-																.replace(/,/g, ", ")
-														: String(
-																trip.route.acf.route_personal_gear_required,
-															).replace(/,/g, ", ")
-													: trip.acf.event_gear_required}
-											</Text>
+											<Text fw={500}>Gear:</Text>
+											{trip.acf.event_gear_required === "None" ? (
+												<Text>
+													All required gear could be borrowed from the Crew.
+												</Text>
+											) : (
+												<Text>
+													Participants needed their own:{" "}
+													{trip.acf.event_gear_required}
+												</Text>
+											)}
 										</div>
 									</Group>
 								)}
@@ -386,19 +406,6 @@ export function TripReportDetailsView({ trip }: TripReportDetailsViewProps) {
 								)}
 							</Stack>
 						</Paper>
-					)}
-
-					{/* Challenge Indicator */}
-					{challengeMetricsResult && (
-						<Box mt="xl">
-							<Title order={3} ta="center" mb="md">
-								Route Challenge Profile
-							</Title>
-							<TripChallengeIndicator
-								metrics={challengeMetricsResult.metrics}
-								weightedRank={challengeMetricsResult.weightedRank}
-							/>
-						</Box>
 					)}
 				</Stack>
 			</Paper>
