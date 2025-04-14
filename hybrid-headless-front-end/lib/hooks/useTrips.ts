@@ -111,7 +111,7 @@ export function useTrips(): UseQueryResult<ApiResponse<Trip[]>> {
 
 			// --- Populate detail cache from the initial cached response ---
 			if (cachedResponse.success && cachedResponse.data) {
-				for (const trip of cachedResponse.data) {
+				cachedResponse.data.forEach((trip) => {
 					// Only set if not already present or older, avoid overwriting fresh data
 					const existingDetail = queryClient.getQueryData<ApiResponse<Trip>>(
 						tripKeys.detail(trip.slug),
@@ -127,7 +127,7 @@ export function useTrips(): UseQueryResult<ApiResponse<Trip[]>> {
 							timestamp: cachedResponse.timestamp,
 						});
 					}
-				}
+				});
 			}
 			// --- End detail cache population ---
 
@@ -299,12 +299,12 @@ export function useTripReports(): UseQueryResult<ApiResponse<Trip[]>> {
 							}),
 						);
 						// --- Populate detail cache for each report ---
-						for (const report of freshResponse.data) {
+						freshResponse.data.forEach((report) => {
 							queryClient.setQueryData(
 								tripKeys.detail(report.slug), // Use tripKeys.detail for consistency
 								{ data: report, success: true, timestamp: Date.now() }, // Set detail data
 							);
-						}
+						});
 						console.log(
 							`[useTripReports] Background fetch complete. Updated list and ${freshResponse.data.length} detail caches.`,
 						);
@@ -321,7 +321,7 @@ export function useTripReports(): UseQueryResult<ApiResponse<Trip[]>> {
 
 			// --- Populate detail cache from the initial cached response ---
 			if (cachedResponse.success && cachedResponse.data) {
-				for (const report of cachedResponse.data) {
+				cachedResponse.data.forEach((report) => {
 					const existingDetail = queryClient.getQueryData<ApiResponse<Trip>>(
 						tripKeys.detail(report.slug),
 					);
@@ -339,7 +339,7 @@ export function useTripReports(): UseQueryResult<ApiResponse<Trip[]>> {
 							}, // Ensure timestamp exists
 						);
 					}
-				}
+				});
 			}
 			// --- End detail cache population ---
 
