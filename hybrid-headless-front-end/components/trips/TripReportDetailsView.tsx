@@ -143,12 +143,14 @@ export function TripReportDetailsView({ trip }: TripReportDetailsViewProps) {
 	};
 
 	// Generate the summary sentence using the utility function
-	const summarySentence =
-		!participantsLoading && participants.length > 0
-			? generateTripReportSummary(trip, participants, canViewNames)
-			: participantsLoading
-				? "Loading participant details..."
-				: generateTripReportSummary(trip, [], false); // Fallback if error or no participants
+	// It will automatically adjust based on available participants and canViewNames status
+	const summarySentence = generateTripReportSummary(
+		trip,
+		participants, // Pass the current participants array (might be empty during load)
+		canViewNames, // Pass the actual view permission
+	);
+
+	// Note: We no longer need the explicit "Loading participant details..." text
 
 	// Process participants into roles (only if names can be viewed)
 	const rolesMap = useMemo(() => {
