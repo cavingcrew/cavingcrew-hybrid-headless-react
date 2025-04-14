@@ -201,3 +201,19 @@ export function generateTripReportSummary(
 	// Fallback if no leader identified (shouldn't happen often for reports)
 	return `${timePrefix}${formattedDate || "a date"}, ${formatParticipantList(allNames)} went to ${locationName}${regionName ? ` in ${regionName}` : ""}${routeName ? ` to explore the ${routeName} route` : ""}.`;
 }
+
+/**
+ * Formats a role string for display.
+ * Replaces underscores with spaces and capitalizes each word.
+ * @param role The raw role string (e.g., "trip_leader", "evening_chef")
+ * @returns Formatted role string (e.g., "Trip Leader", "Evening Chef") or empty string if invalid/none.
+ */
+export function formatRoleName(role?: string): string {
+	if (!role || role === "none") return "";
+	return role
+		.replace(/_/g, " ") // Replace underscores with spaces
+		.toLowerCase() // Convert to lowercase first to handle mixed cases
+		.split(" ") // Split into words
+		.map((word) => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize each word
+		.join(" "); // Join back with spaces
+}

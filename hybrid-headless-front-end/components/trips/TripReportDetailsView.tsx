@@ -1,11 +1,15 @@
 "use client";
 
+import { useMemo } from "react"; // Added useMemo
 import { useTripParticipants } from "@/lib/hooks/useTripParticipants";
 import { useUser } from "@/lib/hooks/useUser";
-import type { Trip } from "@/types/api"; // Removed TripParticipant import as it's handled in util
+import type { Trip } from "@/types/api";
 import { extractChallengeMetrics } from "@/utils/difficulty-utils";
-import { generateTripReportSummary } from "@/utils/trip-report-utils"; // Import the new util
-// Removed formatParticipantCount import as it's handled in util
+import {
+	generateTripReportSummary,
+	formatRoleName, // Import new helper
+	formatParticipantList, // Import helper
+} from "@/utils/trip-report-utils";
 import { Auth } from "@/utils/user-utils";
 import { Carousel } from "@mantine/carousel";
 import {
@@ -21,6 +25,7 @@ import {
 	Paper,
 	SimpleGrid,
 	Stack,
+	Table, // Added Table
 	Text,
 	Title,
 	useMantineTheme,
@@ -145,6 +150,44 @@ export function TripReportDetailsView({ trip }: TripReportDetailsViewProps) {
 				? "Loading participant details..."
 				: generateTripReportSummary(trip, [], false); // Fallback if error or no participants
 
+	// Process participants into roles (only if names can be viewed)
+	const rolesMap = useMemo(() => {
+		if (!canViewNames || participants.length === 0) {
+			return new Map<string, string[]>();
+		}
+
+		const map = new Map<string, string[]>();
+		participants.forEach((p) => {
+			const rawRole = p.order_meta?.cc_volunteer;
+			const formattedRole = formatRoleName(rawRole); // Use the new helper
+			if (formattedRole && p.first_name) {
+				if (!map.has(formattedRole)) {
+					map.set(formattedRole, []);
+				}
+				// Ensure first_name is treated as string before pushing
+				const firstName = p.first_name;
+				if (typeof firstName === 'string') {
+					map.get(formattedRole)?.push(firstName);
+				}
+			}
+		});
+		return map;
+	}, [participants, canViewNames]);
+
+	// Define the desired order for roles
+	const roleOrder: string[] = ["Trip Leader", "Seconder", "Trip Reporter"];
+
+	// Get sorted roles based on the defined order, followed by others alphabetically
+	const sortedRoles = useMemo(() => {
+		const presentRoles = Array.from(rolesMap.keys());
+		const orderedRoles = roleOrder.filter((role) => presentRoles.includes(role));
+		const otherRoles = presentRoles
+			.filter((role) => !roleOrder.includes(role))
+			.sort(); // Sort remaining roles alphabetically
+		return [...orderedRoles, ...otherRoles];
+	}, [rolesMap]);
+
+
 	return (
 		<Container size="md" py="xl">
 			<Paper shadow="sm" p="lg" radius="md" withBorder>
@@ -252,6 +295,29 @@ export function TripReportDetailsView({ trip }: TripReportDetailsViewProps) {
 								</Carousel>
 							</Box>
 						)}
+
+					{/* Participant Roles Table */}
+					{canViewNames && sortedRoles.length > 0 && (
+						<Box mt="lg">
+							<Title order={3} mb="md">
+								Trip Roles
+							</Title>
+							<Table striped withTableBorder withColumnBorders>
+								<Table.Tbody>
+									{sortedRoles.map((role) => (
+										<Table.Tr key={role}>
+											<Table.Td fw={500} style={{ width: "30%" }}>
+												{role}
+											</Table.Td>
+											<Table.Td>
+												{formatParticipantList(rolesMap.get(role) || [])}
+											</Table.Td>
+										</Table.Tr>
+									))}
+								</Table.Tbody>
+							</Table>
+						</Box>
+					)}
 
 					{/* Trip Experience Section (Replaces Challenge Indicator) */}
 					<TripExperience trip={trip} />
