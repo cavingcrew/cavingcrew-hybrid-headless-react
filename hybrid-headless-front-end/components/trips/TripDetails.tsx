@@ -604,7 +604,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
 						</Alert>
 
 						<Box mt="md" style={{ opacity: 0.6, pointerEvents: "none" }}>
-							<TripSignupWidget trip={trip} />
+							<TripSignupWidget trip={trip} signupTiming={signupTiming} />
 						</Box>
 					</Paper>
 				</>
