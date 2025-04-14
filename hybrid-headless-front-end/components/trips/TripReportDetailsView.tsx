@@ -303,7 +303,7 @@ export function TripReportDetailsView({ trip }: TripReportDetailsViewProps) {
 					{canViewNames && sortedRoles.length > 0 && (
 						<Box mt="lg">
 							<Title order={3} mb="md">
-								Trip Roles
+								Who Did What
 							</Title>
 							<Table striped withTableBorder withColumnBorders>
 								<Table.Tbody>

@@ -161,7 +161,7 @@ export function generateTripReportSummary(
 		const participantCount = participants.length; // Use actual length if available
 		const peopleText =
 			participantCount === 0
-				? "Some people"
+				? "some people"
 				: participantCount === 1
 					? "1 person"
 					: `${participantCount} people`;
