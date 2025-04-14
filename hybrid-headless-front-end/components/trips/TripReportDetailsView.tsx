@@ -148,6 +148,7 @@ export function TripReportDetailsView({ trip }: TripReportDetailsViewProps) {
 		trip,
 		participants, // Pass the current participants array (might be empty during load)
 		canViewNames, // Pass the actual view permission
+		participantsData?.data?.participant_count, // Pass the count from the API response
 	);
 
 	// Note: We no longer need the explicit "Loading participant details..." text

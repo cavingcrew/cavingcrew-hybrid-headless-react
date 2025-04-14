@@ -128,12 +128,14 @@ export function getTripLeaders(participants: TripParticipant[]): string[] {
  * @param trip The Trip object
  * @param participants Array of TripParticipant objects
  * @param canViewNames Boolean indicating if user can see full names
+ * @param apiParticipantCount Optional participant count directly from the API response
  * @returns The generated summary sentence string or a placeholder
  */
 export function generateTripReportSummary(
 	trip: Trip,
 	participants: TripParticipant[],
 	canViewNames: boolean,
+	apiParticipantCount?: number, // Add optional count from API
 ): string {
 	const timeContext = getTimeOfDay(trip);
 	const formattedDate = formatDateWithOrdinal(trip.acf.event_start_date_time);
@@ -156,15 +158,19 @@ export function generateTripReportSummary(
 
 	const routeName = trip.route?.acf?.route_name || null;
 
-	if (!canViewNames || participants.length === 0) {
-		// Fallback for logged-out users or no participant data yet
-		const participantCount = participants.length; // Use actual length if available
+	if (!canViewNames) {
+		// Use apiParticipantCount if available and user cannot view names, otherwise default logic
+		const countToUse =
+			apiParticipantCount !== undefined && apiParticipantCount >= 0
+				? apiParticipantCount
+				: participants.length; // Fallback to array length if API count not provided
+
 		const peopleText =
-			participantCount === 0
-				? "some people"
-				: participantCount === 1
+			countToUse === 0
+				? "some people" // Or perhaps "A group" if count is 0 but known? Let's stick to "some people" for now.
+				: countToUse === 1
 					? "1 person"
-					: `${participantCount} people`;
+					: `${countToUse} people`;
 
 		if (timeContext === "weekend") {
 			return `On the weekend of ${formattedDateRange || "a weekend"}, ${peopleText} went to ${trip.hut?.hut_name || "the accommodation"}${regionName ? ` in ${regionName}` : ""}.`;
