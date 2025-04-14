@@ -2,10 +2,11 @@
 
 import { useTripParticipants } from "@/lib/hooks/useTripParticipants";
 import { useUser } from "@/lib/hooks/useUser";
-import type { Trip, TripParticipant } from "@/types/api";
+import type { Trip } from "@/types/api"; // Removed TripParticipant import as it's handled in util
 import { extractChallengeMetrics } from "@/utils/difficulty-utils";
-import { formatParticipantCount } from "@/utils/trip-participant-utils";
+// Removed formatParticipantCount import as it's handled in util
 import { Auth } from "@/utils/user-utils";
+import { generateTripReportSummary } from "@/utils/trip-report-utils"; // Import the new util
 import { Carousel } from "@mantine/carousel";
 import {
 	Alert,
@@ -125,8 +126,16 @@ export function TripReportDetailsView({ trip }: TripReportDetailsViewProps) {
 		if (canViewNames && participants.length > 0) {
 			return participants.map((p) => p.first_name).join(", ");
 		}
-		return formatParticipantCount(participantCount, accessLevel);
+		// Removed renderParticipantInfo function
 	};
+
+	// Generate the summary sentence using the utility function
+	const summarySentence =
+		!participantsLoading && participants.length > 0
+			? generateTripReportSummary(trip, participants, canViewNames)
+			: participantsLoading
+				? "Loading participant details..."
+				: generateTripReportSummary(trip, [], false); // Fallback if error or no participants
 
 	return (
 		<Container size="md" py="xl">
@@ -155,19 +164,9 @@ export function TripReportDetailsView({ trip }: TripReportDetailsViewProps) {
 
 					<Divider />
 
-					{/* Summary Sentence */}
-					{/* Changed ta="center" to ta="left" */}
+					{/* Summary Sentence - Now uses the generated sentence */}
 					<Text ta="left" fz="lg" style={{ lineHeight: 1.6 }}>
-						On {formatDate(trip.acf.event_start_date_time)},{" "}
-						<Text span inherit>
-							{" "}
-							{/* Use inherit to match surrounding text style */}
-							{renderParticipantInfo()}
-						</Text>{" "}
-						{participantCount === 1 ? "person" : "people"} went to{" "}
-						{getLocationName()}
-						{getRegion() && ` in ${getRegion()}`}
-						{getRouteName() && ` to explore the ${getRouteName()} route`}.
+						{summarySentence}
 					</Text>
 
 					{/* Report Content */}
