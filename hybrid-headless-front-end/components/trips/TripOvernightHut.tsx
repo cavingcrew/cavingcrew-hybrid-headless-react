@@ -38,18 +38,20 @@ interface TripOvernightHutProps {
   location?: string;
   facilities?: string;
   photo?: string;
+  isPastTrip?: boolean; // Add the new prop
 }
 
 
 export function TripOvernightHut({
-  hut,
-  tripId,
-  location,
-  facilities,
-  photo
+	hut,
+	tripId,
+	location,
+	facilities,
+	photo,
+	isPastTrip = false, // Default to false
 }: TripOvernightHutProps) {
-  const { user, isLoggedIn, isMember } = useUser();
-  const hasPurchased = tripId ? user?.purchases?.includes(tripId) : false;
+	const { user, isLoggedIn, isMember } = useUser();
+	const hasPurchased = tripId ? user?.purchases?.includes(tripId) : false;
 
   // Support both new hut object and legacy props
   const hutName = hut?.hut_name || location || "Accommodation";
@@ -88,12 +90,15 @@ export function TripOvernightHut({
                       hut?.hut_location?.post_title ||
                       location;
 
-  return (
-    <Paper withBorder p="md" radius="md">
-      <Title order={2} mb="md">Where we'll be staying</Title>
+	return (
+		<Paper withBorder p="md" radius="md">
+			<Title order={2} mb="md">
+				{/* Change title based on prop */}
+				{isPastTrip ? "Where we stayed" : "Where we'll be staying"}
+			</Title>
 
-      <Grid gutter="xl">
-        {hutImage && (
+			<Grid gutter="xl">
+				{hutImage && (
           <Grid.Col span={{ base: 12, md: 6 }}>
             <Image
               src={
@@ -177,16 +182,22 @@ export function TripOvernightHut({
                     </List.Item>
                   )}
                 </List>
-              </div>
-            )}
+							</div>
+						)}
 
-            {hut && !hasPurchased && (
-              <Alert variant="light" color="blue" icon={<IconInfoCircle size={16} />}>
-                Sign up for this trip to view exact location details and arrival information
-              </Alert>
-            )}
-          </Stack>
-        </Grid.Col>
+						{/* Hide alert if it's a past trip */}
+						{hut && !hasPurchased && !isPastTrip && (
+							<Alert
+								variant="light"
+								color="blue"
+								icon={<IconInfoCircle size={16} />}
+							>
+								Sign up for this trip to view exact location details and arrival
+								information
+							</Alert>
+						)}
+					</Stack>
+				</Grid.Col>
       </Grid>
     </Paper>
   );

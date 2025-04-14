@@ -43,10 +43,10 @@ import {
 	IconUser,
 	IconUsers,
 } from "@tabler/icons-react";
-import { useMemo } from "react"; // Added useMemo
+import { useMemo } from "react";
 import { SensitiveAccessWarning } from "./SensitiveAccessWarning";
-import { TripExperience } from "./TripExperience"; // Import TripExperience
-// Removed TripChallengeIndicator import
+import { TripExperience } from "./TripExperience";
+import { TripOvernightHut } from "./TripOvernightHut"; // Import TripOvernightHut
 
 interface TripReportDetailsViewProps {
 	trip: Trip; // Report data is nested within the Trip object
@@ -454,10 +454,19 @@ export function TripReportDetailsView({ trip }: TripReportDetailsViewProps) {
 						</Paper>
 					)}
 
-					{/* Trip Experience Section (Replaces Challenge Indicator) */}
-					<TripExperience trip={trip} isPastTrip={true} />
-
-					{/* Original Trip Requirements Section has been moved */}
+					{/* Conditionally render TripExperience or TripOvernightHut */}
+					{trip.acf.event_type === "overnight" ? (
+						<TripOvernightHut
+							hut={trip.hut}
+							tripId={trip.id}
+							location={trip.acf.event_location}
+							facilities={trip.acf.hut_facilities_description}
+							photo={trip.acf.hut_photo}
+							isPastTrip={true}
+						/>
+					) : (
+						<TripExperience trip={trip} isPastTrip={true} />
+					)}
 				</Stack>
 			</Paper>
 		</Container>
