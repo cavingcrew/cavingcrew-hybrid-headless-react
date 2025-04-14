@@ -52,15 +52,17 @@ import { useTripParticipants } from "../../lib/hooks/useTripParticipants";
  * Component to display trip enjoyment rating and duration
  */
 function TripEnjoymentRating({
-  starRating,
-  estimatedTime
+	starRating,
+	estimatedTime,
+	isPastTrip = false, // Add isPastTrip prop
 }: {
-  starRating?: string | number;
-  estimatedTime?: string;
+	starRating?: string | number;
+	estimatedTime?: string;
+	isPastTrip?: boolean; // Make prop optional
 }) {
-  if (!starRating && !estimatedTime) return null;
+	if (!starRating && !estimatedTime) return null;
 
-  return (
+	return (
     <Stack gap="md" align="flex-start">
       {starRating && (
         <Box>
@@ -87,9 +89,15 @@ function TripEnjoymentRating({
           <Group gap="xs" align="flex-start">
             <IconClock size={18} style={{ marginTop: 4 }} />
             <div>
-              <Text>Estimated Duration: {parseFloat(estimatedTime) + (parseFloat(estimatedTime) * 0.25)} hours</Text>
-              <Text size="sm" c="dimmed" mt={5} style={{ maxWidth: '500px' }}>
-                Note: Cave trip durations vary widely based on group experience, preparation time, navigation, and rest breaks.
+              <Text>
+                Estimated Duration:{" "}
+                {parseFloat(estimatedTime) + parseFloat(estimatedTime) * 0.25}{" "}
+                hours
+              </Text>
+              <Text size="sm" c="dimmed" mt={5} style={{ maxWidth: "500px" }}>
+                {isPastTrip
+                  ? "Note: This is a vague estimate and probably isn't a good reflection of how long the team were actually underground on this occasion."
+                  : "Note: Cave trip durations vary widely based on group experience, preparation time, navigation, and rest breaks."}
               </Text>
             </div>
           </Group>
@@ -101,9 +109,10 @@ function TripEnjoymentRating({
 
 interface TripExperienceProps {
 	trip: Trip;
+	isPastTrip?: boolean; // Add the new prop
 }
 
-export function TripExperience({ trip }: TripExperienceProps) {
+export function TripExperience({ trip, isPastTrip = false }: TripExperienceProps) {
 	const { user } = useUser();
 	const isLoggedIn = Auth.isLoggedIn(user);
 	const { data } = useTripParticipants(trip.id);
@@ -143,7 +152,8 @@ export function TripExperience({ trip }: TripExperienceProps) {
 			{hasExperienceData && (
 				<Paper withBorder p="md" radius="md" mt="md">
 					<Title order={2} mb="md">
-						What the Trip Will Be Like
+						{/* Update title based on prop */}
+						{isPastTrip ? "What the Trip Was Like" : "What the Trip Will Be Like"}
 					</Title>
 
 					<Grid gutter="md" mb="xl">
@@ -153,6 +163,7 @@ export function TripExperience({ trip }: TripExperienceProps) {
 								<TripEnjoymentRating
 									starRating={starRating}
 									estimatedTime={estimatedTime}
+									isPastTrip={isPastTrip} // Pass prop down
 								/>
 							)}
 
@@ -177,9 +188,10 @@ export function TripExperience({ trip }: TripExperienceProps) {
 					</Grid>
 
 
-				{/* Participant Experience - Enhanced - Always show this section */}
+				{/* Participant Experience - Enhanced */}
 				<Stack gap="md" mb="xl">
-					{participantSkills && (
+					{/* Conditionally show title */}
+					{!isPastTrip && participantSkills && (
 						<Group gap="xs">
 							<ThemeIcon variant="light" color="teal">
 								<IconUser size={18} />
@@ -188,7 +200,9 @@ export function TripExperience({ trip }: TripExperienceProps) {
 						</Group>
 					)}
 
-						{participantSkills?.route_participants_skills_required_horizontal_level ? (
+					{/* Conditionally show specific skill level */}
+					{!isPastTrip &&
+						participantSkills?.route_participants_skills_required_horizontal_level ? (
 							<Box>
 								<Group align="center" mb="xs">
 									<Badge size="lg" color="teal" variant="filled">
@@ -312,11 +326,13 @@ export function TripExperience({ trip }: TripExperienceProps) {
 				</>
 			)}
 
-			{/* Equipment Section in its own Paper container */}
-			{((Array.isArray(personalGear) && personalGear.length > 0) || groupTackle) && (
-				<Paper withBorder p="md" radius="md" mt="md">
-					<Title order={2} mb="md">
-						Equipment
+			{/* Equipment Section - Hide if past trip */}
+			{!isPastTrip &&
+				((Array.isArray(personalGear) && personalGear.length > 0) ||
+					groupTackle) && (
+					<Paper withBorder p="md" radius="md" mt="md">
+						<Title order={2} mb="md">
+							Equipment
 					</Title>
 
 					{/* Personal Equipment Suggested */}
