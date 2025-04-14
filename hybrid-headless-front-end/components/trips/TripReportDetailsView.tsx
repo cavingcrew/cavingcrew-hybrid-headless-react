@@ -24,10 +24,12 @@ import {
 	Paper,
 	SimpleGrid,
 	Stack,
-	Table, // Added Table
+	Table,
 	Text,
 	Title,
 	useMantineTheme,
+	Button, // Add Button
+	Center, // Add Center
 } from "@mantine/core";
 import {
 	IconAlertCircle,
@@ -42,11 +44,13 @@ import {
 	IconTools,
 	IconUser,
 	IconUsers,
+	IconArrowRight, // Add IconArrowRight for the button
 } from "@tabler/icons-react";
 import { useMemo } from "react";
+import Link from "next/link"; // Add Link import
 import { SensitiveAccessWarning } from "./SensitiveAccessWarning";
 import { TripExperience } from "./TripExperience";
-import { TripOvernightHut } from "./TripOvernightHut"; // Import TripOvernightHut
+import { TripOvernightHut } from "./TripOvernightHut";
 
 interface TripReportDetailsViewProps {
 	trip: Trip; // Report data is nested within the Trip object
@@ -469,6 +473,30 @@ export function TripReportDetailsView({ trip }: TripReportDetailsViewProps) {
 						/>
 					) : (
 						<TripExperience trip={trip} isPastTrip={true} />
+					)}
+
+					{/* CTA for Logged-Out Users */}
+					{!Auth.isLoggedIn(user) && (
+						<Paper withBorder p="lg" radius="md" mt="xl" shadow="xs">
+							<Stack align="center" gap="md">
+								<Title order={4} ta="center">
+									Inspired to Go Caving?
+								</Title>
+								<Text ta="center">
+									Join one of our Extra Welcoming Giggletrips! They're perfect
+									for beginners and those new to the Crew.
+								</Text>
+								<Button
+									component={Link}
+									href="/"
+									variant="gradient"
+									gradient={{ from: "blue", to: "cyan" }}
+									rightSection={<IconArrowRight size={18} />}
+								>
+									Find an Upcoming Trip
+								</Button>
+							</Stack>
+						</Paper>
 					)}
 				</Stack>
 			</Paper>
