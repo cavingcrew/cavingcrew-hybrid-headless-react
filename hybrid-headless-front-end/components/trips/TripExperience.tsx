@@ -300,8 +300,8 @@ export function TripExperience({ trip, isPastTrip = false }: TripExperienceProps
 								</div>
 							)}
 
-						{/* Conservation Alert */}
-						{hasExperienceData && (
+						{/* Conservation Alert - Hide if past trip */}
+						{hasExperienceData && !isPastTrip && (
 							<Alert
 								color="green"
 								title="Conservation Notice"
