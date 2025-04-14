@@ -42,9 +42,9 @@ import { getSignupTiming, isWithinNextDays } from "../../utils/event-timing"; //
 import { Auth } from "../../utils/user-utils";
 import type { AccessLevel } from "../../utils/user-utils";
 import { NeoClanVolunteeringWidget } from "./NeoClanVolunteeringWidget";
-import { TripCountdown } from "./TripCountdown"; // Import the new countdown component
 import { SensitiveAccessWarning } from "./SensitiveAccessWarning";
 import { TripAccessDetails } from "./TripAccessDetails";
+import { TripCountdown } from "./TripCountdown"; // Import the new countdown component
 import { TripExperience } from "./TripExperience";
 import { TripLeadingInfo } from "./TripLeadingInfo";
 import { TripObjectionHandling } from "./TripObjectionHandling";
@@ -634,7 +634,8 @@ export function TripDetails({ trip }: TripDetailsProps) {
 					<TripCountdown
 						signupTiming={signupTiming}
 						hasAvailability={trip.variations?.some(
-							(v) => v.stock_status === "instock" && (v.stock_quantity ?? 0) > 0,
+							(v) =>
+								v.stock_status === "instock" && (v.stock_quantity ?? 0) > 0,
 						)}
 					/>
 				)}

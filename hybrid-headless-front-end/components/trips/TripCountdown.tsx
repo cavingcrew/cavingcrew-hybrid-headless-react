@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Box, Text, Group, Paper, useMantineTheme } from "@mantine/core";
-import { IconClockHour4 } from "@tabler/icons-react";
 import type { SignupTiming } from "@/utils/event-timing";
+import { Box, Group, Paper, Text, useMantineTheme } from "@mantine/core";
+import { IconClockHour4 } from "@tabler/icons-react";
+import { useEffect, useState } from "react";
 
 interface TripCountdownProps {
 	signupTiming: SignupTiming;

@@ -118,28 +118,36 @@ export default function TripCard({ trip }: TripCardProps) {
 				<Group justify="space-between" mt="md" mb="xs">
 					<Text fw={500}>{trip.name}</Text>
 					<Group gap="xs">
-						{!isMembershipCategory(trip) && (() => {
-							let statusMessage = "";
-							let badgeColor: string = "gray"; // Default color
+						{!isMembershipCategory(trip) &&
+							(() => {
+								let statusMessage = "";
+								let badgeColor = "gray"; // Default color
 
-							if (signupTiming.status === "early" && !trip.acf.event_allow_early_signup) {
-								statusMessage = "Opens Soon";
-								badgeColor = "cyan";
-							} else if (signupTiming.status === "closed" && !trip.acf.event_allow_late_signup) {
-								statusMessage = "Closed";
-								badgeColor = "gray";
-							} else { // Status is 'open' or overrides are active
-								if (hasStock) {
-									statusMessage = "Available";
-									badgeColor = "green";
+								if (
+									signupTiming.status === "early" &&
+									!trip.acf.event_allow_early_signup
+								) {
+									statusMessage = "Opens Soon";
+									badgeColor = "cyan";
+								} else if (
+									signupTiming.status === "closed" &&
+									!trip.acf.event_allow_late_signup
+								) {
+									statusMessage = "Closed";
+									badgeColor = "gray";
 								} else {
-									statusMessage = "Full";
-									badgeColor = "red";
+									// Status is 'open' or overrides are active
+									if (hasStock) {
+										statusMessage = "Available";
+										badgeColor = "green";
+									} else {
+										statusMessage = "Full";
+										badgeColor = "red";
+									}
 								}
-							}
 
-							return <Badge color={badgeColor}>{statusMessage}</Badge>;
-						})()}
+								return <Badge color={badgeColor}>{statusMessage}</Badge>;
+							})()}
 						{hasPurchased && (
 							<Badge color="lime" variant="light">
 								Signed Up

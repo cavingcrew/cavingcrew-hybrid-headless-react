@@ -30,7 +30,6 @@ export function isWithinNextDays(date: Date, days: number): boolean {
 	return diffDays <= days;
 }
 
-
 export function getSignupTiming(trip: Trip): SignupTiming {
 	const now = new Date();
 	const startDate = trip.acf.event_start_date_time
@@ -46,8 +45,8 @@ export function getSignupTiming(trip: Trip): SignupTiming {
 
 	switch (trip.acf.event_type) {
 		case "overnight":
-			// Open: Previous Sunday 8pm, two months before
-			opensAt.setMonth(opensAt.getMonth() - 2);
+			// Open: Previous Sunday 8pm, 4 months before
+			opensAt.setMonth(opensAt.getMonth() - 4);
 			opensAt.setDate(opensAt.getDate() - opensAt.getDay()); // Previous Sunday
 			opensAt.setHours(20, 0, 0, 0); // 8pm
 

@@ -25,7 +25,11 @@ import { apiService } from "@/lib/api-service";
 import { tripKeys } from "@/lib/hooks/useTrips";
 import type { ApiResponse, Trip, Variation } from "@/types/api";
 import type { SignupTiming } from "@/utils/event-timing"; // Import SignupTiming type
-import { IconAlertTriangle, IconInfoCircle, IconLogin } from "@tabler/icons-react";
+import {
+	IconAlertTriangle,
+	IconInfoCircle,
+	IconLogin,
+} from "@tabler/icons-react";
 
 interface TripSignupWidgetProps {
 	trip: Trip;
@@ -224,7 +228,11 @@ export function TripSignupWidget({
 	if (!trip.has_variations && !trip.purchasable) {
 		return (
 			<Paper withBorder p="md" radius="md" mb="xl">
-				<Alert color="yellow" title="Not Available" icon={<IconAlertTriangle />}>
+				<Alert
+					color="yellow"
+					title="Not Available"
+					icon={<IconAlertTriangle />}
+				>
 					This item is currently not available for purchase.
 				</Alert>
 			</Paper>
