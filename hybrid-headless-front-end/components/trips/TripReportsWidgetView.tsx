@@ -50,11 +50,8 @@ export function TripReportsWidgetView({
 	const displayReports = limit ? reports.slice(0, limit) : reports;
 
 	if (displayReports.length === 0) {
-		return (
-			<Text c="dimmed" ta="center">
-				No trip reports available yet.
-			</Text>
-		);
+		// Return null to display nothing when there are no reports
+		return null;
 	}
 
 	return (
