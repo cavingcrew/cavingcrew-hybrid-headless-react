@@ -16,6 +16,8 @@ import {
 	Anchor,
 	Badge,
 	Box,
+	Button, // Add Button
+	Center, // Add Center
 	Container,
 	Divider,
 	Group,
@@ -28,11 +30,10 @@ import {
 	Text,
 	Title,
 	useMantineTheme,
-	Button, // Add Button
-	Center, // Add Center
 } from "@mantine/core";
 import {
 	IconAlertCircle,
+	IconArrowRight, // Add IconArrowRight for the button
 	IconCalendarEvent,
 	IconClock, // Added IconClock
 	IconHeartHandshake,
@@ -44,10 +45,9 @@ import {
 	IconTools,
 	IconUser,
 	IconUsers,
-	IconArrowRight, // Add IconArrowRight for the button
 } from "@tabler/icons-react";
-import { useMemo } from "react";
 import Link from "next/link"; // Add Link import
+import { useMemo } from "react";
 import { SensitiveAccessWarning } from "./SensitiveAccessWarning";
 import { TripExperience } from "./TripExperience";
 import { TripOvernightHut } from "./TripOvernightHut";
