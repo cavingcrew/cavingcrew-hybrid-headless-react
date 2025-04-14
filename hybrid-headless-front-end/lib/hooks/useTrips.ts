@@ -92,17 +92,12 @@ export function useTrips(): UseQueryResult<ApiResponse<Trip[]>> {
 						freshResponse.data.forEach((trip) => {
 							queryClient.setQueryData(
 								tripKeys.detail(trip.slug),
-								{ data: trip, success: true, timestamp: Date.now() }, // Set detail data
+								{ data: trip, success: true, timestamp: Date.now() } // Set detail data
 							);
 						});
-						console.log(
-							`[useTrips] Background fetch complete. Updated list and ${freshResponse.data.length} detail caches.`,
-						);
+						console.log(`[useTrips] Background fetch complete. Updated list and ${freshResponse.data.length} detail caches.`);
 					} else {
-						console.error(
-							"[useTrips] Background fetch failed:",
-							freshResponse.message,
-						);
+						console.error("[useTrips] Background fetch failed:", freshResponse.message);
 					}
 					return freshResponse;
 				},
@@ -113,19 +108,12 @@ export function useTrips(): UseQueryResult<ApiResponse<Trip[]>> {
 			if (cachedResponse.success && cachedResponse.data) {
 				cachedResponse.data.forEach((trip) => {
 					// Only set if not already present or older, avoid overwriting fresh data
-					const existingDetail = queryClient.getQueryData<ApiResponse<Trip>>(
-						tripKeys.detail(trip.slug),
-					);
-					if (
-						!existingDetail ||
-						(existingDetail.timestamp &&
-							existingDetail.timestamp < (cachedResponse.timestamp ?? 0))
-					) {
-						queryClient.setQueryData(tripKeys.detail(trip.slug), {
-							data: trip,
-							success: true,
-							timestamp: cachedResponse.timestamp,
-						});
+					const existingDetail = queryClient.getQueryData<ApiResponse<Trip>>(tripKeys.detail(trip.slug));
+					if (!existingDetail || (existingDetail.timestamp && existingDetail.timestamp < (cachedResponse.timestamp ?? 0))) {
+						queryClient.setQueryData(
+							tripKeys.detail(trip.slug),
+							{ data: trip, success: true, timestamp: cachedResponse.timestamp }
+						);
 					}
 				});
 			}
@@ -280,9 +268,7 @@ export function useTripReports(): UseQueryResult<ApiResponse<Trip[]>> {
 			queryClient.fetchQuery({
 				queryKey: [...tripReportKeys.all, "fresh"], // Use a distinct key
 				queryFn: async () => {
-					console.log(
-						"[useTripReports] Background fetching fresh reports list...",
-					);
+					console.log("[useTripReports] Background fetching fresh reports list...");
 					const freshResponse = await apiService.getTripReports(false); // Fetch non-cached
 					if (freshResponse.success && freshResponse.data) {
 						// Update the main list cache
@@ -295,7 +281,7 @@ export function useTripReports(): UseQueryResult<ApiResponse<Trip[]>> {
 									freshResponse.data &&
 									isDataStale(old.data, freshResponse.data)
 										? Date.now()
-										: (old?.timestamp ?? Date.now()), // Ensure timestamp exists
+										: old?.timestamp ?? Date.now(), // Ensure timestamp exists
 							}),
 						);
 						// --- Populate detail cache for each report ---
@@ -305,14 +291,9 @@ export function useTripReports(): UseQueryResult<ApiResponse<Trip[]>> {
 								{ data: report, success: true, timestamp: Date.now() }, // Set detail data
 							);
 						});
-						console.log(
-							`[useTripReports] Background fetch complete. Updated list and ${freshResponse.data.length} detail caches.`,
-						);
+						console.log(`[useTripReports] Background fetch complete. Updated list and ${freshResponse.data.length} detail caches.`);
 					} else {
-						console.error(
-							"[useTripReports] Background fetch failed:",
-							freshResponse.message,
-						);
+						console.error("[useTripReports] Background fetch failed:", freshResponse.message);
 					}
 					return freshResponse;
 				},
@@ -322,21 +303,11 @@ export function useTripReports(): UseQueryResult<ApiResponse<Trip[]>> {
 			// --- Populate detail cache from the initial cached response ---
 			if (cachedResponse.success && cachedResponse.data) {
 				cachedResponse.data.forEach((report) => {
-					const existingDetail = queryClient.getQueryData<ApiResponse<Trip>>(
-						tripKeys.detail(report.slug),
-					);
-					if (
-						!existingDetail ||
-						(existingDetail.timestamp &&
-							existingDetail.timestamp < (cachedResponse.timestamp ?? 0))
-					) {
+					const existingDetail = queryClient.getQueryData<ApiResponse<Trip>>(tripKeys.detail(report.slug));
+					if (!existingDetail || (existingDetail.timestamp && existingDetail.timestamp < (cachedResponse.timestamp ?? 0))) {
 						queryClient.setQueryData(
 							tripKeys.detail(report.slug),
-							{
-								data: report,
-								success: true,
-								timestamp: cachedResponse.timestamp ?? Date.now(),
-							}, // Ensure timestamp exists
+							{ data: report, success: true, timestamp: cachedResponse.timestamp ?? Date.now() } // Ensure timestamp exists
 						);
 					}
 				});
