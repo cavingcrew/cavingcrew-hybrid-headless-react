@@ -118,9 +118,7 @@ export function formatParticipantList(names: string[]): string {
  */
 export function getTripLeaders(participants: TripParticipant[]): string[] {
 	return participants
-		.filter((p) =>
-			p.order_meta?.cc_volunteer?.toLowerCase().includes("leader"),
-		)
+		.filter((p) => p.order_meta?.cc_volunteer?.toLowerCase().includes("leader"))
 		.map((p) => p.first_name)
 		.filter((name): name is string => !!name); // Type guard to filter out undefined/null names
 }

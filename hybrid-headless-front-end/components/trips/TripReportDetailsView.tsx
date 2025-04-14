@@ -4,9 +4,9 @@ import { useTripParticipants } from "@/lib/hooks/useTripParticipants";
 import { useUser } from "@/lib/hooks/useUser";
 import type { Trip } from "@/types/api"; // Removed TripParticipant import as it's handled in util
 import { extractChallengeMetrics } from "@/utils/difficulty-utils";
+import { generateTripReportSummary } from "@/utils/trip-report-utils"; // Import the new util
 // Removed formatParticipantCount import as it's handled in util
 import { Auth } from "@/utils/user-utils";
-import { generateTripReportSummary } from "@/utils/trip-report-utils"; // Import the new util
 import { Carousel } from "@mantine/carousel";
 import {
 	Alert,
