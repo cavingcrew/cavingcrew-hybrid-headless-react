@@ -316,7 +316,23 @@ export function useTripReports(): UseQueryResult<ApiResponse<Trip[]>> {
 
 			return cachedResponse.success ? cachedResponse : initialEmptyState;
 		},
-		// Removed duplicated block starting from staleTime down to placeholderData
+		staleTime: 1000 * 60 * 5, // 5 minutes
+							...freshData,
+							timestamp:
+								old?.data &&
+								freshData.data &&
+								isDataStale(old.data, freshData.data)
+									? Date.now()
+									: old?.timestamp,
+						}),
+					);
+					return freshData;
+				},
+				staleTime: 0,
+			});
+
+			return cachedResponse.success ? cachedResponse : initialEmptyState;
+		},
 		staleTime: 1000 * 60 * 5, // 5 minutes
 		gcTime: 1000 * 60 * 15, // 15 minutes
 		refetchOnWindowFocus: (query) => {
