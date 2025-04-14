@@ -610,6 +610,22 @@ export function TripDetails({ trip }: TripDetailsProps) {
 				</>
 			) : (
 				<Box id="trip-signup-section">
+					{/* Conditional Countdown Timer */}
+					{!hasPurchased && // Don't show countdown if already signed up
+						!trip.acf.event_allow_early_signup && // Hide if early signup override
+						!trip.acf.event_allow_late_signup && // Hide if late signup override
+						(signupTiming.status === "early" || // Show if signup hasn't opened
+							(signupTiming.status === "open" && // Or if open and closing soon
+								signupTiming.closesAt &&
+								isWithinNextDays(signupTiming.closesAt, 14))) && ( // Use new helper
+							<TripCountdown
+								signupTiming={signupTiming}
+								hasAvailability={trip.variations?.some(
+									(v) =>
+										v.stock_status === "instock" && (v.stock_quantity ?? 0) > 0,
+								)}
+							/>
+						)}
 					<TripSignupWidget
 						trip={trip}
 						requiresLogin={requiresLogin}
@@ -622,23 +638,6 @@ export function TripDetails({ trip }: TripDetailsProps) {
 					/>
 				</Box>
 			)}
-
-			{/* Conditional Countdown Timer */}
-			{!hasPurchased && // Don't show countdown if already signed up
-				!trip.acf.event_allow_early_signup && // Hide if early signup override
-				!trip.acf.event_allow_late_signup && // Hide if late signup override
-				(signupTiming.status === "early" || // Show if signup hasn't opened
-					(signupTiming.status === "open" && // Or if open and closing soon
-						signupTiming.closesAt &&
-						isWithinNextDays(signupTiming.closesAt, 14))) && ( // Use new helper
-					<TripCountdown
-						signupTiming={signupTiming}
-						hasAvailability={trip.variations?.some(
-							(v) =>
-								v.stock_status === "instock" && (v.stock_quantity ?? 0) > 0,
-						)}
-					/>
-				)}
 
 			{/* Conditional Access Details */}
 			{hasPurchased && !isOvernightTrip ? (
