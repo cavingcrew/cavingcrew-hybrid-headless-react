@@ -162,7 +162,9 @@ export const apiService = {
 				success: false,
 				data: null,
 				message:
-					error instanceof Error ? error.message : "Failed to fetch trip reports",
+					error instanceof Error
+						? error.message
+						: "Failed to fetch trip reports",
 			};
 		}
 	},
