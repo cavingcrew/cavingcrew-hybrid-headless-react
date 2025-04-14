@@ -433,26 +433,22 @@ export function TripDetails({ trip }: TripDetailsProps) {
 									</Group>
 								)}
 
-								{/* Gear Required */}
-								{(trip.route?.acf?.route_personal_gear_required ||
-									(acf?.event_gear_required &&
-										acf.event_gear_required !== "None")) && (
+								{/* Gear Required (Updated Logic) */}
+								{acf?.event_gear_required && (
 									<Group gap="xs">
 										<IconTools size={20} />
 										<div>
-											<Text fw={500}>Required Gear:</Text>
+											<Text fw={500}>Gear:</Text>
 											<Text>
-												{trip.route?.acf?.route_personal_gear_required
-													? typeof trip.route.acf
-															.route_personal_gear_required === "string"
-														? trip.route.acf.route_personal_gear_required
-																.replace(/<[^>]*>/g, "")
-																.trim()
-																.replace(/,/g, ", ")
-														: String(
-																trip.route.acf.route_personal_gear_required,
-															).replace(/,/g, ", ")
-													: acf.event_gear_required}
+												{acf.event_gear_required === "None"
+													? "All required gear can be borrowed from the Crew."
+													: acf.event_gear_required ===
+														"Horizontal Caving Gear"
+														? "Participants need their own horizontal caving gear (helmet, light, suits, wellies)."
+														: acf.event_gear_required ===
+															"Horizontal Caving Gear and SRT Kit"
+															? "Participants need their own full horizontal and vertical (SRT) caving gear."
+															: `Specific gear required: ${acf.event_gear_required}`}
 											</Text>
 										</div>
 									</Group>
@@ -565,45 +561,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
 										.join(" - ")}
 								</Alert>
 							)}
-
-							{/* Gear Requirements Clarification */}
-							{(trip.route?.acf?.route_personal_gear_required ||
-								(acf?.event_gear_required &&
-									acf.event_gear_required !== "None")) && (
-								<Alert
-									color="blue"
-									mt="md"
-									variant="light"
-									icon={<IconTools size={18} />}
-								>
-									{(() => {
-										// If we have route-specific gear requirements, use those
-										if (trip.route?.acf?.route_personal_gear_required) {
-											return `You'll need: ${
-												typeof trip.route.acf.route_personal_gear_required ===
-												"string"
-													? trip.route.acf.route_personal_gear_required
-															.replace(/<[^>]*>/g, "")
-															.trim()
-															.replace(/,/g, ", ")
-													: String(
-															trip.route.acf.route_personal_gear_required,
-														).replace(/,/g, ", ")
-											}`;
-										}
-
-										// Otherwise fall back to the event gear required
-										switch (acf.event_gear_required) {
-											case "Horizontal Caving Gear":
-												return "You'll need your own personal caving gear (helmet, light, caving suit, wellies)";
-											case "Horizontal Caving Gear and SRT Kit":
-												return "You'll need your own full caving gear and vertical equipment";
-											default:
-												return "Specialist equipment required - check kit list below";
-										}
-									})()}
-								</Alert>
-							)}
+							{/* Removed Gear Requirements Clarification Alert */}
 						</Paper>
 					)}
 				</Grid.Col>
