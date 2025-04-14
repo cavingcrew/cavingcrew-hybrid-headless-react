@@ -365,7 +365,8 @@ export function TripDetails({ trip }: TripDetailsProps) {
 												return "Giggletrip";
 											case "overnight":
 												return "Overnight Trip";
-											case "known": { // Add block scope
+											case "known": {
+												// Add block scope
 												const startHour = startDate?.getHours() || 0;
 												return startHour >= 17
 													? "Evening Caving"

@@ -363,7 +363,7 @@ export function TripReportDetailsView({ trip }: TripReportDetailsViewProps) {
 												</Text>
 											) : (
 												<Text>
-													Participants needed their own:{" "}
+													People needed their own:{" "}
 													{trip.acf.event_gear_required}
 												</Text>
 											)}
