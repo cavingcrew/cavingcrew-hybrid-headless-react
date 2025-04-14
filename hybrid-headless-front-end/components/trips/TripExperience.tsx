@@ -276,7 +276,8 @@ export function TripExperience({
 									)}
 							</Box>
 						) : (
-							!isPastTrip && participantSkills && ( // Add !isPastTrip condition here
+							!isPastTrip &&
+							participantSkills && ( // Add !isPastTrip condition here
 								<Box>
 									<Alert color="teal" icon={<IconCompass size={18} />} mb="md">
 										<Text size="sm">
