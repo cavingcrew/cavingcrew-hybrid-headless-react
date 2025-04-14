@@ -23,13 +23,15 @@ import { Auth } from "../../utils/user-utils";
 import { WordPressLoginWidget } from "@/components/auth/WordPressLoginWidget";
 import { apiService } from "@/lib/api-service";
 import { tripKeys } from "@/lib/hooks/useTrips";
-import type { ApiResponse, Trip } from "@/types/api";
-import { IconInfoCircle, IconLogin } from "@tabler/icons-react";
+import type { ApiResponse, Trip, Variation } from "@/types/api";
+import type { SignupTiming } from "@/utils/event-timing"; // Import SignupTiming type
+import { IconAlertTriangle, IconInfoCircle, IconLogin } from "@tabler/icons-react";
 
 interface TripSignupWidgetProps {
 	trip: Trip;
 	requiresLogin?: boolean;
 	loginReason?: string;
+	signupTiming: SignupTiming; // Add signupTiming prop
 }
 
 const calculateMemberPrice = (basePrice: string, discountPounds?: string) => {
@@ -46,6 +48,7 @@ export function TripSignupWidget({
 	trip,
 	requiresLogin = false,
 	loginReason = "This trip requires login to sign up",
+	signupTiming, // Destructure prop
 }: TripSignupWidgetProps) {
 	const queryClient = useQueryClient();
 	const [selectedVariation, setSelectedVariation] = useState<string>("");
@@ -184,19 +187,45 @@ export function TripSignupWidget({
 		window.location.href = `/checkout/?add-to-cart=${selectedVariation}`;
 	};
 
-	if (
-		(trip.has_variations && !hasAvailableVariations) ||
-		(!trip.has_variations && !trip.purchasable)
-	) {
+	// Determine if signup is allowed based on timing and overrides
+	const isSignupAllowed =
+		signupTiming.status === "open" ||
+		(signupTiming.status === "early" && trip.acf.event_allow_early_signup) ||
+		(signupTiming.status === "late" && trip.acf.event_allow_late_signup);
+
+	// Show specific messages if signup is closed or not yet open (and no overrides)
+	if (signupTiming.status === "early" && !trip.acf.event_allow_early_signup) {
+		// The countdown widget is shown in TripDetails, so this widget shows nothing
+		return null;
+	}
+
+	if (signupTiming.status === "closed" && !trip.acf.event_allow_late_signup) {
 		return (
 			<Paper withBorder p="md" radius="md" mb="xl">
-				<Alert
-					color="yellow"
-					title={trip.has_variations ? "Full Up" : "Not Available"}
-				>
-					{trip.has_variations
-						? "All places are currently filled"
-						: "This trip is currently not available for signups"}
+				<Alert color="gray" title="Signup Closed" icon={<IconAlertTriangle />}>
+					Signup for this trip has now closed.
+				</Alert>
+			</Paper>
+		);
+	}
+
+	// Handle case where trip is full (even if signup window is technically open)
+	if (!hasAvailableVariations && trip.has_variations) {
+		return (
+			<Paper withBorder p="md" radius="md" mb="xl">
+				<Alert color="red" title="Full Up" icon={<IconAlertTriangle />}>
+					All places on this trip are currently filled.
+				</Alert>
+			</Paper>
+		);
+	}
+
+	// Handle non-variable products that are not purchasable
+	if (!trip.has_variations && !trip.purchasable) {
+		return (
+			<Paper withBorder p="md" radius="md" mb="xl">
+				<Alert color="yellow" title="Not Available" icon={<IconAlertTriangle />}>
+					This item is currently not available for purchase.
 				</Alert>
 			</Paper>
 		);

@@ -2,6 +2,7 @@
 
 import { useTripCache } from "@/lib/hooks/useCache";
 import { useUser } from "@/lib/hooks/useUser";
+import { getSignupTiming } from "@/utils/event-timing"; // Import signup timing function
 import { getTripAvailability } from "@/utils/trip-utils";
 import { Badge, Card, Group, Image, Text, Tooltip } from "@mantine/core";
 import { IconArrowBarUp, IconStairs } from "@tabler/icons-react";
@@ -64,7 +65,8 @@ interface TripCardProps {
 
 export default function TripCard({ trip }: TripCardProps) {
 	const queryClient = useQueryClient();
-	const { statusMessage, badgeColor } = getTripAvailability(trip);
+	const signupTiming = getSignupTiming(trip);
+	const { isAvailable: hasStock } = getTripAvailability(trip); // Check stock separately
 	const eventDate = trip.acf.event_start_date_time
 		? formatDateWithOrdinal(trip.acf.event_start_date_time)
 		: null;
@@ -116,11 +118,30 @@ export default function TripCard({ trip }: TripCardProps) {
 				<Group justify="space-between" mt="md" mb="xs">
 					<Text fw={500}>{trip.name}</Text>
 					<Group gap="xs">
-						{!isMembershipCategory(trip) && (
-							<Badge color={badgeColor}>{statusMessage}</Badge>
-						)}
+						{!isMembershipCategory(trip) && (() => {
+							let statusMessage = "";
+							let badgeColor: string = "gray"; // Default color
+
+							if (signupTiming.status === "early" && !trip.acf.event_allow_early_signup) {
+								statusMessage = "Opens Soon";
+								badgeColor = "cyan";
+							} else if (signupTiming.status === "closed" && !trip.acf.event_allow_late_signup) {
+								statusMessage = "Closed";
+								badgeColor = "gray";
+							} else { // Status is 'open' or overrides are active
+								if (hasStock) {
+									statusMessage = "Available";
+									badgeColor = "green";
+								} else {
+									statusMessage = "Full";
+									badgeColor = "red";
+								}
+							}
+
+							return <Badge color={badgeColor}>{statusMessage}</Badge>;
+						})()}
 						{hasPurchased && (
-							<Badge color="green" variant="light">
+							<Badge color="lime" variant="light">
 								Signed Up
 							</Badge>
 						)}

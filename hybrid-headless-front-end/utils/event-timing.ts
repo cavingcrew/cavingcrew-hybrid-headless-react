@@ -15,6 +15,22 @@ export function isWithinDays(dateString: string, days: number): boolean {
 	return diffDays <= days && diffDays >= 0;
 }
 
+/**
+ * Checks if a future date is within the next N days from now.
+ * @param date The future date object.
+ * @param days The number of days to check within.
+ * @returns True if the date is within N days from now, false otherwise.
+ */
+export function isWithinNextDays(date: Date, days: number): boolean {
+	const now = new Date();
+	if (date <= now) return false; // Date must be in the future
+
+	const diffTime = date.getTime() - now.getTime();
+	const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+	return diffDays <= days;
+}
+
+
 export function getSignupTiming(trip: Trip): SignupTiming {
 	const now = new Date();
 	const startDate = trip.acf.event_start_date_time

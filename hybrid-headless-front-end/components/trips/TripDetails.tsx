@@ -38,10 +38,11 @@ import {
 } from "@tabler/icons-react";
 import React from "react";
 import type { Trip } from "../../types/api";
-import { isWithinDays } from "../../utils/event-timing";
+import { getSignupTiming, isWithinNextDays } from "../../utils/event-timing"; // Use isWithinNextDays
 import { Auth } from "../../utils/user-utils";
 import type { AccessLevel } from "../../utils/user-utils";
 import { NeoClanVolunteeringWidget } from "./NeoClanVolunteeringWidget";
+import { TripCountdown } from "./TripCountdown"; // Import the new countdown component
 import { SensitiveAccessWarning } from "./SensitiveAccessWarning";
 import { TripAccessDetails } from "./TripAccessDetails";
 import { TripExperience } from "./TripExperience";
@@ -58,9 +59,9 @@ interface TripDetailsProps {
 
 export function TripDetails({ trip }: TripDetailsProps) {
 	const acf = trip.acf;
-	const { user } = useUser();
-	const isLoggedIn = Auth.isLoggedIn(user);
+	const { user, isLoggedIn } = useUser(); // Use isLoggedIn from hook
 	const { hasPurchased } = useTripAccess(trip);
+	const signupTiming = getSignupTiming(trip); // Calculate signup timing
 
 	// Helper function to extract locality from address
 	const getVagueLocation = (address?: string) => {
@@ -617,9 +618,27 @@ export function TripDetails({ trip }: TripDetailsProps) {
 								? "This trip requires membership signup"
 								: "This trip requires previous experience caving with us"
 						}
+						signupTiming={signupTiming} // Pass signupTiming
 					/>
 				</Box>
 			)}
+
+			{/* Conditional Countdown Timer */}
+			{!hasPurchased && // Don't show countdown if already signed up
+				!trip.acf.event_allow_early_signup && // Hide if early signup override
+				!trip.acf.event_allow_late_signup && // Hide if late signup override
+				(signupTiming.status === "early" || // Show if signup hasn't opened
+					(signupTiming.status === "open" && // Or if open and closing soon
+						signupTiming.closesAt &&
+						isWithinNextDays(signupTiming.closesAt, 14))) && ( // Use new helper
+					<TripCountdown
+						signupTiming={signupTiming}
+						hasAvailability={trip.variations?.some(
+							(v) => v.stock_status === "instock" && (v.stock_quantity ?? 0) > 0,
+						)}
+					/>
+				)}
+
 			{/* Conditional Access Details */}
 			{hasPurchased && !isOvernightTrip ? (
 				<TripAccessDetails trip={trip} />
