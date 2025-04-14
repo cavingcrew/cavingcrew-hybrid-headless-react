@@ -191,9 +191,7 @@ export function TripDetails({ trip }: TripDetailsProps) {
 		acf?.event_type === "giggletrip" &&
 		trip.variations.some(
 			(v) =>
-				v.attributes &&
-				v.attributes["what-describes-you-best"] &&
-				v.attributes["what-describes-you-best"].value
+				v.attributes?.["what-describes-you-best"]?.value // Use optional chaining
 					.toLowerCase()
 					.includes("keen") &&
 				v.stock_quantity !== null &&
@@ -367,11 +365,12 @@ export function TripDetails({ trip }: TripDetailsProps) {
 												return "Giggletrip";
 											case "overnight":
 												return "Overnight Trip";
-											case "known":
+											case "known": { // Add block scope
 												const startHour = startDate?.getHours() || 0;
 												return startHour >= 17
 													? "Evening Caving"
 													: "Day Caving";
+											} // Close block scope
 											case "mystery":
 												return "Mystery Trip";
 											default:
