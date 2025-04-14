@@ -320,13 +320,10 @@ export function TripReportDetailsView({ trip }: TripReportDetailsViewProps) {
 						</Box>
 					)}
 
-					{/* Trip Experience Section (Replaces Challenge Indicator) */}
-					<TripExperience trip={trip} isPastTrip={true} />
-
 					{/* Original Trip Requirements Section (Moved & Modified) */}
 					{(trip.acf?.event_skills_required ||
 						trip.acf?.event_gear_required ||
-						trip.route?.acf?.route_time_for_eta || // Added condition for time
+						// trip.route?.acf?.route_time_for_eta || // Removed condition for time
 						trip.acf?.event_must_caved_with_us_before ||
 						trip.acf?.event_non_members_welcome ||
 						(trip.acf?.event_volunteering_required &&
@@ -339,16 +336,7 @@ export function TripReportDetailsView({ trip }: TripReportDetailsViewProps) {
 								Original Trip Requirements
 							</Title>
 							<Stack gap="md">
-								{/* Estimated Time */}
-								{trip.route?.acf?.route_time_for_eta && (
-									<Group gap="xs">
-										<IconClock size={20} />
-										<div>
-											<Text fw={500}>Estimated Duration:</Text>
-											<Text>{trip.route.acf.route_time_for_eta} hours</Text>
-										</div>
-									</Group>
-								)}
+								{/* Estimated Time Removed */}
 
 								{/* Skills Required */}
 								{trip.acf?.event_skills_required && (
@@ -465,6 +453,11 @@ export function TripReportDetailsView({ trip }: TripReportDetailsViewProps) {
 							</Stack>
 						</Paper>
 					)}
+
+					{/* Trip Experience Section (Replaces Challenge Indicator) */}
+					<TripExperience trip={trip} isPastTrip={true} />
+
+					{/* Original Trip Requirements Section has been moved */}
 				</Stack>
 			</Paper>
 		</Container>
