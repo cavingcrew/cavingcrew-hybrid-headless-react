@@ -360,7 +360,7 @@ export function TripReportDetailsView({ trip }: TripReportDetailsViewProps) {
 
 								{/* Gear Required (Modified Logic) */}
 								{trip.acf?.event_gear_required && (
-									<Group gap="xs">
+									<Group gap="xs" align="flex-start"> {/* Align icon and text to the top */}
 										<IconTools size={20} />
 										<div>
 											<Text fw={500}>Gear:</Text>
