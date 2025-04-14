@@ -40,7 +40,8 @@ import {
 	IconUsers,
 } from "@tabler/icons-react";
 import { SensitiveAccessWarning } from "./SensitiveAccessWarning";
-import { TripChallengeIndicator } from "./TripChallengeIndicator";
+import { TripExperience } from "./TripExperience"; // Import TripExperience
+// Removed TripChallengeIndicator import
 
 interface TripReportDetailsViewProps {
 	trip: Trip; // Report data is nested within the Trip object
@@ -252,18 +253,8 @@ export function TripReportDetailsView({ trip }: TripReportDetailsViewProps) {
 							</Box>
 						)}
 
-					{/* Challenge Indicator */}
-					{challengeMetricsResult && (
-						<Box mt="xl">
-							<Title order={3} ta="center" mb="md">
-								Route Challenge Profile
-							</Title>
-							<TripChallengeIndicator
-								metrics={challengeMetricsResult.metrics}
-								weightedRank={challengeMetricsResult.weightedRank}
-							/>
-						</Box>
-					)}
+					{/* Trip Experience Section (Replaces Challenge Indicator) */}
+					<TripExperience trip={trip} />
 
 					{/* Original Trip Requirements Section (Moved & Modified) */}
 					{(trip.acf?.event_skills_required ||
