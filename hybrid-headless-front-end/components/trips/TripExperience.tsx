@@ -91,7 +91,8 @@ function TripEnjoymentRating({
 			)}
 			{estimatedTime && (
 				<Box>
-					<Group gap="xs" align="flex-start">
+					{/* Added wrap="nowrap" to prevent the icon from stacking */}
+					<Group gap="xs" align="flex-start" wrap="nowrap">
 						<IconClock size={18} style={{ marginTop: 4 }} />
 						<div>
 							<Text>
