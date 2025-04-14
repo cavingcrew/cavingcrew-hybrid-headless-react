@@ -122,7 +122,25 @@ export function useTrips(): UseQueryResult<ApiResponse<Trip[]>> {
 			// Return cached response or empty state
 			return cachedResponse.success ? cachedResponse : initialEmptyState;
 		},
-		// Removed duplicated block here
+		staleTime: 1000 * 30, // 30 seconds
+							...freshData,
+							// Preserve timestamp if data is similar
+							timestamp:
+								old?.data &&
+								freshData.data &&
+								isDataStale(old.data, freshData.data)
+									? Date.now()
+									: old?.timestamp,
+						}),
+					);
+					return freshData;
+				},
+				staleTime: 0,
+			});
+
+			// Return cached response or empty state
+			return cachedResponse.success ? cachedResponse : initialEmptyState;
+		},
 		staleTime: 1000 * 30, // 30 seconds
 		gcTime: 1000 * 60 * 10, // 10 minutes
 		refetchOnWindowFocus: (query) => {
