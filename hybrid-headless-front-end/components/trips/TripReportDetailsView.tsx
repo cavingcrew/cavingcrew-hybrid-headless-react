@@ -321,7 +321,7 @@ export function TripReportDetailsView({ trip }: TripReportDetailsViewProps) {
 					)}
 
 					{/* Trip Experience Section (Replaces Challenge Indicator) */}
-					<TripExperience trip={trip} />
+					<TripExperience trip={trip} isPastTrip={true} />
 
 					{/* Original Trip Requirements Section (Moved & Modified) */}
 					{(trip.acf?.event_skills_required ||
