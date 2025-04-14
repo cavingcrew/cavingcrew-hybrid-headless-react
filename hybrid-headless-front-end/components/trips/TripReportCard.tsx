@@ -92,21 +92,14 @@ export default function TripReportCard({ report }: TripReportCardProps) {
 								</Text>
 							</Group>
 						)}
-						<Group gap="xs" mb="sm">
-							<IconUser size={16} opacity={0.7} />
-							<Text size="sm" c="dimmed">
-								By: {reportAuthor}
-							</Text>
-						</Group>
+						{/* Removed Author Line */}
 
 						<Text size="sm" c="dimmed" lineClamp={3}>
 							{reportContentPreview}...
 						</Text>
 					</Box>
 
-					<Button variant="light" mt="md" fullWidth>
-						Read Report
-					</Button>
+					{/* Removed Read Report Button */}
 				</Stack>
 			</Card>
 		</Link>
