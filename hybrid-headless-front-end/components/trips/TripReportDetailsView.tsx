@@ -5,8 +5,8 @@ import { useUser } from "@/lib/hooks/useUser";
 import type { Trip } from "@/types/api";
 import { extractChallengeMetrics } from "@/utils/difficulty-utils";
 import {
-	formatParticipantList, // Import helper
-	formatRoleName, // Import new helper
+	formatParticipantList,
+	formatRoleName,
 	generateTripReportSummary,
 } from "@/utils/trip-report-utils";
 import { Auth } from "@/utils/user-utils";
