@@ -258,12 +258,12 @@ export function TripReportDetailsView({ trip }: TripReportDetailsViewProps) {
 						</Box>
 					)}
 
-					{/* Gallery */}
+					{/* Photos */}
 					{trip.trip_report?.report_gallery &&
 						trip.trip_report.report_gallery.length > 0 && (
 							<Box>
 								<Title order={3} mb="md" mt="lg">
-									Gallery
+									Photos
 								</Title>
 								<Carousel
 									withIndicators
